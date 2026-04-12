@@ -1,4 +1,5 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Upload, CheckCircle, AlertCircle, ChevronDown, ChevronUp } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card.js";
@@ -132,11 +133,12 @@ function BankUploadCard({
   );
 }
 
-type MonzoStatus = { configured: boolean; lastSyncedAt: string | null; totalStaged: number };
+type MonzoStatus = { configured: boolean; connected: boolean; accountId: string | null; lastSyncedAt: string | null; totalStaged: number };
 type MonzoSyncResult = { imported: number; duplicates: number };
 
 export function ImportPage() {
   const queryClient = useQueryClient();
+  const [searchParams, setSearchParams] = useSearchParams();
   const amexFileRef = useRef<HTMLInputElement>(null);
   const barclaysFileRef = useRef<HTMLInputElement>(null);
   const santanderFileRef = useRef<HTMLInputElement>(null);
@@ -170,6 +172,19 @@ export function ImportPage() {
     mutationFn: () => api.post("/api/admin/monzo/sync").then((r) => r.data),
     onSuccess: () => { refetchStaged(); refetchMonzoStatus(); },
   });
+
+  const monzoDisconnectMutation = useMutation<void, Error>({
+    mutationFn: () => api.post("/api/admin/monzo/disconnect").then((r) => r.data),
+    onSuccess: () => refetchMonzoStatus(),
+  });
+
+  const monzoParam = searchParams.get("monzo");
+  useEffect(() => {
+    if (monzoParam) {
+      setSearchParams({}, { replace: true });
+      if (monzoParam === "connected") refetchMonzoStatus();
+    }
+  }, [monzoParam]);
 
   const amexMutation = useMutation<ImportResult, Error, { file: File; owner: string }>({
     mutationFn: ({ file, owner }) => {
@@ -354,21 +369,41 @@ export function ImportPage() {
           <CardTitle className="text-xs uppercase tracking-wide text-muted-foreground">Monzo</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
+          {monzoParam === "error" && (
+            <div className="flex items-center gap-2 text-sm text-destructive">
+              <AlertCircle className="h-4 w-4" />
+              Connection failed — check your client credentials and try again.
+            </div>
+          )}
           {!monzoStatus?.configured ? (
             <p className="text-sm text-muted-foreground">
-              Set <span className="font-mono">MONZO_ACCESS_TOKEN</span> in <span className="font-mono">server/.env</span> — grab it from{" "}
-              <span className="font-mono">developers.monzo.com</span>.
+              Set <span className="font-mono">MONZO_CLIENT_ID</span>, <span className="font-mono">MONZO_CLIENT_SECRET</span>, and <span className="font-mono">MONZO_REDIRECT_URI</span> in <span className="font-mono">server/.env</span>.
             </p>
+          ) : !monzoStatus.connected ? (
+            <>
+              <p className="text-sm text-muted-foreground">
+                Connect your Monzo account — tokens refresh automatically, no more manual copy-paste.
+              </p>
+              <a href="/api/admin/monzo/auth">
+                <Button>Connect Monzo</Button>
+              </a>
+            </>
           ) : (
             <>
               <p className="text-sm text-muted-foreground">
-                {monzoStatus.lastSyncedAt
-                  ? <>Last synced {new Date(monzoStatus.lastSyncedAt).toLocaleString()} · {monzoStatus.totalStaged.toLocaleString()} staged</>
-                  : "Not yet synced."}
+                Connected · <span className="font-mono text-xs">{monzoStatus.accountId}</span>
+                {monzoStatus.lastSyncedAt && (
+                  <> · Last synced {new Date(monzoStatus.lastSyncedAt).toLocaleString()} · {monzoStatus.totalStaged.toLocaleString()} staged</>
+                )}
               </p>
-              <Button disabled={monzoSyncMutation.isPending} onClick={() => monzoSyncMutation.mutate()}>
-                {monzoSyncMutation.isPending ? "Syncing…" : "Sync now"}
-              </Button>
+              <div className="flex items-center gap-3">
+                <Button disabled={monzoSyncMutation.isPending} onClick={() => monzoSyncMutation.mutate()}>
+                  {monzoSyncMutation.isPending ? "Syncing…" : "Sync now"}
+                </Button>
+                <Button variant="outline" disabled={monzoDisconnectMutation.isPending} onClick={() => monzoDisconnectMutation.mutate()}>
+                  Disconnect
+                </Button>
+              </div>
               {monzoSyncMutation.isSuccess && (
                 <div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
                   <CheckCircle className="h-4 w-4" />

@@ -170,6 +170,17 @@ exports.Prisma.MonzoApiTransactionScalarFieldEnum = {
   status: 'status'
 };
 
+exports.Prisma.MonzoCredentialScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  accessToken: 'accessToken',
+  refreshToken: 'refreshToken',
+  expiresAt: 'expiresAt',
+  accountId: 'accountId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.AmexTransactionScalarFieldEnum = {
   transactionId: 'transactionId',
   transactionDate: 'transactionDate',
@@ -372,6 +383,7 @@ exports.Prisma.ModelName = {
   Category: 'Category',
   Transaction: 'Transaction',
   MonzoApiTransaction: 'MonzoApiTransaction',
+  MonzoCredential: 'MonzoCredential',
   AmexTransaction: 'AmexTransaction',
   BarclaysTransaction: 'BarclaysTransaction',
   SantanderTransaction: 'SantanderTransaction',

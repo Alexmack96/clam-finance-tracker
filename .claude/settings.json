@@ -1,4 +1,19 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(DATABASE_URL=\"file:./dev.db\" bun --eval \"import { db } from './src/db/client.ts'; const rows = await db.santanderTransaction.findMany\\({ where: { OR: [{ description: { contains: 'FASTER PAYMENT' } }, { description: { contains: 'SALARY' } }, { description: { contains: 'PAY' } }] }, select: { id: true, description: true, amount: true, status: true } }\\); console.log\\(JSON.stringify\\(rows.slice\\(0, 20\\), null, 2\\)\\);\")",
+      "Bash(DATABASE_URL=\"file:./dev.db\" bun --eval \"import { db } from './src/db/client.ts'; const rows = await db.santanderTransaction.findMany\\({ where: { OR: [{ description: { contains: 'FASTER PAYMENT' } }, { description: { contains: 'SALARY' } }, { description: { contains: 'PAY' } }] }, select: { id: true, description: true, moneyIn: true, moneyOut: true, status: true } }\\); console.log\\(JSON.stringify\\(rows.slice\\(0, 20\\), null, 2\\)\\);\")",
+      "Bash(DATABASE_URL=\"file:./dev.db\" bun --eval \"import { db } from './src/db/client.ts'; const txns = await db.transaction.findMany\\({ where: { description: { contains: 'THROGMORTON' } }, select: { id: true, description: true, amount: true, type: true, categoryId: true } }\\); console.log\\(JSON.stringify\\(txns, null, 2\\)\\);\")",
+      "Bash(DATABASE_URL=\"file:./dev.db\" bun --eval \"import { db } from './src/db/client.ts'; const result = await db.transaction.updateMany\\({ where: { description: { contains: 'THROGMORTON' } }, data: { categoryId: 'cmnvgney80000lku8tkh38z6n' } }\\); console.log\\(result\\);\")",
+      "Bash(DATABASE_URL=\"file:./dev.db\" bun --eval \"import { db } from './src/db/client.ts'; const r = await db.monzoApiTransaction.deleteMany\\(\\); console.log\\('deleted:', r.count\\);\")",
+      "Bash(DATABASE_URL=\"file:./test.db\" bunx prisma db execute --help)",
+      "Bash(DATABASE_URL=\"file:./test.db\" bun -e \"import { Database } from 'bun:sqlite'; const db = new Database\\('./test.db'\\); const r = db.query\\('SELECT id FROM \\\\\"user\\\\\" WHERE email = ?'\\).get\\('admin@test.com'\\); console.log\\(JSON.stringify\\(r\\)\\);\")",
+      "Bash(ls /c/Users/amackintosh/Source/repos/clam-finance-tracker/server/*.db)",
+      "Bash(NODE_ENV=test DATABASE_URL=\"file:./test.db\" bun -e \"import { Database } from 'bun:sqlite'; const db = new Database\\('./test.db'\\); const cols = db.query\\(\\\\\"PRAGMA table_info\\('monzo_credential'\\)\\\\\"\\).all\\(\\); console.log\\(JSON.stringify\\(cols.map\\(c => c.name\\)\\)\\);\")",
+      "Bash(python3 -c \"import sys,json; r=json.load\\(sys.stdin\\); [print\\(s['error']['message'][:500]\\) for t in r.get\\('suites',[]\\) for s in \\(t.get\\('specs',[]\\) + [ss for su in t.get\\('suites',[]\\) for ss in su.get\\('specs',[]\\)]\\) if any\\(not tr['ok'] for tr in s.get\\('tests',[]\\) for tr in tr.get\\('results',[]\\)\\)]\")",
+      "Bash(echo \"EXIT: $?\")"
+    ]
+  },
   "enabledPlugins": {
     "context7@claude-plugins-official": true
   }

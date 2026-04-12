@@ -54,7 +54,8 @@ export async function mapMonzoCategories() {
       where: { categoryId: monzoCat.id },
       data: { categoryId: canonicalCat.id },
     });
-    await db.category.delete({ where: { id: monzoCat.id } });
+    const remaining = await db.transaction.count({ where: { categoryId: monzoCat.id } });
+    if (remaining === 0) await db.category.delete({ where: { id: monzoCat.id } });
     console.log(`Mapped Monzo category: "${monzo}" → "${canonical}"`);
   }
 }

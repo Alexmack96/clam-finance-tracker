@@ -1,21 +1,187 @@
 import { Router } from "express";
+import { randomBytes } from "crypto";
 import { db } from "../db/client.js";
 import { env } from "../config/env.js";
 import { requireAuth, requireAdmin } from "../middleware/auth.js";
-import type { Prisma } from "../generated/prisma/index.js";
+import type { MonzoCredential, Prisma } from "../generated/prisma/index.js";
 
 export const monzoRouter = Router();
 
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
+function monzoGuard(res: import("express").Response): boolean {
+  if (!env.MONZO_CLIENT_ID || !env.MONZO_CLIENT_SECRET || !env.MONZO_REDIRECT_URI) {
+    res.status(503).json({ error: "Monzo OAuth not configured — set MONZO_CLIENT_ID, MONZO_CLIENT_SECRET, MONZO_REDIRECT_URI in .env" });
+    return false;
+  }
+  return true;
+}
+
+async function ensureFreshToken(credential: MonzoCredential): Promise<MonzoCredential> {
+  const bufferMs = 5 * 60 * 1000; // refresh 5 min before expiry
+  if (credential.expiresAt.getTime() - Date.now() > bufferMs) return credential;
+
+  const resp = await fetch("https://api.monzo.com/oauth2/token", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      grant_type:    "refresh_token",
+      client_id:     env.MONZO_CLIENT_ID!,
+      client_secret: env.MONZO_CLIENT_SECRET!,
+      refresh_token: credential.refreshToken,
+    }),
+  });
+
+  if (!resp.ok) {
+    const body = await resp.text();
+    // Refresh token invalidated — user needs to reconnect
+    await db.monzoCredential.delete({ where: { id: credential.id } });
+    throw Object.assign(new Error(`Monzo token expired and could not be refreshed — please reconnect: ${body}`), { status: 401 });
+  }
+
+  const data = (await resp.json()) as { access_token: string; refresh_token: string; expires_in: number };
+  return db.monzoCredential.update({
+    where: { id: credential.id },
+    data: {
+      accessToken:  data.access_token,
+      refreshToken: data.refresh_token,
+      expiresAt:    new Date(Date.now() + data.expires_in * 1000),
+    },
+  });
+}
+
 // ─── GET /api/admin/monzo/status ─────────────────────────────────────────────
 
-monzoRouter.get("/status", requireAuth, requireAdmin, async (_req, res) => {
-  const configured = !!env.MONZO_ACCESS_TOKEN;
+monzoRouter.get("/status", requireAuth, requireAdmin, async (req, res) => {
+  const configured = !!(env.MONZO_CLIENT_ID && env.MONZO_CLIENT_SECRET && env.MONZO_REDIRECT_URI);
+  const credential = await db.monzoCredential.findUnique({
+    where: { userId: req.user!.id },
+    select: { accountId: true },
+  });
   const latest = await db.monzoApiTransaction.findFirst({
     orderBy: { created: "desc" },
-    select: { created: true, monzoId: true },
+    select: { created: true },
   });
-  const total = await db.monzoApiTransaction.count();
-  res.json({ configured, lastSyncedAt: latest?.created ?? null, totalStaged: total });
+  const totalStaged = await db.monzoApiTransaction.count();
+
+  res.json({
+    configured,
+    connected: !!credential,
+    accountId: credential?.accountId ?? null,
+    lastSyncedAt: latest?.created ?? null,
+    totalStaged,
+  });
+});
+
+// ─── GET /api/admin/monzo/auth — initiates OAuth ──────────────────────────────
+
+monzoRouter.get("/auth", requireAuth, requireAdmin, async (req, res) => {
+  if (!monzoGuard(res)) return;
+
+  const state = randomBytes(16).toString("hex");
+
+  await db.verification.create({
+    data: {
+      id:         randomBytes(8).toString("hex"),
+      identifier: "monzo-oauth-state",
+      value:      JSON.stringify({ state, userId: req.user!.id }),
+      expiresAt:  new Date(Date.now() + 10 * 60 * 1000),
+      updatedAt:  new Date(),
+    },
+  });
+
+  const url = new URL("https://auth.monzo.com/");
+  url.searchParams.set("client_id",     env.MONZO_CLIENT_ID!);
+  url.searchParams.set("redirect_uri",  env.MONZO_REDIRECT_URI!);
+  url.searchParams.set("response_type", "code");
+  url.searchParams.set("state",         state);
+
+  console.log("[monzo:auth] redirecting to:", url.toString());
+  res.redirect(302, url.toString());
+});
+
+// ─── GET /api/admin/monzo/callback — NOT behind requireAuth ───────────────────
+
+monzoRouter.get("/callback", async (req, res) => {
+  console.log("[monzo:callback] hit", req.query);
+  if (!monzoGuard(res)) return;
+
+  const { code, state, error } = req.query as Record<string, string>;
+  const clientUrl = env.TRUSTED_ORIGINS.split(",")[0].trim();
+
+  if (error || !state || !code) {
+    console.log("[monzo:callback] missing params — error:", error, "state:", !!state, "code:", !!code);
+    res.redirect(302, `${clientUrl}/import?monzo=error`);
+    return;
+  }
+
+  // Verify state
+  const verification = await db.verification.findFirst({
+    where: { identifier: "monzo-oauth-state", expiresAt: { gt: new Date() } },
+    orderBy: { createdAt: "desc" },
+  });
+
+  if (!verification) {
+    console.log("[monzo:callback] no valid state verification found in DB");
+    res.redirect(302, `${clientUrl}/import?monzo=error`); return;
+  }
+
+  let payload: { state: string; userId: string };
+  try { payload = JSON.parse(verification.value); } catch {
+    console.log("[monzo:callback] failed to parse verification value:", verification.value);
+    res.redirect(302, `${clientUrl}/import?monzo=error`); return;
+  }
+
+  if (payload.state !== state) {
+    console.log("[monzo:callback] state mismatch — expected:", payload.state, "got:", state);
+    res.redirect(302, `${clientUrl}/import?monzo=error`); return;
+  }
+
+  await db.verification.delete({ where: { id: verification.id } });
+  console.log("[monzo:callback] state verified, exchanging code for tokens");
+
+  // Exchange code for tokens
+  const tokenResp = await fetch("https://api.monzo.com/oauth2/token", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      grant_type:    "authorization_code",
+      client_id:     env.MONZO_CLIENT_ID!,
+      client_secret: env.MONZO_CLIENT_SECRET!,
+      redirect_uri:  env.MONZO_REDIRECT_URI!,
+      code,
+    }),
+  });
+
+  if (!tokenResp.ok) {
+    const body = await tokenResp.text();
+    console.log("[monzo:callback] token exchange failed:", tokenResp.status, body);
+    res.redirect(302, `${clientUrl}/import?monzo=error`); return;
+  }
+
+  console.log("[monzo:callback] tokens received, saving credential");
+  const tokens = (await tokenResp.json()) as { access_token: string; refresh_token: string; expires_in: number };
+
+  await db.monzoCredential.upsert({
+    where:  { userId: payload.userId },
+    create: {
+      id:           randomBytes(8).toString("hex"),
+      userId:       payload.userId,
+      accessToken:  tokens.access_token,
+      refreshToken: tokens.refresh_token,
+      expiresAt:    new Date(Date.now() + tokens.expires_in * 1000),
+      updatedAt:    new Date(),
+    },
+    update: {
+      accessToken:  tokens.access_token,
+      refreshToken: tokens.refresh_token,
+      expiresAt:    new Date(Date.now() + tokens.expires_in * 1000),
+      accountId:    null, // will be resolved on first sync
+    },
+  });
+
+  console.log("[monzo:callback] credential saved, redirecting to import page");
+  res.redirect(302, `${clientUrl}/import?monzo=connected`);
 });
 
 // ─── POST /api/admin/monzo/sync ───────────────────────────────────────────────
@@ -35,59 +201,56 @@ type MonzoTx = {
   scheme?: string;
   include_in_spending: boolean;
   account_id: string;
-  merchant?: {
-    name?: string;
-    emoji?: string;
-    address?: { short_formatted?: string };
-  } | null;
+  merchant?: { name?: string; emoji?: string; address?: { short_formatted?: string } } | null;
 };
 
-monzoRouter.post("/sync", requireAuth, requireAdmin, async (_req, res) => {
-  if (!env.MONZO_ACCESS_TOKEN) {
-    res.status(503).json({ error: "MONZO_ACCESS_TOKEN not configured in .env" });
-    return;
+monzoRouter.post("/sync", requireAuth, requireAdmin, async (req, res) => {
+  if (!monzoGuard(res)) return;
+
+  let credential = await db.monzoCredential.findUnique({ where: { userId: req.user!.id } });
+  if (!credential) { res.status(400).json({ error: "Monzo not connected — click Connect Monzo first" }); return; }
+
+  // Auto-refresh if needed — throws 401 if refresh token is also dead
+  credential = await ensureFreshToken(credential);
+
+  // Resolve account ID if not yet stored
+  if (!credential.accountId) {
+    console.log("[monzo:sync] no accountId stored, fetching from API");
+    const accountsResp = await fetch("https://api.monzo.com/accounts?account_type=uk_retail", {
+      headers: { Authorization: `Bearer ${credential.accessToken}` },
+    });
+    if (!accountsResp.ok) {
+      const body = await accountsResp.text();
+      res.status(502).json({ error: `Could not fetch Monzo account ID: ${body}` }); return;
+    }
+    const { accounts } = (await accountsResp.json()) as { accounts: { id: string; closed: boolean }[] };
+    console.log("[monzo:sync] accounts:", accounts.map((a) => ({ id: a.id, closed: a.closed })));
+    const account = accounts.find((a) => !a.closed);
+    if (!account) { res.status(502).json({ error: "No open Monzo account found" }); return; }
+    credential = await db.monzoCredential.update({
+      where: { id: credential.id },
+      data:  { accountId: account.id },
+    });
+    console.log("[monzo:sync] accountId saved:", account.id);
   }
 
-  const token = env.MONZO_ACCESS_TOKEN;
-
-  // Fetch account ID
-  const accountsResp = await fetch("https://api.monzo.com/accounts?account_type=uk_retail", {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  if (!accountsResp.ok) {
-    const body = await accountsResp.text();
-    res.status(502).json({ error: `Monzo /accounts failed: ${body}` });
-    return;
-  }
-  const accountsData = (await accountsResp.json()) as { accounts: { id: string; closed: boolean }[] };
-  const account = accountsData.accounts.find((a) => !a.closed);
-  if (!account) {
-    res.status(400).json({ error: "No open Monzo account found" });
-    return;
-  }
-
-  // Use latest monzoId as cursor; fall back to 90 days ago for first sync
   const latest = await db.monzoApiTransaction.findFirst({
     orderBy: { created: "desc" },
     select: { monzoId: true },
   });
   const since = latest?.monzoId ?? "2025-12-31T23:59:59.000Z";
 
-  // Paginate until we have everything
   const allTxs: MonzoTx[] = [];
   let cursor = since;
-  const PAGE_CAP = 50;
 
-  for (let page = 0; page < PAGE_CAP; page++) {
+  for (let page = 0; page < 50; page++) {
     const url = new URL("https://api.monzo.com/transactions");
-    url.searchParams.set("account_id", account.id);
-    url.searchParams.set("since", cursor);
-    url.searchParams.set("limit", "100");
-    url.searchParams.set("expand[]", "merchant");
+    url.searchParams.set("account_id", credential.accountId!);
+    url.searchParams.set("since",      cursor);
+    url.searchParams.set("limit",      "100");
+    url.searchParams.set("expand[]",   "merchant");
 
-    const txResp = await fetch(url.toString(), {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const txResp = await fetch(url.toString(), { headers: { Authorization: `Bearer ${credential.accessToken}` } });
     if (!txResp.ok) {
       const body = await txResp.text();
       res.status(502).json({ error: `Monzo /transactions failed: ${body}` });
@@ -95,49 +258,46 @@ monzoRouter.post("/sync", requireAuth, requireAdmin, async (_req, res) => {
     }
 
     const data = (await txResp.json()) as { transactions: MonzoTx[] };
-    // Only settled, non-declined transactions
-    const settled = data.transactions.filter((tx) => tx.settled && !tx.decline_reason);
-    allTxs.push(...settled);
-
+    allTxs.push(...data.transactions.filter((tx) => tx.settled && !tx.decline_reason));
     if (data.transactions.length < 100) break;
     cursor = data.transactions[data.transactions.length - 1].id;
   }
 
-  if (allTxs.length === 0) {
-    res.json({ imported: 0, duplicates: 0 });
-    return;
-  }
+  if (allTxs.length === 0) { res.json({ imported: 0, duplicates: 0 }); return; }
 
-  // Dedup against existing rows
   const ids = allTxs.map((tx) => tx.id);
-  const existing = await db.monzoApiTransaction.findMany({
-    where: { monzoId: { in: ids } },
-    select: { monzoId: true },
-  });
+  const existing = await db.monzoApiTransaction.findMany({ where: { monzoId: { in: ids } }, select: { monzoId: true } });
   const existingSet = new Set(existing.map((r) => r.monzoId));
 
   const toInsert: Prisma.MonzoApiTransactionCreateManyInput[] = allTxs
     .filter((tx) => !existingSet.has(tx.id))
     .map((tx) => ({
-      monzoId: tx.id,
-      created: new Date(tx.created),
-      settled: tx.settled ? new Date(tx.settled) : null,
-      amountPence: tx.amount,
-      currency: tx.currency,
+      monzoId:          tx.id,
+      created:          new Date(tx.created),
+      settled:          tx.settled ? new Date(tx.settled) : null,
+      amountPence:      tx.amount,
+      currency:         tx.currency,
       localAmountPence: tx.local_amount,
-      localCurrency: tx.local_currency,
-      description: tx.description,
-      notes: tx.notes || null,
-      monzoCategory: tx.category,
-      merchantName: tx.merchant?.name ?? null,
-      merchantEmoji: tx.merchant?.emoji ?? null,
-      merchantAddress: tx.merchant?.address?.short_formatted ?? null,
-      scheme: tx.scheme ?? null,
-      includeInSpending: tx.include_in_spending,
-      accountId: account.id,
+      localCurrency:    tx.local_currency,
+      description:      tx.description,
+      notes:            tx.notes || null,
+      monzoCategory:    tx.category,
+      merchantName:     tx.merchant?.name ?? null,
+      merchantEmoji:    tx.merchant?.emoji ?? null,
+      merchantAddress:  tx.merchant?.address?.short_formatted ?? null,
+      scheme:           tx.scheme ?? null,
+      includeInSpending:tx.include_in_spending,
+      accountId:        credential!.accountId,
     }));
 
   if (toInsert.length > 0) await db.monzoApiTransaction.createMany({ data: toInsert });
 
   res.json({ imported: toInsert.length, duplicates: allTxs.length - toInsert.length });
+});
+
+// ─── POST /api/admin/monzo/disconnect ────────────────────────────────────────
+
+monzoRouter.post("/disconnect", requireAuth, requireAdmin, async (req, res) => {
+  await db.monzoCredential.deleteMany({ where: { userId: req.user!.id } });
+  res.json({ ok: true });
 });

@@ -101,6 +101,19 @@ model MonzoApiTransaction {
   @@map("monzo_api_transaction")
 }
 
+model MonzoCredential {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  accessToken  String
+  refreshToken String
+  expiresAt    DateTime
+  accountId    String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("monzo_credential")
+}
+
 model AmexTransaction {
   transactionId   String   @id
   transactionDate String

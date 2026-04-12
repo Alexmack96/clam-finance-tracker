@@ -44,7 +44,7 @@ export default defineConfig({
       cwd: "client",
       port: 5175,
       env: { API_URL: testEnv.BETTER_AUTH_URL },
-      reuseExistingServer: false,
+      reuseExistingServer: !process.env.CI,
     },
   ],
 });

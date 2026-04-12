@@ -34,6 +34,11 @@ export type Transaction = $Result.DefaultSelection<Prisma.$TransactionPayload>
  */
 export type MonzoApiTransaction = $Result.DefaultSelection<Prisma.$MonzoApiTransactionPayload>
 /**
+ * Model MonzoCredential
+ * 
+ */
+export type MonzoCredential = $Result.DefaultSelection<Prisma.$MonzoCredentialPayload>
+/**
  * Model AmexTransaction
  * 
  */
@@ -325,6 +330,16 @@ export class PrismaClient<
     * ```
     */
   get monzoApiTransaction(): Prisma.MonzoApiTransactionDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.monzoCredential`: Exposes CRUD operations for the **MonzoCredential** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more MonzoCredentials
+    * const monzoCredentials = await prisma.monzoCredential.findMany()
+    * ```
+    */
+  get monzoCredential(): Prisma.MonzoCredentialDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.amexTransaction`: Exposes CRUD operations for the **AmexTransaction** model.
@@ -893,6 +908,7 @@ export namespace Prisma {
     Category: 'Category',
     Transaction: 'Transaction',
     MonzoApiTransaction: 'MonzoApiTransaction',
+    MonzoCredential: 'MonzoCredential',
     AmexTransaction: 'AmexTransaction',
     BarclaysTransaction: 'BarclaysTransaction',
     SantanderTransaction: 'SantanderTransaction',
@@ -921,7 +937,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "category" | "transaction" | "monzoApiTransaction" | "amexTransaction" | "barclaysTransaction" | "santanderTransaction" | "hsbcTransaction" | "chaseTransaction" | "sofiTransaction" | "session" | "account" | "note" | "tab" | "investmentAccount" | "investmentSnapshot" | "verification"
+      modelProps: "user" | "category" | "transaction" | "monzoApiTransaction" | "monzoCredential" | "amexTransaction" | "barclaysTransaction" | "santanderTransaction" | "hsbcTransaction" | "chaseTransaction" | "sofiTransaction" | "session" | "account" | "note" | "tab" | "investmentAccount" | "investmentSnapshot" | "verification"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1218,6 +1234,80 @@ export namespace Prisma {
           count: {
             args: Prisma.MonzoApiTransactionCountArgs<ExtArgs>
             result: $Utils.Optional<MonzoApiTransactionCountAggregateOutputType> | number
+          }
+        }
+      }
+      MonzoCredential: {
+        payload: Prisma.$MonzoCredentialPayload<ExtArgs>
+        fields: Prisma.MonzoCredentialFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.MonzoCredentialFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MonzoCredentialPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.MonzoCredentialFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MonzoCredentialPayload>
+          }
+          findFirst: {
+            args: Prisma.MonzoCredentialFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MonzoCredentialPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.MonzoCredentialFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MonzoCredentialPayload>
+          }
+          findMany: {
+            args: Prisma.MonzoCredentialFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MonzoCredentialPayload>[]
+          }
+          create: {
+            args: Prisma.MonzoCredentialCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MonzoCredentialPayload>
+          }
+          createMany: {
+            args: Prisma.MonzoCredentialCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.MonzoCredentialCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MonzoCredentialPayload>[]
+          }
+          delete: {
+            args: Prisma.MonzoCredentialDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MonzoCredentialPayload>
+          }
+          update: {
+            args: Prisma.MonzoCredentialUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MonzoCredentialPayload>
+          }
+          deleteMany: {
+            args: Prisma.MonzoCredentialDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.MonzoCredentialUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.MonzoCredentialUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MonzoCredentialPayload>[]
+          }
+          upsert: {
+            args: Prisma.MonzoCredentialUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MonzoCredentialPayload>
+          }
+          aggregate: {
+            args: Prisma.MonzoCredentialAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateMonzoCredential>
+          }
+          groupBy: {
+            args: Prisma.MonzoCredentialGroupByArgs<ExtArgs>
+            result: $Utils.Optional<MonzoCredentialGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.MonzoCredentialCountArgs<ExtArgs>
+            result: $Utils.Optional<MonzoCredentialCountAggregateOutputType> | number
           }
         }
       }
@@ -2295,6 +2385,7 @@ export namespace Prisma {
     category?: CategoryOmit
     transaction?: TransactionOmit
     monzoApiTransaction?: MonzoApiTransactionOmit
+    monzoCredential?: MonzoCredentialOmit
     amexTransaction?: AmexTransactionOmit
     barclaysTransaction?: BarclaysTransactionOmit
     santanderTransaction?: SantanderTransactionOmit
@@ -7064,6 +7155,1043 @@ export namespace Prisma {
      * Omit specific fields from the MonzoApiTransaction
      */
     omit?: MonzoApiTransactionOmit<ExtArgs> | null
+  }
+
+
+  /**
+   * Model MonzoCredential
+   */
+
+  export type AggregateMonzoCredential = {
+    _count: MonzoCredentialCountAggregateOutputType | null
+    _min: MonzoCredentialMinAggregateOutputType | null
+    _max: MonzoCredentialMaxAggregateOutputType | null
+  }
+
+  export type MonzoCredentialMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    accessToken: string | null
+    refreshToken: string | null
+    expiresAt: Date | null
+    accountId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type MonzoCredentialMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    accessToken: string | null
+    refreshToken: string | null
+    expiresAt: Date | null
+    accountId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type MonzoCredentialCountAggregateOutputType = {
+    id: number
+    userId: number
+    accessToken: number
+    refreshToken: number
+    expiresAt: number
+    accountId: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type MonzoCredentialMinAggregateInputType = {
+    id?: true
+    userId?: true
+    accessToken?: true
+    refreshToken?: true
+    expiresAt?: true
+    accountId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type MonzoCredentialMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    accessToken?: true
+    refreshToken?: true
+    expiresAt?: true
+    accountId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type MonzoCredentialCountAggregateInputType = {
+    id?: true
+    userId?: true
+    accessToken?: true
+    refreshToken?: true
+    expiresAt?: true
+    accountId?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type MonzoCredentialAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which MonzoCredential to aggregate.
+     */
+    where?: MonzoCredentialWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MonzoCredentials to fetch.
+     */
+    orderBy?: MonzoCredentialOrderByWithRelationInput | MonzoCredentialOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: MonzoCredentialWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MonzoCredentials from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MonzoCredentials.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned MonzoCredentials
+    **/
+    _count?: true | MonzoCredentialCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: MonzoCredentialMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: MonzoCredentialMaxAggregateInputType
+  }
+
+  export type GetMonzoCredentialAggregateType<T extends MonzoCredentialAggregateArgs> = {
+        [P in keyof T & keyof AggregateMonzoCredential]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateMonzoCredential[P]>
+      : GetScalarType<T[P], AggregateMonzoCredential[P]>
+  }
+
+
+
+
+  export type MonzoCredentialGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: MonzoCredentialWhereInput
+    orderBy?: MonzoCredentialOrderByWithAggregationInput | MonzoCredentialOrderByWithAggregationInput[]
+    by: MonzoCredentialScalarFieldEnum[] | MonzoCredentialScalarFieldEnum
+    having?: MonzoCredentialScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: MonzoCredentialCountAggregateInputType | true
+    _min?: MonzoCredentialMinAggregateInputType
+    _max?: MonzoCredentialMaxAggregateInputType
+  }
+
+  export type MonzoCredentialGroupByOutputType = {
+    id: string
+    userId: string
+    accessToken: string
+    refreshToken: string
+    expiresAt: Date
+    accountId: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: MonzoCredentialCountAggregateOutputType | null
+    _min: MonzoCredentialMinAggregateOutputType | null
+    _max: MonzoCredentialMaxAggregateOutputType | null
+  }
+
+  type GetMonzoCredentialGroupByPayload<T extends MonzoCredentialGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<MonzoCredentialGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof MonzoCredentialGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], MonzoCredentialGroupByOutputType[P]>
+            : GetScalarType<T[P], MonzoCredentialGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type MonzoCredentialSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    accessToken?: boolean
+    refreshToken?: boolean
+    expiresAt?: boolean
+    accountId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["monzoCredential"]>
+
+  export type MonzoCredentialSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    accessToken?: boolean
+    refreshToken?: boolean
+    expiresAt?: boolean
+    accountId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["monzoCredential"]>
+
+  export type MonzoCredentialSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    accessToken?: boolean
+    refreshToken?: boolean
+    expiresAt?: boolean
+    accountId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["monzoCredential"]>
+
+  export type MonzoCredentialSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    accessToken?: boolean
+    refreshToken?: boolean
+    expiresAt?: boolean
+    accountId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type MonzoCredentialOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "accessToken" | "refreshToken" | "expiresAt" | "accountId" | "createdAt" | "updatedAt", ExtArgs["result"]["monzoCredential"]>
+
+  export type $MonzoCredentialPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "MonzoCredential"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      accessToken: string
+      refreshToken: string
+      expiresAt: Date
+      accountId: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["monzoCredential"]>
+    composites: {}
+  }
+
+  type MonzoCredentialGetPayload<S extends boolean | null | undefined | MonzoCredentialDefaultArgs> = $Result.GetResult<Prisma.$MonzoCredentialPayload, S>
+
+  type MonzoCredentialCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<MonzoCredentialFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: MonzoCredentialCountAggregateInputType | true
+    }
+
+  export interface MonzoCredentialDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['MonzoCredential'], meta: { name: 'MonzoCredential' } }
+    /**
+     * Find zero or one MonzoCredential that matches the filter.
+     * @param {MonzoCredentialFindUniqueArgs} args - Arguments to find a MonzoCredential
+     * @example
+     * // Get one MonzoCredential
+     * const monzoCredential = await prisma.monzoCredential.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends MonzoCredentialFindUniqueArgs>(args: SelectSubset<T, MonzoCredentialFindUniqueArgs<ExtArgs>>): Prisma__MonzoCredentialClient<$Result.GetResult<Prisma.$MonzoCredentialPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one MonzoCredential that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {MonzoCredentialFindUniqueOrThrowArgs} args - Arguments to find a MonzoCredential
+     * @example
+     * // Get one MonzoCredential
+     * const monzoCredential = await prisma.monzoCredential.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends MonzoCredentialFindUniqueOrThrowArgs>(args: SelectSubset<T, MonzoCredentialFindUniqueOrThrowArgs<ExtArgs>>): Prisma__MonzoCredentialClient<$Result.GetResult<Prisma.$MonzoCredentialPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first MonzoCredential that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MonzoCredentialFindFirstArgs} args - Arguments to find a MonzoCredential
+     * @example
+     * // Get one MonzoCredential
+     * const monzoCredential = await prisma.monzoCredential.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends MonzoCredentialFindFirstArgs>(args?: SelectSubset<T, MonzoCredentialFindFirstArgs<ExtArgs>>): Prisma__MonzoCredentialClient<$Result.GetResult<Prisma.$MonzoCredentialPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first MonzoCredential that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MonzoCredentialFindFirstOrThrowArgs} args - Arguments to find a MonzoCredential
+     * @example
+     * // Get one MonzoCredential
+     * const monzoCredential = await prisma.monzoCredential.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends MonzoCredentialFindFirstOrThrowArgs>(args?: SelectSubset<T, MonzoCredentialFindFirstOrThrowArgs<ExtArgs>>): Prisma__MonzoCredentialClient<$Result.GetResult<Prisma.$MonzoCredentialPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more MonzoCredentials that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MonzoCredentialFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all MonzoCredentials
+     * const monzoCredentials = await prisma.monzoCredential.findMany()
+     * 
+     * // Get first 10 MonzoCredentials
+     * const monzoCredentials = await prisma.monzoCredential.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const monzoCredentialWithIdOnly = await prisma.monzoCredential.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends MonzoCredentialFindManyArgs>(args?: SelectSubset<T, MonzoCredentialFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MonzoCredentialPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a MonzoCredential.
+     * @param {MonzoCredentialCreateArgs} args - Arguments to create a MonzoCredential.
+     * @example
+     * // Create one MonzoCredential
+     * const MonzoCredential = await prisma.monzoCredential.create({
+     *   data: {
+     *     // ... data to create a MonzoCredential
+     *   }
+     * })
+     * 
+     */
+    create<T extends MonzoCredentialCreateArgs>(args: SelectSubset<T, MonzoCredentialCreateArgs<ExtArgs>>): Prisma__MonzoCredentialClient<$Result.GetResult<Prisma.$MonzoCredentialPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many MonzoCredentials.
+     * @param {MonzoCredentialCreateManyArgs} args - Arguments to create many MonzoCredentials.
+     * @example
+     * // Create many MonzoCredentials
+     * const monzoCredential = await prisma.monzoCredential.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends MonzoCredentialCreateManyArgs>(args?: SelectSubset<T, MonzoCredentialCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many MonzoCredentials and returns the data saved in the database.
+     * @param {MonzoCredentialCreateManyAndReturnArgs} args - Arguments to create many MonzoCredentials.
+     * @example
+     * // Create many MonzoCredentials
+     * const monzoCredential = await prisma.monzoCredential.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many MonzoCredentials and only return the `id`
+     * const monzoCredentialWithIdOnly = await prisma.monzoCredential.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends MonzoCredentialCreateManyAndReturnArgs>(args?: SelectSubset<T, MonzoCredentialCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MonzoCredentialPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a MonzoCredential.
+     * @param {MonzoCredentialDeleteArgs} args - Arguments to delete one MonzoCredential.
+     * @example
+     * // Delete one MonzoCredential
+     * const MonzoCredential = await prisma.monzoCredential.delete({
+     *   where: {
+     *     // ... filter to delete one MonzoCredential
+     *   }
+     * })
+     * 
+     */
+    delete<T extends MonzoCredentialDeleteArgs>(args: SelectSubset<T, MonzoCredentialDeleteArgs<ExtArgs>>): Prisma__MonzoCredentialClient<$Result.GetResult<Prisma.$MonzoCredentialPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one MonzoCredential.
+     * @param {MonzoCredentialUpdateArgs} args - Arguments to update one MonzoCredential.
+     * @example
+     * // Update one MonzoCredential
+     * const monzoCredential = await prisma.monzoCredential.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends MonzoCredentialUpdateArgs>(args: SelectSubset<T, MonzoCredentialUpdateArgs<ExtArgs>>): Prisma__MonzoCredentialClient<$Result.GetResult<Prisma.$MonzoCredentialPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more MonzoCredentials.
+     * @param {MonzoCredentialDeleteManyArgs} args - Arguments to filter MonzoCredentials to delete.
+     * @example
+     * // Delete a few MonzoCredentials
+     * const { count } = await prisma.monzoCredential.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends MonzoCredentialDeleteManyArgs>(args?: SelectSubset<T, MonzoCredentialDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more MonzoCredentials.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MonzoCredentialUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many MonzoCredentials
+     * const monzoCredential = await prisma.monzoCredential.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends MonzoCredentialUpdateManyArgs>(args: SelectSubset<T, MonzoCredentialUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more MonzoCredentials and returns the data updated in the database.
+     * @param {MonzoCredentialUpdateManyAndReturnArgs} args - Arguments to update many MonzoCredentials.
+     * @example
+     * // Update many MonzoCredentials
+     * const monzoCredential = await prisma.monzoCredential.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more MonzoCredentials and only return the `id`
+     * const monzoCredentialWithIdOnly = await prisma.monzoCredential.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends MonzoCredentialUpdateManyAndReturnArgs>(args: SelectSubset<T, MonzoCredentialUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MonzoCredentialPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one MonzoCredential.
+     * @param {MonzoCredentialUpsertArgs} args - Arguments to update or create a MonzoCredential.
+     * @example
+     * // Update or create a MonzoCredential
+     * const monzoCredential = await prisma.monzoCredential.upsert({
+     *   create: {
+     *     // ... data to create a MonzoCredential
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the MonzoCredential we want to update
+     *   }
+     * })
+     */
+    upsert<T extends MonzoCredentialUpsertArgs>(args: SelectSubset<T, MonzoCredentialUpsertArgs<ExtArgs>>): Prisma__MonzoCredentialClient<$Result.GetResult<Prisma.$MonzoCredentialPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of MonzoCredentials.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MonzoCredentialCountArgs} args - Arguments to filter MonzoCredentials to count.
+     * @example
+     * // Count the number of MonzoCredentials
+     * const count = await prisma.monzoCredential.count({
+     *   where: {
+     *     // ... the filter for the MonzoCredentials we want to count
+     *   }
+     * })
+    **/
+    count<T extends MonzoCredentialCountArgs>(
+      args?: Subset<T, MonzoCredentialCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], MonzoCredentialCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a MonzoCredential.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MonzoCredentialAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends MonzoCredentialAggregateArgs>(args: Subset<T, MonzoCredentialAggregateArgs>): Prisma.PrismaPromise<GetMonzoCredentialAggregateType<T>>
+
+    /**
+     * Group by MonzoCredential.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MonzoCredentialGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends MonzoCredentialGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: MonzoCredentialGroupByArgs['orderBy'] }
+        : { orderBy?: MonzoCredentialGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, MonzoCredentialGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetMonzoCredentialGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the MonzoCredential model
+   */
+  readonly fields: MonzoCredentialFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for MonzoCredential.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__MonzoCredentialClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the MonzoCredential model
+   */
+  interface MonzoCredentialFieldRefs {
+    readonly id: FieldRef<"MonzoCredential", 'String'>
+    readonly userId: FieldRef<"MonzoCredential", 'String'>
+    readonly accessToken: FieldRef<"MonzoCredential", 'String'>
+    readonly refreshToken: FieldRef<"MonzoCredential", 'String'>
+    readonly expiresAt: FieldRef<"MonzoCredential", 'DateTime'>
+    readonly accountId: FieldRef<"MonzoCredential", 'String'>
+    readonly createdAt: FieldRef<"MonzoCredential", 'DateTime'>
+    readonly updatedAt: FieldRef<"MonzoCredential", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * MonzoCredential findUnique
+   */
+  export type MonzoCredentialFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MonzoCredential
+     */
+    select?: MonzoCredentialSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MonzoCredential
+     */
+    omit?: MonzoCredentialOmit<ExtArgs> | null
+    /**
+     * Filter, which MonzoCredential to fetch.
+     */
+    where: MonzoCredentialWhereUniqueInput
+  }
+
+  /**
+   * MonzoCredential findUniqueOrThrow
+   */
+  export type MonzoCredentialFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MonzoCredential
+     */
+    select?: MonzoCredentialSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MonzoCredential
+     */
+    omit?: MonzoCredentialOmit<ExtArgs> | null
+    /**
+     * Filter, which MonzoCredential to fetch.
+     */
+    where: MonzoCredentialWhereUniqueInput
+  }
+
+  /**
+   * MonzoCredential findFirst
+   */
+  export type MonzoCredentialFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MonzoCredential
+     */
+    select?: MonzoCredentialSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MonzoCredential
+     */
+    omit?: MonzoCredentialOmit<ExtArgs> | null
+    /**
+     * Filter, which MonzoCredential to fetch.
+     */
+    where?: MonzoCredentialWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MonzoCredentials to fetch.
+     */
+    orderBy?: MonzoCredentialOrderByWithRelationInput | MonzoCredentialOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for MonzoCredentials.
+     */
+    cursor?: MonzoCredentialWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MonzoCredentials from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MonzoCredentials.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of MonzoCredentials.
+     */
+    distinct?: MonzoCredentialScalarFieldEnum | MonzoCredentialScalarFieldEnum[]
+  }
+
+  /**
+   * MonzoCredential findFirstOrThrow
+   */
+  export type MonzoCredentialFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MonzoCredential
+     */
+    select?: MonzoCredentialSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MonzoCredential
+     */
+    omit?: MonzoCredentialOmit<ExtArgs> | null
+    /**
+     * Filter, which MonzoCredential to fetch.
+     */
+    where?: MonzoCredentialWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MonzoCredentials to fetch.
+     */
+    orderBy?: MonzoCredentialOrderByWithRelationInput | MonzoCredentialOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for MonzoCredentials.
+     */
+    cursor?: MonzoCredentialWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MonzoCredentials from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MonzoCredentials.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of MonzoCredentials.
+     */
+    distinct?: MonzoCredentialScalarFieldEnum | MonzoCredentialScalarFieldEnum[]
+  }
+
+  /**
+   * MonzoCredential findMany
+   */
+  export type MonzoCredentialFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MonzoCredential
+     */
+    select?: MonzoCredentialSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MonzoCredential
+     */
+    omit?: MonzoCredentialOmit<ExtArgs> | null
+    /**
+     * Filter, which MonzoCredentials to fetch.
+     */
+    where?: MonzoCredentialWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MonzoCredentials to fetch.
+     */
+    orderBy?: MonzoCredentialOrderByWithRelationInput | MonzoCredentialOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing MonzoCredentials.
+     */
+    cursor?: MonzoCredentialWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MonzoCredentials from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MonzoCredentials.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of MonzoCredentials.
+     */
+    distinct?: MonzoCredentialScalarFieldEnum | MonzoCredentialScalarFieldEnum[]
+  }
+
+  /**
+   * MonzoCredential create
+   */
+  export type MonzoCredentialCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MonzoCredential
+     */
+    select?: MonzoCredentialSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MonzoCredential
+     */
+    omit?: MonzoCredentialOmit<ExtArgs> | null
+    /**
+     * The data needed to create a MonzoCredential.
+     */
+    data: XOR<MonzoCredentialCreateInput, MonzoCredentialUncheckedCreateInput>
+  }
+
+  /**
+   * MonzoCredential createMany
+   */
+  export type MonzoCredentialCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many MonzoCredentials.
+     */
+    data: MonzoCredentialCreateManyInput | MonzoCredentialCreateManyInput[]
+  }
+
+  /**
+   * MonzoCredential createManyAndReturn
+   */
+  export type MonzoCredentialCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MonzoCredential
+     */
+    select?: MonzoCredentialSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the MonzoCredential
+     */
+    omit?: MonzoCredentialOmit<ExtArgs> | null
+    /**
+     * The data used to create many MonzoCredentials.
+     */
+    data: MonzoCredentialCreateManyInput | MonzoCredentialCreateManyInput[]
+  }
+
+  /**
+   * MonzoCredential update
+   */
+  export type MonzoCredentialUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MonzoCredential
+     */
+    select?: MonzoCredentialSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MonzoCredential
+     */
+    omit?: MonzoCredentialOmit<ExtArgs> | null
+    /**
+     * The data needed to update a MonzoCredential.
+     */
+    data: XOR<MonzoCredentialUpdateInput, MonzoCredentialUncheckedUpdateInput>
+    /**
+     * Choose, which MonzoCredential to update.
+     */
+    where: MonzoCredentialWhereUniqueInput
+  }
+
+  /**
+   * MonzoCredential updateMany
+   */
+  export type MonzoCredentialUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update MonzoCredentials.
+     */
+    data: XOR<MonzoCredentialUpdateManyMutationInput, MonzoCredentialUncheckedUpdateManyInput>
+    /**
+     * Filter which MonzoCredentials to update
+     */
+    where?: MonzoCredentialWhereInput
+    /**
+     * Limit how many MonzoCredentials to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * MonzoCredential updateManyAndReturn
+   */
+  export type MonzoCredentialUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MonzoCredential
+     */
+    select?: MonzoCredentialSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the MonzoCredential
+     */
+    omit?: MonzoCredentialOmit<ExtArgs> | null
+    /**
+     * The data used to update MonzoCredentials.
+     */
+    data: XOR<MonzoCredentialUpdateManyMutationInput, MonzoCredentialUncheckedUpdateManyInput>
+    /**
+     * Filter which MonzoCredentials to update
+     */
+    where?: MonzoCredentialWhereInput
+    /**
+     * Limit how many MonzoCredentials to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * MonzoCredential upsert
+   */
+  export type MonzoCredentialUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MonzoCredential
+     */
+    select?: MonzoCredentialSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MonzoCredential
+     */
+    omit?: MonzoCredentialOmit<ExtArgs> | null
+    /**
+     * The filter to search for the MonzoCredential to update in case it exists.
+     */
+    where: MonzoCredentialWhereUniqueInput
+    /**
+     * In case the MonzoCredential found by the `where` argument doesn't exist, create a new MonzoCredential with this data.
+     */
+    create: XOR<MonzoCredentialCreateInput, MonzoCredentialUncheckedCreateInput>
+    /**
+     * In case the MonzoCredential was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<MonzoCredentialUpdateInput, MonzoCredentialUncheckedUpdateInput>
+  }
+
+  /**
+   * MonzoCredential delete
+   */
+  export type MonzoCredentialDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MonzoCredential
+     */
+    select?: MonzoCredentialSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MonzoCredential
+     */
+    omit?: MonzoCredentialOmit<ExtArgs> | null
+    /**
+     * Filter which MonzoCredential to delete.
+     */
+    where: MonzoCredentialWhereUniqueInput
+  }
+
+  /**
+   * MonzoCredential deleteMany
+   */
+  export type MonzoCredentialDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which MonzoCredentials to delete
+     */
+    where?: MonzoCredentialWhereInput
+    /**
+     * Limit how many MonzoCredentials to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * MonzoCredential without action
+   */
+  export type MonzoCredentialDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MonzoCredential
+     */
+    select?: MonzoCredentialSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MonzoCredential
+     */
+    omit?: MonzoCredentialOmit<ExtArgs> | null
   }
 
 
@@ -21411,6 +22539,20 @@ export namespace Prisma {
   export type MonzoApiTransactionScalarFieldEnum = (typeof MonzoApiTransactionScalarFieldEnum)[keyof typeof MonzoApiTransactionScalarFieldEnum]
 
 
+  export const MonzoCredentialScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    accessToken: 'accessToken',
+    refreshToken: 'refreshToken',
+    expiresAt: 'expiresAt',
+    accountId: 'accountId',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type MonzoCredentialScalarFieldEnum = (typeof MonzoCredentialScalarFieldEnum)[keyof typeof MonzoCredentialScalarFieldEnum]
+
+
   export const AmexTransactionScalarFieldEnum: {
     transactionId: 'transactionId',
     transactionDate: 'transactionDate',
@@ -22040,6 +23182,73 @@ export namespace Prisma {
     accountId?: StringWithAggregatesFilter<"MonzoApiTransaction"> | string
     importedAt?: DateTimeWithAggregatesFilter<"MonzoApiTransaction"> | Date | string
     status?: StringWithAggregatesFilter<"MonzoApiTransaction"> | string
+  }
+
+  export type MonzoCredentialWhereInput = {
+    AND?: MonzoCredentialWhereInput | MonzoCredentialWhereInput[]
+    OR?: MonzoCredentialWhereInput[]
+    NOT?: MonzoCredentialWhereInput | MonzoCredentialWhereInput[]
+    id?: StringFilter<"MonzoCredential"> | string
+    userId?: StringFilter<"MonzoCredential"> | string
+    accessToken?: StringFilter<"MonzoCredential"> | string
+    refreshToken?: StringFilter<"MonzoCredential"> | string
+    expiresAt?: DateTimeFilter<"MonzoCredential"> | Date | string
+    accountId?: StringNullableFilter<"MonzoCredential"> | string | null
+    createdAt?: DateTimeFilter<"MonzoCredential"> | Date | string
+    updatedAt?: DateTimeFilter<"MonzoCredential"> | Date | string
+  }
+
+  export type MonzoCredentialOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    accessToken?: SortOrder
+    refreshToken?: SortOrder
+    expiresAt?: SortOrder
+    accountId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type MonzoCredentialWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    userId?: string
+    AND?: MonzoCredentialWhereInput | MonzoCredentialWhereInput[]
+    OR?: MonzoCredentialWhereInput[]
+    NOT?: MonzoCredentialWhereInput | MonzoCredentialWhereInput[]
+    accessToken?: StringFilter<"MonzoCredential"> | string
+    refreshToken?: StringFilter<"MonzoCredential"> | string
+    expiresAt?: DateTimeFilter<"MonzoCredential"> | Date | string
+    accountId?: StringNullableFilter<"MonzoCredential"> | string | null
+    createdAt?: DateTimeFilter<"MonzoCredential"> | Date | string
+    updatedAt?: DateTimeFilter<"MonzoCredential"> | Date | string
+  }, "id" | "userId">
+
+  export type MonzoCredentialOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    accessToken?: SortOrder
+    refreshToken?: SortOrder
+    expiresAt?: SortOrder
+    accountId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: MonzoCredentialCountOrderByAggregateInput
+    _max?: MonzoCredentialMaxOrderByAggregateInput
+    _min?: MonzoCredentialMinOrderByAggregateInput
+  }
+
+  export type MonzoCredentialScalarWhereWithAggregatesInput = {
+    AND?: MonzoCredentialScalarWhereWithAggregatesInput | MonzoCredentialScalarWhereWithAggregatesInput[]
+    OR?: MonzoCredentialScalarWhereWithAggregatesInput[]
+    NOT?: MonzoCredentialScalarWhereWithAggregatesInput | MonzoCredentialScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"MonzoCredential"> | string
+    userId?: StringWithAggregatesFilter<"MonzoCredential"> | string
+    accessToken?: StringWithAggregatesFilter<"MonzoCredential"> | string
+    refreshToken?: StringWithAggregatesFilter<"MonzoCredential"> | string
+    expiresAt?: DateTimeWithAggregatesFilter<"MonzoCredential"> | Date | string
+    accountId?: StringNullableWithAggregatesFilter<"MonzoCredential"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"MonzoCredential"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"MonzoCredential"> | Date | string
   }
 
   export type AmexTransactionWhereInput = {
@@ -23417,6 +24626,83 @@ export namespace Prisma {
     accountId?: StringFieldUpdateOperationsInput | string
     importedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     status?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type MonzoCredentialCreateInput = {
+    id?: string
+    userId: string
+    accessToken: string
+    refreshToken: string
+    expiresAt: Date | string
+    accountId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type MonzoCredentialUncheckedCreateInput = {
+    id?: string
+    userId: string
+    accessToken: string
+    refreshToken: string
+    expiresAt: Date | string
+    accountId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type MonzoCredentialUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    accessToken?: StringFieldUpdateOperationsInput | string
+    refreshToken?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    accountId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MonzoCredentialUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    accessToken?: StringFieldUpdateOperationsInput | string
+    refreshToken?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    accountId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MonzoCredentialCreateManyInput = {
+    id?: string
+    userId: string
+    accessToken: string
+    refreshToken: string
+    expiresAt: Date | string
+    accountId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type MonzoCredentialUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    accessToken?: StringFieldUpdateOperationsInput | string
+    refreshToken?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    accountId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MonzoCredentialUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    accessToken?: StringFieldUpdateOperationsInput | string
+    refreshToken?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    accountId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type AmexTransactionCreateInput = {
@@ -24984,6 +26270,39 @@ export namespace Prisma {
     _sum?: NestedIntFilter<$PrismaModel>
     _min?: NestedIntFilter<$PrismaModel>
     _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type MonzoCredentialCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    accessToken?: SortOrder
+    refreshToken?: SortOrder
+    expiresAt?: SortOrder
+    accountId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type MonzoCredentialMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    accessToken?: SortOrder
+    refreshToken?: SortOrder
+    expiresAt?: SortOrder
+    accountId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type MonzoCredentialMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    accessToken?: SortOrder
+    refreshToken?: SortOrder
+    expiresAt?: SortOrder
+    accountId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type AmexTransactionCountOrderByAggregateInput = {

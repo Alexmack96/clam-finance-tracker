@@ -436,6 +436,8 @@ export function DashboardPage() {
   const gridApiRef = useRef<GridApi<Transaction>>();
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [hasFilters, setHasFilters] = useState(false);
+  const [filteredCount, setFilteredCount] = useState<number | null>(null);
+  const [filteredSum, setFilteredSum] = useState<number | null>(null);
   const [form, setForm] = useState({
     description: "",
     amount: "",
@@ -699,7 +701,19 @@ export function DashboardPage() {
       {/* Transactions grid */}
       <Card>
         <CardHeader className="pb-2 flex flex-row items-center justify-between">
-          <CardTitle className="text-xs uppercase tracking-wide text-muted-foreground">Transactions</CardTitle>
+          <div className="flex items-baseline gap-2">
+            <CardTitle className="text-xs uppercase tracking-wide text-muted-foreground">Transactions</CardTitle>
+            <span className="text-xs text-muted-foreground">
+              {filteredCount !== null
+                ? <>{filteredCount} of {transactions.length} rows</>
+                : <>{transactions.length} rows</>}
+            </span>
+            {filteredSum !== null && (
+              <span className="text-xs text-muted-foreground">
+                Sum: <span className={`font-semibold ${filteredSum >= 0 ? "text-green-500" : "text-red-500"}`}>{filteredSum >= 0 ? "+" : ""}{fmt(filteredSum)}</span>
+              </span>
+            )}
+          </div>
           <Button
             variant="outline"
             size="sm"
@@ -722,7 +736,18 @@ export function DashboardPage() {
             getRowId={(p) => p.data.id}
             onGridReady={(e) => { gridApiRef.current = e.api; }}
             onFilterChanged={(e) => {
-              setHasFilters(Object.keys(e.api.getFilterModel()).length > 0);
+              const model = e.api.getFilterModel();
+              const active = Object.keys(model).length > 0;
+              setHasFilters(active);
+              if (!active) { setFilteredCount(null); setFilteredSum(null); return; }
+              let sum = 0;
+              e.api.forEachNodeAfterFilter((node) => {
+                const tx = node.data as Transaction | undefined;
+                if (!tx) return;
+                sum += tx.type === "Income" ? parseFloat(tx.amount) : -parseFloat(tx.amount);
+              });
+              setFilteredCount(e.api.getDisplayedRowCount());
+              setFilteredSum(sum);
             }}
           />
         </CardContent>
