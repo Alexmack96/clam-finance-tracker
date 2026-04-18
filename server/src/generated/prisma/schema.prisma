@@ -100,6 +100,33 @@ model MonzoApiTransaction {
   @@map("monzo_api_transaction")
 }
 
+model PlaidItem {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  accessToken String
+  itemId      String   @unique
+  cursor      String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("plaid_item")
+}
+
+model PlaidTransaction {
+  id            String   @id @default(cuid())
+  transactionId String   @unique
+  date          String
+  description   String
+  amount        Float
+  currency      String
+  merchantName  String?
+  owner         String   @default("Alex")
+  importedAt    DateTime @default(now())
+  status        String   @default("pending")
+
+  @@map("plaid_transaction")
+}
+
 model MonzoCredential {
   id           String   @id @default(cuid())
   userId       String   @unique

@@ -26,6 +26,7 @@
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
     "react-hook-form": "^7.72.0",
+    "react-plaid-link": "^4.1.1",
     "react-router-dom": "^6.26.0",
     "recharts": "^3.8.1",
     "tailwind-merge": "^3.5.0",

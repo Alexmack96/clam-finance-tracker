@@ -927,9 +927,9 @@ const SOFI_TX_ID_RE = /^Transaction ID:\s+(.+)$/;
 // pdf-parse fuses columns with no separator, so date+type+desc run together:
 // "Jan 31, 2026Interest EarnedInterest earned"
 // Amount+balance likewise: "$0.72$375.13" or "-$823.93$374.41"
-const SOFI_DATE_COMBINED_RE = /^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+(\d{1,2}),\s+(\d{4})(Interest Earned|Direct Payment|Deposit|Withdrawal)(.*)/;
+const SOFI_DATE_COMBINED_RE = /^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+(\d{1,2}),\s+(\d{4})(Interest Earned|Direct Payment|Deposit|Withdrawal|Instant Transfer)(.*)/;
 const SOFI_DATE_ONLY_RE = /^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+(\d{1,2}),\s+(\d{4})$/;
-const SOFI_TYPE_RE = /^(Interest Earned|Direct Payment|Deposit|Withdrawal)$/;
+const SOFI_TYPE_RE = /^(Interest Earned|Direct Payment|Deposit|Withdrawal|Instant Transfer)$/;
 const SOFI_AMOUNT_BALANCE_RE = /^(-?\$[\d,]+\.\d{2})\$([\d,]+\.\d{2})$/;
 const SOFI_PERIOD_RE = /(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d+,\s+\d{4}\s*[-–]\s*(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d+,\s+(\d{4})/;
 
@@ -1087,7 +1087,7 @@ importRouter.post("/import/sofi", upload.single("file"), async (req, res) => {
 // ─── GET /api/admin/staged ───────────────────────────────────────────────────
 
 importRouter.get("/staged", async (_req, res) => {
-  const [monzo, amex, barclays, santander, hsbc, sofi, chase] = await Promise.all([
+  const [monzo, amex, barclays, santander, hsbc, sofi, chase, plaid] = await Promise.all([
     db.monzoApiTransaction.groupBy({ by: ["status"], _count: true }),
     db.amexTransaction.groupBy({ by: ["status", "owner"], _count: true }),
     db.barclaysTransaction.groupBy({ by: ["status", "owner"], _count: true }),
@@ -1095,6 +1095,7 @@ importRouter.get("/staged", async (_req, res) => {
     db.hsbcTransaction.groupBy({ by: ["status", "owner"], _count: true }),
     db.sofiTransaction.groupBy({ by: ["status", "owner"], _count: true }),
     db.chaseTransaction.groupBy({ by: ["status", "owner"], _count: true }),
+    db.plaidTransaction.groupBy({ by: ["status", "owner"], _count: true }),
   ]);
 
   function toCounts(rows: { status: string; _count: number }[]) {
@@ -1113,13 +1114,14 @@ importRouter.get("/staged", async (_req, res) => {
   }
 
   res.json({
-    monzo:     toCounts(monzo.map((r) => ({ status: r.status, _count: r._count }))),
-    amex:      { ...toCounts(amex.map((r) => ({ status: r.status, _count: r._count }))),      byOwner: toOwnerCounts(amex.map((r) => ({ status: r.status, owner: r.owner, _count: r._count }))) },
-    barclays:  { ...toCounts(barclays.map((r) => ({ status: r.status, _count: r._count }))),  byOwner: toOwnerCounts(barclays.map((r) => ({ status: r.status, owner: r.owner, _count: r._count }))) },
-    santander: { ...toCounts(santander.map((r) => ({ status: r.status, _count: r._count }))), byOwner: toOwnerCounts(santander.map((r) => ({ status: r.status, owner: r.owner, _count: r._count }))) },
-    hsbc:      { ...toCounts(hsbc.map((r) => ({ status: r.status, _count: r._count }))),      byOwner: toOwnerCounts(hsbc.map((r) => ({ status: r.status, owner: r.owner, _count: r._count }))) },
-    sofi:      { ...toCounts(sofi.map((r) => ({ status: r.status, _count: r._count }))),      byOwner: toOwnerCounts(sofi.map((r) => ({ status: r.status, owner: r.owner, _count: r._count }))) },
-    chase:     { ...toCounts(chase.map((r) => ({ status: r.status, _count: r._count }))),     byOwner: toOwnerCounts(chase.map((r) => ({ status: r.status, owner: r.owner, _count: r._count }))) },
+    monzo:      toCounts(monzo.map((r) => ({ status: r.status, _count: r._count }))),
+    amex:       { ...toCounts(amex.map((r) => ({ status: r.status, _count: r._count }))),       byOwner: toOwnerCounts(amex.map((r) => ({ status: r.status, owner: r.owner, _count: r._count }))) },
+    barclays:   { ...toCounts(barclays.map((r) => ({ status: r.status, _count: r._count }))),   byOwner: toOwnerCounts(barclays.map((r) => ({ status: r.status, owner: r.owner, _count: r._count }))) },
+    santander:  { ...toCounts(santander.map((r) => ({ status: r.status, _count: r._count }))),  byOwner: toOwnerCounts(santander.map((r) => ({ status: r.status, owner: r.owner, _count: r._count }))) },
+    hsbc:       { ...toCounts(hsbc.map((r) => ({ status: r.status, _count: r._count }))),       byOwner: toOwnerCounts(hsbc.map((r) => ({ status: r.status, owner: r.owner, _count: r._count }))) },
+    sofi:       { ...toCounts(sofi.map((r) => ({ status: r.status, _count: r._count }))),       byOwner: toOwnerCounts(sofi.map((r) => ({ status: r.status, owner: r.owner, _count: r._count }))) },
+    chase:      { ...toCounts(chase.map((r) => ({ status: r.status, _count: r._count }))),      byOwner: toOwnerCounts(chase.map((r) => ({ status: r.status, owner: r.owner, _count: r._count }))) },
+    plaid:      { ...toCounts(plaid.map((r) => ({ status: r.status, _count: r._count }))),      byOwner: toOwnerCounts(plaid.map((r) => ({ status: r.status, owner: r.owner, _count: r._count }))) },
   });
 });
 
@@ -1360,6 +1362,37 @@ importRouter.post("/process", async (_req, res) => {
       processed++;
     }
     await db.chaseTransaction.update({ where: { id: row.id }, data: { status: next } });
+  }
+
+  // ── Plaid (Santander) ─────────────────────────────────────────────────────
+  const pendingPlaid = await db.plaidTransaction.findMany({ where: { status: "pending" } });
+
+  for (const row of pendingPlaid) {
+    // Plaid: positive amount = expense, negative = income (counterintuitive)
+    let next: StagedStatus;
+    if (row.amount === 0) {
+      next = "skipped";
+      skipped++;
+    } else {
+      const categoryName = resolveCategoryByMerchant(row.description);
+      const category = await findCategory(categoryName);
+      const extId = `santander-plaid:${row.transactionId}`;
+      const exists = await db.transaction.findUnique({ where: { externalId: extId }, select: { id: true } });
+      if (!exists) await db.transaction.create({
+        data: {
+          description: row.description,
+          amount:      Math.abs(row.amount),
+          type:        row.amount > 0 ? "Expense" : "Income",
+          date:        new Date(row.date),
+          categoryId:  category.id,
+          externalId:  extId,
+          owner:       row.owner as "Alex" | "Casey" | "Joint",
+        },
+      });
+      next = "processed";
+      processed++;
+    }
+    await db.plaidTransaction.update({ where: { id: row.id }, data: { status: next } });
   }
 
   res.json({ processed, skipped, errored });

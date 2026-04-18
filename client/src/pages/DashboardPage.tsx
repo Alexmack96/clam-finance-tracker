@@ -143,6 +143,7 @@ function NoteCell({ tx, onSave }: { tx: Transaction; onSave: (note: string | nul
         onKeyDown={(e) => {
           if (e.key === "Enter")  commit();
           if (e.key === "Escape") { setValue(tx.note ?? ""); setEditing(false); }
+          if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"].includes(e.key)) e.stopPropagation();
         }}
         className="w-full bg-transparent border-b border-primary outline-none text-sm py-0.5"
       />
@@ -150,7 +151,7 @@ function NoteCell({ tx, onSave }: { tx: Transaction; onSave: (note: string | nul
   }
 
   return (
-    <span onClick={start} className="cursor-pointer text-sm group" title="Click to add note">
+    <span onDoubleClick={start} className="cursor-text select-text text-sm group" title="Double-click to edit note">
       {tx.note
         ? <span>{tx.note}</span>
         : <span className="text-muted-foreground/40 group-hover:text-muted-foreground italic">Add note…</span>
@@ -733,6 +734,7 @@ export function DashboardPage() {
             domLayout="autoHeight"
             defaultColDef={{ sortable: true, resizable: true, suppressMovable: true }}
             suppressCellFocus
+            enableCellTextSelection
             getRowId={(p) => p.data.id}
             onGridReady={(e) => { gridApiRef.current = e.api; }}
             onFilterChanged={(e) => {

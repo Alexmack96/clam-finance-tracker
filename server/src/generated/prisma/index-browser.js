@@ -170,6 +170,29 @@ exports.Prisma.MonzoApiTransactionScalarFieldEnum = {
   status: 'status'
 };
 
+exports.Prisma.PlaidItemScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  accessToken: 'accessToken',
+  itemId: 'itemId',
+  cursor: 'cursor',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PlaidTransactionScalarFieldEnum = {
+  id: 'id',
+  transactionId: 'transactionId',
+  date: 'date',
+  description: 'description',
+  amount: 'amount',
+  currency: 'currency',
+  merchantName: 'merchantName',
+  owner: 'owner',
+  importedAt: 'importedAt',
+  status: 'status'
+};
+
 exports.Prisma.MonzoCredentialScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -383,6 +406,8 @@ exports.Prisma.ModelName = {
   Category: 'Category',
   Transaction: 'Transaction',
   MonzoApiTransaction: 'MonzoApiTransaction',
+  PlaidItem: 'PlaidItem',
+  PlaidTransaction: 'PlaidTransaction',
   MonzoCredential: 'MonzoCredential',
   AmexTransaction: 'AmexTransaction',
   BarclaysTransaction: 'BarclaysTransaction',

@@ -34,6 +34,16 @@ export type Transaction = $Result.DefaultSelection<Prisma.$TransactionPayload>
  */
 export type MonzoApiTransaction = $Result.DefaultSelection<Prisma.$MonzoApiTransactionPayload>
 /**
+ * Model PlaidItem
+ * 
+ */
+export type PlaidItem = $Result.DefaultSelection<Prisma.$PlaidItemPayload>
+/**
+ * Model PlaidTransaction
+ * 
+ */
+export type PlaidTransaction = $Result.DefaultSelection<Prisma.$PlaidTransactionPayload>
+/**
  * Model MonzoCredential
  * 
  */
@@ -330,6 +340,26 @@ export class PrismaClient<
     * ```
     */
   get monzoApiTransaction(): Prisma.MonzoApiTransactionDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.plaidItem`: Exposes CRUD operations for the **PlaidItem** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PlaidItems
+    * const plaidItems = await prisma.plaidItem.findMany()
+    * ```
+    */
+  get plaidItem(): Prisma.PlaidItemDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.plaidTransaction`: Exposes CRUD operations for the **PlaidTransaction** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PlaidTransactions
+    * const plaidTransactions = await prisma.plaidTransaction.findMany()
+    * ```
+    */
+  get plaidTransaction(): Prisma.PlaidTransactionDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.monzoCredential`: Exposes CRUD operations for the **MonzoCredential** model.
@@ -908,6 +938,8 @@ export namespace Prisma {
     Category: 'Category',
     Transaction: 'Transaction',
     MonzoApiTransaction: 'MonzoApiTransaction',
+    PlaidItem: 'PlaidItem',
+    PlaidTransaction: 'PlaidTransaction',
     MonzoCredential: 'MonzoCredential',
     AmexTransaction: 'AmexTransaction',
     BarclaysTransaction: 'BarclaysTransaction',
@@ -937,7 +969,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "category" | "transaction" | "monzoApiTransaction" | "monzoCredential" | "amexTransaction" | "barclaysTransaction" | "santanderTransaction" | "hsbcTransaction" | "chaseTransaction" | "sofiTransaction" | "session" | "account" | "note" | "tab" | "investmentAccount" | "investmentSnapshot" | "verification"
+      modelProps: "user" | "category" | "transaction" | "monzoApiTransaction" | "plaidItem" | "plaidTransaction" | "monzoCredential" | "amexTransaction" | "barclaysTransaction" | "santanderTransaction" | "hsbcTransaction" | "chaseTransaction" | "sofiTransaction" | "session" | "account" | "note" | "tab" | "investmentAccount" | "investmentSnapshot" | "verification"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1234,6 +1266,154 @@ export namespace Prisma {
           count: {
             args: Prisma.MonzoApiTransactionCountArgs<ExtArgs>
             result: $Utils.Optional<MonzoApiTransactionCountAggregateOutputType> | number
+          }
+        }
+      }
+      PlaidItem: {
+        payload: Prisma.$PlaidItemPayload<ExtArgs>
+        fields: Prisma.PlaidItemFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PlaidItemFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaidItemPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PlaidItemFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaidItemPayload>
+          }
+          findFirst: {
+            args: Prisma.PlaidItemFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaidItemPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PlaidItemFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaidItemPayload>
+          }
+          findMany: {
+            args: Prisma.PlaidItemFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaidItemPayload>[]
+          }
+          create: {
+            args: Prisma.PlaidItemCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaidItemPayload>
+          }
+          createMany: {
+            args: Prisma.PlaidItemCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PlaidItemCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaidItemPayload>[]
+          }
+          delete: {
+            args: Prisma.PlaidItemDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaidItemPayload>
+          }
+          update: {
+            args: Prisma.PlaidItemUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaidItemPayload>
+          }
+          deleteMany: {
+            args: Prisma.PlaidItemDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PlaidItemUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.PlaidItemUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaidItemPayload>[]
+          }
+          upsert: {
+            args: Prisma.PlaidItemUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaidItemPayload>
+          }
+          aggregate: {
+            args: Prisma.PlaidItemAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePlaidItem>
+          }
+          groupBy: {
+            args: Prisma.PlaidItemGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PlaidItemGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PlaidItemCountArgs<ExtArgs>
+            result: $Utils.Optional<PlaidItemCountAggregateOutputType> | number
+          }
+        }
+      }
+      PlaidTransaction: {
+        payload: Prisma.$PlaidTransactionPayload<ExtArgs>
+        fields: Prisma.PlaidTransactionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PlaidTransactionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaidTransactionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PlaidTransactionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaidTransactionPayload>
+          }
+          findFirst: {
+            args: Prisma.PlaidTransactionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaidTransactionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PlaidTransactionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaidTransactionPayload>
+          }
+          findMany: {
+            args: Prisma.PlaidTransactionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaidTransactionPayload>[]
+          }
+          create: {
+            args: Prisma.PlaidTransactionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaidTransactionPayload>
+          }
+          createMany: {
+            args: Prisma.PlaidTransactionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PlaidTransactionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaidTransactionPayload>[]
+          }
+          delete: {
+            args: Prisma.PlaidTransactionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaidTransactionPayload>
+          }
+          update: {
+            args: Prisma.PlaidTransactionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaidTransactionPayload>
+          }
+          deleteMany: {
+            args: Prisma.PlaidTransactionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PlaidTransactionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.PlaidTransactionUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaidTransactionPayload>[]
+          }
+          upsert: {
+            args: Prisma.PlaidTransactionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaidTransactionPayload>
+          }
+          aggregate: {
+            args: Prisma.PlaidTransactionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePlaidTransaction>
+          }
+          groupBy: {
+            args: Prisma.PlaidTransactionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PlaidTransactionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PlaidTransactionCountArgs<ExtArgs>
+            result: $Utils.Optional<PlaidTransactionCountAggregateOutputType> | number
           }
         }
       }
@@ -2385,6 +2565,8 @@ export namespace Prisma {
     category?: CategoryOmit
     transaction?: TransactionOmit
     monzoApiTransaction?: MonzoApiTransactionOmit
+    plaidItem?: PlaidItemOmit
+    plaidTransaction?: PlaidTransactionOmit
     monzoCredential?: MonzoCredentialOmit
     amexTransaction?: AmexTransactionOmit
     barclaysTransaction?: BarclaysTransactionOmit
@@ -7155,6 +7337,2127 @@ export namespace Prisma {
      * Omit specific fields from the MonzoApiTransaction
      */
     omit?: MonzoApiTransactionOmit<ExtArgs> | null
+  }
+
+
+  /**
+   * Model PlaidItem
+   */
+
+  export type AggregatePlaidItem = {
+    _count: PlaidItemCountAggregateOutputType | null
+    _min: PlaidItemMinAggregateOutputType | null
+    _max: PlaidItemMaxAggregateOutputType | null
+  }
+
+  export type PlaidItemMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    accessToken: string | null
+    itemId: string | null
+    cursor: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type PlaidItemMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    accessToken: string | null
+    itemId: string | null
+    cursor: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type PlaidItemCountAggregateOutputType = {
+    id: number
+    userId: number
+    accessToken: number
+    itemId: number
+    cursor: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type PlaidItemMinAggregateInputType = {
+    id?: true
+    userId?: true
+    accessToken?: true
+    itemId?: true
+    cursor?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type PlaidItemMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    accessToken?: true
+    itemId?: true
+    cursor?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type PlaidItemCountAggregateInputType = {
+    id?: true
+    userId?: true
+    accessToken?: true
+    itemId?: true
+    cursor?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type PlaidItemAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PlaidItem to aggregate.
+     */
+    where?: PlaidItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PlaidItems to fetch.
+     */
+    orderBy?: PlaidItemOrderByWithRelationInput | PlaidItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PlaidItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PlaidItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PlaidItems.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned PlaidItems
+    **/
+    _count?: true | PlaidItemCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PlaidItemMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PlaidItemMaxAggregateInputType
+  }
+
+  export type GetPlaidItemAggregateType<T extends PlaidItemAggregateArgs> = {
+        [P in keyof T & keyof AggregatePlaidItem]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePlaidItem[P]>
+      : GetScalarType<T[P], AggregatePlaidItem[P]>
+  }
+
+
+
+
+  export type PlaidItemGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PlaidItemWhereInput
+    orderBy?: PlaidItemOrderByWithAggregationInput | PlaidItemOrderByWithAggregationInput[]
+    by: PlaidItemScalarFieldEnum[] | PlaidItemScalarFieldEnum
+    having?: PlaidItemScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PlaidItemCountAggregateInputType | true
+    _min?: PlaidItemMinAggregateInputType
+    _max?: PlaidItemMaxAggregateInputType
+  }
+
+  export type PlaidItemGroupByOutputType = {
+    id: string
+    userId: string
+    accessToken: string
+    itemId: string
+    cursor: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: PlaidItemCountAggregateOutputType | null
+    _min: PlaidItemMinAggregateOutputType | null
+    _max: PlaidItemMaxAggregateOutputType | null
+  }
+
+  type GetPlaidItemGroupByPayload<T extends PlaidItemGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PlaidItemGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PlaidItemGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PlaidItemGroupByOutputType[P]>
+            : GetScalarType<T[P], PlaidItemGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PlaidItemSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    accessToken?: boolean
+    itemId?: boolean
+    cursor?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["plaidItem"]>
+
+  export type PlaidItemSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    accessToken?: boolean
+    itemId?: boolean
+    cursor?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["plaidItem"]>
+
+  export type PlaidItemSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    accessToken?: boolean
+    itemId?: boolean
+    cursor?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["plaidItem"]>
+
+  export type PlaidItemSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    accessToken?: boolean
+    itemId?: boolean
+    cursor?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type PlaidItemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "accessToken" | "itemId" | "cursor" | "createdAt" | "updatedAt", ExtArgs["result"]["plaidItem"]>
+
+  export type $PlaidItemPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "PlaidItem"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      accessToken: string
+      itemId: string
+      cursor: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["plaidItem"]>
+    composites: {}
+  }
+
+  type PlaidItemGetPayload<S extends boolean | null | undefined | PlaidItemDefaultArgs> = $Result.GetResult<Prisma.$PlaidItemPayload, S>
+
+  type PlaidItemCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<PlaidItemFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: PlaidItemCountAggregateInputType | true
+    }
+
+  export interface PlaidItemDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PlaidItem'], meta: { name: 'PlaidItem' } }
+    /**
+     * Find zero or one PlaidItem that matches the filter.
+     * @param {PlaidItemFindUniqueArgs} args - Arguments to find a PlaidItem
+     * @example
+     * // Get one PlaidItem
+     * const plaidItem = await prisma.plaidItem.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PlaidItemFindUniqueArgs>(args: SelectSubset<T, PlaidItemFindUniqueArgs<ExtArgs>>): Prisma__PlaidItemClient<$Result.GetResult<Prisma.$PlaidItemPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one PlaidItem that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {PlaidItemFindUniqueOrThrowArgs} args - Arguments to find a PlaidItem
+     * @example
+     * // Get one PlaidItem
+     * const plaidItem = await prisma.plaidItem.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PlaidItemFindUniqueOrThrowArgs>(args: SelectSubset<T, PlaidItemFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PlaidItemClient<$Result.GetResult<Prisma.$PlaidItemPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PlaidItem that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlaidItemFindFirstArgs} args - Arguments to find a PlaidItem
+     * @example
+     * // Get one PlaidItem
+     * const plaidItem = await prisma.plaidItem.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PlaidItemFindFirstArgs>(args?: SelectSubset<T, PlaidItemFindFirstArgs<ExtArgs>>): Prisma__PlaidItemClient<$Result.GetResult<Prisma.$PlaidItemPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PlaidItem that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlaidItemFindFirstOrThrowArgs} args - Arguments to find a PlaidItem
+     * @example
+     * // Get one PlaidItem
+     * const plaidItem = await prisma.plaidItem.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PlaidItemFindFirstOrThrowArgs>(args?: SelectSubset<T, PlaidItemFindFirstOrThrowArgs<ExtArgs>>): Prisma__PlaidItemClient<$Result.GetResult<Prisma.$PlaidItemPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more PlaidItems that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlaidItemFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PlaidItems
+     * const plaidItems = await prisma.plaidItem.findMany()
+     * 
+     * // Get first 10 PlaidItems
+     * const plaidItems = await prisma.plaidItem.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const plaidItemWithIdOnly = await prisma.plaidItem.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PlaidItemFindManyArgs>(args?: SelectSubset<T, PlaidItemFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlaidItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a PlaidItem.
+     * @param {PlaidItemCreateArgs} args - Arguments to create a PlaidItem.
+     * @example
+     * // Create one PlaidItem
+     * const PlaidItem = await prisma.plaidItem.create({
+     *   data: {
+     *     // ... data to create a PlaidItem
+     *   }
+     * })
+     * 
+     */
+    create<T extends PlaidItemCreateArgs>(args: SelectSubset<T, PlaidItemCreateArgs<ExtArgs>>): Prisma__PlaidItemClient<$Result.GetResult<Prisma.$PlaidItemPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many PlaidItems.
+     * @param {PlaidItemCreateManyArgs} args - Arguments to create many PlaidItems.
+     * @example
+     * // Create many PlaidItems
+     * const plaidItem = await prisma.plaidItem.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PlaidItemCreateManyArgs>(args?: SelectSubset<T, PlaidItemCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many PlaidItems and returns the data saved in the database.
+     * @param {PlaidItemCreateManyAndReturnArgs} args - Arguments to create many PlaidItems.
+     * @example
+     * // Create many PlaidItems
+     * const plaidItem = await prisma.plaidItem.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many PlaidItems and only return the `id`
+     * const plaidItemWithIdOnly = await prisma.plaidItem.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PlaidItemCreateManyAndReturnArgs>(args?: SelectSubset<T, PlaidItemCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlaidItemPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a PlaidItem.
+     * @param {PlaidItemDeleteArgs} args - Arguments to delete one PlaidItem.
+     * @example
+     * // Delete one PlaidItem
+     * const PlaidItem = await prisma.plaidItem.delete({
+     *   where: {
+     *     // ... filter to delete one PlaidItem
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PlaidItemDeleteArgs>(args: SelectSubset<T, PlaidItemDeleteArgs<ExtArgs>>): Prisma__PlaidItemClient<$Result.GetResult<Prisma.$PlaidItemPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one PlaidItem.
+     * @param {PlaidItemUpdateArgs} args - Arguments to update one PlaidItem.
+     * @example
+     * // Update one PlaidItem
+     * const plaidItem = await prisma.plaidItem.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PlaidItemUpdateArgs>(args: SelectSubset<T, PlaidItemUpdateArgs<ExtArgs>>): Prisma__PlaidItemClient<$Result.GetResult<Prisma.$PlaidItemPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more PlaidItems.
+     * @param {PlaidItemDeleteManyArgs} args - Arguments to filter PlaidItems to delete.
+     * @example
+     * // Delete a few PlaidItems
+     * const { count } = await prisma.plaidItem.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PlaidItemDeleteManyArgs>(args?: SelectSubset<T, PlaidItemDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PlaidItems.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlaidItemUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PlaidItems
+     * const plaidItem = await prisma.plaidItem.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PlaidItemUpdateManyArgs>(args: SelectSubset<T, PlaidItemUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PlaidItems and returns the data updated in the database.
+     * @param {PlaidItemUpdateManyAndReturnArgs} args - Arguments to update many PlaidItems.
+     * @example
+     * // Update many PlaidItems
+     * const plaidItem = await prisma.plaidItem.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more PlaidItems and only return the `id`
+     * const plaidItemWithIdOnly = await prisma.plaidItem.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends PlaidItemUpdateManyAndReturnArgs>(args: SelectSubset<T, PlaidItemUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlaidItemPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one PlaidItem.
+     * @param {PlaidItemUpsertArgs} args - Arguments to update or create a PlaidItem.
+     * @example
+     * // Update or create a PlaidItem
+     * const plaidItem = await prisma.plaidItem.upsert({
+     *   create: {
+     *     // ... data to create a PlaidItem
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PlaidItem we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PlaidItemUpsertArgs>(args: SelectSubset<T, PlaidItemUpsertArgs<ExtArgs>>): Prisma__PlaidItemClient<$Result.GetResult<Prisma.$PlaidItemPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of PlaidItems.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlaidItemCountArgs} args - Arguments to filter PlaidItems to count.
+     * @example
+     * // Count the number of PlaidItems
+     * const count = await prisma.plaidItem.count({
+     *   where: {
+     *     // ... the filter for the PlaidItems we want to count
+     *   }
+     * })
+    **/
+    count<T extends PlaidItemCountArgs>(
+      args?: Subset<T, PlaidItemCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PlaidItemCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a PlaidItem.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlaidItemAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PlaidItemAggregateArgs>(args: Subset<T, PlaidItemAggregateArgs>): Prisma.PrismaPromise<GetPlaidItemAggregateType<T>>
+
+    /**
+     * Group by PlaidItem.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlaidItemGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PlaidItemGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PlaidItemGroupByArgs['orderBy'] }
+        : { orderBy?: PlaidItemGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PlaidItemGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPlaidItemGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the PlaidItem model
+   */
+  readonly fields: PlaidItemFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PlaidItem.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PlaidItemClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the PlaidItem model
+   */
+  interface PlaidItemFieldRefs {
+    readonly id: FieldRef<"PlaidItem", 'String'>
+    readonly userId: FieldRef<"PlaidItem", 'String'>
+    readonly accessToken: FieldRef<"PlaidItem", 'String'>
+    readonly itemId: FieldRef<"PlaidItem", 'String'>
+    readonly cursor: FieldRef<"PlaidItem", 'String'>
+    readonly createdAt: FieldRef<"PlaidItem", 'DateTime'>
+    readonly updatedAt: FieldRef<"PlaidItem", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * PlaidItem findUnique
+   */
+  export type PlaidItemFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaidItem
+     */
+    select?: PlaidItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaidItem
+     */
+    omit?: PlaidItemOmit<ExtArgs> | null
+    /**
+     * Filter, which PlaidItem to fetch.
+     */
+    where: PlaidItemWhereUniqueInput
+  }
+
+  /**
+   * PlaidItem findUniqueOrThrow
+   */
+  export type PlaidItemFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaidItem
+     */
+    select?: PlaidItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaidItem
+     */
+    omit?: PlaidItemOmit<ExtArgs> | null
+    /**
+     * Filter, which PlaidItem to fetch.
+     */
+    where: PlaidItemWhereUniqueInput
+  }
+
+  /**
+   * PlaidItem findFirst
+   */
+  export type PlaidItemFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaidItem
+     */
+    select?: PlaidItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaidItem
+     */
+    omit?: PlaidItemOmit<ExtArgs> | null
+    /**
+     * Filter, which PlaidItem to fetch.
+     */
+    where?: PlaidItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PlaidItems to fetch.
+     */
+    orderBy?: PlaidItemOrderByWithRelationInput | PlaidItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PlaidItems.
+     */
+    cursor?: PlaidItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PlaidItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PlaidItems.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PlaidItems.
+     */
+    distinct?: PlaidItemScalarFieldEnum | PlaidItemScalarFieldEnum[]
+  }
+
+  /**
+   * PlaidItem findFirstOrThrow
+   */
+  export type PlaidItemFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaidItem
+     */
+    select?: PlaidItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaidItem
+     */
+    omit?: PlaidItemOmit<ExtArgs> | null
+    /**
+     * Filter, which PlaidItem to fetch.
+     */
+    where?: PlaidItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PlaidItems to fetch.
+     */
+    orderBy?: PlaidItemOrderByWithRelationInput | PlaidItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PlaidItems.
+     */
+    cursor?: PlaidItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PlaidItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PlaidItems.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PlaidItems.
+     */
+    distinct?: PlaidItemScalarFieldEnum | PlaidItemScalarFieldEnum[]
+  }
+
+  /**
+   * PlaidItem findMany
+   */
+  export type PlaidItemFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaidItem
+     */
+    select?: PlaidItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaidItem
+     */
+    omit?: PlaidItemOmit<ExtArgs> | null
+    /**
+     * Filter, which PlaidItems to fetch.
+     */
+    where?: PlaidItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PlaidItems to fetch.
+     */
+    orderBy?: PlaidItemOrderByWithRelationInput | PlaidItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing PlaidItems.
+     */
+    cursor?: PlaidItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PlaidItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PlaidItems.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PlaidItems.
+     */
+    distinct?: PlaidItemScalarFieldEnum | PlaidItemScalarFieldEnum[]
+  }
+
+  /**
+   * PlaidItem create
+   */
+  export type PlaidItemCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaidItem
+     */
+    select?: PlaidItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaidItem
+     */
+    omit?: PlaidItemOmit<ExtArgs> | null
+    /**
+     * The data needed to create a PlaidItem.
+     */
+    data: XOR<PlaidItemCreateInput, PlaidItemUncheckedCreateInput>
+  }
+
+  /**
+   * PlaidItem createMany
+   */
+  export type PlaidItemCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many PlaidItems.
+     */
+    data: PlaidItemCreateManyInput | PlaidItemCreateManyInput[]
+  }
+
+  /**
+   * PlaidItem createManyAndReturn
+   */
+  export type PlaidItemCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaidItem
+     */
+    select?: PlaidItemSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaidItem
+     */
+    omit?: PlaidItemOmit<ExtArgs> | null
+    /**
+     * The data used to create many PlaidItems.
+     */
+    data: PlaidItemCreateManyInput | PlaidItemCreateManyInput[]
+  }
+
+  /**
+   * PlaidItem update
+   */
+  export type PlaidItemUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaidItem
+     */
+    select?: PlaidItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaidItem
+     */
+    omit?: PlaidItemOmit<ExtArgs> | null
+    /**
+     * The data needed to update a PlaidItem.
+     */
+    data: XOR<PlaidItemUpdateInput, PlaidItemUncheckedUpdateInput>
+    /**
+     * Choose, which PlaidItem to update.
+     */
+    where: PlaidItemWhereUniqueInput
+  }
+
+  /**
+   * PlaidItem updateMany
+   */
+  export type PlaidItemUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update PlaidItems.
+     */
+    data: XOR<PlaidItemUpdateManyMutationInput, PlaidItemUncheckedUpdateManyInput>
+    /**
+     * Filter which PlaidItems to update
+     */
+    where?: PlaidItemWhereInput
+    /**
+     * Limit how many PlaidItems to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * PlaidItem updateManyAndReturn
+   */
+  export type PlaidItemUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaidItem
+     */
+    select?: PlaidItemSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaidItem
+     */
+    omit?: PlaidItemOmit<ExtArgs> | null
+    /**
+     * The data used to update PlaidItems.
+     */
+    data: XOR<PlaidItemUpdateManyMutationInput, PlaidItemUncheckedUpdateManyInput>
+    /**
+     * Filter which PlaidItems to update
+     */
+    where?: PlaidItemWhereInput
+    /**
+     * Limit how many PlaidItems to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * PlaidItem upsert
+   */
+  export type PlaidItemUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaidItem
+     */
+    select?: PlaidItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaidItem
+     */
+    omit?: PlaidItemOmit<ExtArgs> | null
+    /**
+     * The filter to search for the PlaidItem to update in case it exists.
+     */
+    where: PlaidItemWhereUniqueInput
+    /**
+     * In case the PlaidItem found by the `where` argument doesn't exist, create a new PlaidItem with this data.
+     */
+    create: XOR<PlaidItemCreateInput, PlaidItemUncheckedCreateInput>
+    /**
+     * In case the PlaidItem was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PlaidItemUpdateInput, PlaidItemUncheckedUpdateInput>
+  }
+
+  /**
+   * PlaidItem delete
+   */
+  export type PlaidItemDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaidItem
+     */
+    select?: PlaidItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaidItem
+     */
+    omit?: PlaidItemOmit<ExtArgs> | null
+    /**
+     * Filter which PlaidItem to delete.
+     */
+    where: PlaidItemWhereUniqueInput
+  }
+
+  /**
+   * PlaidItem deleteMany
+   */
+  export type PlaidItemDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PlaidItems to delete
+     */
+    where?: PlaidItemWhereInput
+    /**
+     * Limit how many PlaidItems to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * PlaidItem without action
+   */
+  export type PlaidItemDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaidItem
+     */
+    select?: PlaidItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaidItem
+     */
+    omit?: PlaidItemOmit<ExtArgs> | null
+  }
+
+
+  /**
+   * Model PlaidTransaction
+   */
+
+  export type AggregatePlaidTransaction = {
+    _count: PlaidTransactionCountAggregateOutputType | null
+    _avg: PlaidTransactionAvgAggregateOutputType | null
+    _sum: PlaidTransactionSumAggregateOutputType | null
+    _min: PlaidTransactionMinAggregateOutputType | null
+    _max: PlaidTransactionMaxAggregateOutputType | null
+  }
+
+  export type PlaidTransactionAvgAggregateOutputType = {
+    amount: number | null
+  }
+
+  export type PlaidTransactionSumAggregateOutputType = {
+    amount: number | null
+  }
+
+  export type PlaidTransactionMinAggregateOutputType = {
+    id: string | null
+    transactionId: string | null
+    date: string | null
+    description: string | null
+    amount: number | null
+    currency: string | null
+    merchantName: string | null
+    owner: string | null
+    importedAt: Date | null
+    status: string | null
+  }
+
+  export type PlaidTransactionMaxAggregateOutputType = {
+    id: string | null
+    transactionId: string | null
+    date: string | null
+    description: string | null
+    amount: number | null
+    currency: string | null
+    merchantName: string | null
+    owner: string | null
+    importedAt: Date | null
+    status: string | null
+  }
+
+  export type PlaidTransactionCountAggregateOutputType = {
+    id: number
+    transactionId: number
+    date: number
+    description: number
+    amount: number
+    currency: number
+    merchantName: number
+    owner: number
+    importedAt: number
+    status: number
+    _all: number
+  }
+
+
+  export type PlaidTransactionAvgAggregateInputType = {
+    amount?: true
+  }
+
+  export type PlaidTransactionSumAggregateInputType = {
+    amount?: true
+  }
+
+  export type PlaidTransactionMinAggregateInputType = {
+    id?: true
+    transactionId?: true
+    date?: true
+    description?: true
+    amount?: true
+    currency?: true
+    merchantName?: true
+    owner?: true
+    importedAt?: true
+    status?: true
+  }
+
+  export type PlaidTransactionMaxAggregateInputType = {
+    id?: true
+    transactionId?: true
+    date?: true
+    description?: true
+    amount?: true
+    currency?: true
+    merchantName?: true
+    owner?: true
+    importedAt?: true
+    status?: true
+  }
+
+  export type PlaidTransactionCountAggregateInputType = {
+    id?: true
+    transactionId?: true
+    date?: true
+    description?: true
+    amount?: true
+    currency?: true
+    merchantName?: true
+    owner?: true
+    importedAt?: true
+    status?: true
+    _all?: true
+  }
+
+  export type PlaidTransactionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PlaidTransaction to aggregate.
+     */
+    where?: PlaidTransactionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PlaidTransactions to fetch.
+     */
+    orderBy?: PlaidTransactionOrderByWithRelationInput | PlaidTransactionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PlaidTransactionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PlaidTransactions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PlaidTransactions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned PlaidTransactions
+    **/
+    _count?: true | PlaidTransactionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: PlaidTransactionAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: PlaidTransactionSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PlaidTransactionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PlaidTransactionMaxAggregateInputType
+  }
+
+  export type GetPlaidTransactionAggregateType<T extends PlaidTransactionAggregateArgs> = {
+        [P in keyof T & keyof AggregatePlaidTransaction]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePlaidTransaction[P]>
+      : GetScalarType<T[P], AggregatePlaidTransaction[P]>
+  }
+
+
+
+
+  export type PlaidTransactionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PlaidTransactionWhereInput
+    orderBy?: PlaidTransactionOrderByWithAggregationInput | PlaidTransactionOrderByWithAggregationInput[]
+    by: PlaidTransactionScalarFieldEnum[] | PlaidTransactionScalarFieldEnum
+    having?: PlaidTransactionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PlaidTransactionCountAggregateInputType | true
+    _avg?: PlaidTransactionAvgAggregateInputType
+    _sum?: PlaidTransactionSumAggregateInputType
+    _min?: PlaidTransactionMinAggregateInputType
+    _max?: PlaidTransactionMaxAggregateInputType
+  }
+
+  export type PlaidTransactionGroupByOutputType = {
+    id: string
+    transactionId: string
+    date: string
+    description: string
+    amount: number
+    currency: string
+    merchantName: string | null
+    owner: string
+    importedAt: Date
+    status: string
+    _count: PlaidTransactionCountAggregateOutputType | null
+    _avg: PlaidTransactionAvgAggregateOutputType | null
+    _sum: PlaidTransactionSumAggregateOutputType | null
+    _min: PlaidTransactionMinAggregateOutputType | null
+    _max: PlaidTransactionMaxAggregateOutputType | null
+  }
+
+  type GetPlaidTransactionGroupByPayload<T extends PlaidTransactionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PlaidTransactionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PlaidTransactionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PlaidTransactionGroupByOutputType[P]>
+            : GetScalarType<T[P], PlaidTransactionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PlaidTransactionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    transactionId?: boolean
+    date?: boolean
+    description?: boolean
+    amount?: boolean
+    currency?: boolean
+    merchantName?: boolean
+    owner?: boolean
+    importedAt?: boolean
+    status?: boolean
+  }, ExtArgs["result"]["plaidTransaction"]>
+
+  export type PlaidTransactionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    transactionId?: boolean
+    date?: boolean
+    description?: boolean
+    amount?: boolean
+    currency?: boolean
+    merchantName?: boolean
+    owner?: boolean
+    importedAt?: boolean
+    status?: boolean
+  }, ExtArgs["result"]["plaidTransaction"]>
+
+  export type PlaidTransactionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    transactionId?: boolean
+    date?: boolean
+    description?: boolean
+    amount?: boolean
+    currency?: boolean
+    merchantName?: boolean
+    owner?: boolean
+    importedAt?: boolean
+    status?: boolean
+  }, ExtArgs["result"]["plaidTransaction"]>
+
+  export type PlaidTransactionSelectScalar = {
+    id?: boolean
+    transactionId?: boolean
+    date?: boolean
+    description?: boolean
+    amount?: boolean
+    currency?: boolean
+    merchantName?: boolean
+    owner?: boolean
+    importedAt?: boolean
+    status?: boolean
+  }
+
+  export type PlaidTransactionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "transactionId" | "date" | "description" | "amount" | "currency" | "merchantName" | "owner" | "importedAt" | "status", ExtArgs["result"]["plaidTransaction"]>
+
+  export type $PlaidTransactionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "PlaidTransaction"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      transactionId: string
+      date: string
+      description: string
+      amount: number
+      currency: string
+      merchantName: string | null
+      owner: string
+      importedAt: Date
+      status: string
+    }, ExtArgs["result"]["plaidTransaction"]>
+    composites: {}
+  }
+
+  type PlaidTransactionGetPayload<S extends boolean | null | undefined | PlaidTransactionDefaultArgs> = $Result.GetResult<Prisma.$PlaidTransactionPayload, S>
+
+  type PlaidTransactionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<PlaidTransactionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: PlaidTransactionCountAggregateInputType | true
+    }
+
+  export interface PlaidTransactionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PlaidTransaction'], meta: { name: 'PlaidTransaction' } }
+    /**
+     * Find zero or one PlaidTransaction that matches the filter.
+     * @param {PlaidTransactionFindUniqueArgs} args - Arguments to find a PlaidTransaction
+     * @example
+     * // Get one PlaidTransaction
+     * const plaidTransaction = await prisma.plaidTransaction.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PlaidTransactionFindUniqueArgs>(args: SelectSubset<T, PlaidTransactionFindUniqueArgs<ExtArgs>>): Prisma__PlaidTransactionClient<$Result.GetResult<Prisma.$PlaidTransactionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one PlaidTransaction that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {PlaidTransactionFindUniqueOrThrowArgs} args - Arguments to find a PlaidTransaction
+     * @example
+     * // Get one PlaidTransaction
+     * const plaidTransaction = await prisma.plaidTransaction.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PlaidTransactionFindUniqueOrThrowArgs>(args: SelectSubset<T, PlaidTransactionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PlaidTransactionClient<$Result.GetResult<Prisma.$PlaidTransactionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PlaidTransaction that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlaidTransactionFindFirstArgs} args - Arguments to find a PlaidTransaction
+     * @example
+     * // Get one PlaidTransaction
+     * const plaidTransaction = await prisma.plaidTransaction.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PlaidTransactionFindFirstArgs>(args?: SelectSubset<T, PlaidTransactionFindFirstArgs<ExtArgs>>): Prisma__PlaidTransactionClient<$Result.GetResult<Prisma.$PlaidTransactionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PlaidTransaction that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlaidTransactionFindFirstOrThrowArgs} args - Arguments to find a PlaidTransaction
+     * @example
+     * // Get one PlaidTransaction
+     * const plaidTransaction = await prisma.plaidTransaction.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PlaidTransactionFindFirstOrThrowArgs>(args?: SelectSubset<T, PlaidTransactionFindFirstOrThrowArgs<ExtArgs>>): Prisma__PlaidTransactionClient<$Result.GetResult<Prisma.$PlaidTransactionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more PlaidTransactions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlaidTransactionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PlaidTransactions
+     * const plaidTransactions = await prisma.plaidTransaction.findMany()
+     * 
+     * // Get first 10 PlaidTransactions
+     * const plaidTransactions = await prisma.plaidTransaction.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const plaidTransactionWithIdOnly = await prisma.plaidTransaction.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PlaidTransactionFindManyArgs>(args?: SelectSubset<T, PlaidTransactionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlaidTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a PlaidTransaction.
+     * @param {PlaidTransactionCreateArgs} args - Arguments to create a PlaidTransaction.
+     * @example
+     * // Create one PlaidTransaction
+     * const PlaidTransaction = await prisma.plaidTransaction.create({
+     *   data: {
+     *     // ... data to create a PlaidTransaction
+     *   }
+     * })
+     * 
+     */
+    create<T extends PlaidTransactionCreateArgs>(args: SelectSubset<T, PlaidTransactionCreateArgs<ExtArgs>>): Prisma__PlaidTransactionClient<$Result.GetResult<Prisma.$PlaidTransactionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many PlaidTransactions.
+     * @param {PlaidTransactionCreateManyArgs} args - Arguments to create many PlaidTransactions.
+     * @example
+     * // Create many PlaidTransactions
+     * const plaidTransaction = await prisma.plaidTransaction.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PlaidTransactionCreateManyArgs>(args?: SelectSubset<T, PlaidTransactionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many PlaidTransactions and returns the data saved in the database.
+     * @param {PlaidTransactionCreateManyAndReturnArgs} args - Arguments to create many PlaidTransactions.
+     * @example
+     * // Create many PlaidTransactions
+     * const plaidTransaction = await prisma.plaidTransaction.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many PlaidTransactions and only return the `id`
+     * const plaidTransactionWithIdOnly = await prisma.plaidTransaction.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PlaidTransactionCreateManyAndReturnArgs>(args?: SelectSubset<T, PlaidTransactionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlaidTransactionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a PlaidTransaction.
+     * @param {PlaidTransactionDeleteArgs} args - Arguments to delete one PlaidTransaction.
+     * @example
+     * // Delete one PlaidTransaction
+     * const PlaidTransaction = await prisma.plaidTransaction.delete({
+     *   where: {
+     *     // ... filter to delete one PlaidTransaction
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PlaidTransactionDeleteArgs>(args: SelectSubset<T, PlaidTransactionDeleteArgs<ExtArgs>>): Prisma__PlaidTransactionClient<$Result.GetResult<Prisma.$PlaidTransactionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one PlaidTransaction.
+     * @param {PlaidTransactionUpdateArgs} args - Arguments to update one PlaidTransaction.
+     * @example
+     * // Update one PlaidTransaction
+     * const plaidTransaction = await prisma.plaidTransaction.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PlaidTransactionUpdateArgs>(args: SelectSubset<T, PlaidTransactionUpdateArgs<ExtArgs>>): Prisma__PlaidTransactionClient<$Result.GetResult<Prisma.$PlaidTransactionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more PlaidTransactions.
+     * @param {PlaidTransactionDeleteManyArgs} args - Arguments to filter PlaidTransactions to delete.
+     * @example
+     * // Delete a few PlaidTransactions
+     * const { count } = await prisma.plaidTransaction.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PlaidTransactionDeleteManyArgs>(args?: SelectSubset<T, PlaidTransactionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PlaidTransactions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlaidTransactionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PlaidTransactions
+     * const plaidTransaction = await prisma.plaidTransaction.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PlaidTransactionUpdateManyArgs>(args: SelectSubset<T, PlaidTransactionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PlaidTransactions and returns the data updated in the database.
+     * @param {PlaidTransactionUpdateManyAndReturnArgs} args - Arguments to update many PlaidTransactions.
+     * @example
+     * // Update many PlaidTransactions
+     * const plaidTransaction = await prisma.plaidTransaction.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more PlaidTransactions and only return the `id`
+     * const plaidTransactionWithIdOnly = await prisma.plaidTransaction.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends PlaidTransactionUpdateManyAndReturnArgs>(args: SelectSubset<T, PlaidTransactionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlaidTransactionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one PlaidTransaction.
+     * @param {PlaidTransactionUpsertArgs} args - Arguments to update or create a PlaidTransaction.
+     * @example
+     * // Update or create a PlaidTransaction
+     * const plaidTransaction = await prisma.plaidTransaction.upsert({
+     *   create: {
+     *     // ... data to create a PlaidTransaction
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PlaidTransaction we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PlaidTransactionUpsertArgs>(args: SelectSubset<T, PlaidTransactionUpsertArgs<ExtArgs>>): Prisma__PlaidTransactionClient<$Result.GetResult<Prisma.$PlaidTransactionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of PlaidTransactions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlaidTransactionCountArgs} args - Arguments to filter PlaidTransactions to count.
+     * @example
+     * // Count the number of PlaidTransactions
+     * const count = await prisma.plaidTransaction.count({
+     *   where: {
+     *     // ... the filter for the PlaidTransactions we want to count
+     *   }
+     * })
+    **/
+    count<T extends PlaidTransactionCountArgs>(
+      args?: Subset<T, PlaidTransactionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PlaidTransactionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a PlaidTransaction.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlaidTransactionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PlaidTransactionAggregateArgs>(args: Subset<T, PlaidTransactionAggregateArgs>): Prisma.PrismaPromise<GetPlaidTransactionAggregateType<T>>
+
+    /**
+     * Group by PlaidTransaction.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlaidTransactionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PlaidTransactionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PlaidTransactionGroupByArgs['orderBy'] }
+        : { orderBy?: PlaidTransactionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PlaidTransactionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPlaidTransactionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the PlaidTransaction model
+   */
+  readonly fields: PlaidTransactionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PlaidTransaction.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PlaidTransactionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the PlaidTransaction model
+   */
+  interface PlaidTransactionFieldRefs {
+    readonly id: FieldRef<"PlaidTransaction", 'String'>
+    readonly transactionId: FieldRef<"PlaidTransaction", 'String'>
+    readonly date: FieldRef<"PlaidTransaction", 'String'>
+    readonly description: FieldRef<"PlaidTransaction", 'String'>
+    readonly amount: FieldRef<"PlaidTransaction", 'Float'>
+    readonly currency: FieldRef<"PlaidTransaction", 'String'>
+    readonly merchantName: FieldRef<"PlaidTransaction", 'String'>
+    readonly owner: FieldRef<"PlaidTransaction", 'String'>
+    readonly importedAt: FieldRef<"PlaidTransaction", 'DateTime'>
+    readonly status: FieldRef<"PlaidTransaction", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * PlaidTransaction findUnique
+   */
+  export type PlaidTransactionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaidTransaction
+     */
+    select?: PlaidTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaidTransaction
+     */
+    omit?: PlaidTransactionOmit<ExtArgs> | null
+    /**
+     * Filter, which PlaidTransaction to fetch.
+     */
+    where: PlaidTransactionWhereUniqueInput
+  }
+
+  /**
+   * PlaidTransaction findUniqueOrThrow
+   */
+  export type PlaidTransactionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaidTransaction
+     */
+    select?: PlaidTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaidTransaction
+     */
+    omit?: PlaidTransactionOmit<ExtArgs> | null
+    /**
+     * Filter, which PlaidTransaction to fetch.
+     */
+    where: PlaidTransactionWhereUniqueInput
+  }
+
+  /**
+   * PlaidTransaction findFirst
+   */
+  export type PlaidTransactionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaidTransaction
+     */
+    select?: PlaidTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaidTransaction
+     */
+    omit?: PlaidTransactionOmit<ExtArgs> | null
+    /**
+     * Filter, which PlaidTransaction to fetch.
+     */
+    where?: PlaidTransactionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PlaidTransactions to fetch.
+     */
+    orderBy?: PlaidTransactionOrderByWithRelationInput | PlaidTransactionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PlaidTransactions.
+     */
+    cursor?: PlaidTransactionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PlaidTransactions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PlaidTransactions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PlaidTransactions.
+     */
+    distinct?: PlaidTransactionScalarFieldEnum | PlaidTransactionScalarFieldEnum[]
+  }
+
+  /**
+   * PlaidTransaction findFirstOrThrow
+   */
+  export type PlaidTransactionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaidTransaction
+     */
+    select?: PlaidTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaidTransaction
+     */
+    omit?: PlaidTransactionOmit<ExtArgs> | null
+    /**
+     * Filter, which PlaidTransaction to fetch.
+     */
+    where?: PlaidTransactionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PlaidTransactions to fetch.
+     */
+    orderBy?: PlaidTransactionOrderByWithRelationInput | PlaidTransactionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PlaidTransactions.
+     */
+    cursor?: PlaidTransactionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PlaidTransactions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PlaidTransactions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PlaidTransactions.
+     */
+    distinct?: PlaidTransactionScalarFieldEnum | PlaidTransactionScalarFieldEnum[]
+  }
+
+  /**
+   * PlaidTransaction findMany
+   */
+  export type PlaidTransactionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaidTransaction
+     */
+    select?: PlaidTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaidTransaction
+     */
+    omit?: PlaidTransactionOmit<ExtArgs> | null
+    /**
+     * Filter, which PlaidTransactions to fetch.
+     */
+    where?: PlaidTransactionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PlaidTransactions to fetch.
+     */
+    orderBy?: PlaidTransactionOrderByWithRelationInput | PlaidTransactionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing PlaidTransactions.
+     */
+    cursor?: PlaidTransactionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PlaidTransactions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PlaidTransactions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PlaidTransactions.
+     */
+    distinct?: PlaidTransactionScalarFieldEnum | PlaidTransactionScalarFieldEnum[]
+  }
+
+  /**
+   * PlaidTransaction create
+   */
+  export type PlaidTransactionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaidTransaction
+     */
+    select?: PlaidTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaidTransaction
+     */
+    omit?: PlaidTransactionOmit<ExtArgs> | null
+    /**
+     * The data needed to create a PlaidTransaction.
+     */
+    data: XOR<PlaidTransactionCreateInput, PlaidTransactionUncheckedCreateInput>
+  }
+
+  /**
+   * PlaidTransaction createMany
+   */
+  export type PlaidTransactionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many PlaidTransactions.
+     */
+    data: PlaidTransactionCreateManyInput | PlaidTransactionCreateManyInput[]
+  }
+
+  /**
+   * PlaidTransaction createManyAndReturn
+   */
+  export type PlaidTransactionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaidTransaction
+     */
+    select?: PlaidTransactionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaidTransaction
+     */
+    omit?: PlaidTransactionOmit<ExtArgs> | null
+    /**
+     * The data used to create many PlaidTransactions.
+     */
+    data: PlaidTransactionCreateManyInput | PlaidTransactionCreateManyInput[]
+  }
+
+  /**
+   * PlaidTransaction update
+   */
+  export type PlaidTransactionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaidTransaction
+     */
+    select?: PlaidTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaidTransaction
+     */
+    omit?: PlaidTransactionOmit<ExtArgs> | null
+    /**
+     * The data needed to update a PlaidTransaction.
+     */
+    data: XOR<PlaidTransactionUpdateInput, PlaidTransactionUncheckedUpdateInput>
+    /**
+     * Choose, which PlaidTransaction to update.
+     */
+    where: PlaidTransactionWhereUniqueInput
+  }
+
+  /**
+   * PlaidTransaction updateMany
+   */
+  export type PlaidTransactionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update PlaidTransactions.
+     */
+    data: XOR<PlaidTransactionUpdateManyMutationInput, PlaidTransactionUncheckedUpdateManyInput>
+    /**
+     * Filter which PlaidTransactions to update
+     */
+    where?: PlaidTransactionWhereInput
+    /**
+     * Limit how many PlaidTransactions to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * PlaidTransaction updateManyAndReturn
+   */
+  export type PlaidTransactionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaidTransaction
+     */
+    select?: PlaidTransactionSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaidTransaction
+     */
+    omit?: PlaidTransactionOmit<ExtArgs> | null
+    /**
+     * The data used to update PlaidTransactions.
+     */
+    data: XOR<PlaidTransactionUpdateManyMutationInput, PlaidTransactionUncheckedUpdateManyInput>
+    /**
+     * Filter which PlaidTransactions to update
+     */
+    where?: PlaidTransactionWhereInput
+    /**
+     * Limit how many PlaidTransactions to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * PlaidTransaction upsert
+   */
+  export type PlaidTransactionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaidTransaction
+     */
+    select?: PlaidTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaidTransaction
+     */
+    omit?: PlaidTransactionOmit<ExtArgs> | null
+    /**
+     * The filter to search for the PlaidTransaction to update in case it exists.
+     */
+    where: PlaidTransactionWhereUniqueInput
+    /**
+     * In case the PlaidTransaction found by the `where` argument doesn't exist, create a new PlaidTransaction with this data.
+     */
+    create: XOR<PlaidTransactionCreateInput, PlaidTransactionUncheckedCreateInput>
+    /**
+     * In case the PlaidTransaction was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PlaidTransactionUpdateInput, PlaidTransactionUncheckedUpdateInput>
+  }
+
+  /**
+   * PlaidTransaction delete
+   */
+  export type PlaidTransactionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaidTransaction
+     */
+    select?: PlaidTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaidTransaction
+     */
+    omit?: PlaidTransactionOmit<ExtArgs> | null
+    /**
+     * Filter which PlaidTransaction to delete.
+     */
+    where: PlaidTransactionWhereUniqueInput
+  }
+
+  /**
+   * PlaidTransaction deleteMany
+   */
+  export type PlaidTransactionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PlaidTransactions to delete
+     */
+    where?: PlaidTransactionWhereInput
+    /**
+     * Limit how many PlaidTransactions to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * PlaidTransaction without action
+   */
+  export type PlaidTransactionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaidTransaction
+     */
+    select?: PlaidTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaidTransaction
+     */
+    omit?: PlaidTransactionOmit<ExtArgs> | null
   }
 
 
@@ -22539,6 +24842,35 @@ export namespace Prisma {
   export type MonzoApiTransactionScalarFieldEnum = (typeof MonzoApiTransactionScalarFieldEnum)[keyof typeof MonzoApiTransactionScalarFieldEnum]
 
 
+  export const PlaidItemScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    accessToken: 'accessToken',
+    itemId: 'itemId',
+    cursor: 'cursor',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type PlaidItemScalarFieldEnum = (typeof PlaidItemScalarFieldEnum)[keyof typeof PlaidItemScalarFieldEnum]
+
+
+  export const PlaidTransactionScalarFieldEnum: {
+    id: 'id',
+    transactionId: 'transactionId',
+    date: 'date',
+    description: 'description',
+    amount: 'amount',
+    currency: 'currency',
+    merchantName: 'merchantName',
+    owner: 'owner',
+    importedAt: 'importedAt',
+    status: 'status'
+  };
+
+  export type PlaidTransactionScalarFieldEnum = (typeof PlaidTransactionScalarFieldEnum)[keyof typeof PlaidTransactionScalarFieldEnum]
+
+
   export const MonzoCredentialScalarFieldEnum: {
     id: 'id',
     userId: 'userId',
@@ -22832,6 +25164,13 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Float'
+   */
+  export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+  /**
    * Reference to a field of type 'TabDirection'
    */
   export type EnumTabDirectionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TabDirection'>
@@ -22842,13 +25181,6 @@ export namespace Prisma {
    * Reference to a field of type 'TabStatus'
    */
   export type EnumTabStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TabStatus'>
-    
-
-
-  /**
-   * Reference to a field of type 'Float'
-   */
-  export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
     
   /**
    * Deep Input Types
@@ -23182,6 +25514,147 @@ export namespace Prisma {
     accountId?: StringWithAggregatesFilter<"MonzoApiTransaction"> | string
     importedAt?: DateTimeWithAggregatesFilter<"MonzoApiTransaction"> | Date | string
     status?: StringWithAggregatesFilter<"MonzoApiTransaction"> | string
+  }
+
+  export type PlaidItemWhereInput = {
+    AND?: PlaidItemWhereInput | PlaidItemWhereInput[]
+    OR?: PlaidItemWhereInput[]
+    NOT?: PlaidItemWhereInput | PlaidItemWhereInput[]
+    id?: StringFilter<"PlaidItem"> | string
+    userId?: StringFilter<"PlaidItem"> | string
+    accessToken?: StringFilter<"PlaidItem"> | string
+    itemId?: StringFilter<"PlaidItem"> | string
+    cursor?: StringNullableFilter<"PlaidItem"> | string | null
+    createdAt?: DateTimeFilter<"PlaidItem"> | Date | string
+    updatedAt?: DateTimeFilter<"PlaidItem"> | Date | string
+  }
+
+  export type PlaidItemOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    accessToken?: SortOrder
+    itemId?: SortOrder
+    cursor?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PlaidItemWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    userId?: string
+    itemId?: string
+    AND?: PlaidItemWhereInput | PlaidItemWhereInput[]
+    OR?: PlaidItemWhereInput[]
+    NOT?: PlaidItemWhereInput | PlaidItemWhereInput[]
+    accessToken?: StringFilter<"PlaidItem"> | string
+    cursor?: StringNullableFilter<"PlaidItem"> | string | null
+    createdAt?: DateTimeFilter<"PlaidItem"> | Date | string
+    updatedAt?: DateTimeFilter<"PlaidItem"> | Date | string
+  }, "id" | "userId" | "itemId">
+
+  export type PlaidItemOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    accessToken?: SortOrder
+    itemId?: SortOrder
+    cursor?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: PlaidItemCountOrderByAggregateInput
+    _max?: PlaidItemMaxOrderByAggregateInput
+    _min?: PlaidItemMinOrderByAggregateInput
+  }
+
+  export type PlaidItemScalarWhereWithAggregatesInput = {
+    AND?: PlaidItemScalarWhereWithAggregatesInput | PlaidItemScalarWhereWithAggregatesInput[]
+    OR?: PlaidItemScalarWhereWithAggregatesInput[]
+    NOT?: PlaidItemScalarWhereWithAggregatesInput | PlaidItemScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"PlaidItem"> | string
+    userId?: StringWithAggregatesFilter<"PlaidItem"> | string
+    accessToken?: StringWithAggregatesFilter<"PlaidItem"> | string
+    itemId?: StringWithAggregatesFilter<"PlaidItem"> | string
+    cursor?: StringNullableWithAggregatesFilter<"PlaidItem"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"PlaidItem"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"PlaidItem"> | Date | string
+  }
+
+  export type PlaidTransactionWhereInput = {
+    AND?: PlaidTransactionWhereInput | PlaidTransactionWhereInput[]
+    OR?: PlaidTransactionWhereInput[]
+    NOT?: PlaidTransactionWhereInput | PlaidTransactionWhereInput[]
+    id?: StringFilter<"PlaidTransaction"> | string
+    transactionId?: StringFilter<"PlaidTransaction"> | string
+    date?: StringFilter<"PlaidTransaction"> | string
+    description?: StringFilter<"PlaidTransaction"> | string
+    amount?: FloatFilter<"PlaidTransaction"> | number
+    currency?: StringFilter<"PlaidTransaction"> | string
+    merchantName?: StringNullableFilter<"PlaidTransaction"> | string | null
+    owner?: StringFilter<"PlaidTransaction"> | string
+    importedAt?: DateTimeFilter<"PlaidTransaction"> | Date | string
+    status?: StringFilter<"PlaidTransaction"> | string
+  }
+
+  export type PlaidTransactionOrderByWithRelationInput = {
+    id?: SortOrder
+    transactionId?: SortOrder
+    date?: SortOrder
+    description?: SortOrder
+    amount?: SortOrder
+    currency?: SortOrder
+    merchantName?: SortOrderInput | SortOrder
+    owner?: SortOrder
+    importedAt?: SortOrder
+    status?: SortOrder
+  }
+
+  export type PlaidTransactionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    transactionId?: string
+    AND?: PlaidTransactionWhereInput | PlaidTransactionWhereInput[]
+    OR?: PlaidTransactionWhereInput[]
+    NOT?: PlaidTransactionWhereInput | PlaidTransactionWhereInput[]
+    date?: StringFilter<"PlaidTransaction"> | string
+    description?: StringFilter<"PlaidTransaction"> | string
+    amount?: FloatFilter<"PlaidTransaction"> | number
+    currency?: StringFilter<"PlaidTransaction"> | string
+    merchantName?: StringNullableFilter<"PlaidTransaction"> | string | null
+    owner?: StringFilter<"PlaidTransaction"> | string
+    importedAt?: DateTimeFilter<"PlaidTransaction"> | Date | string
+    status?: StringFilter<"PlaidTransaction"> | string
+  }, "id" | "transactionId">
+
+  export type PlaidTransactionOrderByWithAggregationInput = {
+    id?: SortOrder
+    transactionId?: SortOrder
+    date?: SortOrder
+    description?: SortOrder
+    amount?: SortOrder
+    currency?: SortOrder
+    merchantName?: SortOrderInput | SortOrder
+    owner?: SortOrder
+    importedAt?: SortOrder
+    status?: SortOrder
+    _count?: PlaidTransactionCountOrderByAggregateInput
+    _avg?: PlaidTransactionAvgOrderByAggregateInput
+    _max?: PlaidTransactionMaxOrderByAggregateInput
+    _min?: PlaidTransactionMinOrderByAggregateInput
+    _sum?: PlaidTransactionSumOrderByAggregateInput
+  }
+
+  export type PlaidTransactionScalarWhereWithAggregatesInput = {
+    AND?: PlaidTransactionScalarWhereWithAggregatesInput | PlaidTransactionScalarWhereWithAggregatesInput[]
+    OR?: PlaidTransactionScalarWhereWithAggregatesInput[]
+    NOT?: PlaidTransactionScalarWhereWithAggregatesInput | PlaidTransactionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"PlaidTransaction"> | string
+    transactionId?: StringWithAggregatesFilter<"PlaidTransaction"> | string
+    date?: StringWithAggregatesFilter<"PlaidTransaction"> | string
+    description?: StringWithAggregatesFilter<"PlaidTransaction"> | string
+    amount?: FloatWithAggregatesFilter<"PlaidTransaction"> | number
+    currency?: StringWithAggregatesFilter<"PlaidTransaction"> | string
+    merchantName?: StringNullableWithAggregatesFilter<"PlaidTransaction"> | string | null
+    owner?: StringWithAggregatesFilter<"PlaidTransaction"> | string
+    importedAt?: DateTimeWithAggregatesFilter<"PlaidTransaction"> | Date | string
+    status?: StringWithAggregatesFilter<"PlaidTransaction"> | string
   }
 
   export type MonzoCredentialWhereInput = {
@@ -24624,6 +27097,167 @@ export namespace Prisma {
     scheme?: NullableStringFieldUpdateOperationsInput | string | null
     includeInSpending?: BoolFieldUpdateOperationsInput | boolean
     accountId?: StringFieldUpdateOperationsInput | string
+    importedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type PlaidItemCreateInput = {
+    id?: string
+    userId: string
+    accessToken: string
+    itemId: string
+    cursor?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PlaidItemUncheckedCreateInput = {
+    id?: string
+    userId: string
+    accessToken: string
+    itemId: string
+    cursor?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PlaidItemUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    accessToken?: StringFieldUpdateOperationsInput | string
+    itemId?: StringFieldUpdateOperationsInput | string
+    cursor?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlaidItemUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    accessToken?: StringFieldUpdateOperationsInput | string
+    itemId?: StringFieldUpdateOperationsInput | string
+    cursor?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlaidItemCreateManyInput = {
+    id?: string
+    userId: string
+    accessToken: string
+    itemId: string
+    cursor?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PlaidItemUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    accessToken?: StringFieldUpdateOperationsInput | string
+    itemId?: StringFieldUpdateOperationsInput | string
+    cursor?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlaidItemUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    accessToken?: StringFieldUpdateOperationsInput | string
+    itemId?: StringFieldUpdateOperationsInput | string
+    cursor?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlaidTransactionCreateInput = {
+    id?: string
+    transactionId: string
+    date: string
+    description: string
+    amount: number
+    currency: string
+    merchantName?: string | null
+    owner?: string
+    importedAt?: Date | string
+    status?: string
+  }
+
+  export type PlaidTransactionUncheckedCreateInput = {
+    id?: string
+    transactionId: string
+    date: string
+    description: string
+    amount: number
+    currency: string
+    merchantName?: string | null
+    owner?: string
+    importedAt?: Date | string
+    status?: string
+  }
+
+  export type PlaidTransactionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    transactionId?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    merchantName?: NullableStringFieldUpdateOperationsInput | string | null
+    owner?: StringFieldUpdateOperationsInput | string
+    importedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type PlaidTransactionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    transactionId?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    merchantName?: NullableStringFieldUpdateOperationsInput | string | null
+    owner?: StringFieldUpdateOperationsInput | string
+    importedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type PlaidTransactionCreateManyInput = {
+    id?: string
+    transactionId: string
+    date: string
+    description: string
+    amount: number
+    currency: string
+    merchantName?: string | null
+    owner?: string
+    importedAt?: Date | string
+    status?: string
+  }
+
+  export type PlaidTransactionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    transactionId?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    merchantName?: NullableStringFieldUpdateOperationsInput | string | null
+    owner?: StringFieldUpdateOperationsInput | string
+    importedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type PlaidTransactionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    transactionId?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    merchantName?: NullableStringFieldUpdateOperationsInput | string | null
+    owner?: StringFieldUpdateOperationsInput | string
     importedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     status?: StringFieldUpdateOperationsInput | string
   }
@@ -26272,6 +28906,110 @@ export namespace Prisma {
     _max?: NestedIntFilter<$PrismaModel>
   }
 
+  export type PlaidItemCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    accessToken?: SortOrder
+    itemId?: SortOrder
+    cursor?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PlaidItemMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    accessToken?: SortOrder
+    itemId?: SortOrder
+    cursor?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PlaidItemMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    accessToken?: SortOrder
+    itemId?: SortOrder
+    cursor?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type FloatFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatFilter<$PrismaModel> | number
+  }
+
+  export type PlaidTransactionCountOrderByAggregateInput = {
+    id?: SortOrder
+    transactionId?: SortOrder
+    date?: SortOrder
+    description?: SortOrder
+    amount?: SortOrder
+    currency?: SortOrder
+    merchantName?: SortOrder
+    owner?: SortOrder
+    importedAt?: SortOrder
+    status?: SortOrder
+  }
+
+  export type PlaidTransactionAvgOrderByAggregateInput = {
+    amount?: SortOrder
+  }
+
+  export type PlaidTransactionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    transactionId?: SortOrder
+    date?: SortOrder
+    description?: SortOrder
+    amount?: SortOrder
+    currency?: SortOrder
+    merchantName?: SortOrder
+    owner?: SortOrder
+    importedAt?: SortOrder
+    status?: SortOrder
+  }
+
+  export type PlaidTransactionMinOrderByAggregateInput = {
+    id?: SortOrder
+    transactionId?: SortOrder
+    date?: SortOrder
+    description?: SortOrder
+    amount?: SortOrder
+    currency?: SortOrder
+    merchantName?: SortOrder
+    owner?: SortOrder
+    importedAt?: SortOrder
+    status?: SortOrder
+  }
+
+  export type PlaidTransactionSumOrderByAggregateInput = {
+    amount?: SortOrder
+  }
+
+  export type FloatWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedFloatFilter<$PrismaModel>
+    _min?: NestedFloatFilter<$PrismaModel>
+    _max?: NestedFloatFilter<$PrismaModel>
+  }
+
   export type MonzoCredentialCountOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
@@ -26871,17 +29609,6 @@ export namespace Prisma {
     _max?: NestedFloatNullableFilter<$PrismaModel>
   }
 
-  export type FloatFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatFilter<$PrismaModel> | number
-  }
-
   export type InvestmentAccountScalarRelationFilter = {
     is?: InvestmentAccountWhereInput
     isNot?: InvestmentAccountWhereInput
@@ -26925,22 +29652,6 @@ export namespace Prisma {
 
   export type InvestmentSnapshotSumOrderByAggregateInput = {
     value?: SortOrder
-  }
-
-  export type FloatWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedFloatFilter<$PrismaModel>
-    _min?: NestedFloatFilter<$PrismaModel>
-    _max?: NestedFloatFilter<$PrismaModel>
   }
 
   export type VerificationCountOrderByAggregateInput = {
@@ -27158,6 +29869,14 @@ export namespace Prisma {
     divide?: number
   }
 
+  export type FloatFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
   export type UserCreateNestedOneWithoutSessionsInput = {
     create?: XOR<UserCreateWithoutSessionsInput, UserUncheckedCreateWithoutSessionsInput>
     connectOrCreate?: UserCreateOrConnectWithoutSessionsInput
@@ -27248,14 +29967,6 @@ export namespace Prisma {
     create?: XOR<InvestmentAccountCreateWithoutSnapshotsInput, InvestmentAccountUncheckedCreateWithoutSnapshotsInput>
     connectOrCreate?: InvestmentAccountCreateOrConnectWithoutSnapshotsInput
     connect?: InvestmentAccountWhereUniqueInput
-  }
-
-  export type FloatFieldUpdateOperationsInput = {
-    set?: number
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
   }
 
   export type InvestmentAccountUpdateOneRequiredWithoutSnapshotsNestedInput = {
@@ -27518,6 +30229,22 @@ export namespace Prisma {
     not?: NestedFloatFilter<$PrismaModel> | number
   }
 
+  export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedFloatFilter<$PrismaModel>
+    _min?: NestedFloatFilter<$PrismaModel>
+    _max?: NestedFloatFilter<$PrismaModel>
+  }
+
   export type NestedEnumTabDirectionFilter<$PrismaModel = never> = {
     equals?: $Enums.TabDirection | EnumTabDirectionFieldRefInput<$PrismaModel>
     in?: $Enums.TabDirection[]
@@ -27577,22 +30304,6 @@ export namespace Prisma {
     _sum?: NestedFloatNullableFilter<$PrismaModel>
     _min?: NestedFloatNullableFilter<$PrismaModel>
     _max?: NestedFloatNullableFilter<$PrismaModel>
-  }
-
-  export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedFloatFilter<$PrismaModel>
-    _min?: NestedFloatFilter<$PrismaModel>
-    _max?: NestedFloatFilter<$PrismaModel>
   }
 
   export type SessionCreateWithoutUserInput = {

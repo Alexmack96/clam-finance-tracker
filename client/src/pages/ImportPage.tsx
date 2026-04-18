@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { usePlaidLink } from "react-plaid-link";
 import { useSearchParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Upload, CheckCircle, AlertCircle, ChevronDown, ChevronUp } from "lucide-react";
@@ -10,7 +11,7 @@ type ImportResult = { imported: number; duplicates?: string[] };
 type ProcessResult = { processed: number; skipped: number; errored: number };
 type BankCounts = { pending: number; processed: number; skipped: number; errored: number };
 type BankCountsWithOwner = BankCounts & { byOwner: Record<string, Record<string, number>> };
-type StagedInfo = { monzo: BankCounts; amex: BankCountsWithOwner; barclays: BankCountsWithOwner; santander: BankCountsWithOwner; hsbc: BankCountsWithOwner; sofi: BankCountsWithOwner; chase: BankCountsWithOwner };
+type StagedInfo = { monzo: BankCounts; amex: BankCountsWithOwner; barclays: BankCountsWithOwner; santander: BankCountsWithOwner; hsbc: BankCountsWithOwner; sofi: BankCountsWithOwner; chase: BankCountsWithOwner; plaid: BankCountsWithOwner };
 
 function BankUploadCard({
   title,
@@ -135,6 +136,8 @@ function BankUploadCard({
 
 type MonzoStatus = { configured: boolean; connected: boolean; accountId: string | null; lastSyncedAt: string | null; totalStaged: number };
 type MonzoSyncResult = { imported: number; duplicates: number };
+type PlaidStatus = { configured: boolean; env: string; connected: boolean; lastSyncedAt: string | null; totalStaged: number };
+type PlaidSyncResult = { imported: number; duplicates: number };
 
 export function ImportPage() {
   const queryClient = useQueryClient();
@@ -185,6 +188,44 @@ export function ImportPage() {
       if (monzoParam === "connected") refetchMonzoStatus();
     }
   }, [monzoParam]);
+
+  const { data: plaidStatus, refetch: refetchPlaidStatus } = useQuery<PlaidStatus>({
+    queryKey: ["plaid-status"],
+    queryFn: () => api.get("/api/admin/plaid/status").then((r) => r.data),
+  });
+
+  const [plaidLinkToken, setPlaidLinkToken] = useState<string | null>(null);
+
+  const plaidSyncMutation = useMutation<PlaidSyncResult, Error>({
+    mutationFn: () => api.post("/api/admin/plaid/sync").then((r) => r.data),
+    onSuccess: () => { refetchStaged(); refetchPlaidStatus(); },
+  });
+
+  const plaidDisconnectMutation = useMutation<void, Error>({
+    mutationFn: () => api.post("/api/admin/plaid/disconnect").then((r) => r.data),
+    onSuccess: () => refetchPlaidStatus(),
+  });
+
+  const plaidExchangeMutation = useMutation<void, Error, string>({
+    mutationFn: (public_token) => api.post("/api/admin/plaid/exchange", { public_token }).then((r) => r.data),
+    onSuccess: () => { refetchPlaidStatus(); setPlaidLinkToken(null); },
+  });
+
+  const { open: openPlaidLink, ready: plaidReady } = usePlaidLink({
+    token: plaidLinkToken ?? "",
+    onSuccess: useCallback((public_token: string) => {
+      plaidExchangeMutation.mutate(public_token);
+    }, []),
+  });
+
+  async function handleConnectPlaid() {
+    const { data } = await api.post("/api/admin/plaid/link-token");
+    setPlaidLinkToken(data.link_token);
+  }
+
+  useEffect(() => {
+    if (plaidLinkToken && plaidReady) openPlaidLink();
+  }, [plaidLinkToken, plaidReady]);
 
   const amexMutation = useMutation<ImportResult, Error, { file: File; owner: string }>({
     mutationFn: ({ file, owner }) => {
@@ -280,7 +321,7 @@ export function ImportPage() {
   });
 
   const sum = (key: keyof BankCounts) =>
-    (staged?.monzo[key] ?? 0) + (staged?.amex[key] ?? 0) + (staged?.barclays[key] ?? 0) + (staged?.santander[key] ?? 0) + (staged?.hsbc[key] ?? 0) + (staged?.sofi[key] ?? 0) + (staged?.chase[key] ?? 0);
+    (staged?.monzo[key] ?? 0) + (staged?.amex[key] ?? 0) + (staged?.barclays[key] ?? 0) + (staged?.santander[key] ?? 0) + (staged?.hsbc[key] ?? 0) + (staged?.sofi[key] ?? 0) + (staged?.chase[key] ?? 0) + (staged?.plaid[key] ?? 0);
   const totalPending   = sum("pending");
   const totalProcessed = sum("processed");
   const totalErrored   = sum("errored");
@@ -309,7 +350,7 @@ export function ImportPage() {
             <div className="space-y-3">
               {/* Per-bank breakdown */}
               <div className="flex flex-wrap gap-6 text-sm">
-                {(["monzo", "amex", "barclays", "santander", "hsbc", "sofi", "chase"] as const).map((bank) => {
+                {(["monzo", "amex", "barclays", "santander", "hsbc", "sofi", "chase", "plaid"] as const).map((bank) => {
                   const counts = staged?.[bank];
                   if (!counts) return null;
                   const total = counts.pending + counts.processed + counts.skipped;
@@ -422,6 +463,72 @@ export function ImportPage() {
                 </div>
               )}
             </>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Plaid — Santander open banking */}
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-xs uppercase tracking-wide text-muted-foreground">
+            Santander (Plaid){plaidStatus?.env === "sandbox" && <span className="ml-2 text-amber-500">sandbox</span>}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {!plaidStatus?.configured ? (
+            <p className="text-sm text-muted-foreground">
+              Set <span className="font-mono">PLAID_CLIENT_ID</span> and <span className="font-mono">PLAID_SECRET</span> in <span className="font-mono">server/.env</span>.
+            </p>
+          ) : !plaidStatus.connected ? (
+            <>
+              <p className="text-sm text-muted-foreground">
+                Connect your Santander account via Plaid — transactions sync automatically, no more PDFs.
+              </p>
+              <Button onClick={handleConnectPlaid} disabled={plaidExchangeMutation.isPending}>
+                Connect Santander
+              </Button>
+            </>
+          ) : (
+            <>
+              <p className="text-sm text-muted-foreground">
+                Connected
+                {plaidStatus.lastSyncedAt && (
+                  <> · Last synced {plaidStatus.lastSyncedAt} · {plaidStatus.totalStaged.toLocaleString()} staged</>
+                )}
+              </p>
+              <div className="flex items-center gap-3">
+                <Button disabled={plaidSyncMutation.isPending} onClick={() => plaidSyncMutation.mutate()}>
+                  {plaidSyncMutation.isPending ? "Syncing…" : "Sync now"}
+                </Button>
+                <Button variant="outline" onClick={handleConnectPlaid}>
+                  Reconnect
+                </Button>
+                <Button variant="outline" disabled={plaidDisconnectMutation.isPending} onClick={() => plaidDisconnectMutation.mutate()}>
+                  Disconnect
+                </Button>
+              </div>
+              {plaidSyncMutation.isSuccess && (
+                <div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
+                  <CheckCircle className="h-4 w-4" />
+                  {plaidSyncMutation.data.imported.toLocaleString()} rows staged
+                  {plaidSyncMutation.data.duplicates > 0 && (
+                    <span className="text-muted-foreground">· {plaidSyncMutation.data.duplicates.toLocaleString()} already existed</span>
+                  )}
+                </div>
+              )}
+              {plaidSyncMutation.isError && (
+                <div className="flex items-center gap-2 text-sm text-destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  {plaidSyncMutation.error.message}
+                </div>
+              )}
+            </>
+          )}
+          {plaidExchangeMutation.isError && (
+            <div className="flex items-center gap-2 text-sm text-destructive">
+              <AlertCircle className="h-4 w-4" />
+              {plaidExchangeMutation.error.message}
+            </div>
           )}
         </CardContent>
       </Card>

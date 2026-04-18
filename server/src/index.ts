@@ -19,6 +19,7 @@ import { investmentsRouter } from "./routes/investments.js";
 import { tabsRouter } from "./routes/tabs.js";
 import { notesRouter } from "./routes/notes.js";
 import { monzoRouter } from "./routes/monzo.js";
+import { plaidRouter } from "./routes/plaid.js";
 
 const app = express();
 
@@ -66,6 +67,7 @@ app.use("/api/investments", requireAuth, investmentsRouter);
 app.use("/api/tabs", requireAuth, tabsRouter);
 app.use("/api/notes", requireAuth, notesRouter);
 app.use("/api/admin/monzo", monzoRouter);
+app.use("/api/admin/plaid", plaidRouter);
 
 app.use(errorHandler);
 

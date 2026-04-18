@@ -11,7 +11,22 @@
       "Bash(ls /c/Users/amackintosh/Source/repos/clam-finance-tracker/server/*.db)",
       "Bash(NODE_ENV=test DATABASE_URL=\"file:./test.db\" bun -e \"import { Database } from 'bun:sqlite'; const db = new Database\\('./test.db'\\); const cols = db.query\\(\\\\\"PRAGMA table_info\\('monzo_credential'\\)\\\\\"\\).all\\(\\); console.log\\(JSON.stringify\\(cols.map\\(c => c.name\\)\\)\\);\")",
       "Bash(python3 -c \"import sys,json; r=json.load\\(sys.stdin\\); [print\\(s['error']['message'][:500]\\) for t in r.get\\('suites',[]\\) for s in \\(t.get\\('specs',[]\\) + [ss for su in t.get\\('suites',[]\\) for ss in su.get\\('specs',[]\\)]\\) if any\\(not tr['ok'] for tr in s.get\\('tests',[]\\) for tr in tr.get\\('results',[]\\)\\)]\")",
-      "Bash(echo \"EXIT: $?\")"
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(node -e ':*)",
+      "Read(//c/Users/amackintosh/AppData/Local/Packages/Microsoft.WindowsTerminal_8wekyb3d8bbwe/LocalState/**)",
+      "Bash(cmd /c \"npx ctx7@latest docs /websites/truelayer \\\\\"OAuth2 auth flow token refresh transactions API\\\\\"\")",
+      "Bash(grep -v \"^$\")",
+      "Skill(claude-notifications-go:settings)",
+      "Skill(claude-notifications-go:settings:*)",
+      "WebFetch(domain:www.yapily.com)",
+      "WebFetch(domain:blog.finexer.com)",
+      "WebFetch(domain:docs.yapily.com)",
+      "WebFetch(domain:omr.com)",
+      "WebFetch(domain:accounts.yapily.com)",
+      "Bash(cmd /c \"npx ctx7@latest library Plaid \\\\\"link token transactions sync\\\\\"\")"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\amackintosh\\AppData\\Local\\Packages\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\LocalState"
     ]
   },
   "enabledPlugins": {

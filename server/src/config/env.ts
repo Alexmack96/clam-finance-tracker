@@ -14,6 +14,9 @@ const envSchema = z.object({
   MONZO_CLIENT_ID: z.string().optional(),
   MONZO_CLIENT_SECRET: z.string().optional(),
   MONZO_REDIRECT_URI: z.string().url().optional(),
+  PLAID_CLIENT_ID: z.string().optional(),
+  PLAID_SECRET: z.string().optional(),
+  PLAID_ENV: z.enum(["sandbox", "production"]).default("sandbox"),
   ADMIN_EMAIL: z.string().email(),
   ADMIN_PASSWORD: z.string().min(8),
 });
