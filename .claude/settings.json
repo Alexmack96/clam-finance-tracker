@@ -23,7 +23,8 @@
       "WebFetch(domain:docs.yapily.com)",
       "WebFetch(domain:omr.com)",
       "WebFetch(domain:accounts.yapily.com)",
-      "Bash(cmd /c \"npx ctx7@latest library Plaid \\\\\"link token transactions sync\\\\\"\")"
+      "Bash(cmd /c \"npx ctx7@latest library Plaid \\\\\"link token transactions sync\\\\\"\")",
+      "Bash(sqlite3 prisma/dev.db \"SELECT \\(SELECT COUNT\\(*\\) FROM plaid_transaction\\) as staged, \\(SELECT COUNT\\(*\\) FROM \\\\\"Transaction\\\\\" WHERE externalId LIKE 'santander-plaid:%'\\) as real_txns;\")"
     ],
     "additionalDirectories": [
       "C:\\Users\\amackintosh\\AppData\\Local\\Packages\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\LocalState"

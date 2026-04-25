@@ -81,18 +81,21 @@ investmentsRouter.get("/", async (_req, res) => {
   const navYtdBase  = ytdBaseDate ? computeNAV(accounts, ytdBaseDate)  : 0;
   const navItdBase  = itdBaseDate ? computeNAV(accounts, itdBaseDate)  : 0;
 
-  // Latest known pension value (last non-null snapshot)
+  // Latest known pension value (last two non-null snapshots)
   const pensionAccount = accounts.find((a) => a.category === "pension");
-  const latestPension  = pensionAccount?.snapshots.at(-1)?.value ?? null;
+  const pensionSnaps   = pensionAccount?.snapshots ?? [];
+  const latestPension  = pensionSnaps.at(-1)?.value ?? null;
+  const prevPension    = pensionSnaps.at(-2)?.value ?? null;
 
   const stats = {
     navLatest,
     navPrev,
-    dtdPnL:  navLatest - navPrev,
-    mtdPnL:  navLatest - navMtdBase,
-    ytdPnL:  navLatest - navYtdBase,
-    itdPnL:  navLatest - navItdBase,
-    pension: latestPension,
+    dtdPnL:      navLatest - navPrev,
+    mtdPnL:      navLatest - navMtdBase,
+    ytdPnL:      navLatest - navYtdBase,
+    itdPnL:      navLatest - navItdBase,
+    pension:     latestPension,
+    pensionPrev: prevPension,
     totalWealth: latestPension !== null ? navLatest + latestPension : null,
   };
 

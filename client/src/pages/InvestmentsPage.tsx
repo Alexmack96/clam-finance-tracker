@@ -48,6 +48,7 @@ interface InvestmentsData {
     ytdPnL:       number;
     itdPnL:       number;
     pension:      number | null;
+    pensionPrev:  number | null;
     totalWealth:  number | null;
   };
 }
@@ -210,6 +211,7 @@ function ChartTooltip({ active, payload, label }: any) {
 export function InvestmentsPage() {
   const queryClient = useQueryClient();
   const [deleteAccountId, setDeleteAccountId] = useState<string | null>(null);
+  const [deleteDatePending, setDeleteDatePending] = useState<string | null>(null);
   const [showAddAccount, setShowAddAccount] = useState(false);
   const [showAddDate, setShowAddDate] = useState(false);
   const [localDates, setLocalDates] = useState<string[]>([]);
@@ -261,9 +263,14 @@ export function InvestmentsPage() {
   });
 
   function deleteSnapshotDate(iso: string) {
-    const day = iso.slice(0, 10);
-    setLocalDates((prev) => prev.filter((d) => d !== day));
-    deleteSnapshotDateMutation.mutate(day);
+    setDeleteDatePending(iso.slice(0, 10));
+  }
+
+  function confirmDeleteSnapshotDate() {
+    if (!deleteDatePending) return;
+    setLocalDates((prev) => prev.filter((d) => d !== deleteDatePending));
+    deleteSnapshotDateMutation.mutate(deleteDatePending);
+    setDeleteDatePending(null);
   }
 
   // ── Chart data ──────────────────────────────────────────────────────────────
@@ -350,7 +357,7 @@ export function InvestmentsPage() {
             <button
               onClick={() => setDeleteAccountId(p.data.id)}
               className="text-muted-foreground/40 hover:text-red-500 transition-colors p-1"
-              title="Delete account"
+              title="Delete holding"
             >
               <Trash2 className="w-3.5 h-3.5" />
             </button>
@@ -478,38 +485,38 @@ export function InvestmentsPage() {
             <Plus className="w-3.5 h-3.5 mr-1" /> New Snapshot
           </Button>
           <Button size="sm" onClick={() => setShowAddAccount(true)}>
-            <Plus className="w-3.5 h-3.5 mr-1" /> Add Account
+            <Plus className="w-3.5 h-3.5 mr-1" /> Add Holding
           </Button>
         </div>
       </div>
 
-      {/* ── Row 1: NAV + Pension + Total Wealth ────────────────────────────── */}
+      {/* ── Row 1: Total Wealth + Portfolio Value ───────────────────────────── */}
       <div className="grid grid-cols-2 gap-4">
+        <Card className="border-violet-300 dark:border-violet-800">
+          <CardHeader className="pb-1">
+            <CardTitle className="text-xs uppercase tracking-wide text-muted-foreground">Pension Value</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-5xl font-bold text-violet-500">
+              {stats?.pension != null ? fmt(stats.pension) : "—"}
+            </p>
+            {stats?.pension != null && stats.pensionPrev != null && (
+              <p className={`text-sm mt-2 font-medium ${stats.pension - stats.pensionPrev >= 0 ? "text-green-500" : "text-red-500"}`}>
+                {stats.pension - stats.pensionPrev >= 0 ? "+" : ""}{fmt(stats.pension - stats.pensionPrev)} vs previous snapshot
+              </p>
+            )}
+          </CardContent>
+        </Card>
+
         <Card className="border-primary/30">
           <CardHeader className="pb-1">
-            <CardTitle className="text-xs uppercase tracking-wide text-muted-foreground">Net Asset Value (Liquid)</CardTitle>
+            <CardTitle className="text-xs uppercase tracking-wide text-muted-foreground">Portfolio Value</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-5xl font-bold text-primary">{fmt(latestNAV)}</p>
             {stats && (
               <p className={`text-sm mt-2 font-medium ${stats.dtdPnL >= 0 ? "text-green-500" : "text-red-500"}`}>
                 {stats.dtdPnL >= 0 ? "+" : ""}{fmt(stats.dtdPnL)} vs previous snapshot
-              </p>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card className="border-violet-300 dark:border-violet-800">
-          <CardHeader className="pb-1">
-            <CardTitle className="text-xs uppercase tracking-wide text-muted-foreground">Total Wealth</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-5xl font-bold text-violet-500">
-              {stats?.totalWealth != null ? fmt(stats.totalWealth) : "—"}
-            </p>
-            {stats?.pension != null && (
-              <p className="text-sm mt-2 text-muted-foreground">
-                NAV {fmt(latestNAV)} + Pension {fmt(stats.pension)}
               </p>
             )}
           </CardContent>
@@ -672,7 +679,7 @@ export function InvestmentsPage() {
       <Dialog open={showAddAccount} onOpenChange={setShowAddAccount}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Add Investment Account</DialogTitle>
+            <DialogTitle>Add Holding</DialogTitle>
           </DialogHeader>
           <div className="space-y-3 py-2">
             <div className="space-y-1">
@@ -717,11 +724,29 @@ export function InvestmentsPage() {
         </DialogContent>
       </Dialog>
 
+      {/* ── Delete snapshot date confirmation ───────────────────────────────── */}
+      <AlertDialog open={!!deleteDatePending} onOpenChange={(open) => !open && setDeleteDatePending(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete snapshot date?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete all values for <strong>{deleteDatePending}</strong> across every account. Cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction className="bg-red-500 hover:bg-red-600 text-white" onClick={confirmDeleteSnapshotDate}>
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {/* ── Delete account confirmation ──────────────────────────────────────── */}
       <AlertDialog open={!!deleteAccountId} onOpenChange={(open) => !open && setDeleteAccountId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete account?</AlertDialogTitle>
+            <AlertDialogTitle>Delete holding?</AlertDialogTitle>
             <AlertDialogDescription>
               This will permanently delete this account and all its historical snapshots. Cannot be undone.
             </AlertDialogDescription>
