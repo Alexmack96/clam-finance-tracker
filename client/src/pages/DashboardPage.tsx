@@ -5,16 +5,6 @@ import { AllCommunityModule, ModuleRegistry, themeQuartz } from "ag-grid-communi
 import type { ColDef, GridApi } from "ag-grid-community";
 import { AgGridReact, useGridFilter } from "ag-grid-react";
 import type { CustomCellRendererProps, CustomFilterProps } from "ag-grid-react";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "../components/ui/alert-dialog.js";
 import { Button } from "../components/ui/button.js";
 import { Input } from "../components/ui/input.js";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card.js";
@@ -64,6 +54,7 @@ interface Transaction {
   categoryId: string;
   owner: Owner;
   externalId: string | null;
+  reviewed: boolean;
 }
 
 interface Summary {
@@ -74,9 +65,8 @@ interface Summary {
 }
 
 interface GridCtx {
-  update: (id: string, data: { note?: string | null; categoryId?: string; owner?: Owner }) => void;
+  update: (id: string, data: { note?: string | null; categoryId?: string; owner?: Owner; reviewed?: boolean }) => void;
   categories: Category[];
-  onDelete: (id: string) => void;
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -421,12 +411,49 @@ function AmountRenderer({ data }: CustomCellRendererProps<Transaction>) {
   );
 }
 
-function ActionsRenderer({ data, context }: CustomCellRendererProps<Transaction, string, GridCtx>) {
+function ReviewedRenderer({ data, context }: CustomCellRendererProps<Transaction, boolean, GridCtx>) {
   if (!data) return null;
   return (
-    <Button variant="outline" size="sm" onClick={() => context.onDelete(data.id)}>
-      Delete
-    </Button>
+    <button
+      onClick={() => context.update(data.id, { reviewed: !data.reviewed })}
+      title={data.reviewed ? "Mark as unreviewed" : "Mark as reviewed"}
+      className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
+        data.reviewed
+          ? "bg-green-500 border-green-500 text-white"
+          : "border-muted-foreground/40 hover:border-green-400"
+      }`}
+    >
+      {data.reviewed && <span className="text-[10px] leading-none">✓</span>}
+    </button>
+  );
+}
+
+function FrontendErrorButton() {
+  return (
+    <button
+      onClick={() => { throw new Error("This is your second error!"); }}
+      className="px-3 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600"
+    >
+      Sentry: frontend error
+    </button>
+  );
+}
+
+function BackendErrorButton() {
+  const [loading, setLoading] = useState(false);
+  async function trigger() {
+    setLoading(true);
+    try { await api.post("/api/admin/sentry-test"); } catch { /* expected */ }
+    setLoading(false);
+  }
+  return (
+    <button
+      onClick={trigger}
+      disabled={loading}
+      className="px-3 py-1 text-xs bg-orange-500 text-white rounded hover:bg-orange-600 disabled:opacity-50"
+    >
+      {loading ? "…" : "Sentry: server error"}
+    </button>
   );
 }
 
@@ -435,8 +462,8 @@ function ActionsRenderer({ data, context }: CustomCellRendererProps<Transaction,
 export function DashboardPage() {
   const queryClient = useQueryClient();
   const gridApiRef = useRef<GridApi<Transaction>>();
-  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [hasFilters, setHasFilters] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [filteredCount, setFilteredCount] = useState<number | null>(null);
   const [filteredSum, setFilteredSum] = useState<number | null>(null);
   const [form, setForm] = useState({
@@ -478,7 +505,7 @@ export function DashboardPage() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, ...data }: { id: string; note?: string | null; categoryId?: string; owner?: Owner }) =>
+    mutationFn: ({ id, ...data }: { id: string; note?: string | null; categoryId?: string; owner?: Owner; reviewed?: boolean }) =>
       api.patch(`/api/transactions/${id}`, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
@@ -486,13 +513,25 @@ export function DashboardPage() {
     },
   });
 
-  const deleteMutation = useMutation({
-    mutationFn: (id: string) => api.delete(`/api/transactions/${id}`),
+  const bulkReviewMutation = useMutation({
+    mutationFn: ({ ids, reviewed }: { ids: string[]; reviewed: boolean }) =>
+      Promise.all(ids.map((id) => api.patch(`/api/transactions/${id}`, { reviewed }))),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
-      queryClient.invalidateQueries({ queryKey: ["summary"] });
+      gridApiRef.current?.deselectAll();
     },
   });
+
+  function getFilteredIds(): string[] {
+    const ids: string[] = [];
+    gridApiRef.current?.forEachNodeAfterFilter((node) => { if (node.data) ids.push(node.data.id); });
+    return ids;
+  }
+
+  function handleBulkReview(reviewed: boolean) {
+    const ids = selectedIds.length > 0 ? selectedIds : getFilteredIds();
+    if (ids.length > 0) bulkReviewMutation.mutate({ ids, reviewed });
+  }
 
   function handleAdd() {
     if (!form.description || !form.amount || !form.categoryId) return;
@@ -505,6 +544,16 @@ export function DashboardPage() {
   }
 
   const columnDefs = useMemo((): ColDef<Transaction>[] => [
+    {
+      width: 40,
+      checkboxSelection: true,
+      headerCheckboxSelection: true,
+      sortable: false,
+      filter: false,
+      floatingFilter: false,
+      resizable: false,
+      suppressHeaderMenuButton: true,
+    },
     {
       headerName: "DATE",
       valueGetter: (p) => p.data ? new Date(p.data.date) : null,
@@ -582,30 +631,37 @@ export function DashboardPage() {
       floatingFilter: true,
     },
     {
-      headerName: "",
-      width: 95,
-      cellRenderer: ActionsRenderer,
-      sortable: false,
+      headerName: "✓",
+      width: 60,
+      cellRenderer: ReviewedRenderer,
+      valueGetter: (p) => p.data?.reviewed ?? false,
+      sortable: true,
       filter: false,
       floatingFilter: false,
       resizable: false,
       suppressHeaderMenuButton: true,
+      cellStyle: { display: "flex", alignItems: "center", justifyContent: "center" },
     },
   ], [categories]);
 
   const gridContext = useMemo((): GridCtx => ({
     update: (id, data) => updateMutation.mutate({ id, ...data }),
     categories,
-    onDelete: setPendingDeleteId,
   }), [updateMutation, categories]);
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-foreground">Clam Finance Tracker</h1>
-        <p className="text-sm text-muted-foreground uppercase tracking-wide mt-1">
-          Track your income and expenses
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-foreground">Clam Finance Tracker</h1>
+          <p className="text-sm text-muted-foreground uppercase tracking-wide mt-1">
+            Track your income and expenses
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <FrontendErrorButton />
+          <BackendErrorButton />
+        </div>
       </div>
 
       {/* Summary cards */}
@@ -715,15 +771,49 @@ export function DashboardPage() {
               </span>
             )}
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            className="text-xs text-muted-foreground hover:text-foreground"
-            disabled={!hasFilters}
-            onClick={() => { gridApiRef.current?.setFilterModel(null); }}
-          >
-            Clear filters
-          </Button>
+          <div className="flex items-center gap-2">
+            {selectedIds.length > 0 ? (
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-xs text-green-600 border-green-600/40 hover:bg-green-600/10"
+                  disabled={bulkReviewMutation.isPending}
+                  onClick={() => handleBulkReview(true)}
+                >
+                  Mark {selectedIds.length} reviewed
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-xs text-muted-foreground hover:text-foreground"
+                  disabled={bulkReviewMutation.isPending}
+                  onClick={() => handleBulkReview(false)}
+                >
+                  Unmark
+                </Button>
+              </>
+            ) : hasFilters && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-xs text-green-600 border-green-600/40 hover:bg-green-600/10"
+                disabled={bulkReviewMutation.isPending}
+                onClick={() => handleBulkReview(true)}
+              >
+                Mark filtered reviewed
+              </Button>
+            )}
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-xs text-muted-foreground hover:text-foreground"
+              disabled={!hasFilters}
+              onClick={() => { gridApiRef.current?.setFilterModel(null); }}
+            >
+              Clear filters
+            </Button>
+          </div>
         </CardHeader>
         <CardContent className="p-0">
           <AgGridReact<Transaction>
@@ -733,10 +823,15 @@ export function DashboardPage() {
             context={gridContext}
             domLayout="autoHeight"
             defaultColDef={{ sortable: true, resizable: true, suppressMovable: true }}
+            rowSelection="multiple"
+            suppressRowClickSelection
             suppressCellFocus
             enableCellTextSelection
             getRowId={(p) => p.data.id}
             onGridReady={(e) => { gridApiRef.current = e.api; }}
+            onSelectionChanged={(e) => {
+              setSelectedIds(e.api.getSelectedRows().map((r) => r.id));
+            }}
             onFilterChanged={(e) => {
               const model = e.api.getFilterModel();
               const active = Object.keys(model).length > 0;
@@ -755,26 +850,6 @@ export function DashboardPage() {
         </CardContent>
       </Card>
 
-      <AlertDialog open={!!pendingDeleteId} onOpenChange={(open) => !open && setPendingDeleteId(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete transaction?</AlertDialogTitle>
-            <AlertDialogDescription>This action cannot be undone.</AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-red-500 hover:bg-red-600 text-white focus:ring-red-500"
-              onClick={() => {
-                if (pendingDeleteId) deleteMutation.mutate(pendingDeleteId);
-                setPendingDeleteId(null);
-              }}
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 }

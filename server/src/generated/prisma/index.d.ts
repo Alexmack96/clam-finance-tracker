@@ -4993,6 +4993,7 @@ export namespace Prisma {
     externalId: string | null
     note: string | null
     owner: $Enums.Owner | null
+    reviewed: boolean | null
   }
 
   export type TransactionMaxAggregateOutputType = {
@@ -5006,6 +5007,7 @@ export namespace Prisma {
     externalId: string | null
     note: string | null
     owner: $Enums.Owner | null
+    reviewed: boolean | null
   }
 
   export type TransactionCountAggregateOutputType = {
@@ -5019,6 +5021,7 @@ export namespace Prisma {
     externalId: number
     note: number
     owner: number
+    reviewed: number
     _all: number
   }
 
@@ -5042,6 +5045,7 @@ export namespace Prisma {
     externalId?: true
     note?: true
     owner?: true
+    reviewed?: true
   }
 
   export type TransactionMaxAggregateInputType = {
@@ -5055,6 +5059,7 @@ export namespace Prisma {
     externalId?: true
     note?: true
     owner?: true
+    reviewed?: true
   }
 
   export type TransactionCountAggregateInputType = {
@@ -5068,6 +5073,7 @@ export namespace Prisma {
     externalId?: true
     note?: true
     owner?: true
+    reviewed?: true
     _all?: true
   }
 
@@ -5168,6 +5174,7 @@ export namespace Prisma {
     externalId: string | null
     note: string | null
     owner: $Enums.Owner
+    reviewed: boolean
     _count: TransactionCountAggregateOutputType | null
     _avg: TransactionAvgAggregateOutputType | null
     _sum: TransactionSumAggregateOutputType | null
@@ -5200,6 +5207,7 @@ export namespace Prisma {
     externalId?: boolean
     note?: boolean
     owner?: boolean
+    reviewed?: boolean
     category?: boolean | CategoryDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["transaction"]>
 
@@ -5214,6 +5222,7 @@ export namespace Prisma {
     externalId?: boolean
     note?: boolean
     owner?: boolean
+    reviewed?: boolean
     category?: boolean | CategoryDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["transaction"]>
 
@@ -5228,6 +5237,7 @@ export namespace Prisma {
     externalId?: boolean
     note?: boolean
     owner?: boolean
+    reviewed?: boolean
     category?: boolean | CategoryDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["transaction"]>
 
@@ -5242,9 +5252,10 @@ export namespace Prisma {
     externalId?: boolean
     note?: boolean
     owner?: boolean
+    reviewed?: boolean
   }
 
-  export type TransactionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "description" | "amount" | "type" | "date" | "createdAt" | "categoryId" | "externalId" | "note" | "owner", ExtArgs["result"]["transaction"]>
+  export type TransactionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "description" | "amount" | "type" | "date" | "createdAt" | "categoryId" | "externalId" | "note" | "owner" | "reviewed", ExtArgs["result"]["transaction"]>
   export type TransactionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     category?: boolean | CategoryDefaultArgs<ExtArgs>
   }
@@ -5271,6 +5282,7 @@ export namespace Prisma {
       externalId: string | null
       note: string | null
       owner: $Enums.Owner
+      reviewed: boolean
     }, ExtArgs["result"]["transaction"]>
     composites: {}
   }
@@ -5705,6 +5717,7 @@ export namespace Prisma {
     readonly externalId: FieldRef<"Transaction", 'String'>
     readonly note: FieldRef<"Transaction", 'String'>
     readonly owner: FieldRef<"Transaction", 'Owner'>
+    readonly reviewed: FieldRef<"Transaction", 'Boolean'>
   }
     
 
@@ -24811,7 +24824,8 @@ export namespace Prisma {
     categoryId: 'categoryId',
     externalId: 'externalId',
     note: 'note',
-    owner: 'owner'
+    owner: 'owner',
+    reviewed: 'reviewed'
   };
 
   export type TransactionScalarFieldEnum = (typeof TransactionScalarFieldEnum)[keyof typeof TransactionScalarFieldEnum]
@@ -25324,6 +25338,7 @@ export namespace Prisma {
     externalId?: StringNullableFilter<"Transaction"> | string | null
     note?: StringNullableFilter<"Transaction"> | string | null
     owner?: EnumOwnerFilter<"Transaction"> | $Enums.Owner
+    reviewed?: BoolFilter<"Transaction"> | boolean
     category?: XOR<CategoryScalarRelationFilter, CategoryWhereInput>
   }
 
@@ -25338,6 +25353,7 @@ export namespace Prisma {
     externalId?: SortOrderInput | SortOrder
     note?: SortOrderInput | SortOrder
     owner?: SortOrder
+    reviewed?: SortOrder
     category?: CategoryOrderByWithRelationInput
   }
 
@@ -25355,6 +25371,7 @@ export namespace Prisma {
     categoryId?: StringFilter<"Transaction"> | string
     note?: StringNullableFilter<"Transaction"> | string | null
     owner?: EnumOwnerFilter<"Transaction"> | $Enums.Owner
+    reviewed?: BoolFilter<"Transaction"> | boolean
     category?: XOR<CategoryScalarRelationFilter, CategoryWhereInput>
   }, "id" | "externalId">
 
@@ -25369,6 +25386,7 @@ export namespace Prisma {
     externalId?: SortOrderInput | SortOrder
     note?: SortOrderInput | SortOrder
     owner?: SortOrder
+    reviewed?: SortOrder
     _count?: TransactionCountOrderByAggregateInput
     _avg?: TransactionAvgOrderByAggregateInput
     _max?: TransactionMaxOrderByAggregateInput
@@ -25390,6 +25408,7 @@ export namespace Prisma {
     externalId?: StringNullableWithAggregatesFilter<"Transaction"> | string | null
     note?: StringNullableWithAggregatesFilter<"Transaction"> | string | null
     owner?: EnumOwnerWithAggregatesFilter<"Transaction"> | $Enums.Owner
+    reviewed?: BoolWithAggregatesFilter<"Transaction"> | boolean
   }
 
   export type MonzoApiTransactionWhereInput = {
@@ -26867,6 +26886,7 @@ export namespace Prisma {
     externalId?: string | null
     note?: string | null
     owner?: $Enums.Owner
+    reviewed?: boolean
     category: CategoryCreateNestedOneWithoutTransactionsInput
   }
 
@@ -26881,6 +26901,7 @@ export namespace Prisma {
     externalId?: string | null
     note?: string | null
     owner?: $Enums.Owner
+    reviewed?: boolean
   }
 
   export type TransactionUpdateInput = {
@@ -26893,6 +26914,7 @@ export namespace Prisma {
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
     owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
+    reviewed?: BoolFieldUpdateOperationsInput | boolean
     category?: CategoryUpdateOneRequiredWithoutTransactionsNestedInput
   }
 
@@ -26907,6 +26929,7 @@ export namespace Prisma {
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
     owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
+    reviewed?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type TransactionCreateManyInput = {
@@ -26920,6 +26943,7 @@ export namespace Prisma {
     externalId?: string | null
     note?: string | null
     owner?: $Enums.Owner
+    reviewed?: boolean
   }
 
   export type TransactionUpdateManyMutationInput = {
@@ -26932,6 +26956,7 @@ export namespace Prisma {
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
     owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
+    reviewed?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type TransactionUncheckedUpdateManyInput = {
@@ -26945,6 +26970,7 @@ export namespace Prisma {
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
     owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
+    reviewed?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type MonzoApiTransactionCreateInput = {
@@ -28706,6 +28732,7 @@ export namespace Prisma {
     externalId?: SortOrder
     note?: SortOrder
     owner?: SortOrder
+    reviewed?: SortOrder
   }
 
   export type TransactionAvgOrderByAggregateInput = {
@@ -28723,6 +28750,7 @@ export namespace Prisma {
     externalId?: SortOrder
     note?: SortOrder
     owner?: SortOrder
+    reviewed?: SortOrder
   }
 
   export type TransactionMinOrderByAggregateInput = {
@@ -28736,6 +28764,7 @@ export namespace Prisma {
     externalId?: SortOrder
     note?: SortOrder
     owner?: SortOrder
+    reviewed?: SortOrder
   }
 
   export type TransactionSumOrderByAggregateInput = {
@@ -30449,6 +30478,7 @@ export namespace Prisma {
     externalId?: string | null
     note?: string | null
     owner?: $Enums.Owner
+    reviewed?: boolean
   }
 
   export type TransactionUncheckedCreateWithoutCategoryInput = {
@@ -30461,6 +30491,7 @@ export namespace Prisma {
     externalId?: string | null
     note?: string | null
     owner?: $Enums.Owner
+    reviewed?: boolean
   }
 
   export type TransactionCreateOrConnectWithoutCategoryInput = {
@@ -30502,6 +30533,7 @@ export namespace Prisma {
     externalId?: StringNullableFilter<"Transaction"> | string | null
     note?: StringNullableFilter<"Transaction"> | string | null
     owner?: EnumOwnerFilter<"Transaction"> | $Enums.Owner
+    reviewed?: BoolFilter<"Transaction"> | boolean
   }
 
   export type CategoryCreateWithoutTransactionsInput = {
@@ -30891,6 +30923,7 @@ export namespace Prisma {
     externalId?: string | null
     note?: string | null
     owner?: $Enums.Owner
+    reviewed?: boolean
   }
 
   export type TransactionUpdateWithoutCategoryInput = {
@@ -30903,6 +30936,7 @@ export namespace Prisma {
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
     owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
+    reviewed?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type TransactionUncheckedUpdateWithoutCategoryInput = {
@@ -30915,6 +30949,7 @@ export namespace Prisma {
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
     owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
+    reviewed?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type TransactionUncheckedUpdateManyWithoutCategoryInput = {
@@ -30927,6 +30962,7 @@ export namespace Prisma {
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
     owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
+    reviewed?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type InvestmentSnapshotCreateManyAccountInput = {

@@ -69,6 +69,7 @@ model Transaction {
   externalId  String?         @unique
   note        String?
   owner       Owner           @default(Joint)
+  reviewed    Boolean         @default(false)
 }
 
 // One staging model per bank — each preserves that bank's raw CSV schema exactly.

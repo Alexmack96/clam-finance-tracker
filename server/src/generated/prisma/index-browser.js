@@ -145,7 +145,8 @@ exports.Prisma.TransactionScalarFieldEnum = {
   categoryId: 'categoryId',
   externalId: 'externalId',
   note: 'note',
-  owner: 'owner'
+  owner: 'owner',
+  reviewed: 'reviewed'
 };
 
 exports.Prisma.MonzoApiTransactionScalarFieldEnum = {

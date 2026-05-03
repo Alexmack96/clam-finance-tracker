@@ -287,7 +287,7 @@ monzoRouter.post("/sync", requireAuth, requireAdmin, async (req, res) => {
       merchantAddress:  tx.merchant?.address?.short_formatted ?? null,
       scheme:           tx.scheme ?? null,
       includeInSpending:tx.include_in_spending,
-      accountId:        credential!.accountId,
+      accountId:        credential!.accountId!,
     }));
 
   if (toInsert.length > 0) await db.monzoApiTransaction.createMany({ data: toInsert });

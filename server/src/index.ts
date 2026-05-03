@@ -1,4 +1,5 @@
 import "dotenv/config";
+import * as Sentry from "@sentry/node";
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
@@ -20,6 +21,8 @@ import { tabsRouter } from "./routes/tabs.js";
 import { notesRouter } from "./routes/notes.js";
 import { monzoRouter } from "./routes/monzo.js";
 import { plaidRouter } from "./routes/plaid.js";
+
+Sentry.init({ dsn: env.SENTRY_DSN, sendDefaultPii: true });
 
 const app = express();
 
@@ -52,6 +55,10 @@ app.get("/api/health", (_req, res) => {
   res.json({ status: "ok" });
 });
 
+app.post("/api/admin/sentry-test", requireAuth, requireAdmin, (_req, _res) => {
+  throw new Error("Server Sentry test error");
+});
+
 app.get("/api/me", requireAuth, (req, res) => {
   const { id, email, name, role } = req.user!;
   res.json({ user: { id, email, name, role } });
@@ -69,6 +76,7 @@ app.use("/api/notes", requireAuth, notesRouter);
 app.use("/api/admin/monzo", monzoRouter);
 app.use("/api/admin/plaid", plaidRouter);
 
+Sentry.setupExpressErrorHandler(app);
 app.use(errorHandler);
 
 app.listen(env.PORT, async () => {
