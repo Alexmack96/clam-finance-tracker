@@ -12,6 +12,7 @@ const envSchema = z.object({
   SENDGRID_WEBHOOK_KEY: z.string().optional(),
   ANTHROPIC_API_KEY: z.string().optional(),
   SENTRY_DSN: z.string().optional(),
+  SENTRY_ENVIRONMENT: z.string().optional(),
   MONZO_CLIENT_ID: z.string().optional(),
   MONZO_CLIENT_SECRET: z.string().optional(),
   MONZO_REDIRECT_URI: z.string().url().optional(),

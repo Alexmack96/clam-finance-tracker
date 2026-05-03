@@ -22,7 +22,7 @@ import { notesRouter } from "./routes/notes.js";
 import { monzoRouter } from "./routes/monzo.js";
 import { plaidRouter } from "./routes/plaid.js";
 
-Sentry.init({ dsn: env.SENTRY_DSN, sendDefaultPii: true });
+Sentry.init({ dsn: env.SENTRY_DSN, environment: env.SENTRY_ENVIRONMENT, sendDefaultPii: true });
 
 const app = express();
 
@@ -53,10 +53,6 @@ app.all("/api/auth/*path", toNodeHandler(auth));
 
 app.get("/api/health", (_req, res) => {
   res.json({ status: "ok" });
-});
-
-app.post("/api/admin/sentry-test", requireAuth, requireAdmin, (_req, _res) => {
-  throw new Error("Server Sentry test error");
 });
 
 app.get("/api/me", requireAuth, (req, res) => {

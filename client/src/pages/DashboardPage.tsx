@@ -428,34 +428,6 @@ function ReviewedRenderer({ data, context }: CustomCellRendererProps<Transaction
   );
 }
 
-function FrontendErrorButton() {
-  return (
-    <button
-      onClick={() => { throw new Error("This is your second error!"); }}
-      className="px-3 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600"
-    >
-      Sentry: frontend error
-    </button>
-  );
-}
-
-function BackendErrorButton() {
-  const [loading, setLoading] = useState(false);
-  async function trigger() {
-    setLoading(true);
-    try { await api.post("/api/admin/sentry-test"); } catch { /* expected */ }
-    setLoading(false);
-  }
-  return (
-    <button
-      onClick={trigger}
-      disabled={loading}
-      className="px-3 py-1 text-xs bg-orange-500 text-white rounded hover:bg-orange-600 disabled:opacity-50"
-    >
-      {loading ? "…" : "Sentry: server error"}
-    </button>
-  );
-}
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
@@ -657,10 +629,6 @@ export function DashboardPage() {
           <p className="text-sm text-muted-foreground uppercase tracking-wide mt-1">
             Track your income and expenses
           </p>
-        </div>
-        <div className="flex gap-2">
-          <FrontendErrorButton />
-          <BackendErrorButton />
         </div>
       </div>
 
