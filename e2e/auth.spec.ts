@@ -41,7 +41,7 @@ import { VALID_EMAIL, VALID_PASSWORD, fillLoginForm, loginAs, signOut } from "./
 test.describe("Login — happy path", () => {
   test("valid credentials redirect to /dashboard", async ({ unauthedPage: page }) => {
     await page.goto("/login");
-    await expect(page.getByText("Enter your credentials to access the helpdesk")).toBeVisible();
+    await expect(page.getByText("Sign in to continue your ledger.")).toBeVisible();
 
     await fillLoginForm(page, VALID_EMAIL, VALID_PASSWORD);
 

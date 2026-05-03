@@ -172,18 +172,18 @@ function PnLCard({ label, value, base }: { label: string; value: number; base: n
   const positive = value > 0;
   const zero = value === 0;
   const Icon = zero ? Minus : positive ? TrendingUp : TrendingDown;
-  const color = zero ? "text-muted-foreground" : positive ? "text-green-500" : "text-red-500";
+  const color = zero ? "text-muted-foreground" : positive ? "text-[var(--signal)]" : "text-destructive";
   return (
-    <Card>
-      <CardHeader className="pb-1">
-        <CardTitle className="text-xs uppercase tracking-wide text-muted-foreground">{label}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="flex items-center gap-2">
-          <Icon className={`w-4 h-4 ${color}`} />
-          <p className={`text-2xl font-bold ${color}`}>{value >= 0 ? "+" : ""}{fmt(value)}</p>
+    <Card className="surface-card-hover">
+      <CardContent className="pt-5">
+        <div className="flex items-center justify-between mb-3">
+          <p className="eyebrow">{label}</p>
+          <Icon className={`size-3.5 ${color}`} />
         </div>
-        <p className="text-xs text-muted-foreground mt-1">{pct(value, base)}</p>
+        <p className={`font-display text-[28px] leading-none font-light ${color}`}>
+          {value >= 0 ? "+" : "−"}{fmt(Math.abs(value))}
+        </p>
+        <p className="text-xs text-muted-foreground mt-2.5 font-numeric">{pct(value, base)}</p>
       </CardContent>
     </Card>
   );
@@ -471,52 +471,79 @@ export function InvestmentsPage() {
   }
 
   return (
-    <div className="max-w-full px-6 space-y-6">
+    <div className="max-w-[1400px] mx-auto space-y-7">
       {/* ── Header ─────────────────────────────────────────────────────────── */}
-      <div className="flex items-end justify-between">
+      <header className="rise rise-1 flex items-end justify-between gap-6">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Investments</h1>
-          <p className="text-sm text-muted-foreground uppercase tracking-wide mt-1">
-            Portfolio snapshot — liquid NAV excludes pension
+          <p className="eyebrow mb-3">{new Date().toLocaleDateString("en-GB", { month: "long", year: "numeric" })}</p>
+          <h1 className="font-display text-[44px] leading-[1.02] font-light tracking-tight text-foreground">
+            How the <span className="italic text-primary">portfolio</span>&rsquo;s doing.
+          </h1>
+          <p className="text-sm text-muted-foreground mt-2 max-w-xl">
+            Liquid NAV excludes the pension. Click any cell to update a month-end snapshot.
           </p>
         </div>
-        <div className="flex gap-2">
-          <Button size="sm" variant="outline" onClick={() => setShowAddDate(true)}>
-            <Plus className="w-3.5 h-3.5 mr-1" /> New Snapshot
+        <div className="flex gap-2 shrink-0">
+          <Button size="sm" variant="outline" onClick={() => setShowAddDate(true)} className="h-9">
+            <Plus className="size-3.5 mr-1" /> New Snapshot
           </Button>
-          <Button size="sm" onClick={() => setShowAddAccount(true)}>
-            <Plus className="w-3.5 h-3.5 mr-1" /> Add Holding
+          <Button size="sm" onClick={() => setShowAddAccount(true)} className="h-9">
+            <Plus className="size-3.5 mr-1" /> Add Holding
           </Button>
         </div>
-      </div>
+      </header>
 
-      {/* ── Row 1: Total Wealth + Portfolio Value ───────────────────────────── */}
-      <div className="grid grid-cols-2 gap-4">
-        <Card className="border-violet-300 dark:border-violet-800">
-          <CardHeader className="pb-1">
-            <CardTitle className="text-xs uppercase tracking-wide text-muted-foreground">Pension Value</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-5xl font-bold text-violet-500">
+      {/* ── Row 1: Pension + Portfolio (the headliners) ─────────────────────── */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Card className="surface-card-hover rise rise-2 relative overflow-hidden">
+          <div
+            className="absolute inset-0 pointer-events-none opacity-50"
+            style={{
+              background: "radial-gradient(80% 100% at 100% 0%, color-mix(in oklab, var(--primary) 16%, transparent), transparent 60%)",
+            }}
+            aria-hidden
+          />
+          <CardContent className="pt-6 relative">
+            <div className="flex items-baseline justify-between mb-3">
+              <p className="eyebrow">Pension</p>
+              <p className="text-[10.5px] tracking-widest font-numeric text-muted-foreground">LONG-TERM</p>
+            </div>
+            <p className="font-display text-[64px] leading-[0.95] font-light text-foreground">
               {stats?.pension != null ? fmt(stats.pension) : "—"}
             </p>
             {stats?.pension != null && stats.pensionPrev != null && (
-              <p className={`text-sm mt-2 font-medium ${stats.pension - stats.pensionPrev >= 0 ? "text-green-500" : "text-red-500"}`}>
-                {stats.pension - stats.pensionPrev >= 0 ? "+" : ""}{fmt(stats.pension - stats.pensionPrev)} vs previous snapshot
+              <p className="text-xs mt-4 font-numeric tracking-tight text-muted-foreground">
+                <span className={stats.pension - stats.pensionPrev >= 0 ? "text-[var(--signal)] font-semibold" : "text-destructive font-semibold"}>
+                  {stats.pension - stats.pensionPrev >= 0 ? "+" : "−"}{fmt(Math.abs(stats.pension - stats.pensionPrev))}
+                </span>
+                <span className="text-muted-foreground/60"> vs prev snapshot</span>
               </p>
             )}
           </CardContent>
         </Card>
 
-        <Card className="border-primary/30">
-          <CardHeader className="pb-1">
-            <CardTitle className="text-xs uppercase tracking-wide text-muted-foreground">Portfolio Value</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-5xl font-bold text-primary">{fmt(latestNAV)}</p>
+        <Card className="surface-card-hover rise rise-3 relative overflow-hidden">
+          <div
+            className="absolute inset-0 pointer-events-none opacity-60"
+            style={{
+              background: "radial-gradient(90% 100% at 0% 0%, color-mix(in oklab, var(--primary) 22%, transparent), transparent 65%)",
+            }}
+            aria-hidden
+          />
+          <CardContent className="pt-6 relative">
+            <div className="flex items-baseline justify-between mb-3">
+              <p className="eyebrow">Portfolio Value</p>
+              <p className="text-[10.5px] tracking-widest font-numeric text-muted-foreground">LIQUID NAV</p>
+            </div>
+            <p className="font-display text-[64px] leading-[0.95] font-light text-primary">
+              {fmt(latestNAV)}
+            </p>
             {stats && (
-              <p className={`text-sm mt-2 font-medium ${stats.dtdPnL >= 0 ? "text-green-500" : "text-red-500"}`}>
-                {stats.dtdPnL >= 0 ? "+" : ""}{fmt(stats.dtdPnL)} vs previous snapshot
+              <p className="text-xs mt-4 font-numeric tracking-tight text-muted-foreground">
+                <span className={stats.dtdPnL >= 0 ? "text-[var(--signal)] font-semibold" : "text-destructive font-semibold"}>
+                  {stats.dtdPnL >= 0 ? "+" : "−"}{fmt(Math.abs(stats.dtdPnL))}
+                </span>
+                <span className="text-muted-foreground/60"> vs prev snapshot</span>
               </p>
             )}
           </CardContent>
@@ -524,7 +551,7 @@ export function InvestmentsPage() {
       </div>
 
       {/* ── Row 2: PnL cards ────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 rise rise-4">
         <PnLCard label="MTD P&L"  value={stats?.mtdPnL ?? 0} base={stats ? latestNAV - (stats.mtdPnL) : 1} />
         <PnLCard label="YTD P&L"  value={stats?.ytdPnL ?? 0} base={stats ? latestNAV - (stats.ytdPnL) : 1} />
         <PnLCard label="ITD P&L"  value={stats?.itdPnL ?? 0} base={stats ? latestNAV - (stats.itdPnL) : 1} />
@@ -532,11 +559,11 @@ export function InvestmentsPage() {
       </div>
 
       {/* ── Row 3: Trends + Allocation ────────────────────────────────────── */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 rise rise-5">
         {/* Area chart: 2 cols */}
-        <Card className="col-span-2">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-xs uppercase tracking-wide text-muted-foreground">Portfolio Composition Over Time</CardTitle>
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <CardTitle className="eyebrow">Portfolio Over Time</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={280}>
@@ -571,10 +598,10 @@ export function InvestmentsPage() {
 
         {/* Donut: current allocation */}
         <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-xs uppercase tracking-wide text-muted-foreground">
-              Current Allocation
-              <span className="ml-2 text-muted-foreground/50 normal-case font-normal">
+          <CardHeader>
+            <CardTitle className="eyebrow flex items-center justify-between">
+              <span>Current Allocation</span>
+              <span className="font-numeric tracking-tight font-normal text-muted-foreground/60 normal-case">
                 {data?.dates.at(-1) ? labelDate(data.dates.at(-1)!) : ""}
               </span>
             </CardTitle>
@@ -597,8 +624,8 @@ export function InvestmentsPage() {
               </PieChart>
               {/* Centre label */}
               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                <span className="text-xs text-muted-foreground">NAV</span>
-                <span className="text-sm font-bold text-foreground">{fmt(latestNAV)}</span>
+                <span className="eyebrow text-[9px]">NAV</span>
+                <span className="font-display text-base font-medium text-foreground mt-0.5">{fmt(latestNAV)}</span>
               </div>
             </div>
             <div className="w-full space-y-2">
@@ -630,10 +657,13 @@ export function InvestmentsPage() {
       </div>
 
       {/* ── Grid ─────────────────────────────────────────────────────────────── */}
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-xs uppercase tracking-wide text-muted-foreground">
-            Holdings — click any value cell to edit
+      <Card className="rise rise-6 overflow-hidden">
+        <CardHeader>
+          <CardTitle className="eyebrow flex items-center gap-2">
+            <span>Holdings</span>
+            <span className="text-muted-foreground/50 normal-case tracking-normal font-normal text-[11px]">
+              click any value to edit
+            </span>
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0 overflow-hidden">

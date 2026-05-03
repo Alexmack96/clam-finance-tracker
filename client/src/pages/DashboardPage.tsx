@@ -405,8 +405,8 @@ function SourceRenderer({ data }: CustomCellRendererProps<Transaction>) {
 function AmountRenderer({ data }: CustomCellRendererProps<Transaction>) {
   if (!data) return null;
   return (
-    <span className={`font-semibold ${data.type === "Income" ? "text-green-500" : "text-red-500"}`}>
-      {data.type === "Income" ? "+" : "-"}{fmt(Math.abs(parseFloat(data.amount)))}
+    <span className={`font-numeric font-semibold ${data.type === "Income" ? "text-[var(--signal)]" : "text-destructive"}`}>
+      {data.type === "Income" ? "+" : "−"}{fmt(Math.abs(parseFloat(data.amount)))}
     </span>
   );
 }
@@ -622,87 +622,124 @@ export function DashboardPage() {
   }), [updateMutation, categories]);
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="max-w-[1400px] mx-auto space-y-8">
+      <header className="rise rise-1 flex items-end justify-between gap-6">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Clam Finance Tracker</h1>
-          <p className="text-sm text-muted-foreground uppercase tracking-wide mt-1">
-            Track your income and expenses
+          <p className="eyebrow mb-3">{new Date().toLocaleDateString("en-GB", { month: "long", year: "numeric" })}</p>
+          <h1 className="font-display text-[44px] leading-[1.02] font-light tracking-tight text-foreground">
+            <span className="italic text-primary">Transactions</span>
+          </h1>
+          <p className="text-sm text-muted-foreground mt-2 max-w-xl">
+            Categorise transactions, mark them reviewed, and see what we owe each other.
           </p>
         </div>
-      </div>
+        <div className="hidden md:block text-right">
+          <p className="eyebrow mb-1">Transactions</p>
+          <p className="font-display text-3xl font-light text-foreground">
+            {transactions.length.toLocaleString("en-GB")}
+          </p>
+        </div>
+      </header>
 
       {/* Summary cards */}
-      <div className="grid grid-cols-3 gap-4">
-        <Card className="border-green-200 dark:border-green-900">
-          <CardHeader className="pb-1">
-            <CardTitle className="text-xs uppercase tracking-wide text-muted-foreground">Casey Monzo Sauce</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold text-green-500">{summary ? fmt(summary.caseyIn) : "—"}</p>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card className="surface-card-hover rise rise-2">
+          <CardContent className="pt-6">
+            <div className="flex items-baseline justify-between mb-3">
+              <p className="eyebrow">Casey Monzo Sauce</p>
+              <span className="size-1.5 rounded-full bg-[var(--signal)]" aria-hidden />
+            </div>
+            <p className="font-display text-[40px] leading-none font-light text-foreground">
+              {summary ? fmt(summary.caseyIn) : "—"}
+            </p>
+            <p className="text-xs text-muted-foreground mt-3 font-numeric tracking-tight">
+              INCOMING THIS MONTH
+            </p>
           </CardContent>
         </Card>
-        <Card className="border-red-200 dark:border-red-900">
-          <CardHeader className="pb-1">
-            <CardTitle className="text-xs uppercase tracking-wide text-muted-foreground">Joint Expenses</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold text-red-500">{summary ? fmt(summary.jointExpenses) : "—"}</p>
+
+        <Card className="surface-card-hover rise rise-3">
+          <CardContent className="pt-6">
+            <div className="flex items-baseline justify-between mb-3">
+              <p className="eyebrow">Joint Expenses</p>
+              <span className="size-1.5 rounded-full bg-destructive/80" aria-hidden />
+            </div>
+            <p className="font-display text-[40px] leading-none font-light text-foreground">
+              {summary ? fmt(summary.jointExpenses) : "—"}
+            </p>
+            <p className="text-xs text-muted-foreground mt-3 font-numeric tracking-tight">
+              SHARED THIS MONTH
+            </p>
           </CardContent>
         </Card>
-        <Card className="border-violet-300 dark:border-violet-800">
-          <CardHeader className="pb-1">
-            <CardTitle className="text-xs uppercase tracking-wide text-muted-foreground">Settlement</CardTitle>
-          </CardHeader>
-          <CardContent>
+
+        <Card className="surface-card-hover rise rise-4 relative overflow-hidden">
+          <div
+            className="absolute inset-0 pointer-events-none opacity-40"
+            style={{
+              background: "radial-gradient(120% 80% at 100% 0%, color-mix(in oklab, var(--primary) 22%, transparent), transparent 60%)",
+            }}
+            aria-hidden
+          />
+          <CardContent className="pt-6 relative">
+            <div className="flex items-baseline justify-between mb-3">
+              <p className="eyebrow">Settlement</p>
+              <span className="size-1.5 rounded-full bg-primary" aria-hidden />
+            </div>
             {summary ? (
               summary.settlement < -0.005 ? (
                 <>
-                  <p className="text-3xl font-bold text-violet-400">{fmt(Math.abs(summary.settlement))}</p>
-                  <p className="text-xs text-muted-foreground mt-1">Casey owes pot</p>
+                  <p className="font-display text-[40px] leading-none font-light text-foreground">
+                    {fmt(Math.abs(summary.settlement))}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-3 font-numeric tracking-tight">CASEY OWES POT</p>
                 </>
               ) : summary.settlement > 0.005 ? (
                 <>
-                  <p className="text-3xl font-bold text-violet-400">{fmt(summary.settlement)}</p>
-                  <p className="text-xs text-muted-foreground mt-1">Alex owes Casey</p>
+                  <p className="font-display text-[40px] leading-none font-light text-foreground">
+                    {fmt(summary.settlement)}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-3 font-numeric tracking-tight">ALEX OWES CASEY</p>
                 </>
               ) : (
                 <>
-                  <p className="text-3xl font-bold text-violet-400">All square</p>
-                  <p className="text-xs text-muted-foreground mt-1">&nbsp;</p>
+                  <p className="font-display text-[40px] leading-none font-light italic text-primary">
+                    All square
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-3 font-numeric tracking-tight">NOTHING TO SETTLE</p>
                 </>
               )
-            ) : "—"}
+            ) : <p className="font-display text-[40px] font-light text-muted-foreground">—</p>}
           </CardContent>
         </Card>
       </div>
 
       {/* Add transaction */}
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-xs uppercase tracking-wide text-muted-foreground">Add Transaction</CardTitle>
+      <Card className="rise rise-5">
+        <CardHeader>
+          <CardTitle className="eyebrow">Add Transaction</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Input
               placeholder="Description"
               value={form.description}
               onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-              className="flex-2"
+              className="flex-1 min-w-[200px] h-10 bg-background/40"
             />
             <Input
-              placeholder="Amount"
+              placeholder="0.00"
               type="number"
               min="0"
               step="0.01"
               value={form.amount}
               onChange={(e) => setForm((f) => ({ ...f, amount: e.target.value }))}
-              className="w-32"
+              className="w-32 h-10 font-numeric bg-background/40"
             />
             <select
               value={form.type}
               onChange={(e) => setForm((f) => ({ ...f, type: e.target.value as "Income" | "Expense" }))}
-              className="border border-input bg-background text-foreground rounded-md px-3 py-2 text-sm"
+              className="border border-input bg-background/40 text-foreground rounded-md px-3 h-10 text-sm"
             >
               <option value="Expense">Expense</option>
               <option value="Income">Income</option>
@@ -710,32 +747,32 @@ export function DashboardPage() {
             <select
               value={form.categoryId}
               onChange={(e) => setForm((f) => ({ ...f, categoryId: e.target.value }))}
-              className="border border-input bg-background text-foreground rounded-md px-3 py-2 text-sm"
+              className="border border-input bg-background/40 text-foreground rounded-md px-3 h-10 text-sm"
             >
               {categories.map((c) => (
                 <option key={c.id} value={c.id}>{c.name}</option>
               ))}
             </select>
-            <Button onClick={handleAdd} disabled={addMutation.isPending} className="bg-blue-500 hover:bg-blue-600 text-white">
-              Add
+            <Button onClick={handleAdd} disabled={addMutation.isPending} className="h-10 px-5">
+              {addMutation.isPending ? "Adding…" : "Add"}
             </Button>
           </div>
         </CardContent>
       </Card>
 
       {/* Transactions grid */}
-      <Card>
-        <CardHeader className="pb-2 flex flex-row items-center justify-between">
-          <div className="flex items-baseline gap-2">
-            <CardTitle className="text-xs uppercase tracking-wide text-muted-foreground">Transactions</CardTitle>
-            <span className="text-xs text-muted-foreground">
+      <Card className="rise rise-6 overflow-hidden">
+        <CardHeader className="pb-3 flex flex-row items-center justify-between">
+          <div className="flex items-baseline gap-3">
+            <CardTitle className="eyebrow">Transactions</CardTitle>
+            <span className="text-xs text-muted-foreground font-numeric">
               {filteredCount !== null
-                ? <>{filteredCount} of {transactions.length} rows</>
-                : <>{transactions.length} rows</>}
+                ? <>{filteredCount} <span className="text-muted-foreground/50">of</span> {transactions.length}</>
+                : <>{transactions.length} entries</>}
             </span>
             {filteredSum !== null && (
               <span className="text-xs text-muted-foreground">
-                Sum: <span className={`font-semibold ${filteredSum >= 0 ? "text-green-500" : "text-red-500"}`}>{filteredSum >= 0 ? "+" : ""}{fmt(filteredSum)}</span>
+                · Net <span className={`font-numeric font-semibold ${filteredSum >= 0 ? "text-[var(--signal)]" : "text-destructive"}`}>{filteredSum >= 0 ? "+" : ""}{fmt(filteredSum)}</span>
               </span>
             )}
           </div>

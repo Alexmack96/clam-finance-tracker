@@ -11,9 +11,10 @@ export function Layout() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen relative">
+      <div className="app-atmosphere" aria-hidden />
       <Navbar onSignOut={handleSignOut} />
-      <main className="p-6">
+      <main className="px-6 py-10 md:py-12">
         <Outlet />
       </main>
     </div>
