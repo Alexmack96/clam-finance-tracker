@@ -52,10 +52,9 @@ async function ensureFreshToken(credential: MonzoCredential): Promise<MonzoCrede
 
 // ─── GET /api/admin/monzo/status ─────────────────────────────────────────────
 
-monzoRouter.get("/status", requireAuth, requireAdmin, async (req, res) => {
+monzoRouter.get("/status", requireAuth, async (_req, res) => {
   const configured = !!(env.MONZO_CLIENT_ID && env.MONZO_CLIENT_SECRET && env.MONZO_REDIRECT_URI);
-  const credential = await db.monzoCredential.findUnique({
-    where: { userId: req.user!.id },
+  const credential = await db.monzoCredential.findFirst({
     select: { accountId: true },
   });
   const latest = await db.monzoApiTransaction.findFirst({
@@ -204,10 +203,10 @@ type MonzoTx = {
   merchant?: { name?: string; emoji?: string; address?: { short_formatted?: string } } | null;
 };
 
-monzoRouter.post("/sync", requireAuth, requireAdmin, async (req, res) => {
+monzoRouter.post("/sync", requireAuth, async (_req, res) => {
   if (!monzoGuard(res)) return;
 
-  let credential = await db.monzoCredential.findUnique({ where: { userId: req.user!.id } });
+  let credential = await db.monzoCredential.findFirst();
   if (!credential) { res.status(400).json({ error: "Monzo not connected — click Connect Monzo first" }); return; }
 
   // Auto-refresh if needed — throws 401 if refresh token is also dead

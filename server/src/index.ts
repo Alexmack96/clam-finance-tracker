@@ -1,6 +1,7 @@
 import "dotenv/config";
 import * as Sentry from "@sentry/node";
 import express from "express";
+import { join } from "path";
 import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
@@ -71,6 +72,16 @@ app.use("/api/tabs", requireAuth, tabsRouter);
 app.use("/api/notes", requireAuth, notesRouter);
 app.use("/api/admin/monzo", monzoRouter);
 app.use("/api/admin/plaid", plaidRouter);
+
+if (env.NODE_ENV === "production") {
+  const clientDist = join(import.meta.dirname, "../../client/dist");
+  app.use(express.static(clientDist));
+  
+  // SPA fallback: serve index.html for any non API route
+  app.get("/*path", (_req, res) => {
+    res.sendFile(join(clientDist, "index.html"));
+  });
+}
 
 Sentry.setupExpressErrorHandler(app);
 app.use(errorHandler);
