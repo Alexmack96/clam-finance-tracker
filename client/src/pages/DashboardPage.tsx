@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { AllCommunityModule, ModuleRegistry, themeQuartz } from "ag-grid-community";
@@ -24,7 +24,7 @@ const gridTheme = themeQuartz.withParams({
   accentColor:          "var(--primary)",
   menuBackgroundColor:  "var(--popover)",
   menuTextColor:        "var(--popover-foreground)",
-  rowHoverColor:        "var(--accent)",
+  rowHoverColor:        "transparent",
   fontFamily:           "inherit",
   fontSize:             13,
   headerHeight:         36,
@@ -67,6 +67,8 @@ interface Summary {
 interface GridCtx {
   update: (id: string, data: { note?: string | null; categoryId?: string; owner?: Owner; reviewed?: boolean }) => void;
   categories: Category[];
+  registerNoteEdit: (id: string, fn: () => void) => void;
+  unregisterNoteEdit: (id: string) => void;
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -105,7 +107,12 @@ const fmt = (n: number) =>
 
 // ─── Inline cell components ───────────────────────────────────────────────────
 
-function NoteCell({ tx, onSave }: { tx: Transaction; onSave: (note: string | null) => void }) {
+function NoteCell({ tx, onSave, registerNoteEdit, unregisterNoteEdit }: {
+  tx: Transaction;
+  onSave: (note: string | null) => void;
+  registerNoteEdit: (id: string, fn: () => void) => void;
+  unregisterNoteEdit: (id: string) => void;
+}) {
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState(tx.note ?? "");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -117,11 +124,16 @@ function NoteCell({ tx, onSave }: { tx: Transaction; onSave: (note: string | nul
     if (next !== tx.note) onSave(next);
   }
 
-  function start() {
+  const start = useCallback(() => {
     setValue(tx.note ?? "");
     setEditing(true);
     setTimeout(() => inputRef.current?.focus(), 0);
-  }
+  }, [tx.note]);
+
+  useEffect(() => {
+    registerNoteEdit(tx.id, start);
+    return () => unregisterNoteEdit(tx.id);
+  }, [tx.id, start, registerNoteEdit, unregisterNoteEdit]);
 
   if (editing) {
     return (
@@ -379,7 +391,14 @@ function SourceFilter({ model, onModelChange }: CustomFilterProps<Transaction, a
 
 function NoteRenderer({ data, context }: CustomCellRendererProps<Transaction, string, GridCtx>) {
   if (!data) return null;
-  return <NoteCell tx={data} onSave={(note) => context.update(data.id, { note })} />;
+  return (
+    <NoteCell
+      tx={data}
+      onSave={(note) => context.update(data.id, { note })}
+      registerNoteEdit={context.registerNoteEdit}
+      unregisterNoteEdit={context.unregisterNoteEdit}
+    />
+  );
 }
 
 function CategoryRenderer({ data, context }: CustomCellRendererProps<Transaction, string, GridCtx>) {
@@ -434,6 +453,9 @@ function ReviewedRenderer({ data, context }: CustomCellRendererProps<Transaction
 export function DashboardPage() {
   const queryClient = useQueryClient();
   const gridApiRef = useRef<GridApi<Transaction>>();
+  const noteEditTriggers = useRef<Map<string, () => void>>(new Map());
+  const registerNoteEdit = useCallback((id: string, fn: () => void) => { noteEditTriggers.current.set(id, fn); }, []);
+  const unregisterNoteEdit = useCallback((id: string) => { noteEditTriggers.current.delete(id); }, []);
   const [hasFilters, setHasFilters] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [filteredCount, setFilteredCount] = useState<number | null>(null);
@@ -478,18 +500,34 @@ export function DashboardPage() {
 
   const updateMutation = useMutation({
     mutationFn: ({ id, ...data }: { id: string; note?: string | null; categoryId?: string; owner?: Owner; reviewed?: boolean }) =>
-      api.patch(`/api/transactions/${id}`, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["transactions"] });
-      queryClient.invalidateQueries({ queryKey: ["summary"] });
+      api.patch<Transaction>(`/api/transactions/${id}`, data).then((r) => r.data),
+    onSuccess: (updated, variables) => {
+      // Sync query cache with server truth
+      queryClient.setQueryData<Transaction[]>(["transactions"], (prev) =>
+        prev ? prev.map((t) => (t.id === updated.id ? updated : t)) : prev,
+      );
+      // Re-apply server truth to grid (handles any server-side normalization)
+      gridApiRef.current?.applyTransaction({ update: [updated] });
+      if (variables.categoryId !== undefined || variables.owner !== undefined) {
+        queryClient.invalidateQueries({ queryKey: ["summary"] });
+      }
+    },
+    onError: (_, variables) => {
+      // Roll back grid to cached truth
+      const cached = queryClient.getQueryData<Transaction[]>(["transactions"]);
+      const original = cached?.find((t) => t.id === variables.id);
+      if (original) gridApiRef.current?.applyTransaction({ update: [original] });
     },
   });
 
   const bulkReviewMutation = useMutation({
     mutationFn: ({ ids, reviewed }: { ids: string[]; reviewed: boolean }) =>
       Promise.all(ids.map((id) => api.patch(`/api/transactions/${id}`, { reviewed }))),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+    onSuccess: (_, { ids, reviewed }) => {
+      const idSet = new Set(ids);
+      queryClient.setQueryData<Transaction[]>(["transactions"], (prev) =>
+        prev ? prev.map((t) => (idSet.has(t.id) ? { ...t, reviewed } : t)) : prev,
+      );
       gridApiRef.current?.deselectAll();
     },
   });
@@ -502,7 +540,15 @@ export function DashboardPage() {
 
   function handleBulkReview(reviewed: boolean) {
     const ids = selectedIds.length > 0 ? selectedIds : getFilteredIds();
-    if (ids.length > 0) bulkReviewMutation.mutate({ ids, reviewed });
+    if (ids.length === 0) return;
+    // Immediately update the grid — don't wait for server
+    const idSet = new Set(ids);
+    const updates: Transaction[] = [];
+    gridApiRef.current?.forEachNode((node) => {
+      if (node.data && idSet.has(node.data.id)) updates.push({ ...node.data, reviewed });
+    });
+    if (updates.length > 0) gridApiRef.current?.applyTransaction({ update: updates });
+    bulkReviewMutation.mutate({ ids, reviewed });
   }
 
   function handleAdd() {
@@ -518,8 +564,6 @@ export function DashboardPage() {
   const columnDefs = useMemo((): ColDef<Transaction>[] => [
     {
       width: 40,
-      checkboxSelection: true,
-      headerCheckboxSelection: true,
       sortable: false,
       filter: false,
       floatingFilter: false,
@@ -553,6 +597,7 @@ export function DashboardPage() {
       floatingFilter: true,
     },
     {
+      colId: "note",
       headerName: "NOTE",
       flex: 2,
       cellRenderer: NoteRenderer,
@@ -617,9 +662,23 @@ export function DashboardPage() {
   ], [categories]);
 
   const gridContext = useMemo((): GridCtx => ({
-    update: (id, data) => updateMutation.mutate({ id, ...data }),
+    update: (id, patch) => {
+      // Immediately update the grid cell — don't wait for server
+      const node = gridApiRef.current?.getRowNode(id);
+      if (node?.data) {
+        const updated: Transaction = { ...node.data, ...patch };
+        if (patch.categoryId) {
+          const cat = categories.find((c) => c.id === patch.categoryId);
+          if (cat) updated.category = cat;
+        }
+        gridApiRef.current?.applyTransaction({ update: [updated] });
+      }
+      updateMutation.mutate({ id, ...patch });
+    },
     categories,
-  }), [updateMutation, categories]);
+    registerNoteEdit,
+    unregisterNoteEdit,
+  }), [updateMutation, categories, registerNoteEdit, unregisterNoteEdit]);
 
   return (
     <div className="max-w-[1400px] mx-auto space-y-8">
@@ -649,7 +708,7 @@ export function DashboardPage() {
               <p className="eyebrow">Casey Monzo Sauce</p>
               <span className="size-1.5 rounded-full bg-[var(--signal)]" aria-hidden />
             </div>
-            <p className="font-display text-[40px] leading-none font-light text-foreground">
+            <p className="font-display text-[40px] leading-none font-light text-[var(--signal)]">
               {summary ? fmt(summary.caseyIn) : "—"}
             </p>
             <p className="text-xs text-muted-foreground mt-3 font-numeric tracking-tight">
@@ -664,7 +723,7 @@ export function DashboardPage() {
               <p className="eyebrow">Joint Expenses</p>
               <span className="size-1.5 rounded-full bg-destructive/80" aria-hidden />
             </div>
-            <p className="font-display text-[40px] leading-none font-light text-foreground">
+            <p className="font-display text-[40px] leading-none font-light text-destructive/80">
               {summary ? fmt(summary.jointExpenses) : "—"}
             </p>
             <p className="text-xs text-muted-foreground mt-3 font-numeric tracking-tight">
@@ -689,14 +748,14 @@ export function DashboardPage() {
             {summary ? (
               summary.settlement < -0.005 ? (
                 <>
-                  <p className="font-display text-[40px] leading-none font-light text-foreground">
+                  <p className="font-display text-[40px] leading-none font-light text-primary">
                     {fmt(Math.abs(summary.settlement))}
                   </p>
                   <p className="text-xs text-muted-foreground mt-3 font-numeric tracking-tight">CASEY OWES POT</p>
                 </>
               ) : summary.settlement > 0.005 ? (
                 <>
-                  <p className="font-display text-[40px] leading-none font-light text-foreground">
+                  <p className="font-display text-[40px] leading-none font-light text-primary">
                     {fmt(summary.settlement)}
                   </p>
                   <p className="text-xs text-muted-foreground mt-3 font-numeric tracking-tight">ALEX OWES CASEY</p>
@@ -828,12 +887,15 @@ export function DashboardPage() {
             context={gridContext}
             domLayout="autoHeight"
             defaultColDef={{ sortable: true, resizable: true, suppressMovable: true }}
-            rowSelection="multiple"
-            suppressRowClickSelection
-            suppressCellFocus
+            rowSelection={{ mode: "multiRow", checkboxes: true, headerCheckbox: true, enableClickSelection: false }}
             enableCellTextSelection
             getRowId={(p) => p.data.id}
             onGridReady={(e) => { gridApiRef.current = e.api; }}
+            onCellKeyDown={(params) => {
+              if (params.event?.key !== "Enter" || params.column.getColId() !== "note" || !params.data) return;
+              params.event.preventDefault();
+              noteEditTriggers.current.get(params.data.id)?.();
+            }}
             onSelectionChanged={(e) => {
               setSelectedIds(e.api.getSelectedRows().map((r) => r.id));
             }}

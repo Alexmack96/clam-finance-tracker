@@ -536,7 +536,7 @@ export function ImportPage() {
       <BankUploadCard
         title="Amex"
         description="Download from Amex online → Statements → View/Download PDF."
-        accept=".pdf"
+        accept=".pdf,application/pdf"
         file={amexFile}
         fileRef={amexFileRef}
         onFileChange={(f) => { setAmexFile(f); amexMutation.reset(); }}
@@ -552,7 +552,7 @@ export function ImportPage() {
       <BankUploadCard
         title="Barclays"
         description="Download from Barclays online → Statements → View statement → Save as PDF."
-        accept=".pdf"
+        accept=".pdf,application/pdf"
         file={barclaysFile}
         fileRef={barclaysFileRef}
         onFileChange={(f) => { setBarclaysFile(f); barclaysMutation.reset(); }}
@@ -568,7 +568,7 @@ export function ImportPage() {
       <BankUploadCard
         title="Santander"
         description="Download from Santander online → My Accounts → Statements → Download PDF."
-        accept=".pdf"
+        accept=".pdf,application/pdf"
         file={santanderFile}
         fileRef={santanderFileRef}
         onFileChange={(f) => { setSantanderFile(f); santanderMutation.reset(); }}
@@ -584,7 +584,7 @@ export function ImportPage() {
       <BankUploadCard
         title="HSBC"
         description="Download from HSBC online → My accounts → Statements → View statement → Print/Save as PDF."
-        accept=".pdf"
+        accept=".pdf,application/pdf"
         file={hsbcFile}
         fileRef={hsbcFileRef}
         onFileChange={(f) => { setHsbcFile(f); hsbcMutation.reset(); }}
@@ -600,7 +600,7 @@ export function ImportPage() {
       <BankUploadCard
         title="Chase"
         description="Download from Chase online → Statements → View statement → Save as PDF."
-        accept=".pdf"
+        accept=".pdf,application/pdf"
         file={chaseFile}
         fileRef={chaseFileRef}
         onFileChange={(f) => { setChaseFile(f); chaseMutation.reset(); }}
@@ -616,7 +616,7 @@ export function ImportPage() {
       <BankUploadCard
         title="SoFi"
         description="Download from SoFi app → Account → Statements → Download PDF. Imports both Checking and Savings transactions."
-        accept=".pdf"
+        accept=".pdf,application/pdf"
         file={sofiFile}
         fileRef={sofiFileRef}
         onFileChange={(f) => { setSofiFile(f); sofiMutation.reset(); }}

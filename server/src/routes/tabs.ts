@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { db } from "../db/client.js";
 import { TabDirection, TabStatus } from "../generated/prisma/index.js";
-import { createTabSchema, updateTabSchema } from "@helpdesk/core";
+import { createTabSchema, updateTabSchema } from "@clam/core";
 
 export const tabsRouter = Router();
 

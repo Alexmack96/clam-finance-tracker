@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { db } from "../db/client.js";
-import { createNoteSchema, updateNoteSchema } from "@helpdesk/core";
+import { createNoteSchema, updateNoteSchema } from "@clam/core";
 
 export const notesRouter = Router();
 

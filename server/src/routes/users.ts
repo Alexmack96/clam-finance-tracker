@@ -3,7 +3,7 @@ import { randomUUID } from "crypto";
 import { db } from "../db/client.js";
 import { Prisma, UserRole } from "../generated/prisma/index.js";
 import { hashPassword } from "better-auth/crypto";
-import { createUserSchema } from "@helpdesk/core";
+import { createUserSchema } from "@clam/core";
 
 export const usersRouter = Router();
 

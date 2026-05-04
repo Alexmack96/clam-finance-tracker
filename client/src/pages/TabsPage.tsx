@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckCircle, Trash2, Plus } from "lucide-react";
-import { createTabSchema, type CreateTabInput, type Tab } from "@helpdesk/core";
+import { createTabSchema, type CreateTabInput, type Tab } from "@clam/core";
 import api from "../lib/api.js";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card.js";
 import { Button } from "../components/ui/button.js";

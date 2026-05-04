@@ -212,6 +212,12 @@
   color: var(--muted-foreground);
 }
 
+.ag-cell-focus:not(.ag-cell-inline-editing) {
+  background-color: color-mix(in oklch, var(--primary) 8%, transparent) !important;
+  border-color: transparent !important;
+  outline: none !important;
+}
+
 .divider-rule {
   height: 1px;
   background: linear-gradient(90deg, transparent, var(--border) 18%, var(--border) 82%, transparent);

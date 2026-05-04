@@ -284,6 +284,8 @@ const BARCLAYS_SENTINEL_RE = /^(Promotional transactions|Your new balance|Intere
 const FULL_MONTH: Record<string, number> = {
   January: 1, February: 2, March: 3, April: 4, May: 5, June: 6,
   July: 7, August: 8, September: 9, October: 10, November: 11, December: 12,
+  Jan: 1, Feb: 2, Mar: 3, Apr: 4, Jun: 6,
+  Jul: 7, Aug: 8, Sep: 9, Oct: 10, Nov: 11, Dec: 12,
 };
 
 interface BarclaysRow {
@@ -404,7 +406,7 @@ importRouter.post("/import/barclays", upload.single("file"), async (req, res) =>
 // amount from the running balance difference instead of parsing it from text.
 
 const SANTANDER_TX_RE = /^(\d{1,2})(?:st|nd|rd|th)\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)(.*)/;
-const SANTANDER_PERIOD_RE = /Your transactions.*?(\d{1,2})\w{2}\s+(\w+)\s+(\d{4})\s+to\s+(\d{1,2})\w{2}\s+(\w+)\s+(\d{4})/i;
+const SANTANDER_PERIOD_RE = /^(\d{1,2})\w{2}\s+(\w+)\s+(\d{4})\s+to\s+(\d{1,2})\w{2}\s+(\w+)\s+(\d{4})$/i;
 const SANTANDER_ONE_AMOUNT_RE = /([\d,]+\.\d{2})$/;
 const SANTANDER_SKIP_RE = /^(Balance brought forward|Balance carried forward|Average credit balance)/i;
 

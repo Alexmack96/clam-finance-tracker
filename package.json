@@ -1,5 +1,5 @@
 {
-  "name": "helpdesk",
+  "name": "clam-finance-tracker",
   "private": true,
   "workspaces": ["client", "server", "core"],
   "scripts": {

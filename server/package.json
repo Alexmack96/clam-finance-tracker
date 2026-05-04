@@ -1,10 +1,10 @@
 {
-  "name": "@helpdesk/server",
+  "name": "@clam/server",
   "version": "0.0.1",
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "bun --watch src/index.ts",
+    "dev": "bun --watch --env-file ../.env src/index.ts",
     "build": "tsc",
     "start": "bun src/index.ts",
     "db:migrate": "bunx prisma migrate dev",
@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",
-    "@helpdesk/core": "workspace:*",
+    "@clam/core": "workspace:*",
     "@libsql/client": "^0.17.2",
     "@prisma/adapter-libsql": "^7.6.0",
     "@prisma/client": "^7.0.0",
