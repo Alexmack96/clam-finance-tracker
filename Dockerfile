@@ -6,7 +6,7 @@ COPY package.json bun.lock* ./
 COPY core/package.json ./core/
 COPY server/package.json ./server/
 COPY client/package.json ./client/
-RUN bun install --frozen-lockfile
+RUN bun install
 
 # Stage 2: Build — generate Prisma client and compile the React frontend
 FROM oven/bun:1 AS build
@@ -15,8 +15,15 @@ COPY --from=install /app/node_modules ./node_modules
 COPY --from=install /app/client/node_modules ./client/node_modules
 COPY --from=install /app/server/node_modules ./server/node_modules
 COPY . .
-RUN bunx --cwd server prisma generate
-RUN bun run --cwd client build
+# Ensure zod is resolvable from core/ (peer dep not hoisted to root)
+RUN mkdir -p core/node_modules && \
+    if [ -d client/node_modules/zod ]; then \
+      cp -r client/node_modules/zod core/node_modules/zod; \
+    elif [ -d node_modules/zod ]; then \
+      cp -r node_modules/zod core/node_modules/zod; \
+    fi
+RUN cd server && DATABASE_URL=file:./prisma/dev.db bunx prisma generate
+RUN cd client && bunx vite build
 
 # Stage 3: Production — lean runtime image with only what's needed to run the server
 # Client source and build tooling are left behind; only client/dist and server source are included
@@ -25,10 +32,10 @@ WORKDIR /app
 COPY --from=install /app/node_modules ./node_modules
 COPY --from=install /app/server/node_modules ./server/node_modules
 COPY --from=build /app/client/dist ./client/dist
-COPY --from=build /app/server/node_modules/.prisma ./server/node_modules/.prisma
-COPY server ./server
-COPY core ./core
+COPY --from=build /app/server ./server
+COPY --from=build /app/core ./core
 COPY package.json ./
 ENV NODE_ENV=production
 EXPOSE 3000
-CMD ["sh", "-c", "bunx --cwd server prisma migrate deploy && bun run --cwd server src/index.ts"]
+CMD ["sh", "-c", "cd server && bunx prisma migrate deploy && cd /app && bun run --cwd server src/index.ts"]
+ 

@@ -1,28 +1,17 @@
 services:
-  server:
+  app:
     build:
-      context: ./server
+      context: .
       dockerfile: Dockerfile
     restart: unless-stopped
-    env_file: ./server/.env
+    env_file: .env
+    environment:
+      - NODE_ENV=production
     ports:
       - "3000:3000"
     volumes:
-      - ./server/src:/app/src
-      - ./server/prisma:/app/prisma
-    command: >
-      sh -c "bunx prisma migrate deploy &&
-             bun run db:seed &&
-             bun --watch src/index.ts"
+      - db-data:/app/server/prisma
 
-  client:
-    build:
-      context: ./client
-      dockerfile: Dockerfile
-    restart: unless-stopped
-    ports:
-      - "5173:5173"
-    volumes:
-      - ./client/src:/app/src
-    depends_on:
-      - server
+volumes:
+  db-data:
+ 

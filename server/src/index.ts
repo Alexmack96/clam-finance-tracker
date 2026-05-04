@@ -1,4 +1,5 @@
-import "dotenv/config";
+import { config } from "dotenv";
+config({ path: import.meta.dirname + "/../../.env" });
 import * as Sentry from "@sentry/node";
 import express from "express";
 import { join } from "path";
@@ -94,3 +95,4 @@ app.listen(env.PORT, async () => {
   await mapMonzoCategories();
   await migrateOwners();
 });
+ 
