@@ -37,5 +37,5 @@ COPY --from=build /app/core ./core
 COPY package.json ./
 ENV NODE_ENV=production
 EXPOSE 3000
-CMD ["sh", "-c", "cd server && bunx prisma migrate deploy && cd /app && bun run --cwd server src/index.ts"]
+CMD ["sh", "-c", "cd server && bunx prisma migrate deploy && bun src/db/seed.ts && cd /app && bun run --cwd server src/index.ts"]
  
