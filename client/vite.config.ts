@@ -12,6 +12,9 @@ export default defineConfig({
     VitePWA({
       registerType: "autoUpdate",
       includeAssets: ["icon.svg", "apple-touch-icon-180x180.png"],
+      workbox: {
+        maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
+      },
       manifest: {
         name: "Clam Finance",
         short_name: "Clam",
