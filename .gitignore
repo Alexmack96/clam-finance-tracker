@@ -147,3 +147,6 @@ vite.config.ts.timestamp-*
 e2e/.auth/
 e2e/test-results/
 playwright-report/
+
+# Migration artefacts
+restore-data.json

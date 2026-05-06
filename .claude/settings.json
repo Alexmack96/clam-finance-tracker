@@ -29,7 +29,10 @@
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5173/)",
       "Bash(rm -f .tmp-screenshot.mjs)",
       "Bash(rm -rf .tmp-shots)",
-      "Read(//c/Users/alexm/source/repos/Alexmack96/helpdesk/.claude/agent-memory/security-auditor/**)"
+      "Read(//c/Users/alexm/source/repos/Alexmack96/helpdesk/.claude/agent-memory/security-auditor/**)",
+      "Bash(Dev\")",
+      "Bash(Get-Item \"c:\\\\Users\\\\amackintosh\\\\Source\\\\repos\\\\clam-finance-tracker\\\\server\\\\prisma\\\\dev.db\" -ErrorAction SilentlyContinue)",
+      "Bash(Select-Object -ExpandProperty Length)"
     ],
     "additionalDirectories": [
       "C:\\Users\\amackintosh\\AppData\\Local\\Packages\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\LocalState"
