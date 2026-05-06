@@ -24,7 +24,7 @@ import { notesRouter } from "./routes/notes.js";
 import { monzoRouter } from "./routes/monzo.js";
 import { plaidRouter } from "./routes/plaid.js";
 
-Sentry.init({ dsn: env.SENTRY_DSN, environment: env.SENTRY_ENVIRONMENT, sendDefaultPii: true });
+Sentry.init({ dsn: env.SENTRY_DSN, environment: env.SENTRY_ENVIRONMENT });
 
 const app = express();
 

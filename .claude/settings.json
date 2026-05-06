@@ -28,7 +28,8 @@
       "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:5173/)",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5173/)",
       "Bash(rm -f .tmp-screenshot.mjs)",
-      "Bash(rm -rf .tmp-shots)"
+      "Bash(rm -rf .tmp-shots)",
+      "Read(//c/Users/alexm/source/repos/Alexmack96/helpdesk/.claude/agent-memory/security-auditor/**)"
     ],
     "additionalDirectories": [
       "C:\\Users\\amackintosh\\AppData\\Local\\Packages\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\LocalState"

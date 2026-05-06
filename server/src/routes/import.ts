@@ -6,7 +6,10 @@ import { db } from "../db/client.js";
 
 export const importRouter = Router();
 
-const upload = multer({ storage: multer.memoryStorage() });
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 20 * 1024 * 1024 },
+});
 
 // ─── Monzo API category slug → system category ──────────────────────────────
 
@@ -883,12 +886,12 @@ importRouter.post("/import/chase", upload.single("file"), async (req, res) => {
   let rows: ChaseRow[];
   try { rows = parseChasePdf(text); }
   catch (err) {
-    res.status(400).json({ error: err instanceof Error ? err.message : "Failed to parse Chase statement", raw: text.split("\n").slice(0, 80) });
+    res.status(400).json({ error: err instanceof Error ? err.message : "Failed to parse Chase statement" });
     return;
   }
 
   if (rows.length === 0) {
-    res.status(422).json({ error: "0 rows parsed from Chase PDF", raw: text.split("\n") });
+    res.status(422).json({ error: "0 rows parsed from Chase PDF" });
     return;
   }
 
