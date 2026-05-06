@@ -448,6 +448,95 @@ function ReviewedRenderer({ data, context }: CustomCellRendererProps<Transaction
 }
 
 
+// ─── Mobile card components ───────────────────────────────────────────────────
+
+function MobileNoteCell({ tx, onSave }: { tx: Transaction; onSave: (note: string | null) => void }) {
+  const [editing, setEditing] = useState(false);
+  const [value, setValue] = useState(tx.note ?? "");
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  function commit() {
+    setEditing(false);
+    const trimmed = value.trim();
+    const next = trimmed === "" ? null : trimmed;
+    if (next !== tx.note) onSave(next);
+  }
+
+  function start() {
+    setValue(tx.note ?? "");
+    setEditing(true);
+    setTimeout(() => inputRef.current?.focus(), 0);
+  }
+
+  if (editing) {
+    return (
+      <input
+        ref={inputRef}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        onBlur={commit}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") commit();
+          if (e.key === "Escape") { setValue(tx.note ?? ""); setEditing(false); }
+        }}
+        className="w-full bg-transparent border-b border-primary outline-none text-sm py-0.5"
+      />
+    );
+  }
+
+  return (
+    <button onClick={start} className="text-left w-full">
+      {tx.note
+        ? <span className="text-sm text-muted-foreground">{tx.note}</span>
+        : <span className="text-xs text-muted-foreground/40 italic">Add note…</span>
+      }
+    </button>
+  );
+}
+
+type UpdatePatch = { note?: string | null; categoryId?: string; owner?: Owner; reviewed?: boolean };
+
+function MobileTransactionCard({ tx, categories, onUpdate }: {
+  tx: Transaction;
+  categories: Category[];
+  onUpdate: (id: string, patch: UpdatePatch) => void;
+}) {
+  const source = bankSource(tx.externalId);
+  return (
+    <div className="py-3 space-y-2">
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-medium leading-snug">{tx.description}</p>
+          <p className="text-xs text-muted-foreground font-numeric mt-0.5">
+            {new Date(tx.date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
+          </p>
+        </div>
+        <div className="flex items-center gap-2.5 shrink-0">
+          <span className={`font-numeric font-semibold text-sm ${tx.type === "Income" ? "text-[var(--signal)]" : "text-destructive"}`}>
+            {tx.type === "Income" ? "+" : "−"}{fmt(Math.abs(parseFloat(tx.amount)))}
+          </span>
+          <button
+            onClick={() => onUpdate(tx.id, { reviewed: !tx.reviewed })}
+            className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors shrink-0 ${
+              tx.reviewed ? "bg-green-500 border-green-500 text-white" : "border-muted-foreground/40"
+            }`}
+          >
+            {tx.reviewed && <span className="text-[10px] leading-none">✓</span>}
+          </button>
+        </div>
+      </div>
+      <div className="flex items-center gap-1.5 flex-wrap">
+        <CategoryCell tx={tx} categories={categories} onSave={(categoryId) => onUpdate(tx.id, { categoryId })} />
+        <OwnerCell tx={tx} onSave={(owner) => onUpdate(tx.id, { owner })} />
+        <span className={`px-2 py-0.5 rounded-full text-xs font-medium border ${SOURCE_STYLES[source]}`}>
+          {source}
+        </span>
+      </div>
+      <MobileNoteCell tx={tx} onSave={(note) => onUpdate(tx.id, { note })} />
+    </div>
+  );
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export function DashboardPage() {
@@ -559,6 +648,27 @@ export function DashboardPage() {
       type: form.type,
       categoryId: form.categoryId,
     });
+  }
+
+  const sortedTransactions = useMemo(
+    () => [...transactions].sort((a, b) => b.date.localeCompare(a.date)),
+    [transactions],
+  );
+
+  function handleMobileUpdate(id: string, patch: UpdatePatch) {
+    // Optimistic update in the query cache so cards re-render immediately
+    queryClient.setQueryData<Transaction[]>(["transactions"], (prev) =>
+      prev ? prev.map((t) => {
+        if (t.id !== id) return t;
+        const updated = { ...t, ...patch };
+        if (patch.categoryId) {
+          const cat = categories.find((c) => c.id === patch.categoryId);
+          if (cat) updated.category = cat;
+        }
+        return updated;
+      }) : prev,
+    );
+    updateMutation.mutate({ id, ...patch });
   }
 
   const columnDefs = useMemo((): ColDef<Transaction>[] => [
@@ -819,8 +929,30 @@ export function DashboardPage() {
         </CardContent>
       </Card>
 
-      {/* Transactions grid */}
-      <Card className="rise rise-6 overflow-hidden">
+      {/* Transactions — mobile card list */}
+      <Card className="rise rise-6 overflow-hidden md:hidden">
+        <CardHeader className="pb-2">
+          <div className="flex items-baseline gap-3">
+            <CardTitle className="eyebrow">Transactions</CardTitle>
+            <span className="text-xs text-muted-foreground font-numeric">{transactions.length} entries</span>
+          </div>
+        </CardHeader>
+        <CardContent className="p-0">
+          <div className="divide-y divide-border px-4">
+            {sortedTransactions.map((tx) => (
+              <MobileTransactionCard
+                key={tx.id}
+                tx={tx}
+                categories={categories}
+                onUpdate={handleMobileUpdate}
+              />
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Transactions — desktop AG Grid */}
+      <Card className="rise rise-6 overflow-hidden hidden md:block">
         <CardHeader className="pb-3 flex flex-row items-center justify-between">
           <div className="flex items-baseline gap-3">
             <CardTitle className="eyebrow">Transactions</CardTitle>

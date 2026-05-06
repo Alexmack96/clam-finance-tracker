@@ -1,7 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
+import { Info } from "lucide-react";
 import api from "../lib/api.js";
 import { useSession } from "../lib/authClient.js";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card.js";
+import { Popover, PopoverContent, PopoverTrigger } from "../components/ui/popover.js";
 
 const SALARY_DESC = "FASTER PAYMENTS RECEIPT REF.HUDSON BAY FROM THROGMORTON UK LTD";
 
@@ -121,23 +123,171 @@ export function SavingsPage() {
     },
   ];
 
+  const now = new Date();
+  const currentMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+  const currentMonthActual = actuals?.find((m) => m.key === currentMonthKey);
+  const currentSaved = currentMonthActual?.saved ?? null;
+  const scorePercent = SAVING > 0 && currentSaved !== null ? Math.round((currentSaved / SAVING) * 100) : null;
+  const scoreColor =
+    scorePercent === null ? "text-muted-foreground"
+    : scorePercent >= 100  ? "text-emerald-500"
+    : scorePercent >= 70   ? "text-amber-500"
+    : "text-destructive";
+  const barColor =
+    scorePercent === null ? "bg-muted-foreground"
+    : scorePercent >= 100  ? "bg-emerald-500"
+    : scorePercent >= 70   ? "bg-amber-500"
+    : "bg-red-500";
+  const ringHex =
+    scorePercent === null ? "#6b7280"
+    : scorePercent >= 100  ? "#22c55e"
+    : scorePercent >= 70   ? "#f59e0b"
+    : "#ef4444";
+  const scoreLabel =
+    scorePercent === null ? "No data yet"
+    : scorePercent >= 100  ? "Target hit"
+    : scorePercent >= 70   ? "Getting there"
+    : "Below target";
+
   return (
     <div className="max-w-3xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-foreground">Savings &amp; Investments</h1>
-        <p className="text-sm text-muted-foreground uppercase tracking-wide mt-1">50 / 30 / 20 budget plan</p>
-      </div>
+      <header className="rise rise-1 flex items-center gap-6">
+        {/* Title */}
+        <div className="flex-1">
+          <p className="eyebrow mb-3">
+            {now.toLocaleDateString("en-GB", { month: "long", year: "numeric" })}
+          </p>
+          <h1 className="font-display text-[44px] leading-[1.02] font-light tracking-tight text-foreground">
+            <span className="italic text-primary">Savings</span>
+          </h1>
+          <p className="text-sm text-muted-foreground mt-2">
+            50/30/20 budget plan — track your savings score against the 20% target.
+          </p>
+        </div>
+
+        {/* Score ring — mobile only, sits beside the title */}
+        <div className="md:hidden shrink-0 flex flex-col items-center gap-1">
+          <div className="relative size-28">
+            <svg viewBox="0 0 120 120" className="w-full h-full" style={{ transform: "rotate(-90deg)" }}>
+              <circle cx="60" cy="60" r="48" fill="none" stroke="oklch(0.27 0.05 290)" strokeWidth="10" />
+              <circle
+                cx="60" cy="60" r="48"
+                fill="none"
+                stroke={ringHex}
+                strokeWidth="10"
+                strokeLinecap="round"
+                strokeDasharray={301.593}
+                strokeDashoffset={301.593 * (1 - Math.min((scorePercent ?? 0) / 100, 1))}
+                style={{ transition: "stroke-dashoffset 0.6s cubic-bezier(0.2,0.8,0.2,1), stroke 0.4s ease" }}
+              />
+            </svg>
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-0.5">
+              <span className="eyebrow" style={{ fontSize: "7px", letterSpacing: "0.18em" }}>SCORE</span>
+              <span className={`font-display text-[32px] leading-none font-light ${scoreColor}`}>
+                {scorePercent !== null ? scorePercent : "—"}
+              </span>
+              <span className="text-[9px] text-muted-foreground">/&thinsp;100</span>
+            </div>
+          </div>
+          <div className="flex items-center gap-1">
+            <span className={`text-[10px] font-semibold ${scoreColor}`}>{scoreLabel}</span>
+            <Popover>
+              <PopoverTrigger asChild>
+                <button className="text-muted-foreground/50 hover:text-muted-foreground" aria-label="How is this calculated?">
+                  <Info className="size-3" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent side="bottom" align="end" className="w-72 text-xs space-y-2 p-4">
+                <p className="font-semibold text-foreground">How the score works</p>
+                <p className="text-muted-foreground">
+                  Your score (out of 100) is based on how close you got to saving 20% of your take-home income this month.
+                  Hitting the target exactly = 100. Going over still scores 100.
+                </p>
+                <p className="text-muted-foreground">
+                  Coming soon: mark certain spending categories — like wellbeing or holidays — as allowable,
+                  so they don't count against you.
+                </p>
+              </PopoverContent>
+            </Popover>
+          </div>
+        </div>
+      </header>
+
+      {/* Desktop: score card */}
+      <Card className="hidden md:block rise rise-2 relative overflow-hidden">
+        <CardContent className="pt-6 relative">
+          <div className="flex items-start justify-between mb-4">
+            <div>
+              <div className="flex items-center gap-1.5 mb-1">
+                <p className="eyebrow">This month's savings score</p>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button className="text-muted-foreground/50 hover:text-muted-foreground transition-colors" aria-label="How is this score calculated?">
+                      <Info className="size-3" />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent side="bottom" align="start" className="w-72 text-xs space-y-2 p-4">
+                    <p className="font-semibold text-foreground">How the score works</p>
+                    <p className="text-muted-foreground">
+                      Your score (out of 100) is based on how close you got to saving 20% of your take-home income this month.
+                      Hitting the target exactly = 100. Going over still scores 100.
+                    </p>
+                    <p className="text-muted-foreground">
+                      Coming soon: mark certain spending categories — like wellbeing or holidays — as allowable,
+                      so they don't count against you. Unplanned overspend will remain in scope.
+                    </p>
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {now.toLocaleDateString("en-GB", { month: "long", year: "numeric" })}
+              </p>
+            </div>
+            <span className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${
+              scorePercent === null        ? "text-muted-foreground border-border"
+              : scorePercent >= 100        ? "text-emerald-500 border-emerald-500/40 bg-emerald-500/10"
+              : scorePercent >= 70         ? "text-amber-500 border-amber-500/40 bg-amber-500/10"
+              : "text-red-500 border-red-500/40 bg-red-500/10"
+            }`}>
+              {scoreLabel}
+            </span>
+          </div>
+          <div className="flex items-baseline gap-4 mb-4">
+            {actualsLoading || incomeLoading ? (
+              <span className="font-display text-[56px] leading-none font-light text-muted-foreground animate-pulse">—%</span>
+            ) : (
+              <span className={`font-display text-[56px] leading-none font-light ${scoreColor}`}>
+                {scorePercent !== null ? `${scorePercent}%` : "—%"}
+              </span>
+            )}
+            <div className="flex flex-col">
+              <span className="text-sm font-medium text-foreground">
+                {currentSaved !== null ? fmtExact(currentSaved) : "—"}
+              </span>
+              <span className="text-xs text-muted-foreground">
+                of {SAVING > 0 ? fmt(SAVING) : "—"} target
+              </span>
+            </div>
+          </div>
+          <div className="h-2 rounded-full bg-muted overflow-hidden">
+            <div
+              className={`h-full rounded-full transition-all ${barColor}`}
+              style={{ width: `${Math.min(scorePercent ?? 0, 100)}%` }}
+            />
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Income hero */}
       <Card className="border-2 border-primary/30 bg-primary/5">
         <CardContent className="pt-6">
           <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">Monthly take-home income</p>
           {incomeLoading ? (
-            <p className="text-5xl font-extrabold text-muted-foreground animate-pulse">Loading…</p>
+            <p className="font-display text-[56px] leading-none font-light text-muted-foreground animate-pulse">—</p>
           ) : income == null ? (
             <p className="text-lg text-destructive">No salary transaction found</p>
           ) : (
-            <p className="text-5xl font-extrabold text-foreground">{fmtExact(income)}</p>
+            <p className="font-display text-[56px] leading-none font-light text-foreground">{fmtExact(income)}</p>
           )}
           <p className="text-xs text-muted-foreground mt-2">Latest Santander ({owner}) — Throgmorton UK Ltd payment</p>
         </CardContent>
@@ -150,7 +300,7 @@ export function SavingsPage() {
             <CardHeader className="pb-2">
               <div className="flex items-baseline justify-between">
                 <CardTitle className={`text-sm uppercase tracking-wide ${cat.text}`}>{cat.label}</CardTitle>
-                <span className={`text-2xl font-bold ${cat.text}`}>{fmt(cat.amount)}</span>
+                <span className={`font-display text-[28px] leading-none font-light ${cat.text}`}>{fmt(cat.amount)}</span>
               </div>
             </CardHeader>
             <CardContent className="space-y-2">
@@ -171,7 +321,7 @@ export function SavingsPage() {
         <CardContent className="pt-6 space-y-4">
           <div>
             <p className="text-xs uppercase tracking-widest text-muted-foreground">Your 20% savings target</p>
-            <p className="text-4xl font-extrabold text-emerald-500">
+            <p className="font-display text-[40px] leading-none font-light text-emerald-500">
               {fmt(SAVING)} <span className="text-base font-normal text-muted-foreground">/ month</span>
             </p>
           </div>

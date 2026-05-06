@@ -477,7 +477,7 @@ export function InvestmentsPage() {
         <div>
           <p className="eyebrow mb-3">{new Date().toLocaleDateString("en-GB", { month: "long", year: "numeric" })}</p>
           <h1 className="font-display text-[44px] leading-[1.02] font-light tracking-tight text-foreground">
-            How the <span className="italic text-primary">portfolio</span>&rsquo;s doing.
+            <span className="italic text-primary">Investments</span>
           </h1>
           <p className="text-sm text-muted-foreground mt-2 max-w-xl">
             Liquid NAV excludes the pension. Click any cell to update a month-end snapshot.
