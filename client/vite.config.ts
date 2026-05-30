@@ -14,6 +14,12 @@ export default defineConfig({
       includeAssets: ["icon.svg", "apple-touch-icon-180x180.png"],
       workbox: {
         maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
+        // Take over the page as soon as a new SW activates, instead of waiting
+        // for every old tab/instance to close. Combined with registerType
+        // "autoUpdate" this means: open PWA → new SW installs → page reloads →
+        // user sees the latest deploy. No manual cache clearing needed.
+        skipWaiting: true,
+        clientsClaim: true,
       },
       manifest: {
         name: "Clam Finance",
