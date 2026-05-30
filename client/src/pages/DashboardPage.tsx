@@ -589,12 +589,6 @@ export function DashboardPage() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [filteredCount, setFilteredCount] = useState<number | null>(null);
   const [filteredSum, setFilteredSum] = useState<number | null>(null);
-  const [form, setForm] = useState({
-    description: "",
-    amount: "",
-    type: "Expense" as "Income" | "Expense",
-    categoryId: "",
-  });
 
   const { data: summary } = useQuery<Summary>({
     queryKey: ["summary"],
@@ -609,22 +603,6 @@ export function DashboardPage() {
   const { data: transactions = [] } = useQuery<Transaction[]>({
     queryKey: ["transactions"],
     queryFn: () => api.get("/api/transactions").then((r) => r.data),
-  });
-
-  useEffect(() => {
-    if (categories.length > 0 && !form.categoryId) {
-      setForm((f) => ({ ...f, categoryId: categories[0].id }));
-    }
-  }, [categories, form.categoryId]);
-
-  const addMutation = useMutation({
-    mutationFn: (data: { description: string; amount: number; type: string; categoryId: string }) =>
-      api.post("/api/transactions", data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["transactions"] });
-      queryClient.invalidateQueries({ queryKey: ["summary"] });
-      setForm((f) => ({ ...f, description: "", amount: "" }));
-    },
   });
 
   const updateMutation = useMutation({
@@ -678,16 +656,6 @@ export function DashboardPage() {
     });
     if (updates.length > 0) gridApiRef.current?.applyTransaction({ update: updates });
     bulkReviewMutation.mutate({ ids, reviewed });
-  }
-
-  function handleAdd() {
-    if (!form.description || !form.amount || !form.categoryId) return;
-    addMutation.mutate({
-      description: form.description,
-      amount: parseFloat(form.amount),
-      type: form.type,
-      categoryId: form.categoryId,
-    });
   }
 
   const sortedTransactions = useMemo(
@@ -957,52 +925,6 @@ export function DashboardPage() {
           </CardContent>
         </Card>
       </div>
-
-      {/* Add transaction */}
-      <Card className="rise rise-5">
-        <CardHeader>
-          <CardTitle className="eyebrow">Add Transaction</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-wrap gap-2">
-            <Input
-              placeholder="Description"
-              value={form.description}
-              onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-              className="flex-1 min-w-[200px] h-10 bg-background/40"
-            />
-            <Input
-              placeholder="0.00"
-              type="number"
-              min="0"
-              step="0.01"
-              value={form.amount}
-              onChange={(e) => setForm((f) => ({ ...f, amount: e.target.value }))}
-              className="w-32 h-10 font-numeric bg-background/40"
-            />
-            <select
-              value={form.type}
-              onChange={(e) => setForm((f) => ({ ...f, type: e.target.value as "Income" | "Expense" }))}
-              className="border border-input bg-background/40 text-foreground rounded-md px-3 h-10 text-sm"
-            >
-              <option value="Expense">Expense</option>
-              <option value="Income">Income</option>
-            </select>
-            <select
-              value={form.categoryId}
-              onChange={(e) => setForm((f) => ({ ...f, categoryId: e.target.value }))}
-              className="border border-input bg-background/40 text-foreground rounded-md px-3 h-10 text-sm"
-            >
-              {categories.map((c) => (
-                <option key={c.id} value={c.id}>{c.name}</option>
-              ))}
-            </select>
-            <Button onClick={handleAdd} disabled={addMutation.isPending} className="h-10 px-5">
-              {addMutation.isPending ? "Adding…" : "Add"}
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
 
       {/* Transactions — mobile card list */}
       <Card className="rise rise-6 overflow-hidden md:hidden">
