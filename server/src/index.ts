@@ -12,6 +12,7 @@ import { env } from "./config/env.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { requireAuth, requireAdmin } from "./middleware/auth.js";
 import { initSystemCategories, mapMonzoCategories, migrateOwners, consolidateFoodCategories, migrateTakeout } from "./routes/admin.js";
+import { rescueSofiChaseFx } from "./migrations/rescueSofiChaseFx.js";
 import { usersRouter } from "./routes/users.js";
 import { importRouter } from "./routes/import.js";
 import { categoriesRouter } from "./routes/categories.js";
@@ -94,5 +95,10 @@ app.listen(env.PORT, async () => {
   await migrateTakeout();
   await mapMonzoCategories();
   await migrateOwners();
+  try {
+    await rescueSofiChaseFx();
+  } catch (err) {
+    console.error("[rescueSofiChaseFx] failed:", err);
+  }
 });
  

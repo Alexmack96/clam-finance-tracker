@@ -3,6 +3,7 @@ import { Router } from "express";
 import multer from "multer";
 import pdfParse from "pdf-parse";
 import { db } from "../db/client.js";
+import { convert, convertWithFallback } from "../lib/fxRates.js";
 
 export const importRouter = Router();
 
@@ -1297,20 +1298,19 @@ importRouter.post("/process", async (_req, res) => {
     await db.hsbcTransaction.update({ where: { id: row.id }, data: { status: next } });
   }
 
-  // ── SoFi ───────────────────────────────────────────────────────────────────
+  // ── SoFi (USD → GBP) ───────────────────────────────────────────────────────
   const pendingSofi = await db.sofiTransaction.findMany({ where: { status: "pending" } });
 
   for (const row of pendingSofi) {
-    const amountNum = parseFloat(row.amount.replace(/,/g, ""));
+    const usdAmount = parseFloat(row.amount.replace(/,/g, ""));
     let next: StagedStatus;
-    // Skip internal SoFi transfers between Checking and Savings
     if (/^(From|To)\s+(Savings|Checking)/i.test(row.description)) {
       next = "skipped";
       skipped++;
-    } else if (isNaN(amountNum)) {
+    } else if (isNaN(usdAmount)) {
       next = "errored";
       errored++;
-    } else if (amountNum === 0) {
+    } else if (usdAmount === 0) {
       next = "skipped";
       skipped++;
     } else {
@@ -1318,33 +1318,42 @@ importRouter.post("/process", async (_req, res) => {
       const category = await findCategory(categoryName);
       const sofiExtId = `sofi:${row.transactionId}`;
       const sofiExists = await db.transaction.findUnique({ where: { externalId: sofiExtId }, select: { id: true } });
-      if (!sofiExists) await db.transaction.create({
-        data: {
-          description: row.description,
-          amount:      amountNum,
-          type:        row.isCredit ? "Income" : "Expense",
-          date:        new Date(row.date),
-          categoryId:  category.id,
-          externalId:  sofiExtId,
-          owner:       row.owner as "Alex" | "Casey" | "Joint",
-        },
-      });
-      next = "processed";
-      processed++;
+      if (sofiExists) {
+        next = "processed";
+        processed++;
+      } else {
+        const txDate = new Date(row.date);
+        const { amount: gbpAmount } = await convertWithFallback(usdAmount, "USD", "GBP", txDate, sofiExtId);
+        await db.transaction.create({
+          data: {
+            description:      row.description,
+            amount:           gbpAmount,
+            originalAmount:   usdAmount,
+            originalCurrency: "USD",
+            type:             row.isCredit ? "Income" : "Expense",
+            date:             txDate,
+            categoryId:       category.id,
+            externalId:       sofiExtId,
+            owner:            row.owner as "Alex" | "Casey" | "Joint",
+          },
+        });
+        next = "processed";
+        processed++;
+      }
     }
     await db.sofiTransaction.update({ where: { id: row.id }, data: { status: next } });
   }
 
-  // ── Chase ──────────────────────────────────────────────────────────────────
+  // ── Chase (USD → GBP) ──────────────────────────────────────────────────────
   const pendingChase = await db.chaseTransaction.findMany({ where: { status: "pending" } });
 
   for (const row of pendingChase) {
-    const amountNum = parseFloat(row.amount.replace(/,/g, ""));
+    const usdAmount = parseFloat(row.amount.replace(/,/g, ""));
     let next: StagedStatus;
-    if (isNaN(amountNum)) {
+    if (isNaN(usdAmount)) {
       next = "errored";
       errored++;
-    } else if (amountNum === 0) {
+    } else if (usdAmount === 0) {
       next = "skipped";
       skipped++;
     } else {
@@ -1352,19 +1361,28 @@ importRouter.post("/process", async (_req, res) => {
       const category = await findCategory(categoryName);
       const chaseExtId = `chase:${row.transactionId}`;
       const chaseExists = await db.transaction.findUnique({ where: { externalId: chaseExtId }, select: { id: true } });
-      if (!chaseExists) await db.transaction.create({
-        data: {
-          description: row.description,
-          amount:      amountNum,
-          type:        row.isCredit ? "Income" : "Expense",
-          date:        new Date(row.date),
-          categoryId:  category.id,
-          externalId:  chaseExtId,
-          owner:       row.owner as "Alex" | "Casey" | "Joint",
-        },
-      });
-      next = "processed";
-      processed++;
+      if (chaseExists) {
+        next = "processed";
+        processed++;
+      } else {
+        const txDate = new Date(row.date);
+        const { amount: gbpAmount } = await convertWithFallback(usdAmount, "USD", "GBP", txDate, chaseExtId);
+        await db.transaction.create({
+          data: {
+            description:      row.description,
+            amount:           gbpAmount,
+            originalAmount:   usdAmount,
+            originalCurrency: "USD",
+            type:             row.isCredit ? "Income" : "Expense",
+            date:             txDate,
+            categoryId:       category.id,
+            externalId:       chaseExtId,
+            owner:            row.owner as "Alex" | "Casey" | "Joint",
+          },
+        });
+        next = "processed";
+        processed++;
+      }
     }
     await db.chaseTransaction.update({ where: { id: row.id }, data: { status: next } });
   }
@@ -1401,4 +1419,46 @@ importRouter.post("/process", async (_req, res) => {
   }
 
   res.json({ processed, skipped, errored });
+});
+
+// ─── POST /api/admin/backfill/usd-gbp ────────────────────────────────────────
+// One-shot backfill for SoFi/Chase transactions that were imported before FX
+// conversion was added. Idempotent: rows with originalAmount set are skipped.
+// Pass ?dryRun=true to preview.
+importRouter.post("/backfill/usd-gbp", async (req, res) => {
+  const dryRun = req.query.dryRun === "true";
+
+  const rows = await db.transaction.findMany({
+    where: {
+      originalAmount: null,
+      OR: [
+        { externalId: { startsWith: "sofi:" } },
+        { externalId: { startsWith: "chase:" } },
+      ],
+    },
+    select: { id: true, amount: true, date: true, externalId: true },
+  });
+
+  let converted = 0;
+  let errored = 0;
+  const errors: string[] = [];
+
+  for (const row of rows) {
+    try {
+      const usd = Number(row.amount);
+      const { amount: gbp } = await convertWithFallback(usd, "USD", "GBP", row.date, row.externalId ?? row.id);
+      if (!dryRun) {
+        await db.transaction.update({
+          where: { id: row.id },
+          data: { amount: gbp, originalAmount: usd, originalCurrency: "USD" },
+        });
+      }
+      converted++;
+    } catch (err) {
+      errored++;
+      errors.push(`${row.externalId ?? row.id}: ${err instanceof Error ? err.message : String(err)}`);
+    }
+  }
+
+  res.json({ candidates: rows.length, converted, errored, errors: errors.slice(0, 20), dryRun });
 });

@@ -387,6 +387,46 @@ function SourceFilter({ model, onModelChange }: CustomFilterProps<Transaction, a
   );
 }
 
+interface ReviewedFilterModel { value: "reviewed" | "unreviewed" }
+
+function ReviewedFilter({ model, onModelChange }: CustomFilterProps<Transaction, any, ReviewedFilterModel>) {
+  useGridFilter({
+    doesFilterPass: (params) => {
+      if (!model) return true;
+      const reviewed = (params.data as Transaction)?.reviewed ?? false;
+      return model.value === "reviewed" ? reviewed : !reviewed;
+    },
+  });
+
+  const selected = model?.value ?? null;
+  const options: { value: "reviewed" | "unreviewed"; label: string; className: string }[] = [
+    { value: "unreviewed", label: "Unreviewed", className: "text-amber-600 border-amber-600" },
+    { value: "reviewed",   label: "Reviewed",   className: "text-green-600 border-green-600" },
+  ];
+
+  return (
+    <div className="p-2 min-w-[140px]">
+      <div
+        onClick={() => onModelChange(null)}
+        className={`px-2 py-1 cursor-pointer rounded text-xs text-muted-foreground mb-1 hover:bg-accent ${!selected ? "bg-accent" : ""}`}
+      >
+        All
+      </div>
+      {options.map((o) => (
+        <div
+          key={o.value}
+          onClick={() => onModelChange({ value: o.value })}
+          className={`px-2 py-1 cursor-pointer rounded hover:bg-accent ${selected === o.value ? "bg-accent" : ""}`}
+        >
+          <span className={`px-2 py-0.5 rounded-full text-xs font-medium border ${o.className}`}>
+            {o.label}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 // ─── Cell renderers (outside component to avoid recreation on render) ─────────
 
 function NoteRenderer({ data, context }: CustomCellRendererProps<Transaction, string, GridCtx>) {
@@ -655,6 +695,42 @@ export function DashboardPage() {
     [transactions],
   );
 
+  // ─── Mobile filters ────────────────────────────────────────────────────────
+  const [mobileSearch, setMobileSearch] = useState("");
+  const [mobileOwner, setMobileOwner] = useState<"All" | Owner>("All");
+  const [mobileStatus, setMobileStatus] = useState<"All" | "Unreviewed" | "Reviewed">("All");
+  const [mobileCategoryId, setMobileCategoryId] = useState<string>("All");
+  const [mobileSource, setMobileSource] = useState<"All" | BankSource>("All");
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+
+  const mobileTransactions = useMemo(() => {
+    const q = mobileSearch.trim().toLowerCase();
+    return sortedTransactions.filter((tx) => {
+      if (mobileOwner !== "All" && tx.owner !== mobileOwner) return false;
+      if (mobileStatus === "Reviewed" && !tx.reviewed) return false;
+      if (mobileStatus === "Unreviewed" && tx.reviewed) return false;
+      if (mobileCategoryId !== "All" && tx.categoryId !== mobileCategoryId) return false;
+      if (mobileSource !== "All" && bankSource(tx.externalId) !== mobileSource) return false;
+      if (q && !tx.description.toLowerCase().includes(q) && !(tx.note ?? "").toLowerCase().includes(q)) return false;
+      return true;
+    });
+  }, [sortedTransactions, mobileSearch, mobileOwner, mobileStatus, mobileCategoryId, mobileSource]);
+
+  const mobileFiltersActive =
+    mobileSearch.trim() !== "" ||
+    mobileOwner !== "All" ||
+    mobileStatus !== "All" ||
+    mobileCategoryId !== "All" ||
+    mobileSource !== "All";
+
+  function resetMobileFilters() {
+    setMobileSearch("");
+    setMobileOwner("All");
+    setMobileStatus("All");
+    setMobileCategoryId("All");
+    setMobileSource("All");
+  }
+
   function handleMobileUpdate(id: string, patch: UpdatePatch) {
     // Optimistic update in the query cache so cards re-render immediately
     queryClient.setQueryData<Transaction[]>(["transactions"], (prev) =>
@@ -763,10 +839,9 @@ export function DashboardPage() {
       cellRenderer: ReviewedRenderer,
       valueGetter: (p) => p.data?.reviewed ?? false,
       sortable: true,
-      filter: false,
+      filter: ReviewedFilter,
       floatingFilter: false,
       resizable: false,
-      suppressHeaderMenuButton: true,
       cellStyle: { display: "flex", alignItems: "center", justifyContent: "center" },
     },
   ], [categories]);
@@ -932,14 +1007,112 @@ export function DashboardPage() {
       {/* Transactions — mobile card list */}
       <Card className="rise rise-6 overflow-hidden md:hidden">
         <CardHeader className="pb-2">
-          <div className="flex items-baseline gap-3">
-            <CardTitle className="eyebrow">Transactions</CardTitle>
-            <span className="text-xs text-muted-foreground font-numeric">{transactions.length} entries</span>
+          <div className="flex items-baseline justify-between gap-3">
+            <div className="flex items-baseline gap-3">
+              <CardTitle className="eyebrow">Transactions</CardTitle>
+              <span className="text-xs text-muted-foreground font-numeric">
+                {mobileFiltersActive
+                  ? <>{mobileTransactions.length} <span className="text-muted-foreground/50">of</span> {transactions.length}</>
+                  : <>{transactions.length} entries</>}
+              </span>
+            </div>
+            {mobileFiltersActive && (
+              <button
+                onClick={resetMobileFilters}
+                className="text-xs text-muted-foreground hover:text-foreground underline-offset-2 hover:underline"
+              >
+                Clear
+              </button>
+            )}
           </div>
         </CardHeader>
         <CardContent className="p-0">
+          <div className="px-4 pb-3 space-y-2">
+            <Input
+              placeholder="Search description or note…"
+              value={mobileSearch}
+              onChange={(e) => setMobileSearch(e.target.value)}
+              className="h-9 bg-background/40 text-sm"
+            />
+            <div className="flex items-center gap-1.5 overflow-x-auto -mx-1 px-1 pb-0.5">
+              {(["All", "Alex", "Casey", "Joint"] as const).map((o) => (
+                <button
+                  key={o}
+                  onClick={() => setMobileOwner(o)}
+                  className={`shrink-0 px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${
+                    mobileOwner === o
+                      ? o === "All"
+                        ? "bg-foreground text-background border-foreground"
+                        : `${OWNER_STYLES[o as Owner]} bg-accent/50`
+                      : o === "All"
+                        ? "text-muted-foreground border-border hover:bg-accent"
+                        : `${OWNER_STYLES[o as Owner]} opacity-60 hover:opacity-100`
+                  }`}
+                >
+                  {o}
+                </button>
+              ))}
+            </div>
+            <div className="flex items-center gap-1.5 overflow-x-auto -mx-1 px-1 pb-0.5">
+              {(["All", "Unreviewed", "Reviewed"] as const).map((s) => (
+                <button
+                  key={s}
+                  onClick={() => setMobileStatus(s)}
+                  className={`shrink-0 px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${
+                    mobileStatus === s
+                      ? s === "Reviewed"
+                        ? "text-green-600 border-green-600 bg-green-600/10"
+                        : s === "Unreviewed"
+                          ? "text-amber-600 border-amber-600 bg-amber-600/10"
+                          : "bg-foreground text-background border-foreground"
+                      : "text-muted-foreground border-border hover:bg-accent"
+                  }`}
+                >
+                  {s}
+                </button>
+              ))}
+              <button
+                onClick={() => setMobileFiltersOpen((v) => !v)}
+                className={`shrink-0 ml-auto px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${
+                  mobileCategoryId !== "All" || mobileSource !== "All"
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "text-muted-foreground border-border hover:bg-accent"
+                }`}
+              >
+                {mobileFiltersOpen ? "Less" : "More"}
+              </button>
+            </div>
+            {mobileFiltersOpen && (
+              <div className="flex items-center gap-2 pt-1">
+                <select
+                  value={mobileCategoryId}
+                  onChange={(e) => setMobileCategoryId(e.target.value)}
+                  className="flex-1 border border-input bg-background/40 text-foreground rounded-md px-2 h-9 text-xs"
+                >
+                  <option value="All">All categories</option>
+                  {categories.map((c) => (
+                    <option key={c.id} value={c.id}>{c.name}</option>
+                  ))}
+                </select>
+                <select
+                  value={mobileSource}
+                  onChange={(e) => setMobileSource(e.target.value as "All" | BankSource)}
+                  className="flex-1 border border-input bg-background/40 text-foreground rounded-md px-2 h-9 text-xs"
+                >
+                  <option value="All">All sources</option>
+                  {SOURCES.map((s) => (
+                    <option key={s} value={s}>{s}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+          </div>
           <div className="divide-y divide-border px-4">
-            {sortedTransactions.map((tx) => (
+            {mobileTransactions.length === 0 ? (
+              <div className="py-8 text-center text-sm text-muted-foreground">
+                No transactions match these filters.
+              </div>
+            ) : mobileTransactions.map((tx) => (
               <MobileTransactionCard
                 key={tx.id}
                 tx={tx}

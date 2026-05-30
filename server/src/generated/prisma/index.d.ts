@@ -4976,10 +4976,12 @@ export namespace Prisma {
 
   export type TransactionAvgAggregateOutputType = {
     amount: Decimal | null
+    originalAmount: Decimal | null
   }
 
   export type TransactionSumAggregateOutputType = {
     amount: Decimal | null
+    originalAmount: Decimal | null
   }
 
   export type TransactionMinAggregateOutputType = {
@@ -4994,6 +4996,8 @@ export namespace Prisma {
     note: string | null
     owner: $Enums.Owner | null
     reviewed: boolean | null
+    originalAmount: Decimal | null
+    originalCurrency: string | null
   }
 
   export type TransactionMaxAggregateOutputType = {
@@ -5008,6 +5012,8 @@ export namespace Prisma {
     note: string | null
     owner: $Enums.Owner | null
     reviewed: boolean | null
+    originalAmount: Decimal | null
+    originalCurrency: string | null
   }
 
   export type TransactionCountAggregateOutputType = {
@@ -5022,16 +5028,20 @@ export namespace Prisma {
     note: number
     owner: number
     reviewed: number
+    originalAmount: number
+    originalCurrency: number
     _all: number
   }
 
 
   export type TransactionAvgAggregateInputType = {
     amount?: true
+    originalAmount?: true
   }
 
   export type TransactionSumAggregateInputType = {
     amount?: true
+    originalAmount?: true
   }
 
   export type TransactionMinAggregateInputType = {
@@ -5046,6 +5056,8 @@ export namespace Prisma {
     note?: true
     owner?: true
     reviewed?: true
+    originalAmount?: true
+    originalCurrency?: true
   }
 
   export type TransactionMaxAggregateInputType = {
@@ -5060,6 +5072,8 @@ export namespace Prisma {
     note?: true
     owner?: true
     reviewed?: true
+    originalAmount?: true
+    originalCurrency?: true
   }
 
   export type TransactionCountAggregateInputType = {
@@ -5074,6 +5088,8 @@ export namespace Prisma {
     note?: true
     owner?: true
     reviewed?: true
+    originalAmount?: true
+    originalCurrency?: true
     _all?: true
   }
 
@@ -5175,6 +5191,8 @@ export namespace Prisma {
     note: string | null
     owner: $Enums.Owner
     reviewed: boolean
+    originalAmount: Decimal | null
+    originalCurrency: string | null
     _count: TransactionCountAggregateOutputType | null
     _avg: TransactionAvgAggregateOutputType | null
     _sum: TransactionSumAggregateOutputType | null
@@ -5208,6 +5226,8 @@ export namespace Prisma {
     note?: boolean
     owner?: boolean
     reviewed?: boolean
+    originalAmount?: boolean
+    originalCurrency?: boolean
     category?: boolean | CategoryDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["transaction"]>
 
@@ -5223,6 +5243,8 @@ export namespace Prisma {
     note?: boolean
     owner?: boolean
     reviewed?: boolean
+    originalAmount?: boolean
+    originalCurrency?: boolean
     category?: boolean | CategoryDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["transaction"]>
 
@@ -5238,6 +5260,8 @@ export namespace Prisma {
     note?: boolean
     owner?: boolean
     reviewed?: boolean
+    originalAmount?: boolean
+    originalCurrency?: boolean
     category?: boolean | CategoryDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["transaction"]>
 
@@ -5253,9 +5277,11 @@ export namespace Prisma {
     note?: boolean
     owner?: boolean
     reviewed?: boolean
+    originalAmount?: boolean
+    originalCurrency?: boolean
   }
 
-  export type TransactionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "description" | "amount" | "type" | "date" | "createdAt" | "categoryId" | "externalId" | "note" | "owner" | "reviewed", ExtArgs["result"]["transaction"]>
+  export type TransactionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "description" | "amount" | "type" | "date" | "createdAt" | "categoryId" | "externalId" | "note" | "owner" | "reviewed" | "originalAmount" | "originalCurrency", ExtArgs["result"]["transaction"]>
   export type TransactionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     category?: boolean | CategoryDefaultArgs<ExtArgs>
   }
@@ -5283,6 +5309,8 @@ export namespace Prisma {
       note: string | null
       owner: $Enums.Owner
       reviewed: boolean
+      originalAmount: Prisma.Decimal | null
+      originalCurrency: string | null
     }, ExtArgs["result"]["transaction"]>
     composites: {}
   }
@@ -5718,6 +5746,8 @@ export namespace Prisma {
     readonly note: FieldRef<"Transaction", 'String'>
     readonly owner: FieldRef<"Transaction", 'Owner'>
     readonly reviewed: FieldRef<"Transaction", 'Boolean'>
+    readonly originalAmount: FieldRef<"Transaction", 'Decimal'>
+    readonly originalCurrency: FieldRef<"Transaction", 'String'>
   }
     
 
@@ -24825,7 +24855,9 @@ export namespace Prisma {
     externalId: 'externalId',
     note: 'note',
     owner: 'owner',
-    reviewed: 'reviewed'
+    reviewed: 'reviewed',
+    originalAmount: 'originalAmount',
+    originalCurrency: 'originalCurrency'
   };
 
   export type TransactionScalarFieldEnum = (typeof TransactionScalarFieldEnum)[keyof typeof TransactionScalarFieldEnum]
@@ -25339,6 +25371,8 @@ export namespace Prisma {
     note?: StringNullableFilter<"Transaction"> | string | null
     owner?: EnumOwnerFilter<"Transaction"> | $Enums.Owner
     reviewed?: BoolFilter<"Transaction"> | boolean
+    originalAmount?: DecimalNullableFilter<"Transaction"> | Decimal | DecimalJsLike | number | string | null
+    originalCurrency?: StringNullableFilter<"Transaction"> | string | null
     category?: XOR<CategoryScalarRelationFilter, CategoryWhereInput>
   }
 
@@ -25354,6 +25388,8 @@ export namespace Prisma {
     note?: SortOrderInput | SortOrder
     owner?: SortOrder
     reviewed?: SortOrder
+    originalAmount?: SortOrderInput | SortOrder
+    originalCurrency?: SortOrderInput | SortOrder
     category?: CategoryOrderByWithRelationInput
   }
 
@@ -25372,6 +25408,8 @@ export namespace Prisma {
     note?: StringNullableFilter<"Transaction"> | string | null
     owner?: EnumOwnerFilter<"Transaction"> | $Enums.Owner
     reviewed?: BoolFilter<"Transaction"> | boolean
+    originalAmount?: DecimalNullableFilter<"Transaction"> | Decimal | DecimalJsLike | number | string | null
+    originalCurrency?: StringNullableFilter<"Transaction"> | string | null
     category?: XOR<CategoryScalarRelationFilter, CategoryWhereInput>
   }, "id" | "externalId">
 
@@ -25387,6 +25425,8 @@ export namespace Prisma {
     note?: SortOrderInput | SortOrder
     owner?: SortOrder
     reviewed?: SortOrder
+    originalAmount?: SortOrderInput | SortOrder
+    originalCurrency?: SortOrderInput | SortOrder
     _count?: TransactionCountOrderByAggregateInput
     _avg?: TransactionAvgOrderByAggregateInput
     _max?: TransactionMaxOrderByAggregateInput
@@ -25409,6 +25449,8 @@ export namespace Prisma {
     note?: StringNullableWithAggregatesFilter<"Transaction"> | string | null
     owner?: EnumOwnerWithAggregatesFilter<"Transaction"> | $Enums.Owner
     reviewed?: BoolWithAggregatesFilter<"Transaction"> | boolean
+    originalAmount?: DecimalNullableWithAggregatesFilter<"Transaction"> | Decimal | DecimalJsLike | number | string | null
+    originalCurrency?: StringNullableWithAggregatesFilter<"Transaction"> | string | null
   }
 
   export type MonzoApiTransactionWhereInput = {
@@ -26887,6 +26929,8 @@ export namespace Prisma {
     note?: string | null
     owner?: $Enums.Owner
     reviewed?: boolean
+    originalAmount?: Decimal | DecimalJsLike | number | string | null
+    originalCurrency?: string | null
     category: CategoryCreateNestedOneWithoutTransactionsInput
   }
 
@@ -26902,6 +26946,8 @@ export namespace Prisma {
     note?: string | null
     owner?: $Enums.Owner
     reviewed?: boolean
+    originalAmount?: Decimal | DecimalJsLike | number | string | null
+    originalCurrency?: string | null
   }
 
   export type TransactionUpdateInput = {
@@ -26915,6 +26961,8 @@ export namespace Prisma {
     note?: NullableStringFieldUpdateOperationsInput | string | null
     owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
     reviewed?: BoolFieldUpdateOperationsInput | boolean
+    originalAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    originalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
     category?: CategoryUpdateOneRequiredWithoutTransactionsNestedInput
   }
 
@@ -26930,6 +26978,8 @@ export namespace Prisma {
     note?: NullableStringFieldUpdateOperationsInput | string | null
     owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
     reviewed?: BoolFieldUpdateOperationsInput | boolean
+    originalAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    originalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type TransactionCreateManyInput = {
@@ -26944,6 +26994,8 @@ export namespace Prisma {
     note?: string | null
     owner?: $Enums.Owner
     reviewed?: boolean
+    originalAmount?: Decimal | DecimalJsLike | number | string | null
+    originalCurrency?: string | null
   }
 
   export type TransactionUpdateManyMutationInput = {
@@ -26957,6 +27009,8 @@ export namespace Prisma {
     note?: NullableStringFieldUpdateOperationsInput | string | null
     owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
     reviewed?: BoolFieldUpdateOperationsInput | boolean
+    originalAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    originalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type TransactionUncheckedUpdateManyInput = {
@@ -26971,6 +27025,8 @@ export namespace Prisma {
     note?: NullableStringFieldUpdateOperationsInput | string | null
     owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
     reviewed?: BoolFieldUpdateOperationsInput | boolean
+    originalAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    originalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type MonzoApiTransactionCreateInput = {
@@ -28716,6 +28772,17 @@ export namespace Prisma {
     not?: NestedEnumOwnerFilter<$PrismaModel> | $Enums.Owner
   }
 
+  export type DecimalNullableFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel> | null
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | null
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | null
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalNullableFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
+  }
+
   export type CategoryScalarRelationFilter = {
     is?: CategoryWhereInput
     isNot?: CategoryWhereInput
@@ -28733,10 +28800,13 @@ export namespace Prisma {
     note?: SortOrder
     owner?: SortOrder
     reviewed?: SortOrder
+    originalAmount?: SortOrder
+    originalCurrency?: SortOrder
   }
 
   export type TransactionAvgOrderByAggregateInput = {
     amount?: SortOrder
+    originalAmount?: SortOrder
   }
 
   export type TransactionMaxOrderByAggregateInput = {
@@ -28751,6 +28821,8 @@ export namespace Prisma {
     note?: SortOrder
     owner?: SortOrder
     reviewed?: SortOrder
+    originalAmount?: SortOrder
+    originalCurrency?: SortOrder
   }
 
   export type TransactionMinOrderByAggregateInput = {
@@ -28765,10 +28837,13 @@ export namespace Prisma {
     note?: SortOrder
     owner?: SortOrder
     reviewed?: SortOrder
+    originalAmount?: SortOrder
+    originalCurrency?: SortOrder
   }
 
   export type TransactionSumOrderByAggregateInput = {
     amount?: SortOrder
+    originalAmount?: SortOrder
   }
 
   export type DecimalWithAggregatesFilter<$PrismaModel = never> = {
@@ -28805,6 +28880,22 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumOwnerFilter<$PrismaModel>
     _max?: NestedEnumOwnerFilter<$PrismaModel>
+  }
+
+  export type DecimalNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel> | null
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | null
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | null
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalNullableWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedDecimalNullableFilter<$PrismaModel>
+    _sum?: NestedDecimalNullableFilter<$PrismaModel>
+    _min?: NestedDecimalNullableFilter<$PrismaModel>
+    _max?: NestedDecimalNullableFilter<$PrismaModel>
   }
 
   export type DateTimeNullableFilter<$PrismaModel = never> = {
@@ -29878,6 +29969,14 @@ export namespace Prisma {
     set?: $Enums.Owner
   }
 
+  export type NullableDecimalFieldUpdateOperationsInput = {
+    set?: Decimal | DecimalJsLike | number | string | null
+    increment?: Decimal | DecimalJsLike | number | string
+    decrement?: Decimal | DecimalJsLike | number | string
+    multiply?: Decimal | DecimalJsLike | number | string
+    divide?: Decimal | DecimalJsLike | number | string
+  }
+
   export type CategoryUpdateOneRequiredWithoutTransactionsNestedInput = {
     create?: XOR<CategoryCreateWithoutTransactionsInput, CategoryUncheckedCreateWithoutTransactionsInput>
     connectOrCreate?: CategoryCreateOrConnectWithoutTransactionsInput
@@ -30170,6 +30269,17 @@ export namespace Prisma {
     not?: NestedEnumOwnerFilter<$PrismaModel> | $Enums.Owner
   }
 
+  export type NestedDecimalNullableFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel> | null
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | null
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | null
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalNullableFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
+  }
+
   export type NestedDecimalWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
     in?: Decimal[] | DecimalJsLike[] | number[] | string[]
@@ -30204,6 +30314,22 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumOwnerFilter<$PrismaModel>
     _max?: NestedEnumOwnerFilter<$PrismaModel>
+  }
+
+  export type NestedDecimalNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel> | null
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | null
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | null
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalNullableWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedDecimalNullableFilter<$PrismaModel>
+    _sum?: NestedDecimalNullableFilter<$PrismaModel>
+    _min?: NestedDecimalNullableFilter<$PrismaModel>
+    _max?: NestedDecimalNullableFilter<$PrismaModel>
   }
 
   export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
@@ -30479,6 +30605,8 @@ export namespace Prisma {
     note?: string | null
     owner?: $Enums.Owner
     reviewed?: boolean
+    originalAmount?: Decimal | DecimalJsLike | number | string | null
+    originalCurrency?: string | null
   }
 
   export type TransactionUncheckedCreateWithoutCategoryInput = {
@@ -30492,6 +30620,8 @@ export namespace Prisma {
     note?: string | null
     owner?: $Enums.Owner
     reviewed?: boolean
+    originalAmount?: Decimal | DecimalJsLike | number | string | null
+    originalCurrency?: string | null
   }
 
   export type TransactionCreateOrConnectWithoutCategoryInput = {
@@ -30534,6 +30664,8 @@ export namespace Prisma {
     note?: StringNullableFilter<"Transaction"> | string | null
     owner?: EnumOwnerFilter<"Transaction"> | $Enums.Owner
     reviewed?: BoolFilter<"Transaction"> | boolean
+    originalAmount?: DecimalNullableFilter<"Transaction"> | Decimal | DecimalJsLike | number | string | null
+    originalCurrency?: StringNullableFilter<"Transaction"> | string | null
   }
 
   export type CategoryCreateWithoutTransactionsInput = {
@@ -30924,6 +31056,8 @@ export namespace Prisma {
     note?: string | null
     owner?: $Enums.Owner
     reviewed?: boolean
+    originalAmount?: Decimal | DecimalJsLike | number | string | null
+    originalCurrency?: string | null
   }
 
   export type TransactionUpdateWithoutCategoryInput = {
@@ -30937,6 +31071,8 @@ export namespace Prisma {
     note?: NullableStringFieldUpdateOperationsInput | string | null
     owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
     reviewed?: BoolFieldUpdateOperationsInput | boolean
+    originalAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    originalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type TransactionUncheckedUpdateWithoutCategoryInput = {
@@ -30950,6 +31086,8 @@ export namespace Prisma {
     note?: NullableStringFieldUpdateOperationsInput | string | null
     owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
     reviewed?: BoolFieldUpdateOperationsInput | boolean
+    originalAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    originalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type TransactionUncheckedUpdateManyWithoutCategoryInput = {
@@ -30963,6 +31101,8 @@ export namespace Prisma {
     note?: NullableStringFieldUpdateOperationsInput | string | null
     owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
     reviewed?: BoolFieldUpdateOperationsInput | boolean
+    originalAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    originalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type InvestmentSnapshotCreateManyAccountInput = {

@@ -1,5 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { usePlaidLink } from "react-plaid-link";
+import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Upload, CheckCircle, AlertCircle, ChevronDown, ChevronUp } from "lucide-react";
@@ -11,7 +10,7 @@ type ImportResult = { imported: number; duplicates?: string[] };
 type ProcessResult = { processed: number; skipped: number; errored: number };
 type BankCounts = { pending: number; processed: number; skipped: number; errored: number };
 type BankCountsWithOwner = BankCounts & { byOwner: Record<string, Record<string, number>> };
-type StagedInfo = { monzo: BankCounts; amex: BankCountsWithOwner; barclays: BankCountsWithOwner; santander: BankCountsWithOwner; hsbc: BankCountsWithOwner; sofi: BankCountsWithOwner; chase: BankCountsWithOwner; plaid: BankCountsWithOwner };
+type StagedInfo = { monzo: BankCounts; amex: BankCountsWithOwner; barclays: BankCountsWithOwner; santander: BankCountsWithOwner; hsbc: BankCountsWithOwner; sofi: BankCountsWithOwner; chase: BankCountsWithOwner };
 
 function BankUploadCard({
   title,
@@ -85,7 +84,7 @@ function BankUploadCard({
             }}
           />
           <Button disabled={!file || isPending} onClick={onUpload}>
-            {isPending ? "Uploading…" : "Upload"}
+            {isPending ? "Syncing…" : "Upload & sync"}
           </Button>
         </div>
 
@@ -136,8 +135,6 @@ function BankUploadCard({
 
 type MonzoStatus = { configured: boolean; connected: boolean; accountId: string | null; lastSyncedAt: string | null; totalStaged: number };
 type MonzoSyncResult = { imported: number; duplicates: number };
-type PlaidStatus = { configured: boolean; env: string; connected: boolean; lastSyncedAt: string | null; totalStaged: number };
-type PlaidSyncResult = { imported: number; duplicates: number };
 
 export function ImportPage() {
   const queryClient = useQueryClient();
@@ -171,9 +168,18 @@ export function ImportPage() {
     queryFn: () => api.get("/api/admin/monzo/status").then((r) => r.data),
   });
 
+  const processMutation = useMutation<ProcessResult, Error>({
+    mutationFn: () => api.post("/api/admin/process").then((r) => r.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      refetchStaged();
+    },
+  });
+
   const monzoSyncMutation = useMutation<MonzoSyncResult, Error>({
     mutationFn: () => api.post("/api/admin/monzo/sync").then((r) => r.data),
-    onSuccess: () => { refetchStaged(); refetchMonzoStatus(); },
+    onSuccess: () => { refetchStaged(); refetchMonzoStatus(); processMutation.mutate(); },
   });
 
   const monzoDisconnectMutation = useMutation<void, Error>({
@@ -189,44 +195,6 @@ export function ImportPage() {
     }
   }, [monzoParam]);
 
-  const { data: plaidStatus, refetch: refetchPlaidStatus } = useQuery<PlaidStatus>({
-    queryKey: ["plaid-status"],
-    queryFn: () => api.get("/api/admin/plaid/status").then((r) => r.data),
-  });
-
-  const [plaidLinkToken, setPlaidLinkToken] = useState<string | null>(null);
-
-  const plaidSyncMutation = useMutation<PlaidSyncResult, Error>({
-    mutationFn: () => api.post("/api/admin/plaid/sync").then((r) => r.data),
-    onSuccess: () => { refetchStaged(); refetchPlaidStatus(); },
-  });
-
-  const plaidDisconnectMutation = useMutation<void, Error>({
-    mutationFn: () => api.post("/api/admin/plaid/disconnect").then((r) => r.data),
-    onSuccess: () => refetchPlaidStatus(),
-  });
-
-  const plaidExchangeMutation = useMutation<void, Error, string>({
-    mutationFn: (public_token) => api.post("/api/admin/plaid/exchange", { public_token }).then((r) => r.data),
-    onSuccess: () => { refetchPlaidStatus(); setPlaidLinkToken(null); },
-  });
-
-  const { open: openPlaidLink, ready: plaidReady } = usePlaidLink({
-    token: plaidLinkToken ?? "",
-    onSuccess: useCallback((public_token: string) => {
-      plaidExchangeMutation.mutate(public_token);
-    }, []),
-  });
-
-  async function handleConnectPlaid() {
-    const { data } = await api.post("/api/admin/plaid/link-token");
-    setPlaidLinkToken(data.link_token);
-  }
-
-  useEffect(() => {
-    if (plaidLinkToken && plaidReady) openPlaidLink();
-  }, [plaidLinkToken, plaidReady]);
-
   const amexMutation = useMutation<ImportResult, Error, { file: File; owner: string }>({
     mutationFn: ({ file, owner }) => {
       const form = new FormData();
@@ -238,6 +206,7 @@ export function ImportPage() {
       refetchStaged();
       setAmexFile(null);
       if (amexFileRef.current) amexFileRef.current.value = "";
+      processMutation.mutate();
     },
   });
 
@@ -252,6 +221,7 @@ export function ImportPage() {
       refetchStaged();
       setBarclaysFile(null);
       if (barclaysFileRef.current) barclaysFileRef.current.value = "";
+      processMutation.mutate();
     },
   });
 
@@ -266,6 +236,7 @@ export function ImportPage() {
       refetchStaged();
       setSantanderFile(null);
       if (santanderFileRef.current) santanderFileRef.current.value = "";
+      processMutation.mutate();
     },
   });
 
@@ -280,6 +251,7 @@ export function ImportPage() {
       refetchStaged();
       setHsbcFile(null);
       if (hsbcFileRef.current) hsbcFileRef.current.value = "";
+      processMutation.mutate();
     },
   });
 
@@ -294,6 +266,7 @@ export function ImportPage() {
       refetchStaged();
       setChaseFile(null);
       if (chaseFileRef.current) chaseFileRef.current.value = "";
+      processMutation.mutate();
     },
   });
 
@@ -308,20 +281,12 @@ export function ImportPage() {
       refetchStaged();
       setSofiFile(null);
       if (sofiFileRef.current) sofiFileRef.current.value = "";
-    },
-  });
-
-  const processMutation = useMutation<ProcessResult, Error>({
-    mutationFn: () => api.post("/api/admin/process").then((r) => r.data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["transactions"] });
-      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
-      refetchStaged();
+      processMutation.mutate();
     },
   });
 
   const sum = (key: keyof BankCounts) =>
-    (staged?.monzo[key] ?? 0) + (staged?.amex[key] ?? 0) + (staged?.barclays[key] ?? 0) + (staged?.santander[key] ?? 0) + (staged?.hsbc[key] ?? 0) + (staged?.sofi[key] ?? 0) + (staged?.chase[key] ?? 0) + (staged?.plaid[key] ?? 0);
+    (staged?.monzo[key] ?? 0) + (staged?.amex[key] ?? 0) + (staged?.barclays[key] ?? 0) + (staged?.santander[key] ?? 0) + (staged?.hsbc[key] ?? 0) + (staged?.sofi[key] ?? 0) + (staged?.chase[key] ?? 0);
   const totalPending   = sum("pending");
   const totalProcessed = sum("processed");
   const totalErrored   = sum("errored");
@@ -350,7 +315,7 @@ export function ImportPage() {
             <div className="space-y-3">
               {/* Per-bank breakdown */}
               <div className="flex flex-wrap gap-6 text-sm">
-                {(["monzo", "amex", "barclays", "santander", "hsbc", "sofi", "chase", "plaid"] as const).map((bank) => {
+                {(["monzo", "amex", "barclays", "santander", "hsbc", "sofi", "chase"] as const).map((bank) => {
                   const counts = staged?.[bank];
                   if (!counts) return null;
                   const total = counts.pending + counts.processed + counts.skipped;
@@ -370,25 +335,30 @@ export function ImportPage() {
                   );
                 })}
               </div>
-              {/* Status summary + action */}
+              {/* Status summary + (fallback) action */}
               <div className="flex items-center gap-4">
                 <span className="text-sm text-muted-foreground">
                   {totalProcessed.toLocaleString()} processed
                   {totalErrored > 0 && (
                     <> · <span className="text-destructive">{totalErrored.toLocaleString()} errored</span></>
                   )}
-                  {" · "}
-                  <span className={totalPending > 0 ? "text-foreground font-medium" : ""}>
-                    {totalPending.toLocaleString()} pending
-                  </span>
+                  {totalPending > 0 && (
+                    <> · <span className="text-foreground font-medium">{totalPending.toLocaleString()} pending</span></>
+                  )}
+                  {processMutation.isPending && (
+                    <> · <span className="text-foreground">syncing…</span></>
+                  )}
                 </span>
-                <Button
-                  size="sm"
-                  disabled={totalPending === 0 || processMutation.isPending}
-                  onClick={() => processMutation.mutate()}
-                >
-                  {processMutation.isPending ? "Processing…" : "Process staged"}
-                </Button>
+                {totalPending > 0 && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={processMutation.isPending}
+                    onClick={() => processMutation.mutate()}
+                  >
+                    {processMutation.isPending ? "Processing…" : "Re-process pending"}
+                  </Button>
+                )}
               </div>
               {processMutation.isSuccess && (
                 <div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
@@ -467,72 +437,6 @@ export function ImportPage() {
         </CardContent>
       </Card>
 
-      {/* Plaid — Santander open banking */}
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-xs uppercase tracking-wide text-muted-foreground">
-            Santander (Plaid){plaidStatus?.env === "sandbox" && <span className="ml-2 text-amber-500">sandbox</span>}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {!plaidStatus?.configured ? (
-            <p className="text-sm text-muted-foreground">
-              Set <span className="font-mono">PLAID_CLIENT_ID</span> and <span className="font-mono">PLAID_SECRET</span> in <span className="font-mono">server/.env</span>.
-            </p>
-          ) : !plaidStatus.connected ? (
-            <>
-              <p className="text-sm text-muted-foreground">
-                Connect your Santander account via Plaid — transactions sync automatically, no more PDFs.
-              </p>
-              <Button onClick={handleConnectPlaid} disabled={plaidExchangeMutation.isPending}>
-                Connect Santander
-              </Button>
-            </>
-          ) : (
-            <>
-              <p className="text-sm text-muted-foreground">
-                Connected
-                {plaidStatus.lastSyncedAt && (
-                  <> · Last synced {plaidStatus.lastSyncedAt} · {plaidStatus.totalStaged.toLocaleString()} staged</>
-                )}
-              </p>
-              <div className="flex items-center gap-3">
-                <Button disabled={plaidSyncMutation.isPending} onClick={() => plaidSyncMutation.mutate()}>
-                  {plaidSyncMutation.isPending ? "Syncing…" : "Sync now"}
-                </Button>
-                <Button variant="outline" onClick={handleConnectPlaid}>
-                  Reconnect
-                </Button>
-                <Button variant="outline" disabled={plaidDisconnectMutation.isPending} onClick={() => plaidDisconnectMutation.mutate()}>
-                  Disconnect
-                </Button>
-              </div>
-              {plaidSyncMutation.isSuccess && (
-                <div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
-                  <CheckCircle className="h-4 w-4" />
-                  {plaidSyncMutation.data.imported.toLocaleString()} rows staged
-                  {plaidSyncMutation.data.duplicates > 0 && (
-                    <span className="text-muted-foreground">· {plaidSyncMutation.data.duplicates.toLocaleString()} already existed</span>
-                  )}
-                </div>
-              )}
-              {plaidSyncMutation.isError && (
-                <div className="flex items-center gap-2 text-sm text-destructive">
-                  <AlertCircle className="h-4 w-4" />
-                  {plaidSyncMutation.error.message}
-                </div>
-              )}
-            </>
-          )}
-          {plaidExchangeMutation.isError && (
-            <div className="flex items-center gap-2 text-sm text-destructive">
-              <AlertCircle className="h-4 w-4" />
-              {plaidExchangeMutation.error.message}
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
       <BankUploadCard
         title="Amex"
         description="Download from Amex online → Statements → View/Download PDF."
@@ -542,7 +446,7 @@ export function ImportPage() {
         onFileChange={(f) => { setAmexFile(f); amexMutation.reset(); }}
         onUpload={() => amexFile && amexMutation.mutate({ file: amexFile, owner: amexOwner })}
         result={amexMutation.data}
-        isPending={amexMutation.isPending}
+        isPending={amexMutation.isPending || (amexMutation.isSuccess && processMutation.isPending)}
         isError={amexMutation.isError}
         error={amexMutation.error}
         owner={amexOwner}
@@ -558,7 +462,7 @@ export function ImportPage() {
         onFileChange={(f) => { setBarclaysFile(f); barclaysMutation.reset(); }}
         onUpload={() => barclaysFile && barclaysMutation.mutate({ file: barclaysFile, owner: barclaysOwner })}
         result={barclaysMutation.data}
-        isPending={barclaysMutation.isPending}
+        isPending={barclaysMutation.isPending || (barclaysMutation.isSuccess && processMutation.isPending)}
         isError={barclaysMutation.isError}
         error={barclaysMutation.error}
         owner={barclaysOwner}
@@ -574,7 +478,7 @@ export function ImportPage() {
         onFileChange={(f) => { setSantanderFile(f); santanderMutation.reset(); }}
         onUpload={() => santanderFile && santanderMutation.mutate({ file: santanderFile, owner: santanderOwner })}
         result={santanderMutation.data}
-        isPending={santanderMutation.isPending}
+        isPending={santanderMutation.isPending || (santanderMutation.isSuccess && processMutation.isPending)}
         isError={santanderMutation.isError}
         error={santanderMutation.error}
         owner={santanderOwner}
@@ -590,7 +494,7 @@ export function ImportPage() {
         onFileChange={(f) => { setHsbcFile(f); hsbcMutation.reset(); }}
         onUpload={() => hsbcFile && hsbcMutation.mutate({ file: hsbcFile, owner: hsbcOwner })}
         result={hsbcMutation.data}
-        isPending={hsbcMutation.isPending}
+        isPending={hsbcMutation.isPending || (hsbcMutation.isSuccess && processMutation.isPending)}
         isError={hsbcMutation.isError}
         error={hsbcMutation.error}
         owner={hsbcOwner}
@@ -606,7 +510,7 @@ export function ImportPage() {
         onFileChange={(f) => { setChaseFile(f); chaseMutation.reset(); }}
         onUpload={() => chaseFile && chaseMutation.mutate({ file: chaseFile, owner: chaseOwner })}
         result={chaseMutation.data}
-        isPending={chaseMutation.isPending}
+        isPending={chaseMutation.isPending || (chaseMutation.isSuccess && processMutation.isPending)}
         isError={chaseMutation.isError}
         error={chaseMutation.error}
         owner={chaseOwner}
@@ -622,7 +526,7 @@ export function ImportPage() {
         onFileChange={(f) => { setSofiFile(f); sofiMutation.reset(); }}
         onUpload={() => sofiFile && sofiMutation.mutate({ file: sofiFile, owner: sofiOwner })}
         result={sofiMutation.data}
-        isPending={sofiMutation.isPending}
+        isPending={sofiMutation.isPending || (sofiMutation.isSuccess && processMutation.isPending)}
         isError={sofiMutation.isError}
         error={sofiMutation.error}
         owner={sofiOwner}
