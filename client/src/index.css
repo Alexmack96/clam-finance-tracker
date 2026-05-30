@@ -334,4 +334,17 @@
     background: color-mix(in oklab, var(--primary) 30%, transparent);
     color: var(--foreground);
   }
+
+  /*
+    iOS-only top safe-area padding for the sticky navbar in standalone PWA.
+    Android Chrome already inset the webview below the status bar, so applying
+    env(safe-area-inset-top) globally would double-pad it. The
+    `-webkit-touch-callout` property is supported only on iOS Safari/WebKit,
+    so this @supports block targets iOS exclusively.
+  */
+  @supports (-webkit-touch-callout: none) {
+    .ios-safe-top {
+      padding-top: env(safe-area-inset-top);
+    }
+  }
 }

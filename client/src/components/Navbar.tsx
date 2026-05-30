@@ -29,7 +29,7 @@ export function Navbar({ onSignOut }: { onSignOut: () => void }) {
     .join("");
 
   return (
-    <header className="glass-pane sticky top-0 z-40">
+    <header className="glass-pane sticky top-0 z-40 ios-safe-top">
       <nav className="mx-auto max-w-[1400px] px-6 h-14 flex items-center gap-8">
         {/* Wordmark */}
         <Link to="/dashboard" className="flex items-center gap-2.5 group shrink-0">
