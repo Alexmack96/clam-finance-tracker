@@ -3,7 +3,7 @@ import { Router } from "express";
 import multer from "multer";
 import pdfParse from "pdf-parse";
 import { db } from "../db/client.js";
-import { convert, convertWithFallback } from "../lib/fxRates.js";
+import { convertWithFallback } from "../lib/fxRates.js";
 
 export const importRouter = Router();
 
@@ -1172,6 +1172,34 @@ importRouter.get("/staged", async (_req, res) => {
     chase:      { ...toCounts(chase.map((r) => ({ status: r.status, _count: r._count }))),      byOwner: toOwnerCounts(chase.map((r) => ({ status: r.status, owner: r.owner, _count: r._count }))) },
     plaid:      { ...toCounts(plaid.map((r) => ({ status: r.status, _count: r._count }))),      byOwner: toOwnerCounts(plaid.map((r) => ({ status: r.status, owner: r.owner, _count: r._count }))) },
   });
+});
+
+// ─── GET /api/admin/last-statement ───────────────────────────────────────────
+// For each statement-based bank, the date (date-only) of the most recent
+// processed Transaction. Tells the user how far their uploaded statements reach.
+
+const BANK_EXTERNAL_ID_PREFIXES: Record<string, string> = {
+  monzo:     "monzo:",
+  amex:      "amex:",
+  barclays:  "barclays:",
+  santander: "santander:",
+  hsbc:      "hsbc:",
+  sofi:      "sofi:",
+  chase:     "chase:",
+};
+
+importRouter.get("/last-statement", async (_req, res) => {
+  const entries = await Promise.all(
+    Object.entries(BANK_EXTERNAL_ID_PREFIXES).map(async ([bank, prefix]) => {
+      const latest = await db.transaction.findFirst({
+        where: { externalId: { startsWith: prefix } },
+        orderBy: { date: "desc" },
+        select: { date: true },
+      });
+      return [bank, latest ? latest.date.toISOString().slice(0, 10) : null] as const;
+    }),
+  );
+  res.json(Object.fromEntries(entries));
 });
 
 // ─── POST /api/admin/process ─────────────────────────────────────────────────

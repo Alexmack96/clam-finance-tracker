@@ -8,17 +8,19 @@ import api from "../lib/api.js";
 
 type ImportResult = { imported: number; duplicates?: string[] };
 type ProcessResult = { processed: number; skipped: number; errored: number };
-type BankCounts = { pending: number; processed: number; skipped: number; errored: number };
-type BankCountsWithOwner = BankCounts & { byOwner: Record<string, Record<string, number>> };
-type StagedInfo = {
-  monzo: BankCounts;
-  amex: BankCountsWithOwner;
-  barclays: BankCountsWithOwner;
-  santander: BankCountsWithOwner;
-  hsbc: BankCountsWithOwner;
-  sofi: BankCountsWithOwner;
-  chase: BankCountsWithOwner;
-};
+
+// Per-bank date (YYYY-MM-DD) of the most recent transaction, or null if none yet.
+type LastStatement = Record<string, string | null>;
+
+// "2026-05-31" → "31 May 2026"
+const fmtStatementDate = (iso: string | null | undefined) =>
+  iso
+    ? new Date(`${iso}T00:00:00`).toLocaleDateString("en-GB", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      })
+    : null;
 
 function BankUploadCard({
   title,
@@ -34,6 +36,7 @@ function BankUploadCard({
   accept = ".csv",
   owner,
   onOwnerChange,
+  lastStatement,
 }: {
   title: string;
   description: string;
@@ -48,6 +51,7 @@ function BankUploadCard({
   accept?: string;
   owner?: string;
   onOwnerChange?: (owner: string) => void;
+  lastStatement?: string | null;
 }) {
   const [showDuplicates, setShowDuplicates] = useState(false);
   const inputId = `file-${title.toLowerCase()}`;
@@ -55,9 +59,25 @@ function BankUploadCard({
   return (
     <Card>
       <CardHeader className="pb-2">
-        <CardTitle className="text-xs uppercase tracking-wide text-muted-foreground">
-          {title}
-        </CardTitle>
+        <div className="flex items-center justify-between gap-3">
+          <CardTitle className="text-xs uppercase tracking-wide text-muted-foreground">
+            {title}
+          </CardTitle>
+          {lastStatement ? (
+            <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+              <CheckCircle className="h-3.5 w-3.5 text-green-600 dark:text-green-400" />
+              Statements through{" "}
+              <span className="font-medium text-foreground font-numeric">
+                {fmtStatementDate(lastStatement)}
+              </span>
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1.5 text-xs font-medium text-amber-600 dark:text-amber-500">
+              <AlertCircle className="h-3.5 w-3.5" />
+              No statements uploaded yet
+            </span>
+          )}
+        </div>
       </CardHeader>
       <CardContent className="space-y-4">
         <p className="text-sm text-muted-foreground">{description}</p>
@@ -100,7 +120,7 @@ function BankUploadCard({
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
               <CheckCircle className="h-4 w-4" />
-              {result.imported.toLocaleString()} rows staged
+              {result.imported.toLocaleString()} transactions imported
               {(result.duplicates?.length ?? 0) > 0 && (
                 <span className="text-muted-foreground">
                   · {result.duplicates!.length} already existed
@@ -176,9 +196,9 @@ export function ImportPage() {
   const [sofiOwner, setSofiOwner] = useState("Casey");
   const [chaseOwner, setChaseOwner] = useState("Casey");
 
-  const { data: staged, refetch: refetchStaged } = useQuery<StagedInfo>({
-    queryKey: ["staged"],
-    queryFn: () => api.get("/api/admin/staged").then((r) => r.data),
+  const { data: lastStatement, refetch: refetchLastStatement } = useQuery<LastStatement>({
+    queryKey: ["last-statement"],
+    queryFn: () => api.get("/api/admin/last-statement").then((r) => r.data),
   });
 
   const { data: monzoStatus, refetch: refetchMonzoStatus } = useQuery<MonzoStatus>({
@@ -191,14 +211,14 @@ export function ImportPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
-      refetchStaged();
+      refetchLastStatement();
     },
   });
 
   const monzoSyncMutation = useMutation<MonzoSyncResult, Error>({
     mutationFn: () => api.post("/api/admin/monzo/sync").then((r) => r.data),
     onSuccess: () => {
-      refetchStaged();
+      refetchLastStatement();
       refetchMonzoStatus();
       processMutation.mutate();
     },
@@ -225,7 +245,7 @@ export function ImportPage() {
       return api.post("/api/admin/import/amex", form).then((r) => r.data);
     },
     onSuccess: () => {
-      refetchStaged();
+      refetchLastStatement();
       setAmexFile(null);
       if (amexFileRef.current) amexFileRef.current.value = "";
       processMutation.mutate();
@@ -240,7 +260,7 @@ export function ImportPage() {
       return api.post("/api/admin/import/barclays", form).then((r) => r.data);
     },
     onSuccess: () => {
-      refetchStaged();
+      refetchLastStatement();
       setBarclaysFile(null);
       if (barclaysFileRef.current) barclaysFileRef.current.value = "";
       processMutation.mutate();
@@ -255,7 +275,7 @@ export function ImportPage() {
       return api.post("/api/admin/import/santander", form).then((r) => r.data);
     },
     onSuccess: () => {
-      refetchStaged();
+      refetchLastStatement();
       setSantanderFile(null);
       if (santanderFileRef.current) santanderFileRef.current.value = "";
       processMutation.mutate();
@@ -270,7 +290,7 @@ export function ImportPage() {
       return api.post("/api/admin/import/hsbc", form).then((r) => r.data);
     },
     onSuccess: () => {
-      refetchStaged();
+      refetchLastStatement();
       setHsbcFile(null);
       if (hsbcFileRef.current) hsbcFileRef.current.value = "";
       processMutation.mutate();
@@ -285,7 +305,7 @@ export function ImportPage() {
       return api.post("/api/admin/import/chase", form).then((r) => r.data);
     },
     onSuccess: () => {
-      refetchStaged();
+      refetchLastStatement();
       setChaseFile(null);
       if (chaseFileRef.current) chaseFileRef.current.value = "";
       processMutation.mutate();
@@ -300,25 +320,12 @@ export function ImportPage() {
       return api.post("/api/admin/import/sofi", form).then((r) => r.data);
     },
     onSuccess: () => {
-      refetchStaged();
+      refetchLastStatement();
       setSofiFile(null);
       if (sofiFileRef.current) sofiFileRef.current.value = "";
       processMutation.mutate();
     },
   });
-
-  const sum = (key: keyof BankCounts) =>
-    (staged?.monzo[key] ?? 0) +
-    (staged?.amex[key] ?? 0) +
-    (staged?.barclays[key] ?? 0) +
-    (staged?.santander[key] ?? 0) +
-    (staged?.hsbc[key] ?? 0) +
-    (staged?.sofi[key] ?? 0) +
-    (staged?.chase[key] ?? 0);
-  const totalPending = sum("pending");
-  const totalProcessed = sum("processed");
-  const totalErrored = sum("errored");
-  const totalStaged = totalPending + totalProcessed + sum("skipped") + totalErrored;
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
@@ -329,106 +336,7 @@ export function ImportPage() {
         </p>
       </div>
 
-      {/* Staging status */}
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-xs uppercase tracking-wide text-muted-foreground">
-            Staging
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {totalStaged === 0 ? (
-            <p className="text-sm text-muted-foreground">No staged transactions yet.</p>
-          ) : (
-            <div className="space-y-3">
-              {/* Per-bank breakdown */}
-              <div className="flex flex-wrap gap-6 text-sm">
-                {(["monzo", "amex", "barclays", "santander", "hsbc", "sofi", "chase"] as const).map(
-                  (bank) => {
-                    const counts = staged?.[bank];
-                    if (!counts) return null;
-                    const total = counts.pending + counts.processed + counts.skipped;
-                    if (total === 0) return null;
-                    const ownerCounts = "byOwner" in counts ? counts.byOwner : null;
-                    const owners = ownerCounts
-                      ? Object.entries(ownerCounts)
-                          .map(
-                            ([o, s]) =>
-                              `${o} ${((s.pending ?? 0) + (s.processed ?? 0) + (s.skipped ?? 0)).toLocaleString()}`,
-                          )
-                          .join(" · ")
-                      : null;
-                    return (
-                      <div key={bank}>
-                        <span className="font-medium text-foreground capitalize">{bank}</span>
-                        <span className="text-muted-foreground ml-1">
-                          {total.toLocaleString()} rows
-                        </span>
-                        {owners && (
-                          <span className="text-muted-foreground/60 ml-1 text-xs">({owners})</span>
-                        )}
-                      </div>
-                    );
-                  },
-                )}
-              </div>
-              {/* Status summary + (fallback) action */}
-              <div className="flex items-center gap-4">
-                <span className="text-sm text-muted-foreground">
-                  {totalProcessed.toLocaleString()} processed
-                  {totalErrored > 0 && (
-                    <>
-                      {" "}
-                      ·{" "}
-                      <span className="text-destructive">
-                        {totalErrored.toLocaleString()} errored
-                      </span>
-                    </>
-                  )}
-                  {totalPending > 0 && (
-                    <>
-                      {" "}
-                      ·{" "}
-                      <span className="text-foreground font-medium">
-                        {totalPending.toLocaleString()} pending
-                      </span>
-                    </>
-                  )}
-                  {processMutation.isPending && (
-                    <>
-                      {" "}
-                      · <span className="text-foreground">syncing…</span>
-                    </>
-                  )}
-                </span>
-                {totalPending > 0 && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    disabled={processMutation.isPending}
-                    onClick={() => processMutation.mutate()}
-                  >
-                    {processMutation.isPending ? "Processing…" : "Re-process pending"}
-                  </Button>
-                )}
-              </div>
-              {processMutation.isSuccess && (
-                <div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
-                  <CheckCircle className="h-4 w-4" />
-                  {processMutation.data.processed.toLocaleString()} transactions added
-                  {processMutation.data.errored > 0 && (
-                    <span className="text-destructive">
-                      · {processMutation.data.errored.toLocaleString()} errored
-                    </span>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Active bank upload cards */}
+      {/* Monzo — API-synced, not statement-based */}
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-xs uppercase tracking-wide text-muted-foreground">
@@ -464,11 +372,7 @@ export function ImportPage() {
               <p className="text-sm text-muted-foreground">
                 Connected · <span className="font-mono text-xs">{monzoStatus.accountId}</span>
                 {monzoStatus.lastSyncedAt && (
-                  <>
-                    {" "}
-                    · Last synced {new Date(monzoStatus.lastSyncedAt).toLocaleString()} ·{" "}
-                    {monzoStatus.totalStaged.toLocaleString()} staged
-                  </>
+                  <> · Last synced {new Date(monzoStatus.lastSyncedAt).toLocaleString()}</>
                 )}
               </p>
               <div className="flex items-center gap-3">
@@ -489,7 +393,7 @@ export function ImportPage() {
               {monzoSyncMutation.isSuccess && (
                 <div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
                   <CheckCircle className="h-4 w-4" />
-                  {monzoSyncMutation.data.imported.toLocaleString()} rows staged
+                  {monzoSyncMutation.data.imported.toLocaleString()} transactions synced
                   {monzoSyncMutation.data.duplicates > 0 && (
                     <span className="text-muted-foreground">
                       · {monzoSyncMutation.data.duplicates.toLocaleString()} already existed
@@ -525,6 +429,7 @@ export function ImportPage() {
         error={amexMutation.error}
         owner={amexOwner}
         onOwnerChange={setAmexOwner}
+        lastStatement={lastStatement?.amex}
       />
 
       <BankUploadCard
@@ -548,6 +453,7 @@ export function ImportPage() {
         error={barclaysMutation.error}
         owner={barclaysOwner}
         onOwnerChange={setBarclaysOwner}
+        lastStatement={lastStatement?.barclays}
       />
 
       <BankUploadCard
@@ -571,6 +477,7 @@ export function ImportPage() {
         error={santanderMutation.error}
         owner={santanderOwner}
         onOwnerChange={setSantanderOwner}
+        lastStatement={lastStatement?.santander}
       />
 
       <BankUploadCard
@@ -590,6 +497,7 @@ export function ImportPage() {
         error={hsbcMutation.error}
         owner={hsbcOwner}
         onOwnerChange={setHsbcOwner}
+        lastStatement={lastStatement?.hsbc}
       />
 
       <BankUploadCard
@@ -611,6 +519,7 @@ export function ImportPage() {
         error={chaseMutation.error}
         owner={chaseOwner}
         onOwnerChange={setChaseOwner}
+        lastStatement={lastStatement?.chase}
       />
 
       <BankUploadCard
@@ -630,6 +539,7 @@ export function ImportPage() {
         error={sofiMutation.error}
         owner={sofiOwner}
         onOwnerChange={setSofiOwner}
+        lastStatement={lastStatement?.sofi}
       />
     </div>
   );

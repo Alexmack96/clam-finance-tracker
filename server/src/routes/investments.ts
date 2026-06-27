@@ -53,7 +53,6 @@ investmentsRouter.get("/", async (_req, res) => {
 
   const now = new Date();
   const currentMonth = ym(now);
-  const currentYear = year(now);
   const prevMonthStr = ym(new Date(now.getFullYear(), now.getMonth() - 1, 1));
   const prevYearStr  = String(now.getFullYear() - 1);
 

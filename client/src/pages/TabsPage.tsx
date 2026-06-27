@@ -10,19 +10,44 @@ import { Button } from "../components/ui/button.js";
 import { Input } from "../components/ui/input.js";
 import { Label } from "../components/ui/label.js";
 import { Badge } from "../components/ui/badge.js";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "../components/ui/dialog.js";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "../components/ui/alert-dialog.js";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select.js";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "../components/ui/dialog.js";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "../components/ui/alert-dialog.js";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select.js";
 import { Skeleton } from "../components/ui/skeleton.js";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../components/ui/table.js";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "../components/ui/table.js";
 
 const fmt = (n: string | number) =>
   new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP" }).format(
-    typeof n === "string" ? parseFloat(n) : n
+    typeof n === "string" ? parseFloat(n) : n,
   );
-
-const fmtDate = (d: string | null) =>
-  d ? new Date(d).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "—";
 
 function TabTable({
   tabs,
@@ -44,8 +69,6 @@ function TabTable({
           <TableHead>Person</TableHead>
           <TableHead>Description</TableHead>
           <TableHead className="text-right">Amount</TableHead>
-          <TableHead>Due</TableHead>
-          <TableHead>Note</TableHead>
           <TableHead>Status</TableHead>
           <TableHead />
         </TableRow>
@@ -56,8 +79,6 @@ function TabTable({
             <TableCell className="font-medium">{tab.person}</TableCell>
             <TableCell>{tab.description}</TableCell>
             <TableCell className="text-right font-mono">{fmt(tab.amount)}</TableCell>
-            <TableCell className="text-sm text-muted-foreground">{fmtDate(tab.dueDate)}</TableCell>
-            <TableCell className="text-sm text-muted-foreground">{tab.note ?? "—"}</TableCell>
             <TableCell>
               <Badge variant={tab.status === "Settled" ? "secondary" : "default"}>
                 {tab.status}
@@ -114,19 +135,17 @@ export function TabsPage() {
 
   const { data, isPending } = useQuery({
     queryKey: ["tabs", showAll ? "all" : "open"],
-    queryFn: () =>
-      api.get(`/api/tabs${showAll ? "?status=all" : ""}`).then((r) => r.data),
+    queryFn: () => api.get(`/api/tabs${showAll ? "?status=all" : ""}`).then((r) => r.data),
   });
 
   const tabs: Tab[] = data?.tabs ?? [];
   const totals = data?.totals ?? { theyOweMe: "0.00", iOweThem: "0.00" };
 
   const theyOweMeTabs = tabs.filter((t) => t.direction === "TheyOwe");
-  const iOweThem = tabs.filter((t) => t.direction === "IOwe");
 
   const form = useForm<CreateTabInput>({
     resolver: zodResolver(createTabSchema),
-    defaultValues: { person: "", description: "", amount: 0, direction: "TheyOwe", dueDate: null, note: null },
+    defaultValues: { person: "", description: "", amount: 0, direction: "TheyOwe" },
   });
 
   const createMutation = useMutation({
@@ -139,7 +158,8 @@ export function TabsPage() {
   });
 
   const settleMutation = useMutation({
-    mutationFn: (id: string) => api.patch(`/api/tabs/${id}`, { status: "Settled" }).then((r) => r.data),
+    mutationFn: (id: string) =>
+      api.patch(`/api/tabs/${id}`, { status: "Settled" }).then((r) => r.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tabs"] });
       setSettleTarget(null);
@@ -181,7 +201,9 @@ export function TabsPage() {
       <div className="grid grid-cols-2 gap-4">
         <Card className="border-emerald-500/40">
           <CardHeader className="pb-2">
-            <CardTitle className="text-xs uppercase tracking-wide text-muted-foreground">Owed to Me</CardTitle>
+            <CardTitle className="text-xs uppercase tracking-wide text-muted-foreground">
+              Owed to Me
+            </CardTitle>
           </CardHeader>
           <CardContent>
             {isPending ? (
@@ -193,7 +215,9 @@ export function TabsPage() {
         </Card>
         <Card className="border-amber-500/40">
           <CardHeader className="pb-2">
-            <CardTitle className="text-xs uppercase tracking-wide text-muted-foreground">I Owe Them</CardTitle>
+            <CardTitle className="text-xs uppercase tracking-wide text-muted-foreground">
+              I Owe Them
+            </CardTitle>
           </CardHeader>
           <CardContent>
             {isPending ? (
@@ -214,29 +238,7 @@ export function TabsPage() {
           {isPending ? (
             <Skeleton className="h-24 w-full" />
           ) : (
-            <TabTable
-              tabs={theyOweMeTabs}
-              onSettle={setSettleTarget}
-              onDelete={setDeleteTarget}
-            />
-          )}
-        </CardContent>
-      </Card>
-
-      {/* I Owe Them */}
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-semibold">I Owe Them</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {isPending ? (
-            <Skeleton className="h-24 w-full" />
-          ) : (
-            <TabTable
-              tabs={iOweThem}
-              onSettle={setSettleTarget}
-              onDelete={setDeleteTarget}
-            />
+            <TabTable tabs={theyOweMeTabs} onSettle={setSettleTarget} onDelete={setDeleteTarget} />
           )}
         </CardContent>
       </Card>
@@ -259,7 +261,9 @@ export function TabsPage() {
                     className={form.formState.errors.person ? "border-destructive" : ""}
                   />
                   {form.formState.errors.person && (
-                    <p className="text-xs text-destructive">{form.formState.errors.person.message}</p>
+                    <p className="text-xs text-destructive">
+                      {form.formState.errors.person.message}
+                    </p>
                   )}
                 </div>
                 <div className="space-y-1">
@@ -288,48 +292,38 @@ export function TabsPage() {
                   className={form.formState.errors.description ? "border-destructive" : ""}
                 />
                 {form.formState.errors.description && (
-                  <p className="text-xs text-destructive">{form.formState.errors.description.message}</p>
+                  <p className="text-xs text-destructive">
+                    {form.formState.errors.description.message}
+                  </p>
                 )}
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <Label htmlFor="amount">Amount (£)</Label>
-                  <Input
-                    id="amount"
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    placeholder="0.00"
-                    {...form.register("amount", { valueAsNumber: true })}
-                    className={form.formState.errors.amount ? "border-destructive" : ""}
-                  />
-                  {form.formState.errors.amount && (
-                    <p className="text-xs text-destructive">{form.formState.errors.amount.message}</p>
-                  )}
-                </div>
-                <div className="space-y-1">
-                  <Label htmlFor="dueDate">Due date (optional)</Label>
-                  <Input
-                    id="dueDate"
-                    type="date"
-                    {...form.register("dueDate")}
-                  />
-                </div>
-              </div>
-
               <div className="space-y-1">
-                <Label htmlFor="note">Note (optional)</Label>
+                <Label htmlFor="amount">Amount (£)</Label>
                 <Input
-                  id="note"
-                  placeholder="Any extra context"
-                  {...form.register("note")}
+                  id="amount"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  placeholder="0.00"
+                  {...form.register("amount", { valueAsNumber: true })}
+                  className={form.formState.errors.amount ? "border-destructive" : ""}
                 />
+                {form.formState.errors.amount && (
+                  <p className="text-xs text-destructive">{form.formState.errors.amount.message}</p>
+                )}
               </div>
             </div>
 
             <DialogFooter className="mt-4">
-              <Button type="button" variant="outline" onClick={() => { setAddOpen(false); form.reset(); }}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setAddOpen(false);
+                  form.reset();
+                }}
+              >
                 Cancel
               </Button>
               <Button type="submit" disabled={createMutation.isPending}>
@@ -372,7 +366,8 @@ export function TabsPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete tab?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete the tab with {deleteTarget?.person} for {fmt(deleteTarget?.amount ?? 0)}. This cannot be undone.
+              This will permanently delete the tab with {deleteTarget?.person} for{" "}
+              {fmt(deleteTarget?.amount ?? 0)}. This cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

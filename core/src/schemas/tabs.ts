@@ -8,8 +8,6 @@ export const createTabSchema = z.object({
   description: z.string().min(1, "Description is required"),
   amount: z.number().positive("Amount must be positive"),
   direction: tabDirectionSchema,
-  dueDate: z.string().optional().nullable(),
-  note: z.string().optional().nullable(),
 });
 
 export const updateTabSchema = z.object({
@@ -18,9 +16,7 @@ export const updateTabSchema = z.object({
   amount: z.number().positive().optional(),
   direction: tabDirectionSchema.optional(),
   status: tabStatusSchema.optional(),
-  dueDate: z.string().optional().nullable(),
   settledAt: z.string().optional().nullable(),
-  note: z.string().optional().nullable(),
 });
 
 export type CreateTabInput = z.infer<typeof createTabSchema>;
@@ -33,9 +29,7 @@ export type Tab = {
   amount: string; // Decimal → string over JSON
   direction: "IOwe" | "TheyOwe";
   status: "Open" | "Settled";
-  dueDate: string | null;
   settledAt: string | null;
-  note: string | null;
   createdAt: string;
   updatedAt: string;
 };

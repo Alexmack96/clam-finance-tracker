@@ -40,8 +40,6 @@ tabsRouter.post("/", async (req, res) => {
       description: body.description,
       amount: body.amount,
       direction: body.direction as TabDirection,
-      dueDate: body.dueDate ? new Date(body.dueDate) : null,
-      note: body.note ?? null,
     },
   });
   res.status(201).json(tab);
@@ -57,9 +55,6 @@ tabsRouter.patch("/:id", async (req, res) => {
   }
   if (body.status === "Open") {
     data.settledAt = null;
-  }
-  if (body.dueDate !== undefined) {
-    data.dueDate = body.dueDate ? new Date(body.dueDate) : null;
   }
 
   const tab = await db.tab.update({ where: { id: req.params.id }, data });
