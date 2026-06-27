@@ -10,6 +10,8 @@
   "devDependencies": {
     "@playwright/test": "^1.59.1",
     "@types/node": "^25.5.0",
+    "@types/pdfkit": "^0.17.6",
+    "pdfkit": "^0.19.1",
     "playwright": "1.59.1",
     "typescript": "^6.0.2"
   }

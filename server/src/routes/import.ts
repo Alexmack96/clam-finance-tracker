@@ -220,6 +220,25 @@ function parseAmexPdf(text: string): AmexRow[] {
 
 const VALID_OWNERS = new Set(["Alex", "Casey", "Joint"]);
 
+// ─── Business keys (Barclays / Santander) ────────────────────────────────────
+//
+// Build a deterministic content-hash id per staged row so re-uploading the same
+// file produces the SAME ids and the rows are detected as duplicates instead of
+// being inserted again. Genuine same-content repeats within ONE file (e.g. four
+// £1.75 Lime hires on the same day) are kept distinct by appending _1, _2, _3…
+// Rows are sorted by their content key first, so suffix assignment is independent
+// of PDF parse order — the same file always yields the same set of ids.
+function assignBusinessKeys<T>(rows: T[], contentKey: (r: T) => string): (T & { transactionId: string })[] {
+  const sorted = [...rows].sort((a, b) => contentKey(a).localeCompare(contentKey(b)));
+  const counts = new Map<string, number>();
+  return sorted.map((r) => {
+    const baseId = createHash("sha256").update(contentKey(r)).digest("hex").slice(0, 16);
+    const c = counts.get(baseId) ?? 0;
+    counts.set(baseId, c + 1);
+    return { ...r, transactionId: c === 0 ? baseId : `${baseId}_${c}` };
+  });
+}
+
 function amexTransactionId(row: AmexRow): string {
   const sign = row.isCredit ? "CR" : "DR";
   return createHash("sha256")
@@ -394,8 +413,20 @@ importRouter.post("/import/barclays", upload.single("file"), async (req, res) =>
     return;
   }
 
-  if (rows.length > 0) await db.barclaysTransaction.createMany({ data: rows.map((r) => ({ ...r, owner })) });
-  res.json({ imported: rows.length });
+  const keyed = assignBusinessKeys(rows, (r) => `${r.date}|${r.description}|${r.amount}|${r.isCredit}`);
+
+  const existing = await db.barclaysTransaction.findMany({ select: { transactionId: true } });
+  const existingIds = new Set(existing.map((r) => r.transactionId));
+
+  const toInsert: (BarclaysRow & { transactionId: string; owner: string })[] = [];
+  const duplicates: string[] = [];
+  for (const row of keyed) {
+    if (existingIds.has(row.transactionId)) duplicates.push(row.transactionId);
+    else toInsert.push({ ...row, owner });
+  }
+
+  if (toInsert.length > 0) await db.barclaysTransaction.createMany({ data: toInsert });
+  res.json({ imported: toInsert.length, duplicates });
 });
 
 // ─── Santander PDF parser ─────────────────────────────────────────────────────
@@ -562,8 +593,20 @@ importRouter.post("/import/santander", upload.single("file"), async (req, res) =
     return;
   }
 
-  if (rows.length > 0) await db.santanderTransaction.createMany({ data: rows.map((r) => ({ ...r, owner })) });
-  res.json({ imported: rows.length });
+  const keyed = assignBusinessKeys(rows, (r) => `${r.date}|${r.description}|${r.moneyIn ?? ""}|${r.moneyOut ?? ""}|${r.balance}`);
+
+  const existing = await db.santanderTransaction.findMany({ select: { transactionId: true } });
+  const existingIds = new Set(existing.map((r) => r.transactionId));
+
+  const toInsert: (SantanderRow & { transactionId: string; owner: string })[] = [];
+  const duplicates: string[] = [];
+  for (const row of keyed) {
+    if (existingIds.has(row.transactionId)) duplicates.push(row.transactionId);
+    else toInsert.push({ ...row, owner });
+  }
+
+  if (toInsert.length > 0) await db.santanderTransaction.createMany({ data: toInsert });
+  res.json({ imported: toInsert.length, duplicates });
 });
 
 // ─── HSBC PDF parser ──────────────────────────────────────────────────────────
@@ -1206,7 +1249,7 @@ importRouter.post("/process", async (_req, res) => {
       } else {
         const categoryName = resolveCategoryByMerchant(row.description);
         const category = await findCategory(categoryName);
-        const barclaysExtId = `barclays:${row.id}`;
+        const barclaysExtId = `barclays:${row.transactionId ?? row.id}`;
         const barclaysExists = await db.transaction.findUnique({ where: { externalId: barclaysExtId }, select: { id: true } });
         if (!barclaysExists) await db.transaction.create({
           data: {
@@ -1243,7 +1286,7 @@ importRouter.post("/process", async (_req, res) => {
     } else {
       const categoryName = resolveCategoryByMerchant(row.description);
       const category = await findCategory(categoryName);
-      const santanderExtId = `santander:${row.id}`;
+      const santanderExtId = `santander:${row.transactionId ?? row.id}`;
       const santanderExists = await db.transaction.findUnique({ where: { externalId: santanderExtId }, select: { id: true } });
       if (!santanderExists) await db.transaction.create({
         data: {

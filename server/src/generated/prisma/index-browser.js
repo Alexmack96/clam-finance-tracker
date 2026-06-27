@@ -224,6 +224,7 @@ exports.Prisma.AmexTransactionScalarFieldEnum = {
 
 exports.Prisma.BarclaysTransactionScalarFieldEnum = {
   id: 'id',
+  transactionId: 'transactionId',
   date: 'date',
   description: 'description',
   amount: 'amount',
@@ -236,6 +237,7 @@ exports.Prisma.BarclaysTransactionScalarFieldEnum = {
 
 exports.Prisma.SantanderTransactionScalarFieldEnum = {
   id: 'id',
+  transactionId: 'transactionId',
   date: 'date',
   description: 'description',
   moneyIn: 'moneyIn',

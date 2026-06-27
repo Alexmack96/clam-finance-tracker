@@ -162,6 +162,7 @@ model AmexTransaction {
 
 model BarclaysTransaction {
   id            Int      @id @default(autoincrement())
+  transactionId String?  @unique
   date          String
   description   String
   amount        String
@@ -176,6 +177,7 @@ model BarclaysTransaction {
 
 model SantanderTransaction {
   id            Int      @id @default(autoincrement())
+  transactionId String?  @unique
   date          String
   description   String
   moneyIn       String?

@@ -307,6 +307,10 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html, body, #root {
+    height: 100%;
+    height: 100dvh;
+  }
   html, body {
     font-family: var(--font-sans);
     font-feature-settings: "ss01" 1, "cv11" 1;
@@ -314,6 +318,20 @@
     -moz-osx-font-smoothing: grayscale;
     /* Prevent the bouncy-pull overscroll in standalone PWA */
     overscroll-behavior: none;
+    /* Body never scrolls — the shell's <main> does. Stops iOS URL-bar
+       wobble and pull-to-refresh; makes the chrome feel truly fixed. */
+    overflow: hidden;
+  }
+
+  /* App chrome (top + bottom nav): no tap flash, no text select, no
+     long-press callout, no double-tap zoom delay. Native-app feel. */
+  .app-chrome,
+  .app-chrome * {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+    touch-action: manipulation;
   }
   body {
     @apply text-foreground;

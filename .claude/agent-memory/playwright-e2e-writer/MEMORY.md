@@ -1,2 +1,3 @@
 - [E2E test conventions and infrastructure](project_e2e_conventions.md) — fixture pattern, auth state, credentials, sign-out destination, global setup/teardown
 - [Monzo pipeline seeding and mocking pattern](project_monzo_e2e_pattern.md) — bun:sqlite direct seeding, status endpoint mock, MONZO_* vars absent from .env.test
+- [bun:sqlite stdout in runBunScript — Windows quirk](feedback_bunsqlite_stdout.md) — use cnt alias not n, use process.stdout.write not console.log, add stdio:pipe + try/catch

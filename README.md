@@ -43,8 +43,8 @@ Supported: Monzo ✓ — Amex, Barclays, Santander, Caseys banks coming soon.
 
 ---
 
-## Todo 11-April-2026
-[] feat Add automated stream of monzo transactions via webhooks
+## Todo 27-Jun-2026
+[] run prod dedup script for barclays
 [] Fix up monzo JOINT, get back to casey is owed 200 and total 2900 joint
 [] Monzo OAUTH
 

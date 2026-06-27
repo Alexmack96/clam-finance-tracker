@@ -11652,6 +11652,7 @@ export namespace Prisma {
 
   export type BarclaysTransactionMinAggregateOutputType = {
     id: number | null
+    transactionId: string | null
     date: string | null
     description: string | null
     amount: string | null
@@ -11664,6 +11665,7 @@ export namespace Prisma {
 
   export type BarclaysTransactionMaxAggregateOutputType = {
     id: number | null
+    transactionId: string | null
     date: string | null
     description: string | null
     amount: string | null
@@ -11676,6 +11678,7 @@ export namespace Prisma {
 
   export type BarclaysTransactionCountAggregateOutputType = {
     id: number
+    transactionId: number
     date: number
     description: number
     amount: number
@@ -11698,6 +11701,7 @@ export namespace Prisma {
 
   export type BarclaysTransactionMinAggregateInputType = {
     id?: true
+    transactionId?: true
     date?: true
     description?: true
     amount?: true
@@ -11710,6 +11714,7 @@ export namespace Prisma {
 
   export type BarclaysTransactionMaxAggregateInputType = {
     id?: true
+    transactionId?: true
     date?: true
     description?: true
     amount?: true
@@ -11722,6 +11727,7 @@ export namespace Prisma {
 
   export type BarclaysTransactionCountAggregateInputType = {
     id?: true
+    transactionId?: true
     date?: true
     description?: true
     amount?: true
@@ -11821,6 +11827,7 @@ export namespace Prisma {
 
   export type BarclaysTransactionGroupByOutputType = {
     id: number
+    transactionId: string | null
     date: string
     description: string
     amount: string
@@ -11852,6 +11859,7 @@ export namespace Prisma {
 
   export type BarclaysTransactionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    transactionId?: boolean
     date?: boolean
     description?: boolean
     amount?: boolean
@@ -11864,6 +11872,7 @@ export namespace Prisma {
 
   export type BarclaysTransactionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    transactionId?: boolean
     date?: boolean
     description?: boolean
     amount?: boolean
@@ -11876,6 +11885,7 @@ export namespace Prisma {
 
   export type BarclaysTransactionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    transactionId?: boolean
     date?: boolean
     description?: boolean
     amount?: boolean
@@ -11888,6 +11898,7 @@ export namespace Prisma {
 
   export type BarclaysTransactionSelectScalar = {
     id?: boolean
+    transactionId?: boolean
     date?: boolean
     description?: boolean
     amount?: boolean
@@ -11898,13 +11909,14 @@ export namespace Prisma {
     status?: boolean
   }
 
-  export type BarclaysTransactionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "date" | "description" | "amount" | "isCredit" | "statementDate" | "owner" | "importedAt" | "status", ExtArgs["result"]["barclaysTransaction"]>
+  export type BarclaysTransactionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "transactionId" | "date" | "description" | "amount" | "isCredit" | "statementDate" | "owner" | "importedAt" | "status", ExtArgs["result"]["barclaysTransaction"]>
 
   export type $BarclaysTransactionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "BarclaysTransaction"
     objects: {}
     scalars: $Extensions.GetPayloadResult<{
       id: number
+      transactionId: string | null
       date: string
       description: string
       amount: string
@@ -12337,6 +12349,7 @@ export namespace Prisma {
    */
   interface BarclaysTransactionFieldRefs {
     readonly id: FieldRef<"BarclaysTransaction", 'Int'>
+    readonly transactionId: FieldRef<"BarclaysTransaction", 'String'>
     readonly date: FieldRef<"BarclaysTransaction", 'String'>
     readonly description: FieldRef<"BarclaysTransaction", 'String'>
     readonly amount: FieldRef<"BarclaysTransaction", 'String'>
@@ -12736,6 +12749,7 @@ export namespace Prisma {
 
   export type SantanderTransactionMinAggregateOutputType = {
     id: number | null
+    transactionId: string | null
     date: string | null
     description: string | null
     moneyIn: string | null
@@ -12749,6 +12763,7 @@ export namespace Prisma {
 
   export type SantanderTransactionMaxAggregateOutputType = {
     id: number | null
+    transactionId: string | null
     date: string | null
     description: string | null
     moneyIn: string | null
@@ -12762,6 +12777,7 @@ export namespace Prisma {
 
   export type SantanderTransactionCountAggregateOutputType = {
     id: number
+    transactionId: number
     date: number
     description: number
     moneyIn: number
@@ -12785,6 +12801,7 @@ export namespace Prisma {
 
   export type SantanderTransactionMinAggregateInputType = {
     id?: true
+    transactionId?: true
     date?: true
     description?: true
     moneyIn?: true
@@ -12798,6 +12815,7 @@ export namespace Prisma {
 
   export type SantanderTransactionMaxAggregateInputType = {
     id?: true
+    transactionId?: true
     date?: true
     description?: true
     moneyIn?: true
@@ -12811,6 +12829,7 @@ export namespace Prisma {
 
   export type SantanderTransactionCountAggregateInputType = {
     id?: true
+    transactionId?: true
     date?: true
     description?: true
     moneyIn?: true
@@ -12911,6 +12930,7 @@ export namespace Prisma {
 
   export type SantanderTransactionGroupByOutputType = {
     id: number
+    transactionId: string | null
     date: string
     description: string
     moneyIn: string | null
@@ -12943,6 +12963,7 @@ export namespace Prisma {
 
   export type SantanderTransactionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    transactionId?: boolean
     date?: boolean
     description?: boolean
     moneyIn?: boolean
@@ -12956,6 +12977,7 @@ export namespace Prisma {
 
   export type SantanderTransactionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    transactionId?: boolean
     date?: boolean
     description?: boolean
     moneyIn?: boolean
@@ -12969,6 +12991,7 @@ export namespace Prisma {
 
   export type SantanderTransactionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    transactionId?: boolean
     date?: boolean
     description?: boolean
     moneyIn?: boolean
@@ -12982,6 +13005,7 @@ export namespace Prisma {
 
   export type SantanderTransactionSelectScalar = {
     id?: boolean
+    transactionId?: boolean
     date?: boolean
     description?: boolean
     moneyIn?: boolean
@@ -12993,13 +13017,14 @@ export namespace Prisma {
     status?: boolean
   }
 
-  export type SantanderTransactionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "date" | "description" | "moneyIn" | "moneyOut" | "balance" | "statementDate" | "owner" | "importedAt" | "status", ExtArgs["result"]["santanderTransaction"]>
+  export type SantanderTransactionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "transactionId" | "date" | "description" | "moneyIn" | "moneyOut" | "balance" | "statementDate" | "owner" | "importedAt" | "status", ExtArgs["result"]["santanderTransaction"]>
 
   export type $SantanderTransactionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "SantanderTransaction"
     objects: {}
     scalars: $Extensions.GetPayloadResult<{
       id: number
+      transactionId: string | null
       date: string
       description: string
       moneyIn: string | null
@@ -13433,6 +13458,7 @@ export namespace Prisma {
    */
   interface SantanderTransactionFieldRefs {
     readonly id: FieldRef<"SantanderTransaction", 'Int'>
+    readonly transactionId: FieldRef<"SantanderTransaction", 'String'>
     readonly date: FieldRef<"SantanderTransaction", 'String'>
     readonly description: FieldRef<"SantanderTransaction", 'String'>
     readonly moneyIn: FieldRef<"SantanderTransaction", 'String'>
@@ -24951,6 +24977,7 @@ export namespace Prisma {
 
   export const BarclaysTransactionScalarFieldEnum: {
     id: 'id',
+    transactionId: 'transactionId',
     date: 'date',
     description: 'description',
     amount: 'amount',
@@ -24966,6 +24993,7 @@ export namespace Prisma {
 
   export const SantanderTransactionScalarFieldEnum: {
     id: 'id',
+    transactionId: 'transactionId',
     date: 'date',
     description: 'description',
     moneyIn: 'moneyIn',
@@ -25877,6 +25905,7 @@ export namespace Prisma {
     OR?: BarclaysTransactionWhereInput[]
     NOT?: BarclaysTransactionWhereInput | BarclaysTransactionWhereInput[]
     id?: IntFilter<"BarclaysTransaction"> | number
+    transactionId?: StringNullableFilter<"BarclaysTransaction"> | string | null
     date?: StringFilter<"BarclaysTransaction"> | string
     description?: StringFilter<"BarclaysTransaction"> | string
     amount?: StringFilter<"BarclaysTransaction"> | string
@@ -25889,6 +25918,7 @@ export namespace Prisma {
 
   export type BarclaysTransactionOrderByWithRelationInput = {
     id?: SortOrder
+    transactionId?: SortOrderInput | SortOrder
     date?: SortOrder
     description?: SortOrder
     amount?: SortOrder
@@ -25901,6 +25931,7 @@ export namespace Prisma {
 
   export type BarclaysTransactionWhereUniqueInput = Prisma.AtLeast<{
     id?: number
+    transactionId?: string
     AND?: BarclaysTransactionWhereInput | BarclaysTransactionWhereInput[]
     OR?: BarclaysTransactionWhereInput[]
     NOT?: BarclaysTransactionWhereInput | BarclaysTransactionWhereInput[]
@@ -25912,10 +25943,11 @@ export namespace Prisma {
     owner?: StringFilter<"BarclaysTransaction"> | string
     importedAt?: DateTimeFilter<"BarclaysTransaction"> | Date | string
     status?: StringFilter<"BarclaysTransaction"> | string
-  }, "id">
+  }, "id" | "transactionId">
 
   export type BarclaysTransactionOrderByWithAggregationInput = {
     id?: SortOrder
+    transactionId?: SortOrderInput | SortOrder
     date?: SortOrder
     description?: SortOrder
     amount?: SortOrder
@@ -25936,6 +25968,7 @@ export namespace Prisma {
     OR?: BarclaysTransactionScalarWhereWithAggregatesInput[]
     NOT?: BarclaysTransactionScalarWhereWithAggregatesInput | BarclaysTransactionScalarWhereWithAggregatesInput[]
     id?: IntWithAggregatesFilter<"BarclaysTransaction"> | number
+    transactionId?: StringNullableWithAggregatesFilter<"BarclaysTransaction"> | string | null
     date?: StringWithAggregatesFilter<"BarclaysTransaction"> | string
     description?: StringWithAggregatesFilter<"BarclaysTransaction"> | string
     amount?: StringWithAggregatesFilter<"BarclaysTransaction"> | string
@@ -25951,6 +25984,7 @@ export namespace Prisma {
     OR?: SantanderTransactionWhereInput[]
     NOT?: SantanderTransactionWhereInput | SantanderTransactionWhereInput[]
     id?: IntFilter<"SantanderTransaction"> | number
+    transactionId?: StringNullableFilter<"SantanderTransaction"> | string | null
     date?: StringFilter<"SantanderTransaction"> | string
     description?: StringFilter<"SantanderTransaction"> | string
     moneyIn?: StringNullableFilter<"SantanderTransaction"> | string | null
@@ -25964,6 +25998,7 @@ export namespace Prisma {
 
   export type SantanderTransactionOrderByWithRelationInput = {
     id?: SortOrder
+    transactionId?: SortOrderInput | SortOrder
     date?: SortOrder
     description?: SortOrder
     moneyIn?: SortOrderInput | SortOrder
@@ -25977,6 +26012,7 @@ export namespace Prisma {
 
   export type SantanderTransactionWhereUniqueInput = Prisma.AtLeast<{
     id?: number
+    transactionId?: string
     AND?: SantanderTransactionWhereInput | SantanderTransactionWhereInput[]
     OR?: SantanderTransactionWhereInput[]
     NOT?: SantanderTransactionWhereInput | SantanderTransactionWhereInput[]
@@ -25989,10 +26025,11 @@ export namespace Prisma {
     owner?: StringFilter<"SantanderTransaction"> | string
     importedAt?: DateTimeFilter<"SantanderTransaction"> | Date | string
     status?: StringFilter<"SantanderTransaction"> | string
-  }, "id">
+  }, "id" | "transactionId">
 
   export type SantanderTransactionOrderByWithAggregationInput = {
     id?: SortOrder
+    transactionId?: SortOrderInput | SortOrder
     date?: SortOrder
     description?: SortOrder
     moneyIn?: SortOrderInput | SortOrder
@@ -26014,6 +26051,7 @@ export namespace Prisma {
     OR?: SantanderTransactionScalarWhereWithAggregatesInput[]
     NOT?: SantanderTransactionScalarWhereWithAggregatesInput | SantanderTransactionScalarWhereWithAggregatesInput[]
     id?: IntWithAggregatesFilter<"SantanderTransaction"> | number
+    transactionId?: StringNullableWithAggregatesFilter<"SantanderTransaction"> | string | null
     date?: StringWithAggregatesFilter<"SantanderTransaction"> | string
     description?: StringWithAggregatesFilter<"SantanderTransaction"> | string
     moneyIn?: StringNullableWithAggregatesFilter<"SantanderTransaction"> | string | null
@@ -27527,6 +27565,7 @@ export namespace Prisma {
   }
 
   export type BarclaysTransactionCreateInput = {
+    transactionId?: string | null
     date: string
     description: string
     amount: string
@@ -27539,6 +27578,7 @@ export namespace Prisma {
 
   export type BarclaysTransactionUncheckedCreateInput = {
     id?: number
+    transactionId?: string | null
     date: string
     description: string
     amount: string
@@ -27550,6 +27590,7 @@ export namespace Prisma {
   }
 
   export type BarclaysTransactionUpdateInput = {
+    transactionId?: NullableStringFieldUpdateOperationsInput | string | null
     date?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     amount?: StringFieldUpdateOperationsInput | string
@@ -27562,6 +27603,7 @@ export namespace Prisma {
 
   export type BarclaysTransactionUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
+    transactionId?: NullableStringFieldUpdateOperationsInput | string | null
     date?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     amount?: StringFieldUpdateOperationsInput | string
@@ -27574,6 +27616,7 @@ export namespace Prisma {
 
   export type BarclaysTransactionCreateManyInput = {
     id?: number
+    transactionId?: string | null
     date: string
     description: string
     amount: string
@@ -27585,6 +27628,7 @@ export namespace Prisma {
   }
 
   export type BarclaysTransactionUpdateManyMutationInput = {
+    transactionId?: NullableStringFieldUpdateOperationsInput | string | null
     date?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     amount?: StringFieldUpdateOperationsInput | string
@@ -27597,6 +27641,7 @@ export namespace Prisma {
 
   export type BarclaysTransactionUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
+    transactionId?: NullableStringFieldUpdateOperationsInput | string | null
     date?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     amount?: StringFieldUpdateOperationsInput | string
@@ -27608,6 +27653,7 @@ export namespace Prisma {
   }
 
   export type SantanderTransactionCreateInput = {
+    transactionId?: string | null
     date: string
     description: string
     moneyIn?: string | null
@@ -27621,6 +27667,7 @@ export namespace Prisma {
 
   export type SantanderTransactionUncheckedCreateInput = {
     id?: number
+    transactionId?: string | null
     date: string
     description: string
     moneyIn?: string | null
@@ -27633,6 +27680,7 @@ export namespace Prisma {
   }
 
   export type SantanderTransactionUpdateInput = {
+    transactionId?: NullableStringFieldUpdateOperationsInput | string | null
     date?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     moneyIn?: NullableStringFieldUpdateOperationsInput | string | null
@@ -27646,6 +27694,7 @@ export namespace Prisma {
 
   export type SantanderTransactionUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
+    transactionId?: NullableStringFieldUpdateOperationsInput | string | null
     date?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     moneyIn?: NullableStringFieldUpdateOperationsInput | string | null
@@ -27659,6 +27708,7 @@ export namespace Prisma {
 
   export type SantanderTransactionCreateManyInput = {
     id?: number
+    transactionId?: string | null
     date: string
     description: string
     moneyIn?: string | null
@@ -27671,6 +27721,7 @@ export namespace Prisma {
   }
 
   export type SantanderTransactionUpdateManyMutationInput = {
+    transactionId?: NullableStringFieldUpdateOperationsInput | string | null
     date?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     moneyIn?: NullableStringFieldUpdateOperationsInput | string | null
@@ -27684,6 +27735,7 @@ export namespace Prisma {
 
   export type SantanderTransactionUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
+    transactionId?: NullableStringFieldUpdateOperationsInput | string | null
     date?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     moneyIn?: NullableStringFieldUpdateOperationsInput | string | null
@@ -29210,6 +29262,7 @@ export namespace Prisma {
 
   export type BarclaysTransactionCountOrderByAggregateInput = {
     id?: SortOrder
+    transactionId?: SortOrder
     date?: SortOrder
     description?: SortOrder
     amount?: SortOrder
@@ -29226,6 +29279,7 @@ export namespace Prisma {
 
   export type BarclaysTransactionMaxOrderByAggregateInput = {
     id?: SortOrder
+    transactionId?: SortOrder
     date?: SortOrder
     description?: SortOrder
     amount?: SortOrder
@@ -29238,6 +29292,7 @@ export namespace Prisma {
 
   export type BarclaysTransactionMinOrderByAggregateInput = {
     id?: SortOrder
+    transactionId?: SortOrder
     date?: SortOrder
     description?: SortOrder
     amount?: SortOrder
@@ -29254,6 +29309,7 @@ export namespace Prisma {
 
   export type SantanderTransactionCountOrderByAggregateInput = {
     id?: SortOrder
+    transactionId?: SortOrder
     date?: SortOrder
     description?: SortOrder
     moneyIn?: SortOrder
@@ -29271,6 +29327,7 @@ export namespace Prisma {
 
   export type SantanderTransactionMaxOrderByAggregateInput = {
     id?: SortOrder
+    transactionId?: SortOrder
     date?: SortOrder
     description?: SortOrder
     moneyIn?: SortOrder
@@ -29284,6 +29341,7 @@ export namespace Prisma {
 
   export type SantanderTransactionMinOrderByAggregateInput = {
     id?: SortOrder
+    transactionId?: SortOrder
     date?: SortOrder
     description?: SortOrder
     moneyIn?: SortOrder
