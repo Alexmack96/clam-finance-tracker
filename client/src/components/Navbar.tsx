@@ -16,6 +16,7 @@ const links = [
 const adminLinks = [
   { to: "/users", label: "Users" },
   { to: "/import", label: "Import" },
+  { to: "/categories", label: "Categories" },
 ] as const;
 
 export function Navbar({ onSignOut }: { onSignOut: () => void }) {

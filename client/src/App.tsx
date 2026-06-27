@@ -8,6 +8,7 @@ import { DashboardPage } from "./pages/DashboardPage.js";
 import { AnalyticsPage } from "./pages/AnalyticsPage.js";
 import { UsersPage } from "./pages/UsersPage.js";
 import { ImportPage } from "./pages/ImportPage.js";
+import { CategoriesPage } from "./pages/CategoriesPage.js";
 import { SavingsPage } from "./pages/SavingsPage.js";
 import { InvestmentsPage } from "./pages/InvestmentsPage.js";
 import { TabsPage } from "./pages/TabsPage.js";
@@ -30,6 +31,7 @@ export function App() {
           <Route element={<AdminRoute />}>
             <Route path="/users" element={<UsersPage />} />
             <Route path="/import" element={<ImportPage />} />
+            <Route path="/categories" element={<CategoriesPage />} />
           </Route>
         </Route>
       </Route>
