@@ -24,6 +24,7 @@ const updateSchema = z.object({
   categoryId: z.string().min(1).optional(),
   owner: z.enum(["Alex", "Casey", "Joint"]).optional(),
   reviewed: z.boolean().optional(),
+  excludeFromSavings: z.boolean().optional(),
 });
 
 transactionsRouter.patch("/:id", async (req, res) => {
@@ -35,6 +36,9 @@ transactionsRouter.patch("/:id", async (req, res) => {
       ...(body.categoryId ? { categoryId: body.categoryId } : {}),
       ...(body.owner ? { owner: body.owner } : {}),
       ...(body.reviewed !== undefined ? { reviewed: body.reviewed } : {}),
+      ...(body.excludeFromSavings !== undefined
+        ? { excludeFromSavings: body.excludeFromSavings }
+        : {}),
     },
     include: { category: true },
   });

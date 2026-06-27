@@ -71,6 +71,7 @@ model Transaction {
   note             String?
   owner            Owner           @default(Joint)
   reviewed         Boolean         @default(false)
+  excludeFromSavings Boolean       @default(false)
   originalAmount   Decimal?
   originalCurrency String?
 }

@@ -58,20 +58,21 @@ model Category {
 }
 
 model Transaction {
-  id               String          @id @default(cuid())
-  description      String
-  amount           Decimal
-  type             TransactionType
-  date             DateTime        @default(now())
-  createdAt        DateTime        @default(now())
-  categoryId       String
-  category         Category        @relation(fields: [categoryId], references: [id])
-  externalId       String?         @unique
-  note             String?
-  owner            Owner           @default(Joint)
-  reviewed         Boolean         @default(false)
-  originalAmount   Decimal?
-  originalCurrency String?
+  id                 String          @id @default(cuid())
+  description        String
+  amount             Decimal
+  type               TransactionType
+  date               DateTime        @default(now())
+  createdAt          DateTime        @default(now())
+  categoryId         String
+  category           Category        @relation(fields: [categoryId], references: [id])
+  externalId         String?         @unique
+  note               String?
+  owner              Owner           @default(Joint)
+  reviewed           Boolean         @default(false)
+  excludeFromSavings Boolean         @default(false)
+  originalAmount     Decimal?
+  originalCurrency   String?
 }
 
 // One staging model per bank — each preserves that bank's raw CSV schema exactly.

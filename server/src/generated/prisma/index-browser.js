@@ -147,6 +147,7 @@ exports.Prisma.TransactionScalarFieldEnum = {
   note: 'note',
   owner: 'owner',
   reviewed: 'reviewed',
+  excludeFromSavings: 'excludeFromSavings',
   originalAmount: 'originalAmount',
   originalCurrency: 'originalCurrency'
 };

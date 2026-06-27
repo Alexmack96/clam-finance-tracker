@@ -4996,6 +4996,7 @@ export namespace Prisma {
     note: string | null
     owner: $Enums.Owner | null
     reviewed: boolean | null
+    excludeFromSavings: boolean | null
     originalAmount: Decimal | null
     originalCurrency: string | null
   }
@@ -5012,6 +5013,7 @@ export namespace Prisma {
     note: string | null
     owner: $Enums.Owner | null
     reviewed: boolean | null
+    excludeFromSavings: boolean | null
     originalAmount: Decimal | null
     originalCurrency: string | null
   }
@@ -5028,6 +5030,7 @@ export namespace Prisma {
     note: number
     owner: number
     reviewed: number
+    excludeFromSavings: number
     originalAmount: number
     originalCurrency: number
     _all: number
@@ -5056,6 +5059,7 @@ export namespace Prisma {
     note?: true
     owner?: true
     reviewed?: true
+    excludeFromSavings?: true
     originalAmount?: true
     originalCurrency?: true
   }
@@ -5072,6 +5076,7 @@ export namespace Prisma {
     note?: true
     owner?: true
     reviewed?: true
+    excludeFromSavings?: true
     originalAmount?: true
     originalCurrency?: true
   }
@@ -5088,6 +5093,7 @@ export namespace Prisma {
     note?: true
     owner?: true
     reviewed?: true
+    excludeFromSavings?: true
     originalAmount?: true
     originalCurrency?: true
     _all?: true
@@ -5191,6 +5197,7 @@ export namespace Prisma {
     note: string | null
     owner: $Enums.Owner
     reviewed: boolean
+    excludeFromSavings: boolean
     originalAmount: Decimal | null
     originalCurrency: string | null
     _count: TransactionCountAggregateOutputType | null
@@ -5226,6 +5233,7 @@ export namespace Prisma {
     note?: boolean
     owner?: boolean
     reviewed?: boolean
+    excludeFromSavings?: boolean
     originalAmount?: boolean
     originalCurrency?: boolean
     category?: boolean | CategoryDefaultArgs<ExtArgs>
@@ -5243,6 +5251,7 @@ export namespace Prisma {
     note?: boolean
     owner?: boolean
     reviewed?: boolean
+    excludeFromSavings?: boolean
     originalAmount?: boolean
     originalCurrency?: boolean
     category?: boolean | CategoryDefaultArgs<ExtArgs>
@@ -5260,6 +5269,7 @@ export namespace Prisma {
     note?: boolean
     owner?: boolean
     reviewed?: boolean
+    excludeFromSavings?: boolean
     originalAmount?: boolean
     originalCurrency?: boolean
     category?: boolean | CategoryDefaultArgs<ExtArgs>
@@ -5277,11 +5287,12 @@ export namespace Prisma {
     note?: boolean
     owner?: boolean
     reviewed?: boolean
+    excludeFromSavings?: boolean
     originalAmount?: boolean
     originalCurrency?: boolean
   }
 
-  export type TransactionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "description" | "amount" | "type" | "date" | "createdAt" | "categoryId" | "externalId" | "note" | "owner" | "reviewed" | "originalAmount" | "originalCurrency", ExtArgs["result"]["transaction"]>
+  export type TransactionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "description" | "amount" | "type" | "date" | "createdAt" | "categoryId" | "externalId" | "note" | "owner" | "reviewed" | "excludeFromSavings" | "originalAmount" | "originalCurrency", ExtArgs["result"]["transaction"]>
   export type TransactionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     category?: boolean | CategoryDefaultArgs<ExtArgs>
   }
@@ -5309,6 +5320,7 @@ export namespace Prisma {
       note: string | null
       owner: $Enums.Owner
       reviewed: boolean
+      excludeFromSavings: boolean
       originalAmount: Prisma.Decimal | null
       originalCurrency: string | null
     }, ExtArgs["result"]["transaction"]>
@@ -5746,6 +5758,7 @@ export namespace Prisma {
     readonly note: FieldRef<"Transaction", 'String'>
     readonly owner: FieldRef<"Transaction", 'Owner'>
     readonly reviewed: FieldRef<"Transaction", 'Boolean'>
+    readonly excludeFromSavings: FieldRef<"Transaction", 'Boolean'>
     readonly originalAmount: FieldRef<"Transaction", 'Decimal'>
     readonly originalCurrency: FieldRef<"Transaction", 'String'>
   }
@@ -24882,6 +24895,7 @@ export namespace Prisma {
     note: 'note',
     owner: 'owner',
     reviewed: 'reviewed',
+    excludeFromSavings: 'excludeFromSavings',
     originalAmount: 'originalAmount',
     originalCurrency: 'originalCurrency'
   };
@@ -25399,6 +25413,7 @@ export namespace Prisma {
     note?: StringNullableFilter<"Transaction"> | string | null
     owner?: EnumOwnerFilter<"Transaction"> | $Enums.Owner
     reviewed?: BoolFilter<"Transaction"> | boolean
+    excludeFromSavings?: BoolFilter<"Transaction"> | boolean
     originalAmount?: DecimalNullableFilter<"Transaction"> | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: StringNullableFilter<"Transaction"> | string | null
     category?: XOR<CategoryScalarRelationFilter, CategoryWhereInput>
@@ -25416,6 +25431,7 @@ export namespace Prisma {
     note?: SortOrderInput | SortOrder
     owner?: SortOrder
     reviewed?: SortOrder
+    excludeFromSavings?: SortOrder
     originalAmount?: SortOrderInput | SortOrder
     originalCurrency?: SortOrderInput | SortOrder
     category?: CategoryOrderByWithRelationInput
@@ -25436,6 +25452,7 @@ export namespace Prisma {
     note?: StringNullableFilter<"Transaction"> | string | null
     owner?: EnumOwnerFilter<"Transaction"> | $Enums.Owner
     reviewed?: BoolFilter<"Transaction"> | boolean
+    excludeFromSavings?: BoolFilter<"Transaction"> | boolean
     originalAmount?: DecimalNullableFilter<"Transaction"> | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: StringNullableFilter<"Transaction"> | string | null
     category?: XOR<CategoryScalarRelationFilter, CategoryWhereInput>
@@ -25453,6 +25470,7 @@ export namespace Prisma {
     note?: SortOrderInput | SortOrder
     owner?: SortOrder
     reviewed?: SortOrder
+    excludeFromSavings?: SortOrder
     originalAmount?: SortOrderInput | SortOrder
     originalCurrency?: SortOrderInput | SortOrder
     _count?: TransactionCountOrderByAggregateInput
@@ -25477,6 +25495,7 @@ export namespace Prisma {
     note?: StringNullableWithAggregatesFilter<"Transaction"> | string | null
     owner?: EnumOwnerWithAggregatesFilter<"Transaction"> | $Enums.Owner
     reviewed?: BoolWithAggregatesFilter<"Transaction"> | boolean
+    excludeFromSavings?: BoolWithAggregatesFilter<"Transaction"> | boolean
     originalAmount?: DecimalNullableWithAggregatesFilter<"Transaction"> | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: StringNullableWithAggregatesFilter<"Transaction"> | string | null
   }
@@ -26967,6 +26986,7 @@ export namespace Prisma {
     note?: string | null
     owner?: $Enums.Owner
     reviewed?: boolean
+    excludeFromSavings?: boolean
     originalAmount?: Decimal | DecimalJsLike | number | string | null
     originalCurrency?: string | null
     category: CategoryCreateNestedOneWithoutTransactionsInput
@@ -26984,6 +27004,7 @@ export namespace Prisma {
     note?: string | null
     owner?: $Enums.Owner
     reviewed?: boolean
+    excludeFromSavings?: boolean
     originalAmount?: Decimal | DecimalJsLike | number | string | null
     originalCurrency?: string | null
   }
@@ -26999,6 +27020,7 @@ export namespace Prisma {
     note?: NullableStringFieldUpdateOperationsInput | string | null
     owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
     reviewed?: BoolFieldUpdateOperationsInput | boolean
+    excludeFromSavings?: BoolFieldUpdateOperationsInput | boolean
     originalAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
     category?: CategoryUpdateOneRequiredWithoutTransactionsNestedInput
@@ -27016,6 +27038,7 @@ export namespace Prisma {
     note?: NullableStringFieldUpdateOperationsInput | string | null
     owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
     reviewed?: BoolFieldUpdateOperationsInput | boolean
+    excludeFromSavings?: BoolFieldUpdateOperationsInput | boolean
     originalAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
   }
@@ -27032,6 +27055,7 @@ export namespace Prisma {
     note?: string | null
     owner?: $Enums.Owner
     reviewed?: boolean
+    excludeFromSavings?: boolean
     originalAmount?: Decimal | DecimalJsLike | number | string | null
     originalCurrency?: string | null
   }
@@ -27047,6 +27071,7 @@ export namespace Prisma {
     note?: NullableStringFieldUpdateOperationsInput | string | null
     owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
     reviewed?: BoolFieldUpdateOperationsInput | boolean
+    excludeFromSavings?: BoolFieldUpdateOperationsInput | boolean
     originalAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
   }
@@ -27063,6 +27088,7 @@ export namespace Prisma {
     note?: NullableStringFieldUpdateOperationsInput | string | null
     owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
     reviewed?: BoolFieldUpdateOperationsInput | boolean
+    excludeFromSavings?: BoolFieldUpdateOperationsInput | boolean
     originalAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
   }
@@ -28852,6 +28878,7 @@ export namespace Prisma {
     note?: SortOrder
     owner?: SortOrder
     reviewed?: SortOrder
+    excludeFromSavings?: SortOrder
     originalAmount?: SortOrder
     originalCurrency?: SortOrder
   }
@@ -28873,6 +28900,7 @@ export namespace Prisma {
     note?: SortOrder
     owner?: SortOrder
     reviewed?: SortOrder
+    excludeFromSavings?: SortOrder
     originalAmount?: SortOrder
     originalCurrency?: SortOrder
   }
@@ -28889,6 +28917,7 @@ export namespace Prisma {
     note?: SortOrder
     owner?: SortOrder
     reviewed?: SortOrder
+    excludeFromSavings?: SortOrder
     originalAmount?: SortOrder
     originalCurrency?: SortOrder
   }
@@ -30663,6 +30692,7 @@ export namespace Prisma {
     note?: string | null
     owner?: $Enums.Owner
     reviewed?: boolean
+    excludeFromSavings?: boolean
     originalAmount?: Decimal | DecimalJsLike | number | string | null
     originalCurrency?: string | null
   }
@@ -30678,6 +30708,7 @@ export namespace Prisma {
     note?: string | null
     owner?: $Enums.Owner
     reviewed?: boolean
+    excludeFromSavings?: boolean
     originalAmount?: Decimal | DecimalJsLike | number | string | null
     originalCurrency?: string | null
   }
@@ -30722,6 +30753,7 @@ export namespace Prisma {
     note?: StringNullableFilter<"Transaction"> | string | null
     owner?: EnumOwnerFilter<"Transaction"> | $Enums.Owner
     reviewed?: BoolFilter<"Transaction"> | boolean
+    excludeFromSavings?: BoolFilter<"Transaction"> | boolean
     originalAmount?: DecimalNullableFilter<"Transaction"> | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: StringNullableFilter<"Transaction"> | string | null
   }
@@ -31114,6 +31146,7 @@ export namespace Prisma {
     note?: string | null
     owner?: $Enums.Owner
     reviewed?: boolean
+    excludeFromSavings?: boolean
     originalAmount?: Decimal | DecimalJsLike | number | string | null
     originalCurrency?: string | null
   }
@@ -31129,6 +31162,7 @@ export namespace Prisma {
     note?: NullableStringFieldUpdateOperationsInput | string | null
     owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
     reviewed?: BoolFieldUpdateOperationsInput | boolean
+    excludeFromSavings?: BoolFieldUpdateOperationsInput | boolean
     originalAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
   }
@@ -31144,6 +31178,7 @@ export namespace Prisma {
     note?: NullableStringFieldUpdateOperationsInput | string | null
     owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
     reviewed?: BoolFieldUpdateOperationsInput | boolean
+    excludeFromSavings?: BoolFieldUpdateOperationsInput | boolean
     originalAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
   }
@@ -31159,6 +31194,7 @@ export namespace Prisma {
     note?: NullableStringFieldUpdateOperationsInput | string | null
     owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
     reviewed?: BoolFieldUpdateOperationsInput | boolean
+    excludeFromSavings?: BoolFieldUpdateOperationsInput | boolean
     originalAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
   }

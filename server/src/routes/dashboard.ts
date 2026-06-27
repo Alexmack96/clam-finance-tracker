@@ -13,7 +13,11 @@ dashboardRouter.get("/summary", async (_req, res) => {
 
   for (const t of all) {
     const amount = Number(t.amount);
-    if (t.category.name === "Bank Sauce" && t.owner === "Casey" && t.externalId?.startsWith("monzo:")) {
+    if (
+      t.category.name === "Bank Sauce" &&
+      t.owner === "Casey" &&
+      t.externalId?.startsWith("monzo:")
+    ) {
       caseyIn += amount;
     } else if (t.owner === "Joint") {
       const signed = t.type === TransactionType.Expense ? amount : -amount;
@@ -41,7 +45,20 @@ dashboardRouter.get("/summary", async (_req, res) => {
 dashboardRouter.get("/analytics", async (_req, res) => {
   const now = new Date();
   const yearStart = new Date(now.getFullYear(), 0, 1);
-  const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const MONTHS = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
   const currentMonthIdx = now.getMonth();
 
   const transactions = await db.transaction.findMany({
@@ -56,8 +73,10 @@ dashboardRouter.get("/analytics", async (_req, res) => {
     const monthExp = expenses.filter((t) => new Date(t.date).getMonth() === i);
     return {
       month,
-      fixed:    monthExp.filter((t) => t.category.isFixed).reduce((s, t) => s + Number(t.amount), 0),
-      variable: monthExp.filter((t) => !t.category.isFixed).reduce((s, t) => s + Number(t.amount), 0),
+      fixed: monthExp.filter((t) => t.category.isFixed).reduce((s, t) => s + Number(t.amount), 0),
+      variable: monthExp
+        .filter((t) => !t.category.isFixed)
+        .reduce((s, t) => s + Number(t.amount), 0),
     };
   });
 
@@ -79,7 +98,8 @@ dashboardRouter.get("/analytics", async (_req, res) => {
 
   const catMap: Record<string, { name: string; color: string; value: number }> = {};
   for (const t of expenses) {
-    if (!catMap[t.categoryId]) catMap[t.categoryId] = { name: t.category.name, color: t.category.color, value: 0 };
+    if (!catMap[t.categoryId])
+      catMap[t.categoryId] = { name: t.category.name, color: t.category.color, value: 0 };
     catMap[t.categoryId].value += Number(t.amount);
   }
   const spendingByCategory = Object.values(catMap).sort((a, b) => b.value - a.value);
@@ -91,19 +111,38 @@ dashboardRouter.get("/analytics", async (_req, res) => {
     .filter((o) => o.amount > 0);
 
   const merchantMap: Record<string, number> = {};
-  for (const t of expenses) merchantMap[t.description] = (merchantMap[t.description] ?? 0) + Number(t.amount);
+  for (const t of expenses)
+    merchantMap[t.description] = (merchantMap[t.description] ?? 0) + Number(t.amount);
   const topMerchants = Object.entries(merchantMap)
     .map(([name, amount]) => ({ name, amount }))
     .sort((a, b) => b.amount - a.amount)
     .slice(0, 10);
 
-  const funCategories = FUN_CATEGORIES.map((name) => ({ name, color: funCatMap[name]?.color ?? "#888" }));
+  const funCategories = FUN_CATEGORIES.map((name) => ({
+    name,
+    color: funCatMap[name]?.color ?? "#888",
+  }));
+
+  // Monthly fun budget = 30% of ~£5.5k salary. Tracks current-month variable (non-fixed) spend.
+  const MONTHLY_FUN_BUDGET = 1650;
+  const monthSpent = expenses
+    .filter((t) => !t.category.isFixed && new Date(t.date).getMonth() === currentMonthIdx)
+    .reduce((s, t) => s + Number(t.amount), 0);
+  const budget = {
+    spent: monthSpent,
+    limit: MONTHLY_FUN_BUDGET,
+    month: MONTHS[currentMonthIdx],
+    day: now.getDate(),
+    daysInMonth: new Date(now.getFullYear(), currentMonthIdx + 1, 0).getDate(),
+  };
 
   const vacationCat = await db.category.findUnique({ where: { name: "Vacation" } });
   const monthlyVacation = MONTHS.slice(0, currentMonthIdx + 1).map((month, i) => ({
     month,
     amount: vacationCat
-      ? expenses.filter((t) => t.categoryId === vacationCat.id && new Date(t.date).getMonth() === i).reduce((s, t) => s + Number(t.amount), 0)
+      ? expenses
+          .filter((t) => t.categoryId === vacationCat.id && new Date(t.date).getMonth() === i)
+          .reduce((s, t) => s + Number(t.amount), 0)
       : 0,
   }));
   const vacationColor = vacationCat?.color ?? "#eab308";
@@ -123,7 +162,22 @@ dashboardRouter.get("/analytics", async (_req, res) => {
     }
     return entry;
   });
-  const foodCategories = FOOD_CATEGORIES.map((name) => ({ name, color: foodCatMap[name]?.color ?? "#888" }));
+  const foodCategories = FOOD_CATEGORIES.map((name) => ({
+    name,
+    color: foodCatMap[name]?.color ?? "#888",
+  }));
 
-  res.json({ fixedVsVariable, monthlyFun, funCategories, monthlyVacation, vacationColor, monthlyFood, foodCategories, spendingByCategory, ownerBreakdown, topMerchants });
+  res.json({
+    budget,
+    fixedVsVariable,
+    monthlyFun,
+    funCategories,
+    monthlyVacation,
+    vacationColor,
+    monthlyFood,
+    foodCategories,
+    spendingByCategory,
+    ownerBreakdown,
+    topMerchants,
+  });
 });

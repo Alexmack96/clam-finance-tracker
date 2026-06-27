@@ -27,12 +27,16 @@ interface Tx {
   date: string;
   type: "Income" | "Expense";
   owner: string;
+  excludeFromSavings: boolean;
+  category: { isFixed: boolean };
 }
 
 interface MonthActual {
   key: string;
   label: string;
   saved: number;
+  // Discretionary (non-fixed) spend that month — drives the in-progress month footnote.
+  variable: number;
 }
 
 function useMonthlyIncome(owner: string) {
@@ -61,21 +65,28 @@ function useMonthlyActuals(owner: string) {
         api.get<Tx[]>("/api/transactions", { params: { owner: "Joint" } }),
       ]);
 
-      const net = (txs: Tx[], weight: number) => {
-        const byMonth: Record<string, number> = {};
+      const agg: Record<string, { saved: number; variable: number }> = {};
+      const add = (txs: Tx[], weight: number) => {
         for (const t of txs) {
           const key = t.date.slice(0, 7);
-          const sign = t.type === "Income" ? 1 : -1;
-          byMonth[key] = (byMonth[key] ?? 0) + sign * parseFloat(t.amount) * weight;
+          if (!agg[key]) agg[key] = { saved: 0, variable: 0 };
+          const amount = parseFloat(t.amount) * weight;
+          if (t.type === "Income") {
+            agg[key].saved += amount;
+          } else {
+            // Discretionary spend = anything not in a fixed category (raw, for the footnote).
+            if (!t.category.isFixed) agg[key].variable += amount;
+            // Mandatory / one-off items (wedding ring, investment transfer) are excluded
+            // from the savings score so they don't drag it down.
+            if (!t.excludeFromSavings) agg[key].saved -= amount;
+          }
         }
-        return byMonth;
       };
 
-      const ownerNet = net(ownerTxs, 1);
-      const jointNet = net(jointTxs, 0.5);
+      add(ownerTxs, 1);
+      add(jointTxs, 0.5);
 
-      const keys = new Set([...Object.keys(ownerNet), ...Object.keys(jointNet)]);
-      const months: MonthActual[] = [...keys]
+      const months: MonthActual[] = Object.keys(agg)
         .filter((k) => k >= "2025-01")
         .sort()
         .map((key) => {
@@ -84,16 +95,107 @@ function useMonthlyActuals(owner: string) {
             month: "short",
             year: "numeric",
           });
-          return {
-            key,
-            label,
-            saved: (ownerNet[key] ?? 0) + (jointNet[key] ?? 0),
-          };
+          return { key, label, saved: agg[key].saved, variable: agg[key].variable };
         });
 
       return months;
     },
   });
+}
+
+function scoreTheme(score: number | null) {
+  if (score === null)
+    return {
+      hex: "#6b7280",
+      text: "text-muted-foreground",
+      badge: "text-muted-foreground border-border",
+      label: "No data yet",
+    };
+  if (score >= 80)
+    return {
+      hex: "#22c55e",
+      text: "text-emerald-500",
+      badge: "text-emerald-500 border-emerald-500/40 bg-emerald-500/10",
+      label: "On track",
+    };
+  if (score >= 50)
+    return {
+      hex: "#f59e0b",
+      text: "text-amber-500",
+      badge: "text-amber-500 border-amber-500/40 bg-amber-500/10",
+      label: "Getting there",
+    };
+  return {
+    hex: "#ef4444",
+    text: "text-red-500",
+    badge: "text-red-500 border-red-500/40 bg-red-500/10",
+    label: "Below target",
+  };
+}
+
+function ScoreRing({
+  score,
+  size = 112,
+  stroke = 10,
+  loading = false,
+}: {
+  score: number | null;
+  size?: number;
+  stroke?: number;
+  loading?: boolean;
+}) {
+  const { hex, text } = scoreTheme(loading ? null : score);
+  const r = (size - stroke) / 2;
+  const circ = 2 * Math.PI * r;
+  const filled = Math.min(Math.max(score ?? 0, 0), 100);
+  return (
+    <div className="relative shrink-0" style={{ width: size, height: size }}>
+      <svg
+        viewBox={`0 0 ${size} ${size}`}
+        className="w-full h-full"
+        style={{ transform: "rotate(-90deg)" }}
+      >
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          fill="none"
+          stroke="oklch(0.27 0.05 290)"
+          strokeWidth={stroke}
+        />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          fill="none"
+          stroke={hex}
+          strokeWidth={stroke}
+          strokeLinecap="round"
+          strokeDasharray={circ}
+          strokeDashoffset={loading ? circ : circ * (1 - filled / 100)}
+          style={{
+            transition: "stroke-dashoffset 0.6s cubic-bezier(0.2,0.8,0.2,1), stroke 0.4s ease",
+          }}
+        />
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center gap-0.5">
+        <span className="eyebrow" style={{ fontSize: size * 0.075, letterSpacing: "0.18em" }}>
+          SCORE
+        </span>
+        <span
+          className={`font-display font-light leading-none ${
+            loading ? "animate-pulse text-muted-foreground" : text
+          }`}
+          style={{ fontSize: size * 0.32 }}
+        >
+          {!loading && score !== null ? score : "—"}
+        </span>
+        <span className="text-muted-foreground" style={{ fontSize: size * 0.095 }}>
+          /&thinsp;100
+        </span>
+      </div>
+    </div>
+  );
 }
 
 export function SavingsPage() {
@@ -135,42 +237,31 @@ export function SavingsPage() {
 
   const now = new Date();
   const currentMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
-  const currentMonthActual = actuals?.find((m) => m.key === currentMonthKey);
-  const currentSaved = currentMonthActual?.saved ?? null;
-  const scorePercent =
-    SAVING > 0 && currentSaved !== null ? Math.round((currentSaved / SAVING) * 100) : null;
-  const scoreColor =
-    scorePercent === null
-      ? "text-muted-foreground"
-      : scorePercent >= 100
-        ? "text-emerald-500"
-        : scorePercent >= 70
-          ? "text-amber-500"
-          : "text-destructive";
-  const barColor =
-    scorePercent === null
-      ? "bg-muted-foreground"
-      : scorePercent >= 100
-        ? "bg-emerald-500"
-        : scorePercent >= 70
-          ? "bg-amber-500"
-          : "bg-red-500";
-  const ringHex =
-    scorePercent === null
-      ? "#6b7280"
-      : scorePercent >= 100
-        ? "#22c55e"
-        : scorePercent >= 70
-          ? "#f59e0b"
-          : "#ef4444";
-  const scoreLabel =
-    scorePercent === null
-      ? "No data yet"
-      : scorePercent >= 100
-        ? "Target hit"
-        : scorePercent >= 70
-          ? "Getting there"
-          : "Below target";
+  const currentMonthName = now.toLocaleDateString("en-GB", { month: "long" });
+  // The score reflects the last *complete* month (e.g. May while you're in June).
+  const prevDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  const scoreMonthKey = `${prevDate.getFullYear()}-${String(prevDate.getMonth() + 1).padStart(2, "0")}`;
+  const scoreMonthName = prevDate.toLocaleDateString("en-GB", { month: "long", year: "numeric" });
+
+  const scoreActual = actuals?.find((m) => m.key === scoreMonthKey);
+  const scoreSaved = scoreActual?.saved ?? null;
+  const currentVariable = actuals?.find((m) => m.key === currentMonthKey)?.variable ?? 0;
+
+  // Convert saved-vs-target into a 0–100 score. Break-even (saved £0) sits at 20, hitting the
+  // 20%-of-income target is 100, scaled linearly and clamped — so a small miss reads ~20, not 0.
+  const toScore = (saved: number | null) =>
+    SAVING <= 0 || saved === null
+      ? null
+      : Math.max(0, Math.min(Math.round(20 + 80 * (saved / SAVING)), 100));
+  const score = toScore(scoreSaved);
+  const scoreLoading = actualsLoading || incomeLoading;
+  const theme = scoreTheme(score);
+
+  // Year-to-date history, most recent first, excluding the in-progress month.
+  const history = (actuals ?? [])
+    .filter((m) => m.key.startsWith(`${now.getFullYear()}-`) && m.key !== currentMonthKey)
+    .slice()
+    .reverse();
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
@@ -190,48 +281,10 @@ export function SavingsPage() {
 
         {/* Score ring — mobile only, sits beside the title */}
         <div className="md:hidden shrink-0 flex flex-col items-center gap-1">
-          <div className="relative size-28">
-            <svg
-              viewBox="0 0 120 120"
-              className="w-full h-full"
-              style={{ transform: "rotate(-90deg)" }}
-            >
-              <circle
-                cx="60"
-                cy="60"
-                r="48"
-                fill="none"
-                stroke="oklch(0.27 0.05 290)"
-                strokeWidth="10"
-              />
-              <circle
-                cx="60"
-                cy="60"
-                r="48"
-                fill="none"
-                stroke={ringHex}
-                strokeWidth="10"
-                strokeLinecap="round"
-                strokeDasharray={301.593}
-                strokeDashoffset={301.593 * (1 - Math.min((scorePercent ?? 0) / 100, 1))}
-                style={{
-                  transition:
-                    "stroke-dashoffset 0.6s cubic-bezier(0.2,0.8,0.2,1), stroke 0.4s ease",
-                }}
-              />
-            </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-0.5">
-              <span className="eyebrow" style={{ fontSize: "7px", letterSpacing: "0.18em" }}>
-                SCORE
-              </span>
-              <span className={`font-display text-[32px] leading-none font-light ${scoreColor}`}>
-                {scorePercent !== null ? scorePercent : "—"}
-              </span>
-              <span className="text-[9px] text-muted-foreground">/&thinsp;100</span>
-            </div>
-          </div>
+          <ScoreRing score={score} size={112} loading={scoreLoading} />
+          <span className="text-[9px] text-muted-foreground -mt-0.5">{scoreMonthName}</span>
           <div className="flex items-center gap-1">
-            <span className={`text-[10px] font-semibold ${scoreColor}`}>{scoreLabel}</span>
+            <span className={`text-[10px] font-semibold ${theme.text}`}>{theme.label}</span>
             <Popover>
               <PopoverTrigger asChild>
                 <button
@@ -244,13 +297,12 @@ export function SavingsPage() {
               <PopoverContent side="bottom" align="end" className="w-72 text-xs space-y-2 p-4">
                 <p className="font-semibold text-foreground">How the score works</p>
                 <p className="text-muted-foreground">
-                  Your score (out of 100) is based on how close you got to saving 20% of your
-                  take-home income this month. Hitting the target exactly = 100. Going over still
-                  scores 100.
+                  Your score (out of 100) reflects last complete month — how close you got to saving
+                  20% of your take-home income. Hitting or beating the target scores 100.
                 </p>
                 <p className="text-muted-foreground">
-                  Coming soon: mark certain spending categories — like wellbeing or holidays — as
-                  allowable, so they don't count against you.
+                  Tip: mark one-off or mandatory items (a wedding ring, an investment transfer) as
+                  excluded on the transactions table — they won't count against your score.
                 </p>
               </PopoverContent>
             </Popover>
@@ -264,7 +316,7 @@ export function SavingsPage() {
           <div className="flex items-start justify-between mb-4">
             <div>
               <div className="flex items-center gap-1.5 mb-1">
-                <p className="eyebrow">This month's savings score</p>
+                <p className="eyebrow">Last month's savings score</p>
                 <Popover>
                   <PopoverTrigger asChild>
                     <button
@@ -281,60 +333,107 @@ export function SavingsPage() {
                   >
                     <p className="font-semibold text-foreground">How the score works</p>
                     <p className="text-muted-foreground">
-                      Your score (out of 100) is based on how close you got to saving 20% of your
-                      take-home income this month. Hitting the target exactly = 100. Going over
-                      still scores 100.
+                      Your score (out of 100) reflects last complete month — how close you got to
+                      saving 20% of your take-home income. Hitting or beating the target scores 100.
                     </p>
                     <p className="text-muted-foreground">
-                      Coming soon: mark certain spending categories — like wellbeing or holidays —
-                      as allowable, so they don't count against you. Unplanned overspend will remain
-                      in scope.
+                      Tip: mark one-off or mandatory items (a wedding ring, an investment transfer)
+                      as excluded on the transactions table — they won't count against your score.
+                      Unplanned overspend stays in scope.
                     </p>
                   </PopoverContent>
                 </Popover>
               </div>
-              <p className="text-xs text-muted-foreground">
-                {now.toLocaleDateString("en-GB", { month: "long", year: "numeric" })}
-              </p>
+              <p className="text-xs text-muted-foreground">{scoreMonthName}</p>
             </div>
             <span
-              className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${
-                scorePercent === null
-                  ? "text-muted-foreground border-border"
-                  : scorePercent >= 100
-                    ? "text-emerald-500 border-emerald-500/40 bg-emerald-500/10"
-                    : scorePercent >= 70
-                      ? "text-amber-500 border-amber-500/40 bg-amber-500/10"
-                      : "text-red-500 border-red-500/40 bg-red-500/10"
-              }`}
+              className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${theme.badge}`}
             >
-              {scoreLabel}
+              {theme.label}
             </span>
           </div>
-          <div className="flex items-baseline gap-4 mb-4">
-            {actualsLoading || incomeLoading ? (
-              <span className="font-display text-[56px] leading-none font-light text-muted-foreground animate-pulse">
-                —%
+          <div className="flex items-center gap-6">
+            <ScoreRing score={score} size={148} stroke={12} loading={scoreLoading} />
+            <div className="flex flex-col gap-1">
+              <span className="font-display text-[32px] leading-none font-light text-foreground">
+                {scoreSaved !== null ? fmtExact(scoreSaved) : "—"}
               </span>
-            ) : (
-              <span className={`font-display text-[56px] leading-none font-light ${scoreColor}`}>
-                {scorePercent !== null ? `${scorePercent}%` : "—%"}
+              <span className="text-sm text-muted-foreground">
+                saved of {SAVING > 0 ? fmt(SAVING) : "—"} target
               </span>
-            )}
-            <div className="flex flex-col">
-              <span className="text-sm font-medium text-foreground">
-                {currentSaved !== null ? fmtExact(currentSaved) : "—"}
-              </span>
-              <span className="text-xs text-muted-foreground">
-                of {SAVING > 0 ? fmt(SAVING) : "—"} target
+              <span className="text-xs text-muted-foreground mt-1">
+                Score = how close you are to your 20% target. 80+ green · 50–79 amber · under 50
+                red.
               </span>
             </div>
           </div>
-          <div className="h-2 rounded-full bg-muted overflow-hidden">
-            <div
-              className={`h-full rounded-full transition-all ${barColor}`}
-              style={{ width: `${Math.min(scorePercent ?? 0, 100)}%` }}
-            />
+          <p className="text-xs text-muted-foreground mt-4 pt-3 border-t border-border">
+            {currentMonthName} so far —{" "}
+            <span className="font-medium text-foreground">{fmt(currentVariable)}</span> spent
+            outside of fixed
+          </p>
+        </CardContent>
+      </Card>
+
+      {/* Savings target + monthly score history */}
+      <Card className="rise rise-3 bg-emerald-500/10 border-emerald-500/30">
+        <CardContent className="pt-6 space-y-4">
+          <div>
+            <p className="text-xs uppercase tracking-widest text-muted-foreground">
+              Your 20% savings target
+            </p>
+            <p className="font-display text-[40px] leading-none font-light text-emerald-500">
+              {fmt(SAVING)}{" "}
+              <span className="text-base font-normal text-muted-foreground">/ month</span>
+            </p>
+          </div>
+
+          <div className="border-t border-emerald-500/20 pt-4 space-y-2">
+            <div className="flex items-center justify-between">
+              <p className="text-xs uppercase tracking-widest text-muted-foreground">
+                {owner} actual + ½ Joint · {now.getFullYear()}
+              </p>
+              <p className="text-[10px] uppercase tracking-widest text-muted-foreground/70">
+                Score · Saved
+              </p>
+            </div>
+            {actualsLoading ? (
+              <p className="text-sm text-muted-foreground animate-pulse">Loading…</p>
+            ) : !history.length ? (
+              <p className="text-sm text-muted-foreground">No data yet</p>
+            ) : (
+              <div className="space-y-1.5">
+                {history.map((m) => {
+                  const s = toScore(m.saved);
+                  const t = scoreTheme(s);
+                  const positive = m.saved >= 0;
+                  return (
+                    <div key={m.key} className="flex items-center gap-3">
+                      <span className="text-xs text-muted-foreground w-16 shrink-0">{m.label}</span>
+                      <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
+                        <div
+                          className="h-full rounded-full transition-all"
+                          style={{ width: `${s ?? 0}%`, backgroundColor: t.hex }}
+                        />
+                      </div>
+                      <span
+                        className="text-xs font-semibold w-8 text-right shrink-0"
+                        style={{ color: t.hex }}
+                      >
+                        {s ?? "—"}
+                      </span>
+                      <span
+                        className={`text-xs font-semibold w-20 text-right shrink-0 ${
+                          positive ? "text-emerald-500" : "text-red-500"
+                        }`}
+                      >
+                        {fmt(m.saved)}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -396,55 +495,6 @@ export function SavingsPage() {
           </Card>
         ))}
       </div>
-
-      {/* Savings target + monthly actuals */}
-      <Card className="bg-emerald-500/10 border-emerald-500/30">
-        <CardContent className="pt-6 space-y-4">
-          <div>
-            <p className="text-xs uppercase tracking-widest text-muted-foreground">
-              Your 20% savings target
-            </p>
-            <p className="font-display text-[40px] leading-none font-light text-emerald-500">
-              {fmt(SAVING)}{" "}
-              <span className="text-base font-normal text-muted-foreground">/ month</span>
-            </p>
-          </div>
-
-          <div className="border-t border-emerald-500/20 pt-4 space-y-2">
-            <p className="text-xs uppercase tracking-widest text-muted-foreground">
-              {owner} actual + ½ Joint
-            </p>
-            {actualsLoading ? (
-              <p className="text-sm text-muted-foreground animate-pulse">Loading…</p>
-            ) : !actuals?.length ? (
-              <p className="text-sm text-muted-foreground">No data</p>
-            ) : (
-              <div className="space-y-1.5">
-                {actuals.map((m) => {
-                  const vs = SAVING > 0 ? m.saved / SAVING : 0;
-                  const positive = m.saved >= 0;
-                  return (
-                    <div key={m.key} className="flex items-center gap-3">
-                      <span className="text-xs text-muted-foreground w-16 shrink-0">{m.label}</span>
-                      <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
-                        <div
-                          className={`h-full rounded-full ${positive ? "bg-emerald-500" : "bg-red-500"}`}
-                          style={{ width: `${Math.min(Math.abs(vs) * 100, 100)}%` }}
-                        />
-                      </div>
-                      <span
-                        className={`text-xs font-semibold w-20 text-right shrink-0 ${positive ? "text-emerald-500" : "text-red-500"}`}
-                      >
-                        {fmt(m.saved)}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }

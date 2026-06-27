@@ -56,14 +56,7 @@ interface Category {
 }
 
 type BankSource =
-  | "Monzo"
-  | "Amex"
-  | "Barclays"
-  | "Santander"
-  | "HSBC"
-  | "SoFi"
-  | "Chase"
-  | "Manual";
+  "Monzo" | "Amex" | "Barclays" | "Santander" | "HSBC" | "SoFi" | "Chase" | "Manual";
 
 interface Transaction {
   id: string;
@@ -77,6 +70,7 @@ interface Transaction {
   owner: Owner;
   externalId: string | null;
   reviewed: boolean;
+  excludeFromSavings: boolean;
 }
 
 interface Summary {
@@ -89,7 +83,13 @@ interface Summary {
 interface GridCtx {
   update: (
     id: string,
-    data: { note?: string | null; categoryId?: string; owner?: Owner; reviewed?: boolean },
+    data: {
+      note?: string | null;
+      categoryId?: string;
+      owner?: Owner;
+      reviewed?: boolean;
+      excludeFromSavings?: boolean;
+    },
   ) => void;
   categories: Category[];
   registerNoteEdit: (id: string, fn: () => void) => void;
@@ -657,6 +657,31 @@ function ReviewedRenderer({
   );
 }
 
+function ExcludeSavingsRenderer({
+  data,
+  context,
+}: CustomCellRendererProps<Transaction, boolean, GridCtx>) {
+  if (!data || data.type !== "Expense") return null;
+  const excluded = data.excludeFromSavings;
+  return (
+    <button
+      onClick={() => context.update(data.id, { excludeFromSavings: !excluded })}
+      title={
+        excluded
+          ? "Counts against savings — click to exclude"
+          : "Excluded from savings score (mandatory / one-off)"
+      }
+      className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
+        excluded
+          ? "bg-amber-500 border-amber-500 text-white"
+          : "border-muted-foreground/40 hover:border-amber-400"
+      }`}
+    >
+      {excluded && <span className="text-[10px] leading-none">★</span>}
+    </button>
+  );
+}
+
 // ─── Mobile card components ───────────────────────────────────────────────────
 
 function MobileNoteCell({
@@ -713,7 +738,13 @@ function MobileNoteCell({
   );
 }
 
-type UpdatePatch = { note?: string | null; categoryId?: string; owner?: Owner; reviewed?: boolean };
+type UpdatePatch = {
+  note?: string | null;
+  categoryId?: string;
+  owner?: Owner;
+  reviewed?: boolean;
+  excludeFromSavings?: boolean;
+};
 
 function MobileTransactionCard({
   tx,
@@ -745,6 +776,21 @@ function MobileTransactionCard({
             {tx.type === "Income" ? "+" : "−"}
             {fmt(Math.abs(parseFloat(tx.amount)))}
           </span>
+          {tx.type === "Expense" && (
+            <button
+              onClick={() => onUpdate(tx.id, { excludeFromSavings: !tx.excludeFromSavings })}
+              title={
+                tx.excludeFromSavings ? "Excluded from savings score" : "Exclude from savings score"
+              }
+              className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors shrink-0 ${
+                tx.excludeFromSavings
+                  ? "bg-amber-500 border-amber-500 text-white"
+                  : "border-muted-foreground/40"
+              }`}
+            >
+              {tx.excludeFromSavings && <span className="text-[10px] leading-none">★</span>}
+            </button>
+          )}
           <button
             onClick={() => onUpdate(tx.id, { reviewed: !tx.reviewed })}
             className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors shrink-0 ${
@@ -818,6 +864,7 @@ export function DashboardPage() {
       categoryId?: string;
       owner?: Owner;
       reviewed?: boolean;
+      excludeFromSavings?: boolean;
     }) => api.patch<Transaction>(`/api/transactions/${id}`, data).then((r) => r.data),
     onSuccess: (updated, variables) => {
       // Sync query cache with server truth
@@ -1030,6 +1077,18 @@ export function DashboardPage() {
         valueGetter: (p) => p.data?.reviewed ?? false,
         sortable: true,
         filter: ReviewedFilter,
+        floatingFilter: false,
+        resizable: false,
+        cellStyle: { display: "flex", alignItems: "center", justifyContent: "center" },
+      },
+      {
+        headerName: "★",
+        headerTooltip: "Exclude from savings score (mandatory / one-off)",
+        width: 56,
+        cellRenderer: ExcludeSavingsRenderer,
+        valueGetter: (p) => p.data?.excludeFromSavings ?? false,
+        sortable: true,
+        filter: false,
         floatingFilter: false,
         resizable: false,
         cellStyle: { display: "flex", alignItems: "center", justifyContent: "center" },
