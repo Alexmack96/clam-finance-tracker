@@ -1,0 +1,9 @@
+# Commits listed here are skipped by `git blame` so bulk mechanical changes
+# (e.g. the initial Prettier reformat) don't obscure real authorship.
+# Append the full 40-char SHA of each such commit on its own line, with a comment.
+#
+# Enable locally:  git config blame.ignoreRevsFile .git-blame-ignore-revs
+# (GitHub honours this file automatically.)
+
+# style: format client/src with Prettier
+f1dafc2dabc4c293abb07910cd61bec0a5152df5
