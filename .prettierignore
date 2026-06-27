@@ -1,0 +1,11 @@
+node_modules
+dist
+dev-dist
+build
+coverage
+**/generated/**
+*.db
+*.db-wal
+*.db-shm
+*.db.b64
+bun.lock
