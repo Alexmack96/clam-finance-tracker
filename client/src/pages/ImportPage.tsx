@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Upload, CheckCircle, AlertCircle, ChevronDown, ChevronUp } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card.js";
 import { Button } from "../components/ui/button.js";
+import { cn } from "../lib/utils.js";
 import api from "../lib/api.js";
 
 type ImportResult = { imported: number; duplicates?: string[] };
@@ -66,7 +67,39 @@ function BankUploadCard({
   lastStatement?: string | null;
 }) {
   const [showDuplicates, setShowDuplicates] = useState(false);
+  const [dragActive, setDragActive] = useState(false);
+  const [validationError, setValidationError] = useState<string | null>(null);
   const inputId = `file-${title.toLowerCase()}`;
+
+  // Extensions we accept, derived from the `accept` string (dot-prefixed tokens
+  // only — MIME types like "application/pdf" are ignored here). e.g. "PDF", "CSV".
+  const allowedExts = accept
+    .split(",")
+    .map((s) => s.trim().toLowerCase())
+    .filter((s) => s.startsWith("."));
+  const extLabel = allowedExts.length
+    ? allowedExts.map((e) => e.slice(1).toUpperCase()).join("/")
+    : "these";
+
+  // Validate the file's extension up front so the upload button can't be pressed
+  // with a wrong file type — surface an inline error instead of a server round-trip.
+  const handleFile = (f: File | null) => {
+    setShowDuplicates(false);
+    if (!f) {
+      setValidationError(null);
+      onFileChange(null);
+      return;
+    }
+    const ok = allowedExts.some((ext) => f.name.toLowerCase().endsWith(ext));
+    if (allowedExts.length && !ok) {
+      setValidationError(`${title} only accepts ${extLabel} files — “${f.name}” isn’t one.`);
+      onFileChange(null);
+      if (fileRef.current) fileRef.current.value = "";
+      return;
+    }
+    setValidationError(null);
+    onFileChange(f);
+  };
 
   return (
     <Card>
@@ -93,6 +126,53 @@ function BankUploadCard({
       </CardHeader>
       <CardContent className="space-y-4">
         <p className="text-sm text-muted-foreground">{description}</p>
+
+        <label
+          htmlFor={inputId}
+          onDragOver={(e) => {
+            e.preventDefault();
+            setDragActive(true);
+          }}
+          onDragLeave={(e) => {
+            e.preventDefault();
+            setDragActive(false);
+          }}
+          onDrop={(e) => {
+            e.preventDefault();
+            setDragActive(false);
+            handleFile(e.dataTransfer.files?.[0] ?? null);
+          }}
+          className={cn(
+            "flex cursor-pointer flex-col items-center justify-center gap-1.5 rounded-md border-2 border-dashed px-4 py-6 text-sm transition-colors",
+            dragActive ? "border-primary bg-primary/5" : "border-input hover:bg-accent/50",
+            validationError && "border-destructive/60",
+          )}
+        >
+          <Upload className="h-5 w-5 text-muted-foreground" />
+          {file ? (
+            <span className="font-medium text-foreground">{file.name}</span>
+          ) : (
+            <span className="text-muted-foreground">
+              Drop {extLabel} here or <span className="text-foreground underline">browse</span>
+            </span>
+          )}
+        </label>
+        <input
+          ref={fileRef}
+          id={inputId}
+          type="file"
+          accept={accept}
+          className="sr-only"
+          onChange={(e) => handleFile(e.target.files?.[0] ?? null)}
+        />
+
+        {validationError && (
+          <div className="flex items-center gap-2 text-sm text-destructive">
+            <AlertCircle className="h-4 w-4" />
+            {validationError}
+          </div>
+        )}
+
         <div className="flex items-center gap-3">
           {onOwnerChange && (
             <select
@@ -107,25 +187,7 @@ function BankUploadCard({
               ))}
             </select>
           )}
-          <label
-            htmlFor={inputId}
-            className="cursor-pointer inline-flex items-center gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm hover:bg-accent hover:text-accent-foreground"
-          >
-            <Upload className="h-4 w-4" />
-            {file ? file.name : "Choose file…"}
-          </label>
-          <input
-            ref={fileRef}
-            id={inputId}
-            type="file"
-            accept={accept}
-            className="sr-only"
-            onChange={(e) => {
-              onFileChange(e.target.files?.[0] ?? null);
-              setShowDuplicates(false);
-            }}
-          />
-          <Button disabled={!file || isPending} onClick={onUpload}>
+          <Button disabled={!file || isPending || !!validationError} onClick={onUpload}>
             {isPending ? "Syncing…" : "Upload & sync"}
           </Button>
         </div>
