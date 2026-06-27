@@ -10,7 +10,17 @@ type ImportResult = { imported: number; duplicates?: string[] };
 type ProcessResult = { processed: number; skipped: number; errored: number };
 
 // Per-bank date (YYYY-MM-DD) of the most recent transaction, or null if none yet.
-type LastStatement = Record<string, string | null>;
+// `amexByOwner` breaks Amex down per owner since Alex and Casey share the card.
+type LastStatement = {
+  monzo: string | null;
+  amex: string | null;
+  barclays: string | null;
+  santander: string | null;
+  hsbc: string | null;
+  sofi: string | null;
+  chase: string | null;
+  amexByOwner?: Record<string, string | null>;
+};
 
 // "2026-05-31" → "31 May 2026"
 const fmtStatementDate = (iso: string | null | undefined) =>
@@ -35,6 +45,7 @@ function BankUploadCard({
   fileRef,
   accept = ".csv",
   owner,
+  owners = ["Alex", "Casey", "Joint"],
   onOwnerChange,
   lastStatement,
 }: {
@@ -50,6 +61,7 @@ function BankUploadCard({
   fileRef: React.RefObject<HTMLInputElement | null>;
   accept?: string;
   owner?: string;
+  owners?: string[];
   onOwnerChange?: (owner: string) => void;
   lastStatement?: string | null;
 }) {
@@ -88,9 +100,11 @@ function BankUploadCard({
               onChange={(e) => onOwnerChange(e.target.value)}
               className="rounded-md border border-input bg-background px-3 py-2 text-sm"
             >
-              <option value="Alex">Alex</option>
-              <option value="Casey">Casey</option>
-              <option value="Joint">Joint</option>
+              {owners.map((o) => (
+                <option key={o} value={o}>
+                  {o}
+                </option>
+              ))}
             </select>
           )}
           <label
@@ -189,12 +203,14 @@ export function ImportPage() {
   const [hsbcFile, setHsbcFile] = useState<File | null>(null);
   const [sofiFile, setSofiFile] = useState<File | null>(null);
   const [chaseFile, setChaseFile] = useState<File | null>(null);
+  // Amex is the only shared card (Alex + Casey), so it keeps an owner selector.
+  // The rest belong to one person — fixed owner, no dropdown to misfile into.
   const [amexOwner, setAmexOwner] = useState("Alex");
-  const [barclaysOwner, setBarclaysOwner] = useState("Alex");
-  const [santanderOwner, setSantanderOwner] = useState("Alex");
-  const [hsbcOwner, setHsbcOwner] = useState("Joint");
-  const [sofiOwner, setSofiOwner] = useState("Casey");
-  const [chaseOwner, setChaseOwner] = useState("Casey");
+  const barclaysOwner = "Alex";
+  const santanderOwner = "Alex";
+  const hsbcOwner = "Casey";
+  const sofiOwner = "Casey";
+  const chaseOwner = "Casey";
 
   const { data: lastStatement, refetch: refetchLastStatement } = useQuery<LastStatement>({
     queryKey: ["last-statement"],
@@ -428,8 +444,9 @@ export function ImportPage() {
         isError={amexMutation.isError}
         error={amexMutation.error}
         owner={amexOwner}
+        owners={["Alex", "Casey"]}
         onOwnerChange={setAmexOwner}
-        lastStatement={lastStatement?.amex}
+        lastStatement={lastStatement?.amexByOwner?.[amexOwner] ?? null}
       />
 
       <BankUploadCard
@@ -452,7 +469,6 @@ export function ImportPage() {
         isError={barclaysMutation.isError}
         error={barclaysMutation.error}
         owner={barclaysOwner}
-        onOwnerChange={setBarclaysOwner}
         lastStatement={lastStatement?.barclays}
       />
 
@@ -476,7 +492,6 @@ export function ImportPage() {
         isError={santanderMutation.isError}
         error={santanderMutation.error}
         owner={santanderOwner}
-        onOwnerChange={setSantanderOwner}
         lastStatement={lastStatement?.santander}
       />
 
@@ -496,7 +511,6 @@ export function ImportPage() {
         isError={hsbcMutation.isError}
         error={hsbcMutation.error}
         owner={hsbcOwner}
-        onOwnerChange={setHsbcOwner}
         lastStatement={lastStatement?.hsbc}
       />
 
@@ -518,7 +532,6 @@ export function ImportPage() {
         isError={chaseMutation.isError}
         error={chaseMutation.error}
         owner={chaseOwner}
-        onOwnerChange={setChaseOwner}
         lastStatement={lastStatement?.chase}
       />
 
@@ -538,7 +551,6 @@ export function ImportPage() {
         isError={sofiMutation.isError}
         error={sofiMutation.error}
         owner={sofiOwner}
-        onOwnerChange={setSofiOwner}
         lastStatement={lastStatement?.sofi}
       />
     </div>
