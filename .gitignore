@@ -150,3 +150,9 @@ playwright-report/
 
 # Migration artefacts
 restore-data.json
+
+# Local prod DB snapshots (real financial data — never commit). See /db-snapshot.
+prod.db
+prod.db-wal
+prod.db-shm
+*.db.b64
