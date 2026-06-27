@@ -10,9 +10,9 @@ import {
   ListTodo,
   Users,
   Upload,
+  Tags,
 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover.js";
-import { useSession } from "../lib/authClient.js";
 
 const mainTabs = [
   { to: "/dashboard", label: "Home", Icon: Home },
@@ -21,25 +21,20 @@ const mainTabs = [
   { to: "/investments", label: "Investments", Icon: TrendingUp },
 ] as const;
 
-const otherItems = [
+const extraItems = [
   { to: "/tabs", label: "Tabs", Icon: Receipt },
   { to: "/tasks", label: "Tasks", Icon: ListTodo },
-];
-
-const adminItems = [
   { to: "/users", label: "Users", Icon: Users },
   { to: "/import", label: "Import", Icon: Upload },
+  { to: "/categories", label: "Categories", Icon: Tags },
 ];
 
-const otherRoutes = ["/tabs", "/tasks", "/users", "/import"];
+const otherRoutes = extraItems.map((i) => i.to);
 
 export function BottomNav() {
   const [open, setOpen] = useState(false);
-  const { data: session } = useSession();
   const { pathname } = useLocation();
   const otherActive = otherRoutes.some((r) => pathname.startsWith(r));
-
-  const extraItems = [...otherItems, ...(session?.user.role === "Admin" ? adminItems : [])];
 
   return (
     <nav

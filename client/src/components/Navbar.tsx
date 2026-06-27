@@ -11,9 +11,6 @@ const links = [
   { to: "/investments", label: "Investments" },
   { to: "/tabs", label: "Tabs" },
   { to: "/tasks", label: "Tasks" },
-] as const;
-
-const adminLinks = [
   { to: "/users", label: "Users" },
   { to: "/import", label: "Import" },
   { to: "/categories", label: "Categories" },
@@ -83,24 +80,6 @@ export function Navbar({ onSignOut }: { onSignOut: () => void }) {
               )}
             </NavLink>
           ))}
-          {session?.user.role === "Admin" && (
-            <>
-              <span className="h-3.5 w-px bg-border" />
-              {adminLinks.map((l) => (
-                <NavLink
-                  key={l.to}
-                  to={l.to}
-                  className={({ isActive }) =>
-                    `nav-link text-muted-foreground/80 ${isActive ? "is-active" : ""}`
-                  }
-                >
-                  {({ isActive }) => (
-                    <span aria-current={isActive ? "page" : undefined}>{l.label}</span>
-                  )}
-                </NavLink>
-              ))}
-            </>
-          )}
         </div>
 
         {/* Right: identity + controls */}

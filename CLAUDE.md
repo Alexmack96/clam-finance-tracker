@@ -100,7 +100,7 @@ Express + TypeScript API. Entry point: `src/index.ts`.
 - `config/env.ts` — Zod-validated env vars. Required: `DATABASE_URL`, `SESSION_SECRET`. Optional: SendGrid and Anthropic keys.
 - `db/client.ts` — Prisma client singleton.
 - `db/seed.ts` — seeds admin user only; no sample transactions.
-- `middleware/auth.ts` — `requireAuth` (any session) and `requireAdmin` (role === "Admin").
+- `middleware/auth.ts` — `requireAuth` (any logged-in session). There is no admin role gate; every authenticated user can reach every route.
 - `routes/admin.ts` — user list, Monzo CSV import, staging status, process staged.
 - `routes/categories.ts` — category CRUD.
 - `routes/transactions.ts` — transaction CRUD.
@@ -118,9 +118,8 @@ React 18 + React Router v6 + Tailwind v4 + shadcn/ui. Entry: `main.tsx` → `App
 - `lib/api.ts` — Axios instance (`withCredentials: true`). **Always import this for HTTP requests — never use `fetch` directly.**
 - `lib/utils.ts` — `cn()` helper (clsx + tailwind-merge).
 - `components/ProtectedRoute.tsx` — Route guard; redirects to `/login` if no session.
-- `components/AdminRoute.tsx` — Admin-only guard; redirects to `/dashboard` if not Admin.
 - `components/Layout.tsx` — Shell with `<Navbar>` + `<Outlet>`; handles sign-out.
-- `components/Navbar.tsx` — Green navbar; shows Users + Import links for admins only.
+- `components/Navbar.tsx` — Green navbar; all pages (incl. Users, Import, Categories) are shown to every logged-in user.
 - `components/ui/` — shadcn/ui components (new-york style).
 - `pages/LoginPage.tsx` — Email/password login.
 - `pages/DashboardPage.tsx` — Summary cards (income/expenses/balance), spending pie chart, transaction table with type/category filters.

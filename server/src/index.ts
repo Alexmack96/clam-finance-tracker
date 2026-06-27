@@ -10,8 +10,14 @@ import { toNodeHandler } from "better-auth/node";
 import { auth } from "./lib/auth.js";
 import { env } from "./config/env.js";
 import { errorHandler } from "./middleware/errorHandler.js";
-import { requireAuth, requireAdmin } from "./middleware/auth.js";
-import { initSystemCategories, mapMonzoCategories, migrateOwners, consolidateFoodCategories, migrateTakeout } from "./routes/admin.js";
+import { requireAuth } from "./middleware/auth.js";
+import {
+  initSystemCategories,
+  mapMonzoCategories,
+  migrateOwners,
+  consolidateFoodCategories,
+  migrateTakeout,
+} from "./routes/admin.js";
 import { rescueSofiChaseFx } from "./migrations/rescueSofiChaseFx.js";
 import { usersRouter } from "./routes/users.js";
 import { importRouter } from "./routes/import.js";
@@ -35,7 +41,7 @@ app.use(
   cors({
     origin: trustedOrigins,
     credentials: true,
-  })
+  }),
 );
 
 app.use(helmet());
@@ -63,8 +69,8 @@ app.get("/api/me", requireAuth, (req, res) => {
   res.json({ user: { id, email, name, role } });
 });
 
-app.use("/api/admin/users", requireAuth, requireAdmin, usersRouter);
-app.use("/api/admin", requireAuth, requireAdmin, importRouter);
+app.use("/api/admin/users", requireAuth, usersRouter);
+app.use("/api/admin", requireAuth, importRouter);
 app.use("/api/categories", requireAuth, categoriesRouter);
 app.use("/api/transactions", requireAuth, transactionsRouter);
 app.use("/api/dashboard", requireAuth, dashboardRouter);
@@ -78,7 +84,7 @@ app.use("/api/admin/plaid", plaidRouter);
 if (env.NODE_ENV === "production") {
   const clientDist = join(import.meta.dirname, "../../client/dist");
   app.use(express.static(clientDist));
-  
+
   // SPA fallback: serve index.html for any non API route
   app.get("/*path", (_req, res) => {
     res.sendFile(join(clientDist, "index.html"));
@@ -101,4 +107,3 @@ app.listen(env.PORT, async () => {
     console.error("[rescueSofiChaseFx] failed:", err);
   }
 });
- 

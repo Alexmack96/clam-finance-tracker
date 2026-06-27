@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { db } from "../db/client.js";
 import { Prisma } from "../generated/prisma/index.js";
-import { requireAdmin } from "../middleware/auth.js";
 import { createCategorySchema, updateCategorySchema } from "@clam/core";
 
 export const categoriesRouter = Router();
@@ -14,7 +13,7 @@ categoriesRouter.get("/", async (_req, res) => {
   res.json(categories.map(({ _count, ...c }) => ({ ...c, transactionCount: _count.transactions })));
 });
 
-categoriesRouter.post("/", requireAdmin, async (req, res) => {
+categoriesRouter.post("/", async (req, res) => {
   const parsed = createCategorySchema.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ errors: parsed.error.flatten().fieldErrors });
@@ -33,7 +32,7 @@ categoriesRouter.post("/", requireAdmin, async (req, res) => {
   }
 });
 
-categoriesRouter.patch("/:id", requireAdmin, async (req, res) => {
+categoriesRouter.patch("/:id", async (req, res) => {
   const parsed = updateCategorySchema.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ errors: parsed.error.flatten().fieldErrors });
@@ -61,7 +60,7 @@ categoriesRouter.patch("/:id", requireAdmin, async (req, res) => {
   }
 });
 
-categoriesRouter.delete("/:id", requireAdmin, async (req, res) => {
+categoriesRouter.delete("/:id", async (req, res) => {
   const category = await db.category.findUnique({ where: { id: req.params.id as string } });
   if (!category) {
     res.status(404).json({ error: "Category not found" });
@@ -89,7 +88,7 @@ categoriesRouter.delete("/:id", requireAdmin, async (req, res) => {
   res.status(204).end();
 });
 
-categoriesRouter.post("/:fromId/merge/:toId", requireAdmin, async (req, res) => {
+categoriesRouter.post("/:fromId/merge/:toId", async (req, res) => {
   const fromId = req.params.fromId as string;
   const toId = req.params.toId as string;
 
