@@ -213,7 +213,10 @@ function CategoryCell({
   onSave: (id: string) => void;
 }) {
   const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [highlight, setHighlight] = useState(0);
   const triggerRef = useRef<HTMLSpanElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const [pos, setPos] = useState({ top: 0, left: 0 });
 
   useEffect(() => {
@@ -225,9 +228,20 @@ function CategoryCell({
     return () => document.removeEventListener("mousedown", handle);
   }, [open]);
 
-  const DROPDOWN_HEIGHT = categories.length * 32 + 8;
+  useEffect(() => {
+    if (open) inputRef.current?.focus();
+  }, [open]);
 
-  function handleClick() {
+  const matches = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    const filtered = q ? categories.filter((c) => c.name.toLowerCase().includes(q)) : categories;
+    return filtered.slice(0, 10);
+  }, [categories, query]);
+
+  // ~32px per row + 40px search box + padding
+  const DROPDOWN_HEIGHT = Math.min(matches.length || 1, 10) * 32 + 48;
+
+  function openDropdown() {
     if (triggerRef.current) {
       const rect = triggerRef.current.getBoundingClientRect();
       const spaceBelow = window.innerHeight - rect.bottom;
@@ -235,14 +249,38 @@ function CategoryCell({
         spaceBelow >= DROPDOWN_HEIGHT + 4 ? rect.bottom + 4 : rect.top - DROPDOWN_HEIGHT - 4;
       setPos({ top, left: rect.left });
     }
-    setOpen((o) => !o);
+    setQuery("");
+    setHighlight(0);
+    setOpen(true);
+  }
+
+  function select(id: string) {
+    onSave(id);
+    setOpen(false);
+  }
+
+  function handleKeyDown(e: React.KeyboardEvent) {
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setHighlight((h) => Math.min(h + 1, matches.length - 1));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setHighlight((h) => Math.max(h - 1, 0));
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      const pick = matches[highlight];
+      if (pick) select(pick.id);
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      setOpen(false);
+    }
   }
 
   return (
     <>
       <span
         ref={triggerRef}
-        onClick={handleClick}
+        onClick={() => (open ? setOpen(false) : openDropdown())}
         className="cursor-pointer px-2 py-0.5 rounded-full text-xs font-medium border hover:opacity-80"
         style={{ color: tx.category.color, borderColor: tx.category.color }}
       >
@@ -252,26 +290,43 @@ function CategoryCell({
         createPortal(
           <div
             style={{ position: "fixed", top: pos.top, left: pos.left, zIndex: 99999 }}
-            className="bg-popover border border-border rounded-md shadow-lg py-1 min-w-[150px]"
+            className="bg-popover border border-border rounded-md shadow-lg py-1 min-w-[180px]"
             onMouseDown={(e) => e.stopPropagation()}
           >
-            {categories.map((c) => (
-              <div
-                key={c.id}
-                onClick={() => {
-                  onSave(c.id);
-                  setOpen(false);
+            <div className="px-2 pb-1">
+              <input
+                ref={inputRef}
+                value={query}
+                onChange={(e) => {
+                  setQuery(e.target.value);
+                  setHighlight(0);
                 }}
-                className="px-2 py-1 cursor-pointer hover:bg-accent"
-              >
-                <span
-                  className="px-2 py-0.5 rounded-full text-xs font-medium border"
-                  style={{ color: c.color, borderColor: c.color }}
-                >
-                  {c.name}
-                </span>
-              </div>
-            ))}
+                onKeyDown={handleKeyDown}
+                placeholder="Search categories…"
+                className="w-full px-2 py-1 text-xs rounded-sm border border-border bg-background outline-none focus:ring-1 focus:ring-ring"
+              />
+            </div>
+            <div className="max-h-[320px] overflow-y-auto">
+              {matches.length === 0 ? (
+                <div className="px-3 py-2 text-xs text-muted-foreground">No matches</div>
+              ) : (
+                matches.map((c, i) => (
+                  <div
+                    key={c.id}
+                    onClick={() => select(c.id)}
+                    onMouseEnter={() => setHighlight(i)}
+                    className={`px-2 py-1 cursor-pointer ${i === highlight ? "bg-accent" : ""}`}
+                  >
+                    <span
+                      className="px-2 py-0.5 rounded-full text-xs font-medium border"
+                      style={{ color: c.color, borderColor: c.color }}
+                    >
+                      {c.name}
+                    </span>
+                  </div>
+                ))
+              )}
+            </div>
           </div>,
           document.body,
         )}
