@@ -10,7 +10,15 @@ type ImportResult = { imported: number; duplicates?: string[] };
 type ProcessResult = { processed: number; skipped: number; errored: number };
 type BankCounts = { pending: number; processed: number; skipped: number; errored: number };
 type BankCountsWithOwner = BankCounts & { byOwner: Record<string, Record<string, number>> };
-type StagedInfo = { monzo: BankCounts; amex: BankCountsWithOwner; barclays: BankCountsWithOwner; santander: BankCountsWithOwner; hsbc: BankCountsWithOwner; sofi: BankCountsWithOwner; chase: BankCountsWithOwner };
+type StagedInfo = {
+  monzo: BankCounts;
+  amex: BankCountsWithOwner;
+  barclays: BankCountsWithOwner;
+  santander: BankCountsWithOwner;
+  hsbc: BankCountsWithOwner;
+  sofi: BankCountsWithOwner;
+  chase: BankCountsWithOwner;
+};
 
 function BankUploadCard({
   title,
@@ -105,7 +113,11 @@ function BankUploadCard({
                   className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
                   onClick={() => setShowDuplicates((v) => !v)}
                 >
-                  {showDuplicates ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                  {showDuplicates ? (
+                    <ChevronUp className="h-3 w-3" />
+                  ) : (
+                    <ChevronDown className="h-3 w-3" />
+                  )}
                   {showDuplicates ? "Hide" : "Show"} duplicate IDs
                 </button>
                 {showDuplicates && (
@@ -133,7 +145,13 @@ function BankUploadCard({
   );
 }
 
-type MonzoStatus = { configured: boolean; connected: boolean; accountId: string | null; lastSyncedAt: string | null; totalStaged: number };
+type MonzoStatus = {
+  configured: boolean;
+  connected: boolean;
+  accountId: string | null;
+  lastSyncedAt: string | null;
+  totalStaged: number;
+};
 type MonzoSyncResult = { imported: number; duplicates: number };
 
 export function ImportPage() {
@@ -179,7 +197,11 @@ export function ImportPage() {
 
   const monzoSyncMutation = useMutation<MonzoSyncResult, Error>({
     mutationFn: () => api.post("/api/admin/monzo/sync").then((r) => r.data),
-    onSuccess: () => { refetchStaged(); refetchMonzoStatus(); processMutation.mutate(); },
+    onSuccess: () => {
+      refetchStaged();
+      refetchMonzoStatus();
+      processMutation.mutate();
+    },
   });
 
   const monzoDisconnectMutation = useMutation<void, Error>({
@@ -286,11 +308,17 @@ export function ImportPage() {
   });
 
   const sum = (key: keyof BankCounts) =>
-    (staged?.monzo[key] ?? 0) + (staged?.amex[key] ?? 0) + (staged?.barclays[key] ?? 0) + (staged?.santander[key] ?? 0) + (staged?.hsbc[key] ?? 0) + (staged?.sofi[key] ?? 0) + (staged?.chase[key] ?? 0);
-  const totalPending   = sum("pending");
+    (staged?.monzo[key] ?? 0) +
+    (staged?.amex[key] ?? 0) +
+    (staged?.barclays[key] ?? 0) +
+    (staged?.santander[key] ?? 0) +
+    (staged?.hsbc[key] ?? 0) +
+    (staged?.sofi[key] ?? 0) +
+    (staged?.chase[key] ?? 0);
+  const totalPending = sum("pending");
   const totalProcessed = sum("processed");
-  const totalErrored   = sum("errored");
-  const totalStaged    = totalPending + totalProcessed + sum("skipped") + totalErrored;
+  const totalErrored = sum("errored");
+  const totalStaged = totalPending + totalProcessed + sum("skipped") + totalErrored;
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
@@ -315,38 +343,62 @@ export function ImportPage() {
             <div className="space-y-3">
               {/* Per-bank breakdown */}
               <div className="flex flex-wrap gap-6 text-sm">
-                {(["monzo", "amex", "barclays", "santander", "hsbc", "sofi", "chase"] as const).map((bank) => {
-                  const counts = staged?.[bank];
-                  if (!counts) return null;
-                  const total = counts.pending + counts.processed + counts.skipped;
-                  if (total === 0) return null;
-                  const ownerCounts = "byOwner" in counts ? counts.byOwner : null;
-                  const owners = ownerCounts
-                    ? Object.entries(ownerCounts)
-                        .map(([o, s]) => `${o} ${((s.pending ?? 0) + (s.processed ?? 0) + (s.skipped ?? 0)).toLocaleString()}`)
-                        .join(" · ")
-                    : null;
-                  return (
-                    <div key={bank}>
-                      <span className="font-medium text-foreground capitalize">{bank}</span>
-                      <span className="text-muted-foreground ml-1">{total.toLocaleString()} rows</span>
-                      {owners && <span className="text-muted-foreground/60 ml-1 text-xs">({owners})</span>}
-                    </div>
-                  );
-                })}
+                {(["monzo", "amex", "barclays", "santander", "hsbc", "sofi", "chase"] as const).map(
+                  (bank) => {
+                    const counts = staged?.[bank];
+                    if (!counts) return null;
+                    const total = counts.pending + counts.processed + counts.skipped;
+                    if (total === 0) return null;
+                    const ownerCounts = "byOwner" in counts ? counts.byOwner : null;
+                    const owners = ownerCounts
+                      ? Object.entries(ownerCounts)
+                          .map(
+                            ([o, s]) =>
+                              `${o} ${((s.pending ?? 0) + (s.processed ?? 0) + (s.skipped ?? 0)).toLocaleString()}`,
+                          )
+                          .join(" · ")
+                      : null;
+                    return (
+                      <div key={bank}>
+                        <span className="font-medium text-foreground capitalize">{bank}</span>
+                        <span className="text-muted-foreground ml-1">
+                          {total.toLocaleString()} rows
+                        </span>
+                        {owners && (
+                          <span className="text-muted-foreground/60 ml-1 text-xs">({owners})</span>
+                        )}
+                      </div>
+                    );
+                  },
+                )}
               </div>
               {/* Status summary + (fallback) action */}
               <div className="flex items-center gap-4">
                 <span className="text-sm text-muted-foreground">
                   {totalProcessed.toLocaleString()} processed
                   {totalErrored > 0 && (
-                    <> · <span className="text-destructive">{totalErrored.toLocaleString()} errored</span></>
+                    <>
+                      {" "}
+                      ·{" "}
+                      <span className="text-destructive">
+                        {totalErrored.toLocaleString()} errored
+                      </span>
+                    </>
                   )}
                   {totalPending > 0 && (
-                    <> · <span className="text-foreground font-medium">{totalPending.toLocaleString()} pending</span></>
+                    <>
+                      {" "}
+                      ·{" "}
+                      <span className="text-foreground font-medium">
+                        {totalPending.toLocaleString()} pending
+                      </span>
+                    </>
                   )}
                   {processMutation.isPending && (
-                    <> · <span className="text-foreground">syncing…</span></>
+                    <>
+                      {" "}
+                      · <span className="text-foreground">syncing…</span>
+                    </>
                   )}
                 </span>
                 {totalPending > 0 && (
@@ -365,7 +417,9 @@ export function ImportPage() {
                   <CheckCircle className="h-4 w-4" />
                   {processMutation.data.processed.toLocaleString()} transactions added
                   {processMutation.data.errored > 0 && (
-                    <span className="text-destructive">· {processMutation.data.errored.toLocaleString()} errored</span>
+                    <span className="text-destructive">
+                      · {processMutation.data.errored.toLocaleString()} errored
+                    </span>
                   )}
                 </div>
               )}
@@ -377,7 +431,9 @@ export function ImportPage() {
       {/* Active bank upload cards */}
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-xs uppercase tracking-wide text-muted-foreground">Monzo</CardTitle>
+          <CardTitle className="text-xs uppercase tracking-wide text-muted-foreground">
+            Monzo
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {monzoParam === "error" && (
@@ -388,12 +444,16 @@ export function ImportPage() {
           )}
           {!monzoStatus?.configured ? (
             <p className="text-sm text-muted-foreground">
-              Set <span className="font-mono">MONZO_CLIENT_ID</span>, <span className="font-mono">MONZO_CLIENT_SECRET</span>, and <span className="font-mono">MONZO_REDIRECT_URI</span> in <span className="font-mono">server/.env</span>.
+              Set <span className="font-mono">MONZO_CLIENT_ID</span>,{" "}
+              <span className="font-mono">MONZO_CLIENT_SECRET</span>, and{" "}
+              <span className="font-mono">MONZO_REDIRECT_URI</span> in{" "}
+              <span className="font-mono">server/.env</span>.
             </p>
           ) : !monzoStatus.connected ? (
             <>
               <p className="text-sm text-muted-foreground">
-                Connect your Monzo account — tokens refresh automatically, no more manual copy-paste.
+                Connect your Monzo account — tokens refresh automatically, no more manual
+                copy-paste.
               </p>
               <a href="/api/admin/monzo/auth">
                 <Button>Connect Monzo</Button>
@@ -404,14 +464,25 @@ export function ImportPage() {
               <p className="text-sm text-muted-foreground">
                 Connected · <span className="font-mono text-xs">{monzoStatus.accountId}</span>
                 {monzoStatus.lastSyncedAt && (
-                  <> · Last synced {new Date(monzoStatus.lastSyncedAt).toLocaleString()} · {monzoStatus.totalStaged.toLocaleString()} staged</>
+                  <>
+                    {" "}
+                    · Last synced {new Date(monzoStatus.lastSyncedAt).toLocaleString()} ·{" "}
+                    {monzoStatus.totalStaged.toLocaleString()} staged
+                  </>
                 )}
               </p>
               <div className="flex items-center gap-3">
-                <Button disabled={monzoSyncMutation.isPending} onClick={() => monzoSyncMutation.mutate()}>
+                <Button
+                  disabled={monzoSyncMutation.isPending}
+                  onClick={() => monzoSyncMutation.mutate()}
+                >
                   {monzoSyncMutation.isPending ? "Syncing…" : "Sync now"}
                 </Button>
-                <Button variant="outline" disabled={monzoDisconnectMutation.isPending} onClick={() => monzoDisconnectMutation.mutate()}>
+                <Button
+                  variant="outline"
+                  disabled={monzoDisconnectMutation.isPending}
+                  onClick={() => monzoDisconnectMutation.mutate()}
+                >
                   Disconnect
                 </Button>
               </div>
@@ -443,7 +514,10 @@ export function ImportPage() {
         accept=".pdf,application/pdf"
         file={amexFile}
         fileRef={amexFileRef}
-        onFileChange={(f) => { setAmexFile(f); amexMutation.reset(); }}
+        onFileChange={(f) => {
+          setAmexFile(f);
+          amexMutation.reset();
+        }}
         onUpload={() => amexFile && amexMutation.mutate({ file: amexFile, owner: amexOwner })}
         result={amexMutation.data}
         isPending={amexMutation.isPending || (amexMutation.isSuccess && processMutation.isPending)}
@@ -459,10 +533,17 @@ export function ImportPage() {
         accept=".pdf,application/pdf"
         file={barclaysFile}
         fileRef={barclaysFileRef}
-        onFileChange={(f) => { setBarclaysFile(f); barclaysMutation.reset(); }}
-        onUpload={() => barclaysFile && barclaysMutation.mutate({ file: barclaysFile, owner: barclaysOwner })}
+        onFileChange={(f) => {
+          setBarclaysFile(f);
+          barclaysMutation.reset();
+        }}
+        onUpload={() =>
+          barclaysFile && barclaysMutation.mutate({ file: barclaysFile, owner: barclaysOwner })
+        }
         result={barclaysMutation.data}
-        isPending={barclaysMutation.isPending || (barclaysMutation.isSuccess && processMutation.isPending)}
+        isPending={
+          barclaysMutation.isPending || (barclaysMutation.isSuccess && processMutation.isPending)
+        }
         isError={barclaysMutation.isError}
         error={barclaysMutation.error}
         owner={barclaysOwner}
@@ -475,10 +556,17 @@ export function ImportPage() {
         accept=".pdf,application/pdf"
         file={santanderFile}
         fileRef={santanderFileRef}
-        onFileChange={(f) => { setSantanderFile(f); santanderMutation.reset(); }}
-        onUpload={() => santanderFile && santanderMutation.mutate({ file: santanderFile, owner: santanderOwner })}
+        onFileChange={(f) => {
+          setSantanderFile(f);
+          santanderMutation.reset();
+        }}
+        onUpload={() =>
+          santanderFile && santanderMutation.mutate({ file: santanderFile, owner: santanderOwner })
+        }
         result={santanderMutation.data}
-        isPending={santanderMutation.isPending || (santanderMutation.isSuccess && processMutation.isPending)}
+        isPending={
+          santanderMutation.isPending || (santanderMutation.isSuccess && processMutation.isPending)
+        }
         isError={santanderMutation.isError}
         error={santanderMutation.error}
         owner={santanderOwner}
@@ -491,7 +579,10 @@ export function ImportPage() {
         accept=".pdf,application/pdf"
         file={hsbcFile}
         fileRef={hsbcFileRef}
-        onFileChange={(f) => { setHsbcFile(f); hsbcMutation.reset(); }}
+        onFileChange={(f) => {
+          setHsbcFile(f);
+          hsbcMutation.reset();
+        }}
         onUpload={() => hsbcFile && hsbcMutation.mutate({ file: hsbcFile, owner: hsbcOwner })}
         result={hsbcMutation.data}
         isPending={hsbcMutation.isPending || (hsbcMutation.isSuccess && processMutation.isPending)}
@@ -507,10 +598,15 @@ export function ImportPage() {
         accept=".pdf,application/pdf"
         file={chaseFile}
         fileRef={chaseFileRef}
-        onFileChange={(f) => { setChaseFile(f); chaseMutation.reset(); }}
+        onFileChange={(f) => {
+          setChaseFile(f);
+          chaseMutation.reset();
+        }}
         onUpload={() => chaseFile && chaseMutation.mutate({ file: chaseFile, owner: chaseOwner })}
         result={chaseMutation.data}
-        isPending={chaseMutation.isPending || (chaseMutation.isSuccess && processMutation.isPending)}
+        isPending={
+          chaseMutation.isPending || (chaseMutation.isSuccess && processMutation.isPending)
+        }
         isError={chaseMutation.isError}
         error={chaseMutation.error}
         owner={chaseOwner}
@@ -523,7 +619,10 @@ export function ImportPage() {
         accept=".pdf,application/pdf"
         file={sofiFile}
         fileRef={sofiFileRef}
-        onFileChange={(f) => { setSofiFile(f); sofiMutation.reset(); }}
+        onFileChange={(f) => {
+          setSofiFile(f);
+          sofiMutation.reset();
+        }}
         onUpload={() => sofiFile && sofiMutation.mutate({ file: sofiFile, owner: sofiOwner })}
         result={sofiMutation.data}
         isPending={sofiMutation.isPending || (sofiMutation.isSuccess && processMutation.isPending)}

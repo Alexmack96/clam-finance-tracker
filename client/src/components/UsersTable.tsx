@@ -1,11 +1,4 @@
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "./ui/table.js";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table.js";
 import { Badge } from "./ui/badge.js";
 import { Skeleton } from "./ui/skeleton.js";
 
@@ -50,9 +43,7 @@ export function UsersTable({ users, isPending }: { users: User[]; isPending: boo
             <TableCell className="font-medium">{user.name}</TableCell>
             <TableCell>{user.email}</TableCell>
             <TableCell>
-              <Badge variant={user.role === "Admin" ? "default" : "secondary"}>
-                {user.role}
-              </Badge>
+              <Badge variant={user.role === "Admin" ? "default" : "secondary"}>{user.role}</Badge>
             </TableCell>
             <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
           </TableRow>

@@ -46,16 +46,31 @@ export function LoginPage() {
       {/* Left editorial panel */}
       <aside className="hidden lg:flex flex-col justify-between w-[46%] xl:w-[40%] p-12 xl:p-16 relative">
         <div className="rise rise-1 flex items-center gap-2.5">
-          <svg width="22" height="22" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-primary">
-            <path d="M14 3 C7 3 3 8 3 14 L25 14 C25 8 21 3 14 3 Z" fill="currentColor" opacity="0.45"/>
-            <path d="M14 3 L14 14"       stroke="currentColor" strokeWidth="1" opacity="0.65"/>
-            <path d="M9.5 4.5 L11.5 14"  stroke="currentColor" strokeWidth="1" opacity="0.65"/>
-            <path d="M18.5 4.5 L16.5 14" stroke="currentColor" strokeWidth="1" opacity="0.65"/>
-            <path d="M5.5 8.5 L9 14"     stroke="currentColor" strokeWidth="1" opacity="0.45"/>
-            <path d="M22.5 8.5 L19 14"   stroke="currentColor" strokeWidth="1" opacity="0.45"/>
-            <path d="M3 14 C3 21 7.5 25 14 25 C20.5 25 25 21 25 14 Z" fill="currentColor" opacity="0.85"/>
-            <circle cx="14" cy="17" r="3.5" fill="white" opacity="0.92"/>
-            <circle cx="13" cy="16" r="1.2" fill="white" opacity="0.5"/>
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 28 28"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className="text-primary"
+          >
+            <path
+              d="M14 3 C7 3 3 8 3 14 L25 14 C25 8 21 3 14 3 Z"
+              fill="currentColor"
+              opacity="0.45"
+            />
+            <path d="M14 3 L14 14" stroke="currentColor" strokeWidth="1" opacity="0.65" />
+            <path d="M9.5 4.5 L11.5 14" stroke="currentColor" strokeWidth="1" opacity="0.65" />
+            <path d="M18.5 4.5 L16.5 14" stroke="currentColor" strokeWidth="1" opacity="0.65" />
+            <path d="M5.5 8.5 L9 14" stroke="currentColor" strokeWidth="1" opacity="0.45" />
+            <path d="M22.5 8.5 L19 14" stroke="currentColor" strokeWidth="1" opacity="0.45" />
+            <path
+              d="M3 14 C3 21 7.5 25 14 25 C20.5 25 25 21 25 14 Z"
+              fill="currentColor"
+              opacity="0.85"
+            />
+            <circle cx="14" cy="17" r="3.5" fill="white" opacity="0.92" />
+            <circle cx="13" cy="16" r="1.2" fill="white" opacity="0.5" />
           </svg>
           <span className="font-display text-[19px] font-medium tracking-tight text-foreground">
             Clam<span className="font-light text-muted-foreground/70"> Finance</span>
@@ -68,7 +83,8 @@ export function LoginPage() {
             Money, <span className="italic text-primary">tracked together</span>.
           </h1>
           <p className="rise rise-4 max-w-md text-[15px] leading-relaxed text-muted-foreground">
-            Bank transactions in one place, joint expenses settled fairly, and the portfolio in plain sight.
+            Bank transactions in one place, joint expenses settled fairly, and the portfolio in
+            plain sight.
           </p>
           <div className="rise rise-5 divider-rule max-w-md" />
           <dl className="rise rise-5 grid grid-cols-3 gap-6 max-w-md text-sm">
@@ -111,7 +127,9 @@ export function LoginPage() {
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
             <div className="space-y-1.5">
-              <Label htmlFor="email" className="eyebrow">Email</Label>
+              <Label htmlFor="email" className="eyebrow">
+                Email
+              </Label>
               <Input
                 id="email"
                 type="email"
@@ -120,10 +138,14 @@ export function LoginPage() {
                 {...register("email")}
                 className={`h-11 bg-card/60 backdrop-blur-sm ${errors.email ? "border-destructive focus-visible:ring-destructive" : ""}`}
               />
-              {errors.email && <p className="text-xs text-destructive mt-1">{errors.email.message}</p>}
+              {errors.email && (
+                <p className="text-xs text-destructive mt-1">{errors.email.message}</p>
+              )}
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="password" className="eyebrow">Password</Label>
+              <Label htmlFor="password" className="eyebrow">
+                Password
+              </Label>
               <Input
                 id="password"
                 type="password"
@@ -132,7 +154,9 @@ export function LoginPage() {
                 {...register("password")}
                 className={`h-11 bg-card/60 backdrop-blur-sm ${errors.password ? "border-destructive focus-visible:ring-destructive" : ""}`}
               />
-              {errors.password && <p className="text-xs text-destructive mt-1">{errors.password.message}</p>}
+              {errors.password && (
+                <p className="text-xs text-destructive mt-1">{errors.password.message}</p>
+              )}
             </div>
             {errors.root?.serverError && (
               <p className="text-xs text-destructive">{errors.root.serverError.message}</p>

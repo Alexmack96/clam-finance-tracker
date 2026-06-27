@@ -6,8 +6,5 @@ export function renderWithQuery(ui: ReactElement, options?: RenderOptions) {
   const client = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   });
-  return render(
-    <QueryClientProvider client={client}>{ui}</QueryClientProvider>,
-    options
-  );
+  return render(<QueryClientProvider client={client}>{ui}</QueryClientProvider>, options);
 }

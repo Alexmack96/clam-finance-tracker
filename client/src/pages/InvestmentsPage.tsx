@@ -1,8 +1,18 @@
 import { useMemo, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  ComposedChart, Area, Line, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, Legend, PieChart, Pie, Cell,
+  ComposedChart,
+  Area,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+  PieChart,
+  Pie,
+  Cell,
 } from "recharts";
 import { AllCommunityModule, ModuleRegistry, themeQuartz } from "ag-grid-community";
 import type { ColDef, CellValueChangedEvent, GetRowIdParams } from "ag-grid-community";
@@ -11,12 +21,24 @@ import { AgGridReact } from "ag-grid-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card.js";
 import { Button } from "../components/ui/button.js";
 import { Input } from "../components/ui/input.js";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "../components/ui/dialog.js";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "../components/ui/dialog.js";
 import { Label } from "../components/ui/label.js";
 import { TrendingUp, TrendingDown, Minus, Plus, Trash2 } from "lucide-react";
 import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
-  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
 } from "../components/ui/alert-dialog.js";
 import api from "../lib/api.js";
 
@@ -26,54 +48,77 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 
 type InvCategory = "pension" | "crypto" | "equity" | "cash" | "commodity" | "debt";
 
-interface Snapshot { id: string; date: string; value: number }
+interface Snapshot {
+  id: string;
+  date: string;
+  value: number;
+}
 
 interface Account {
-  id:        string;
-  name:      string;
-  category:  InvCategory;
-  rate:      number | null;
+  id: string;
+  name: string;
+  category: InvCategory;
+  rate: number | null;
   sortOrder: number;
   snapshots: Snapshot[];
 }
 
 interface InvestmentsData {
   accounts: Account[];
-  dates:    string[];   // sorted ISO date strings
+  dates: string[]; // sorted ISO date strings
   stats: {
-    navLatest:    number;
-    navPrev:      number;
-    dtdPnL:       number;
-    mtdPnL:       number;
-    ytdPnL:       number;
-    itdPnL:       number;
-    pension:      number | null;
-    pensionPrev:  number | null;
-    totalWealth:  number | null;
+    navLatest: number;
+    navPrev: number;
+    dtdPnL: number;
+    mtdPnL: number;
+    ytdPnL: number;
+    itdPnL: number;
+    pension: number | null;
+    pensionPrev: number | null;
+    totalWealth: number | null;
   };
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const CAT_CONFIG: Record<InvCategory | "__total", { label: string; color: string; areaColor: string }> = {
-  pension:   { label: "Pension",   color: "#8b5cf6", areaColor: "#8b5cf620" },
-  crypto:    { label: "Crypto",    color: "#f97316", areaColor: "#f9731620" },
-  equity:    { label: "Equity",    color: "#3b82f6", areaColor: "#3b82f620" },
-  cash:      { label: "Cash",      color: "#22c55e", areaColor: "#22c55e20" },
+const CAT_CONFIG: Record<
+  InvCategory | "__total",
+  { label: string; color: string; areaColor: string }
+> = {
+  pension: { label: "Pension", color: "#8b5cf6", areaColor: "#8b5cf620" },
+  crypto: { label: "Crypto", color: "#f97316", areaColor: "#f9731620" },
+  equity: { label: "Equity", color: "#3b82f6", areaColor: "#3b82f620" },
+  cash: { label: "Cash", color: "#22c55e", areaColor: "#22c55e20" },
   commodity: { label: "Commodity", color: "#eab308", areaColor: "#eab30820" },
-  debt:      { label: "Debt",      color: "#ef4444", areaColor: "#ef444420" },
-  __total:   { label: "Total NAV", color: "var(--muted-foreground)", areaColor: "" },
+  debt: { label: "Debt", color: "#ef4444", areaColor: "#ef444420" },
+  __total: { label: "Total NAV", color: "var(--muted-foreground)", areaColor: "" },
 };
 
-const CATEGORY_OPTIONS: InvCategory[] = ["pension", "crypto", "equity", "cash", "commodity", "debt"];
+const CATEGORY_OPTIONS: InvCategory[] = [
+  "pension",
+  "crypto",
+  "equity",
+  "cash",
+  "commodity",
+  "debt",
+];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const fmt = (n: number) =>
-  new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP", maximumFractionDigits: 0 }).format(n);
+  new Intl.NumberFormat("en-GB", {
+    style: "currency",
+    currency: "GBP",
+    maximumFractionDigits: 0,
+  }).format(n);
 
 const fmtFull = (n: number) =>
-  new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP", minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(n);
+  new Intl.NumberFormat("en-GB", {
+    style: "currency",
+    currency: "GBP",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(n);
 
 function pct(n: number, base: number) {
   if (base === 0) return "";
@@ -103,32 +148,41 @@ function navAtDate(accounts: Account[], dateIso: string): number {
 // ─── AG Grid theme ────────────────────────────────────────────────────────────
 
 const gridTheme = themeQuartz.withParams({
-  backgroundColor:       "var(--card)",
-  foregroundColor:       "var(--foreground)",
-  borderColor:           "var(--border)",
+  backgroundColor: "var(--card)",
+  foregroundColor: "var(--foreground)",
+  borderColor: "var(--border)",
   headerBackgroundColor: "var(--card)",
-  headerTextColor:       "var(--muted-foreground)",
-  subtleTextColor:       "var(--muted-foreground)",
-  accentColor:           "var(--primary)",
-  rowHoverColor:         "var(--accent)",
-  fontFamily:            "inherit",
-  fontSize:              12,
-  headerHeight:          32,
-  rowHeight:             40,
-  wrapperBorder:         false,
-  wrapperBorderRadius:   0,
+  headerTextColor: "var(--muted-foreground)",
+  subtleTextColor: "var(--muted-foreground)",
+  accentColor: "var(--primary)",
+  rowHoverColor: "var(--accent)",
+  fontFamily: "inherit",
+  fontSize: 12,
+  headerHeight: 32,
+  rowHeight: 40,
+  wrapperBorder: false,
+  wrapperBorderRadius: 0,
   cellHorizontalPadding: 10,
-  browserColorScheme:    "inherit",
+  browserColorScheme: "inherit",
 });
 
 // ─── Cell renderers ───────────────────────────────────────────────────────────
 
-function DateColumnHeader({ displayName, onDelete }: { displayName: string; onDelete: () => void }) {
+function DateColumnHeader({
+  displayName,
+  onDelete,
+}: {
+  displayName: string;
+  onDelete: () => void;
+}) {
   return (
     <div className="flex items-center justify-between w-full gap-1 group">
       <span>{displayName}</span>
       <button
-        onClick={(e) => { e.stopPropagation(); onDelete(); }}
+        onClick={(e) => {
+          e.stopPropagation();
+          onDelete();
+        }}
         className="opacity-0 group-hover:opacity-100 text-muted-foreground/60 hover:text-red-500 transition-all"
         title="Delete snapshot date"
       >
@@ -140,7 +194,8 @@ function DateColumnHeader({ displayName, onDelete }: { displayName: string; onDe
 
 function CategoryBadge({ value }: { value: InvCategory | "__total" }) {
   const cfg = CAT_CONFIG[value] ?? CAT_CONFIG.__total;
-  if (value === "__total") return <span className="text-xs text-muted-foreground font-semibold">—</span>;
+  if (value === "__total")
+    return <span className="text-xs text-muted-foreground font-semibold">—</span>;
   return (
     <span
       className="px-2 py-0.5 rounded-full text-xs font-medium border"
@@ -156,23 +211,29 @@ function CategoryRenderer({ value }: CustomCellRendererProps) {
 }
 
 function ValueRenderer({ value, data }: CustomCellRendererProps) {
-  if (value === undefined || value === null || value === "") return <span className="text-muted-foreground/30">—</span>;
+  if (value === undefined || value === null || value === "")
+    return <span className="text-muted-foreground/30">—</span>;
   const num = typeof value === "number" ? value : parseFloat(value);
   if (isNaN(num)) return <span className="text-muted-foreground/30">—</span>;
   const isTotal = data?.category === "__total";
   return (
-    <span className={`font-${isTotal ? "bold" : "normal"} ${num < 0 ? "text-red-500" : num === 0 ? "text-muted-foreground/40" : ""}`}>
+    <span
+      className={`font-${isTotal ? "bold" : "normal"} ${num < 0 ? "text-red-500" : num === 0 ? "text-muted-foreground/40" : ""}`}
+    >
       {fmtFull(num)}
     </span>
   );
 }
 
-
 function PnLCard({ label, value, base }: { label: string; value: number; base: number }) {
   const positive = value > 0;
   const zero = value === 0;
   const Icon = zero ? Minus : positive ? TrendingUp : TrendingDown;
-  const color = zero ? "text-muted-foreground" : positive ? "text-[var(--signal)]" : "text-destructive";
+  const color = zero
+    ? "text-muted-foreground"
+    : positive
+      ? "text-[var(--signal)]"
+      : "text-destructive";
   return (
     <Card className="surface-card-hover">
       <CardContent className="pt-5">
@@ -181,7 +242,8 @@ function PnLCard({ label, value, base }: { label: string; value: number; base: n
           <Icon className={`size-3.5 ${color}`} />
         </div>
         <p className={`font-display text-[28px] leading-none font-light ${color}`}>
-          {value >= 0 ? "+" : "−"}{fmt(Math.abs(value))}
+          {value >= 0 ? "+" : "−"}
+          {fmt(Math.abs(value))}
         </p>
         <p className="text-xs text-muted-foreground mt-2.5 font-numeric">{pct(value, base)}</p>
       </CardContent>
@@ -222,7 +284,9 @@ export function InvestmentsPage() {
     return last.toISOString().slice(0, 10);
   });
   const [addAccountForm, setAddAccountForm] = useState({
-    name: "", category: "cash" as InvCategory, rate: "",
+    name: "",
+    category: "cash" as InvCategory,
+    rate: "",
   });
 
   const { data, isLoading } = useQuery<InvestmentsData>({
@@ -286,10 +350,10 @@ export function InvestmentsPage() {
             const snap = a.snapshots.find((sp) => sp.date.slice(0, 10) === day);
             return s + (snap?.value ?? 0);
           }, 0);
-      const cash   = get("cash");
+      const cash = get("cash");
       const equity = get("equity");
       const crypto = get("crypto");
-      const debt   = Math.abs(get("debt")); // stored negative
+      const debt = Math.abs(get("debt")); // stored negative
       return { label: labelDate(iso), cash, equity, crypto, nav: cash + equity + crypto - debt };
     });
   }, [data]);
@@ -307,8 +371,11 @@ export function InvestmentsPage() {
     if (!data) return [];
     return data.accounts.map((acc) => {
       const row: Record<string, any> = {
-        id: acc.id, name: acc.name, category: acc.category,
-        rate: acc.rate, sortOrder: acc.sortOrder,
+        id: acc.id,
+        name: acc.name,
+        category: acc.category,
+        rate: acc.rate,
+        sortOrder: acc.sortOrder,
       };
       for (const snap of acc.snapshots) {
         row[fieldKey(snap.date)] = snap.value;
@@ -321,7 +388,10 @@ export function InvestmentsPage() {
   const pinnedBottomRowData = useMemo(() => {
     if (!data) return [];
     const row: Record<string, any> = {
-      id: "__total", name: "Total NAV", category: "__total", rate: null,
+      id: "__total",
+      name: "Total NAV",
+      category: "__total",
+      rate: null,
     };
     for (const iso of allDates) {
       row[fieldKey(iso)] = navAtDate(data.accounts, iso);
@@ -332,25 +402,41 @@ export function InvestmentsPage() {
   const columnDefs = useMemo((): ColDef[] => {
     const fixed: ColDef[] = [
       {
-        field: "name", headerName: "INVESTMENT", pinned: "left", width: 220,
+        field: "name",
+        headerName: "INVESTMENT",
+        pinned: "left",
+        width: 220,
         editable: (p) => p.data?.id !== "__total",
-        cellStyle: (p) => p.data?.category === "__total"
-          ? { fontWeight: "bold", color: "var(--foreground)" } : null,
+        cellStyle: (p) =>
+          p.data?.category === "__total"
+            ? { fontWeight: "bold", color: "var(--foreground)" }
+            : null,
       },
       {
-        field: "category", headerName: "TYPE", pinned: "left", width: 115,
+        field: "category",
+        headerName: "TYPE",
+        pinned: "left",
+        width: 115,
         cellRenderer: CategoryRenderer,
         sortable: false,
       },
       {
-        field: "rate", headerName: "RATE %", pinned: "left", width: 80,
+        field: "rate",
+        headerName: "RATE %",
+        pinned: "left",
+        width: 80,
         editable: (p) => p.data?.id !== "__total",
         cellEditor: "agNumberCellEditor",
-        valueFormatter: (p) => p.value != null && p.value !== "" ? `${p.value}%` : "—",
+        valueFormatter: (p) => (p.value != null && p.value !== "" ? `${p.value}%` : "—"),
       },
       {
-        headerName: "", pinned: "left", width: 52, sortable: false, filter: false,
-        suppressHeaderMenuButton: true, resizable: false,
+        headerName: "",
+        pinned: "left",
+        width: 52,
+        sortable: false,
+        filter: false,
+        suppressHeaderMenuButton: true,
+        resizable: false,
         cellRenderer: (p: CustomCellRendererProps) => {
           if (!p.data || p.data.id === "__total") return null;
           return (
@@ -375,9 +461,10 @@ export function InvestmentsPage() {
       editable: (p: any) => p.data?.id !== "__total",
       cellEditor: "agNumberCellEditor",
       cellRenderer: ValueRenderer,
-      cellStyle: (p: any) => p.data?.category === "__total"
-        ? { fontWeight: "bold", borderTop: "1px solid var(--border)" }
-        : null,
+      cellStyle: (p: any) =>
+        p.data?.category === "__total"
+          ? { fontWeight: "bold", borderTop: "1px solid var(--border)" }
+          : null,
       suppressKeyboardEvent: (p: any) => p.event.key === "Escape",
     }));
 
@@ -413,7 +500,8 @@ export function InvestmentsPage() {
     if (!newDate) return;
     const isoDay = newDate; // YYYY-MM-DD
     // Check if already exists
-    const exists = data?.dates.some((d) => d.slice(0, 10) === isoDay) || localDates.includes(isoDay);
+    const exists =
+      data?.dates.some((d) => d.slice(0, 10) === isoDay) || localDates.includes(isoDay);
     if (!exists) setLocalDates((prev) => [...prev, isoDay].sort());
     setShowAddDate(false);
   }
@@ -421,9 +509,9 @@ export function InvestmentsPage() {
   function handleAddAccount() {
     if (!addAccountForm.name.trim()) return;
     createAccountMutation.mutate({
-      name:     addAccountForm.name.trim(),
+      name: addAccountForm.name.trim(),
       category: addAccountForm.category,
-      rate:     addAccountForm.rate ? parseFloat(addAccountForm.rate) : null,
+      rate: addAccountForm.rate ? parseFloat(addAccountForm.rate) : null,
     });
   }
 
@@ -447,15 +535,26 @@ export function InvestmentsPage() {
       else if (totals[acc.category] !== undefined) totals[acc.category] += val;
     }
     const gross = totals.cash + totals.equity + totals.crypto + totals.commodity;
-    return { ...totals, gross } as { cash: number; equity: number; crypto: number; commodity: number; debt: number; gross: number };
+    return { ...totals, gross } as {
+      cash: number;
+      equity: number;
+      crypto: number;
+      commodity: number;
+      debt: number;
+      gross: number;
+    };
   }, [data]);
 
-  const pieData = useMemo(() => [
-    { name: "Cash",        key: "cash",      color: "#22c55e", value: breakdown.cash      },
-    { name: "Index Funds", key: "equity",    color: "#3b82f6", value: breakdown.equity    },
-    { name: "Crypto",      key: "crypto",    color: "#f97316", value: breakdown.crypto    },
-    { name: "Commodities", key: "commodity", color: "#eab308", value: breakdown.commodity },
-  ].filter((d) => d.value > 0), [breakdown]);
+  const pieData = useMemo(
+    () =>
+      [
+        { name: "Cash", key: "cash", color: "#22c55e", value: breakdown.cash },
+        { name: "Index Funds", key: "equity", color: "#3b82f6", value: breakdown.equity },
+        { name: "Crypto", key: "crypto", color: "#f97316", value: breakdown.crypto },
+        { name: "Commodities", key: "commodity", color: "#eab308", value: breakdown.commodity },
+      ].filter((d) => d.value > 0),
+    [breakdown],
+  );
 
   if (isLoading) {
     return (
@@ -475,7 +574,9 @@ export function InvestmentsPage() {
       {/* ── Header ─────────────────────────────────────────────────────────── */}
       <header className="rise rise-1 flex items-end justify-between gap-6">
         <div>
-          <p className="eyebrow mb-3">{new Date().toLocaleDateString("en-GB", { month: "long", year: "numeric" })}</p>
+          <p className="eyebrow mb-3">
+            {new Date().toLocaleDateString("en-GB", { month: "long", year: "numeric" })}
+          </p>
           <h1 className="font-display text-[44px] leading-[1.02] font-light tracking-tight text-foreground">
             <span className="italic text-primary">Investments</span>
           </h1>
@@ -499,22 +600,32 @@ export function InvestmentsPage() {
           <div
             className="absolute inset-0 pointer-events-none opacity-50"
             style={{
-              background: "radial-gradient(80% 100% at 100% 0%, color-mix(in oklab, var(--primary) 16%, transparent), transparent 60%)",
+              background:
+                "radial-gradient(80% 100% at 100% 0%, color-mix(in oklab, var(--primary) 16%, transparent), transparent 60%)",
             }}
             aria-hidden
           />
           <CardContent className="pt-6 relative">
             <div className="flex items-baseline justify-between mb-3">
               <p className="eyebrow">Pension</p>
-              <p className="text-[10.5px] tracking-widest font-numeric text-muted-foreground">LONG-TERM</p>
+              <p className="text-[10.5px] tracking-widest font-numeric text-muted-foreground">
+                LONG-TERM
+              </p>
             </div>
             <p className="font-display text-[64px] leading-[0.95] font-light text-foreground">
               {stats?.pension != null ? fmt(stats.pension) : "—"}
             </p>
             {stats?.pension != null && stats.pensionPrev != null && (
               <p className="text-xs mt-4 font-numeric tracking-tight text-muted-foreground">
-                <span className={stats.pension - stats.pensionPrev >= 0 ? "text-[var(--signal)] font-semibold" : "text-destructive font-semibold"}>
-                  {stats.pension - stats.pensionPrev >= 0 ? "+" : "−"}{fmt(Math.abs(stats.pension - stats.pensionPrev))}
+                <span
+                  className={
+                    stats.pension - stats.pensionPrev >= 0
+                      ? "text-[var(--signal)] font-semibold"
+                      : "text-destructive font-semibold"
+                  }
+                >
+                  {stats.pension - stats.pensionPrev >= 0 ? "+" : "−"}
+                  {fmt(Math.abs(stats.pension - stats.pensionPrev))}
                 </span>
                 <span className="text-muted-foreground/60"> vs prev snapshot</span>
               </p>
@@ -526,22 +637,32 @@ export function InvestmentsPage() {
           <div
             className="absolute inset-0 pointer-events-none opacity-60"
             style={{
-              background: "radial-gradient(90% 100% at 0% 0%, color-mix(in oklab, var(--primary) 22%, transparent), transparent 65%)",
+              background:
+                "radial-gradient(90% 100% at 0% 0%, color-mix(in oklab, var(--primary) 22%, transparent), transparent 65%)",
             }}
             aria-hidden
           />
           <CardContent className="pt-6 relative">
             <div className="flex items-baseline justify-between mb-3">
               <p className="eyebrow">Portfolio Value</p>
-              <p className="text-[10.5px] tracking-widest font-numeric text-muted-foreground">LIQUID NAV</p>
+              <p className="text-[10.5px] tracking-widest font-numeric text-muted-foreground">
+                LIQUID NAV
+              </p>
             </div>
             <p className="font-display text-[64px] leading-[0.95] font-light text-primary">
               {fmt(latestNAV)}
             </p>
             {stats && (
               <p className="text-xs mt-4 font-numeric tracking-tight text-muted-foreground">
-                <span className={stats.dtdPnL >= 0 ? "text-[var(--signal)] font-semibold" : "text-destructive font-semibold"}>
-                  {stats.dtdPnL >= 0 ? "+" : "−"}{fmt(Math.abs(stats.dtdPnL))}
+                <span
+                  className={
+                    stats.dtdPnL >= 0
+                      ? "text-[var(--signal)] font-semibold"
+                      : "text-destructive font-semibold"
+                  }
+                >
+                  {stats.dtdPnL >= 0 ? "+" : "−"}
+                  {fmt(Math.abs(stats.dtdPnL))}
                 </span>
                 <span className="text-muted-foreground/60"> vs prev snapshot</span>
               </p>
@@ -552,9 +673,21 @@ export function InvestmentsPage() {
 
       {/* ── Row 2: PnL cards ────────────────────────────────────────────────── */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 rise rise-4">
-        <PnLCard label="MTD P&L"  value={stats?.mtdPnL ?? 0} base={stats ? latestNAV - (stats.mtdPnL) : 1} />
-        <PnLCard label="YTD P&L"  value={stats?.ytdPnL ?? 0} base={stats ? latestNAV - (stats.ytdPnL) : 1} />
-        <PnLCard label="ITD P&L"  value={stats?.itdPnL ?? 0} base={stats ? latestNAV - (stats.itdPnL) : 1} />
+        <PnLCard
+          label="MTD P&L"
+          value={stats?.mtdPnL ?? 0}
+          base={stats ? latestNAV - stats.mtdPnL : 1}
+        />
+        <PnLCard
+          label="YTD P&L"
+          value={stats?.ytdPnL ?? 0}
+          base={stats ? latestNAV - stats.ytdPnL : 1}
+        />
+        <PnLCard
+          label="ITD P&L"
+          value={stats?.itdPnL ?? 0}
+          base={stats ? latestNAV - stats.itdPnL : 1}
+        />
         <PnLCard label="vs Prev Snapshot" value={stats?.dtdPnL ?? 0} base={stats?.navPrev ?? 1} />
       </div>
 
@@ -570,27 +703,67 @@ export function InvestmentsPage() {
               <ComposedChart data={chartData} margin={{ top: 10, right: 20, left: 10, bottom: 0 }}>
                 <defs>
                   <linearGradient id="cashGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%"  stopColor="#22c55e" stopOpacity={0.45} />
+                    <stop offset="5%" stopColor="#22c55e" stopOpacity={0.45} />
                     <stop offset="95%" stopColor="#22c55e" stopOpacity={0.05} />
                   </linearGradient>
                   <linearGradient id="equityGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%"  stopColor="#3b82f6" stopOpacity={0.45} />
+                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.45} />
                     <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.05} />
                   </linearGradient>
                   <linearGradient id="cryptoGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%"  stopColor="#f97316" stopOpacity={0.45} />
+                    <stop offset="5%" stopColor="#f97316" stopOpacity={0.45} />
                     <stop offset="95%" stopColor="#f97316" stopOpacity={0.05} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(128,128,128,0.12)" vertical={false} />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="rgba(128,128,128,0.12)"
+                  vertical={false}
+                />
                 <XAxis dataKey="label" tick={{ fontSize: 10, fill: "#888" }} interval={1} />
-                <YAxis tickFormatter={(v) => `£${(v / 1000).toFixed(0)}k`} tick={{ fontSize: 10, fill: "#888" }} domain={[0, "auto"]} />
+                <YAxis
+                  tickFormatter={(v) => `£${(v / 1000).toFixed(0)}k`}
+                  tick={{ fontSize: 10, fill: "#888" }}
+                  domain={[0, "auto"]}
+                />
                 <Tooltip content={<ChartTooltip />} />
                 <Legend wrapperStyle={{ fontSize: 11 }} />
-                <Area stackId="a" type="monotone" dataKey="cash"   name="Cash"        stroke="#22c55e" fill="url(#cashGrad)"   strokeWidth={1.5} />
-                <Area stackId="a" type="monotone" dataKey="equity" name="Index Funds" stroke="#3b82f6" fill="url(#equityGrad)" strokeWidth={1.5} />
-                <Area stackId="a" type="monotone" dataKey="crypto" name="Crypto"      stroke="#f97316" fill="url(#cryptoGrad)" strokeWidth={1.5} />
-                <Line type="monotone" dataKey="nav" name="NAV (net)" stroke="oklch(0.527 0.154 150.069)" strokeWidth={2.5} dot={false} activeDot={{ r: 4 }} />
+                <Area
+                  stackId="a"
+                  type="monotone"
+                  dataKey="cash"
+                  name="Cash"
+                  stroke="#22c55e"
+                  fill="url(#cashGrad)"
+                  strokeWidth={1.5}
+                />
+                <Area
+                  stackId="a"
+                  type="monotone"
+                  dataKey="equity"
+                  name="Index Funds"
+                  stroke="#3b82f6"
+                  fill="url(#equityGrad)"
+                  strokeWidth={1.5}
+                />
+                <Area
+                  stackId="a"
+                  type="monotone"
+                  dataKey="crypto"
+                  name="Crypto"
+                  stroke="#f97316"
+                  fill="url(#cryptoGrad)"
+                  strokeWidth={1.5}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="nav"
+                  name="NAV (net)"
+                  stroke="oklch(0.527 0.154 150.069)"
+                  strokeWidth={2.5}
+                  dot={false}
+                  activeDot={{ r: 4 }}
+                />
               </ComposedChart>
             </ResponsiveContainer>
           </CardContent>
@@ -611,8 +784,10 @@ export function InvestmentsPage() {
               <PieChart width={180} height={180}>
                 <Pie
                   data={pieData}
-                  cx={90} cy={90}
-                  innerRadius={54} outerRadius={80}
+                  cx={90}
+                  cy={90}
+                  innerRadius={54}
+                  outerRadius={80}
                   dataKey="value"
                   strokeWidth={0}
                 >
@@ -625,19 +800,29 @@ export function InvestmentsPage() {
               {/* Centre label */}
               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                 <span className="eyebrow text-[9px]">NAV</span>
-                <span className="font-display text-base font-medium text-foreground mt-0.5">{fmt(latestNAV)}</span>
+                <span className="font-display text-base font-medium text-foreground mt-0.5">
+                  {fmt(latestNAV)}
+                </span>
               </div>
             </div>
             <div className="w-full space-y-2">
               {pieData.map((d) => (
-                <div key={d.key} className="grid grid-cols-[1fr_auto_3rem] items-center gap-1 text-xs">
+                <div
+                  key={d.key}
+                  className="grid grid-cols-[1fr_auto_3rem] items-center gap-1 text-xs"
+                >
                   <span className="flex items-center gap-1.5 min-w-0">
-                    <span className="w-2 h-2 rounded-full inline-block shrink-0" style={{ background: d.color }} />
+                    <span
+                      className="w-2 h-2 rounded-full inline-block shrink-0"
+                      style={{ background: d.color }}
+                    />
                     {d.name}
                   </span>
                   <span className="font-medium text-right">{fmt(d.value)}</span>
                   <span className="text-muted-foreground text-right">
-                    {breakdown.gross > 0 ? `${((d.value / breakdown.gross) * 100).toFixed(1)}%` : "—"}
+                    {breakdown.gross > 0
+                      ? `${((d.value / breakdown.gross) * 100).toFixed(1)}%`
+                      : "—"}
                   </span>
                 </div>
               ))}
@@ -647,7 +832,9 @@ export function InvestmentsPage() {
                     <span className="w-2 h-2 rounded-full inline-block shrink-0 bg-red-500" />
                     Debt
                   </span>
-                  <span className="font-medium text-right text-red-500">-{fmt(breakdown.debt)}</span>
+                  <span className="font-medium text-right text-red-500">
+                    -{fmt(breakdown.debt)}
+                  </span>
                   <span className="text-muted-foreground text-right" />
                 </div>
               )}
@@ -699,7 +886,9 @@ export function InvestmentsPage() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowAddDate(false)}>Cancel</Button>
+            <Button variant="outline" onClick={() => setShowAddDate(false)}>
+              Cancel
+            </Button>
             <Button onClick={handleAddDate}>Add Column</Button>
           </DialogFooter>
         </DialogContent>
@@ -724,11 +913,15 @@ export function InvestmentsPage() {
               <Label>Category</Label>
               <select
                 value={addAccountForm.category}
-                onChange={(e) => setAddAccountForm((f) => ({ ...f, category: e.target.value as InvCategory }))}
+                onChange={(e) =>
+                  setAddAccountForm((f) => ({ ...f, category: e.target.value as InvCategory }))
+                }
                 className="w-full border border-input bg-background text-foreground rounded-md px-3 py-2 text-sm"
               >
                 {CATEGORY_OPTIONS.map((c) => (
-                  <option key={c} value={c}>{CAT_CONFIG[c].label}</option>
+                  <option key={c} value={c}>
+                    {CAT_CONFIG[c].label}
+                  </option>
                 ))}
               </select>
             </div>
@@ -743,7 +936,9 @@ export function InvestmentsPage() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowAddAccount(false)}>Cancel</Button>
+            <Button variant="outline" onClick={() => setShowAddAccount(false)}>
+              Cancel
+            </Button>
             <Button
               onClick={handleAddAccount}
               disabled={!addAccountForm.name.trim() || createAccountMutation.isPending}
@@ -755,17 +950,24 @@ export function InvestmentsPage() {
       </Dialog>
 
       {/* ── Delete snapshot date confirmation ───────────────────────────────── */}
-      <AlertDialog open={!!deleteDatePending} onOpenChange={(open) => !open && setDeleteDatePending(null)}>
+      <AlertDialog
+        open={!!deleteDatePending}
+        onOpenChange={(open) => !open && setDeleteDatePending(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete snapshot date?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete all values for <strong>{deleteDatePending}</strong> across every account. Cannot be undone.
+              This will permanently delete all values for <strong>{deleteDatePending}</strong>{" "}
+              across every account. Cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction className="bg-red-500 hover:bg-red-600 text-white" onClick={confirmDeleteSnapshotDate}>
+            <AlertDialogAction
+              className="bg-red-500 hover:bg-red-600 text-white"
+              onClick={confirmDeleteSnapshotDate}
+            >
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -773,12 +975,16 @@ export function InvestmentsPage() {
       </AlertDialog>
 
       {/* ── Delete account confirmation ──────────────────────────────────────── */}
-      <AlertDialog open={!!deleteAccountId} onOpenChange={(open) => !open && setDeleteAccountId(null)}>
+      <AlertDialog
+        open={!!deleteAccountId}
+        onOpenChange={(open) => !open && setDeleteAccountId(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete holding?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete this account and all its historical snapshots. Cannot be undone.
+              This will permanently delete this account and all its historical snapshots. Cannot be
+              undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

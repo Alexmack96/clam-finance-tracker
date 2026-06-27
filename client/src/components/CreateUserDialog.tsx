@@ -91,9 +91,7 @@ export function CreateUserDialog({
                 placeholder="Jane Smith"
                 autoComplete="off"
               />
-              {errors.name && (
-                <p className="text-sm text-destructive">{errors.name.message}</p>
-              )}
+              {errors.name && <p className="text-sm text-destructive">{errors.name.message}</p>}
             </div>
             <div className="space-y-1">
               <Label htmlFor="cu-email">Email</Label>
@@ -103,9 +101,7 @@ export function CreateUserDialog({
                 {...register("email")}
                 placeholder="jane@example.com"
               />
-              {errors.email && (
-                <p className="text-sm text-destructive">{errors.email.message}</p>
-              )}
+              {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
             </div>
             <div className="space-y-1">
               <Label htmlFor="cu-password">Password</Label>

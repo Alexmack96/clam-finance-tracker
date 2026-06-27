@@ -22,10 +22,7 @@ export function Layout() {
     <div className="fixed inset-0 flex flex-col">
       <div className="app-atmosphere" aria-hidden />
       <Navbar onSignOut={handleSignOut} />
-      <main
-        ref={mainRef}
-        className="flex-1 overflow-y-auto overscroll-contain px-6 py-8 md:py-12"
-      >
+      <main ref={mainRef} className="flex-1 overflow-y-auto overscroll-contain px-6 py-8 md:py-12">
         <Outlet />
       </main>
       <BottomNav />

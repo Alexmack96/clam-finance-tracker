@@ -3,13 +3,13 @@ import { CheckCircle2, Circle } from "lucide-react";
 import { Card, CardContent } from "../components/ui/card.js";
 
 const TASKS = [
-  { id: "return-packages",    label: "Return unwanted packages" },
-  { id: "pay-debts",          label: "Pay off debts" },
-  { id: "categorize",         label: "Categorize for the month" },
-  { id: "track-aaw",          label: "Track AAW progress",            note: "£175k Net worth goal" },
-  { id: "discount-code",      label: "Use a discount code" },
-  { id: "automate-savings",   label: "Automate savings/investments" },
-  { id: "audit-subs",         label: "Audit subscriptions" },
+  { id: "return-packages", label: "Return unwanted packages" },
+  { id: "pay-debts", label: "Pay off debts" },
+  { id: "categorize", label: "Categorize for the month" },
+  { id: "track-aaw", label: "Track AAW progress", note: "£175k Net worth goal" },
+  { id: "discount-code", label: "Use a discount code" },
+  { id: "automate-savings", label: "Automate savings/investments" },
+  { id: "audit-subs", label: "Audit subscriptions" },
 ];
 
 function monthKey() {
@@ -21,7 +21,9 @@ function load(): Set<string> {
   try {
     const raw = localStorage.getItem(monthKey());
     if (raw) return new Set(JSON.parse(raw) as string[]);
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
   return new Set();
 }
 
@@ -35,7 +37,8 @@ export function TasksPage() {
   function toggle(id: string) {
     setChecked((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id); else next.add(id);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
       save(next);
       return next;
     });
@@ -64,16 +67,21 @@ export function TasksPage() {
                 onClick={() => toggle(task.id)}
                 className="w-full flex items-start gap-3 py-3 px-1 text-left hover:bg-muted/40 rounded transition-colors"
               >
-                {isDone
-                  ? <CheckCircle2 className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-                  : <Circle      className="h-5 w-5 text-muted-foreground mt-0.5 shrink-0" />
-                }
+                {isDone ? (
+                  <CheckCircle2 className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+                ) : (
+                  <Circle className="h-5 w-5 text-muted-foreground mt-0.5 shrink-0" />
+                )}
                 <div>
-                  <span className={`text-sm font-medium ${isDone ? "line-through text-muted-foreground" : "text-foreground"}`}>
+                  <span
+                    className={`text-sm font-medium ${isDone ? "line-through text-muted-foreground" : "text-foreground"}`}
+                  >
                     {task.label}
                   </span>
                   {task.note && (
-                    <p className={`text-xs mt-0.5 ${task.highImpact ? "text-primary/80 font-medium" : "text-muted-foreground"}`}>
+                    <p
+                      className={`text-xs mt-0.5 ${task.highImpact ? "text-primary/80 font-medium" : "text-muted-foreground"}`}
+                    >
                       {task.note}
                     </p>
                   )}

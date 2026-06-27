@@ -16,7 +16,6 @@ export function AdminRoute() {
       </div>
     );
   // "Admin" mirrors server-side UserRole.Admin enum value
-  if (!session || session.user.role !== "Admin")
-    return <Navigate to="/dashboard" replace />;
+  if (!session || session.user.role !== "Admin") return <Navigate to="/dashboard" replace />;
   return <Outlet />;
 }

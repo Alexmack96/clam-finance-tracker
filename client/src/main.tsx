@@ -26,5 +26,5 @@ createRoot(document.getElementById("root")!).render(
         </ThemeProvider>
       </QueryClientProvider>
     </Sentry.ErrorBoundary>
-  </StrictMode>
+  </StrictMode>,
 );
