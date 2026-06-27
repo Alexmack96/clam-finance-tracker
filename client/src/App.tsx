@@ -16,23 +16,23 @@ import { TasksPage } from "./pages/TasksPage.js";
 export function App() {
   return (
     <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/logged-out" element={<LoggedOutPage />} />
-        <Route element={<ProtectedRoute />}>
-          <Route element={<Layout />}>
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
-            <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/analytics" element={<AnalyticsPage />} />
-            <Route path="/savings" element={<SavingsPage />} />
-            <Route path="/investments" element={<InvestmentsPage />} />
-            <Route path="/tabs" element={<TabsPage />} />
-            <Route path="/tasks" element={<TasksPage />} />
-            <Route element={<AdminRoute />}>
-              <Route path="/users" element={<UsersPage />} />
-              <Route path="/import" element={<ImportPage />} />
-            </Route>
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/logged-out" element={<LoggedOutPage />} />
+      <Route element={<ProtectedRoute />}>
+        <Route element={<Layout />}>
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/dashboard" element={<AnalyticsPage />} />
+          <Route path="/transactions" element={<DashboardPage />} />
+          <Route path="/savings" element={<SavingsPage />} />
+          <Route path="/investments" element={<InvestmentsPage />} />
+          <Route path="/tabs" element={<TabsPage />} />
+          <Route path="/tasks" element={<TasksPage />} />
+          <Route element={<AdminRoute />}>
+            <Route path="/users" element={<UsersPage />} />
+            <Route path="/import" element={<ImportPage />} />
           </Route>
         </Route>
-      </Routes>
+      </Route>
+    </Routes>
   );
 }

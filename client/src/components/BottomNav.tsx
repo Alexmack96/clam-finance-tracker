@@ -2,7 +2,7 @@ import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import {
   Home,
-  BarChart3,
+  ArrowLeftRight,
   PiggyBank,
   TrendingUp,
   MoreHorizontal,
@@ -15,19 +15,19 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover.js";
 import { useSession } from "../lib/authClient.js";
 
 const mainTabs = [
-  { to: "/dashboard",   label: "Home",        Icon: Home },
-  { to: "/analytics",   label: "Analytics",   Icon: BarChart3 },
-  { to: "/savings",     label: "Savings",     Icon: PiggyBank },
+  { to: "/dashboard", label: "Home", Icon: Home },
+  { to: "/transactions", label: "Transactions", Icon: ArrowLeftRight },
+  { to: "/savings", label: "Savings", Icon: PiggyBank },
   { to: "/investments", label: "Investments", Icon: TrendingUp },
 ] as const;
 
 const otherItems = [
-  { to: "/tabs",  label: "Tabs",  Icon: Receipt },
+  { to: "/tabs", label: "Tabs", Icon: Receipt },
   { to: "/tasks", label: "Tasks", Icon: ListTodo },
 ];
 
 const adminItems = [
-  { to: "/users",  label: "Users",  Icon: Users },
+  { to: "/users", label: "Users", Icon: Users },
   { to: "/import", label: "Import", Icon: Upload },
 ];
 
@@ -39,10 +39,7 @@ export function BottomNav() {
   const { pathname } = useLocation();
   const otherActive = otherRoutes.some((r) => pathname.startsWith(r));
 
-  const extraItems = [
-    ...otherItems,
-    ...(session?.user.role === "Admin" ? adminItems : []),
-  ];
+  const extraItems = [...otherItems, ...(session?.user.role === "Admin" ? adminItems : [])];
 
   return (
     <nav

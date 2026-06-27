@@ -8,6 +8,16 @@ import type { CustomCellRendererProps, CustomFilterProps } from "ag-grid-react";
 import { Button } from "../components/ui/button.js";
 import { Input } from "../components/ui/input.js";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card.js";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "../components/ui/alert-dialog.js";
 import api from "../lib/api.js";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -15,33 +25,45 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 // ─── Theme ────────────────────────────────────────────────────────────────────
 
 const gridTheme = themeQuartz.withParams({
-  backgroundColor:      "var(--card)",
-  foregroundColor:      "var(--foreground)",
-  borderColor:          "var(--border)",
-  headerBackgroundColor:"var(--card)",
-  headerTextColor:      "var(--muted-foreground)",
-  subtleTextColor:      "var(--muted-foreground)",
-  accentColor:          "var(--primary)",
-  menuBackgroundColor:  "var(--popover)",
-  menuTextColor:        "var(--popover-foreground)",
-  rowHoverColor:        "transparent",
-  fontFamily:           "inherit",
-  fontSize:             13,
-  headerHeight:         36,
-  rowHeight:            48,
-  wrapperBorder:        false,
-  wrapperBorderRadius:  0,
-  cellHorizontalPadding:8,
-  browserColorScheme:   "inherit",
+  backgroundColor: "var(--card)",
+  foregroundColor: "var(--foreground)",
+  borderColor: "var(--border)",
+  headerBackgroundColor: "var(--card)",
+  headerTextColor: "var(--muted-foreground)",
+  subtleTextColor: "var(--muted-foreground)",
+  accentColor: "var(--primary)",
+  menuBackgroundColor: "var(--popover)",
+  menuTextColor: "var(--popover-foreground)",
+  rowHoverColor: "transparent",
+  fontFamily: "inherit",
+  fontSize: 13,
+  headerHeight: 36,
+  rowHeight: 48,
+  wrapperBorder: false,
+  wrapperBorderRadius: 0,
+  cellHorizontalPadding: 8,
+  browserColorScheme: "inherit",
 });
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type Owner = "Alex" | "Casey" | "Joint";
 
-interface Category { id: string; name: string; color: string; }
+interface Category {
+  id: string;
+  name: string;
+  color: string;
+}
 
-type BankSource = "Monzo" | "Amex" | "Barclays" | "Santander" | "HSBC" | "SoFi" | "Chase" | "Manual";
+type BankSource =
+  | "Monzo"
+  | "Amex"
+  | "Barclays"
+  | "Santander"
+  | "HSBC"
+  | "SoFi"
+  | "Chase"
+  | "Manual";
 
 interface Transaction {
   id: string;
@@ -65,7 +87,10 @@ interface Summary {
 }
 
 interface GridCtx {
-  update: (id: string, data: { note?: string | null; categoryId?: string; owner?: Owner; reviewed?: boolean }) => void;
+  update: (
+    id: string,
+    data: { note?: string | null; categoryId?: string; owner?: Owner; reviewed?: boolean },
+  ) => void;
   categories: Category[];
   registerNoteEdit: (id: string, fn: () => void) => void;
   unregisterNoteEdit: (id: string) => void;
@@ -75,29 +100,29 @@ interface GridCtx {
 
 function bankSource(externalId: string | null): BankSource {
   if (!externalId) return "Manual";
-  if (externalId.startsWith("monzo:"))     return "Monzo";
-  if (externalId.startsWith("amex:"))      return "Amex";
-  if (externalId.startsWith("barclays:"))  return "Barclays";
+  if (externalId.startsWith("monzo:")) return "Monzo";
+  if (externalId.startsWith("amex:")) return "Amex";
+  if (externalId.startsWith("barclays:")) return "Barclays";
   if (externalId.startsWith("santander:")) return "Santander";
-  if (externalId.startsWith("hsbc:"))      return "HSBC";
-  if (externalId.startsWith("sofi:"))      return "SoFi";
-  if (externalId.startsWith("chase:"))     return "Chase";
+  if (externalId.startsWith("hsbc:")) return "HSBC";
+  if (externalId.startsWith("sofi:")) return "SoFi";
+  if (externalId.startsWith("chase:")) return "Chase";
   return "Manual";
 }
 
 const SOURCE_STYLES: Record<BankSource, string> = {
-  Monzo:     "text-orange-500 border-orange-500",
-  Amex:      "text-blue-500 border-blue-500",
-  Barclays:  "text-sky-500 border-sky-500",
+  Monzo: "text-orange-500 border-orange-500",
+  Amex: "text-blue-500 border-blue-500",
+  Barclays: "text-sky-500 border-sky-500",
   Santander: "text-red-500 border-red-500",
-  HSBC:      "text-purple-500 border-purple-500",
-  SoFi:      "text-green-500 border-green-500",
-  Chase:     "text-blue-700 border-blue-700",
-  Manual:    "text-muted-foreground border-muted-foreground/40",
+  HSBC: "text-purple-500 border-purple-500",
+  SoFi: "text-green-500 border-green-500",
+  Chase: "text-blue-700 border-blue-700",
+  Manual: "text-muted-foreground border-muted-foreground/40",
 };
 
 const OWNER_STYLES: Record<Owner, string> = {
-  Alex:  "text-blue-500 border-blue-500",
+  Alex: "text-blue-500 border-blue-500",
   Casey: "text-pink-500 border-pink-500",
   Joint: "text-muted-foreground border-muted-foreground/40",
 };
@@ -107,7 +132,12 @@ const fmt = (n: number) =>
 
 // ─── Inline cell components ───────────────────────────────────────────────────
 
-function NoteCell({ tx, onSave, registerNoteEdit, unregisterNoteEdit }: {
+function NoteCell({
+  tx,
+  onSave,
+  registerNoteEdit,
+  unregisterNoteEdit,
+}: {
   tx: Transaction;
   onSave: (note: string | null) => void;
   registerNoteEdit: (id: string, fn: () => void) => void;
@@ -143,9 +173,13 @@ function NoteCell({ tx, onSave, registerNoteEdit, unregisterNoteEdit }: {
         onChange={(e) => setValue(e.target.value)}
         onBlur={commit}
         onKeyDown={(e) => {
-          if (e.key === "Enter")  commit();
-          if (e.key === "Escape") { setValue(tx.note ?? ""); setEditing(false); }
-          if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"].includes(e.key)) e.stopPropagation();
+          if (e.key === "Enter") commit();
+          if (e.key === "Escape") {
+            setValue(tx.note ?? "");
+            setEditing(false);
+          }
+          if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"].includes(e.key))
+            e.stopPropagation();
         }}
         className="w-full bg-transparent border-b border-primary outline-none text-sm py-0.5"
       />
@@ -153,23 +187,40 @@ function NoteCell({ tx, onSave, registerNoteEdit, unregisterNoteEdit }: {
   }
 
   return (
-    <span onDoubleClick={start} className="cursor-text select-text text-sm group" title="Double-click to edit note">
-      {tx.note
-        ? <span>{tx.note}</span>
-        : <span className="text-muted-foreground/40 group-hover:text-muted-foreground italic">Add note…</span>
-      }
+    <span
+      onDoubleClick={start}
+      className="cursor-text select-text text-sm group"
+      title="Double-click to edit note"
+    >
+      {tx.note ? (
+        <span>{tx.note}</span>
+      ) : (
+        <span className="text-muted-foreground/40 group-hover:text-muted-foreground italic">
+          Add note…
+        </span>
+      )}
     </span>
   );
 }
 
-function CategoryCell({ tx, categories, onSave }: { tx: Transaction; categories: Category[]; onSave: (id: string) => void }) {
+function CategoryCell({
+  tx,
+  categories,
+  onSave,
+}: {
+  tx: Transaction;
+  categories: Category[];
+  onSave: (id: string) => void;
+}) {
   const [open, setOpen] = useState(false);
   const triggerRef = useRef<HTMLSpanElement>(null);
   const [pos, setPos] = useState({ top: 0, left: 0 });
 
   useEffect(() => {
     if (!open) return;
-    function handle() { setOpen(false); }
+    function handle() {
+      setOpen(false);
+    }
     document.addEventListener("mousedown", handle);
     return () => document.removeEventListener("mousedown", handle);
   }, [open]);
@@ -180,9 +231,8 @@ function CategoryCell({ tx, categories, onSave }: { tx: Transaction; categories:
     if (triggerRef.current) {
       const rect = triggerRef.current.getBoundingClientRect();
       const spaceBelow = window.innerHeight - rect.bottom;
-      const top = spaceBelow >= DROPDOWN_HEIGHT + 4
-        ? rect.bottom + 4
-        : rect.top - DROPDOWN_HEIGHT - 4;
+      const top =
+        spaceBelow >= DROPDOWN_HEIGHT + 4 ? rect.bottom + 4 : rect.top - DROPDOWN_HEIGHT - 4;
       setPos({ top, left: rect.left });
     }
     setOpen((o) => !o);
@@ -198,22 +248,33 @@ function CategoryCell({ tx, categories, onSave }: { tx: Transaction; categories:
       >
         {tx.category.name}
       </span>
-      {open && createPortal(
-        <div
-          style={{ position: "fixed", top: pos.top, left: pos.left, zIndex: 99999 }}
-          className="bg-popover border border-border rounded-md shadow-lg py-1 min-w-[150px]"
-          onMouseDown={(e) => e.stopPropagation()}
-        >
-          {categories.map((c) => (
-            <div key={c.id} onClick={() => { onSave(c.id); setOpen(false); }} className="px-2 py-1 cursor-pointer hover:bg-accent">
-              <span className="px-2 py-0.5 rounded-full text-xs font-medium border" style={{ color: c.color, borderColor: c.color }}>
-                {c.name}
-              </span>
-            </div>
-          ))}
-        </div>,
-        document.body
-      )}
+      {open &&
+        createPortal(
+          <div
+            style={{ position: "fixed", top: pos.top, left: pos.left, zIndex: 99999 }}
+            className="bg-popover border border-border rounded-md shadow-lg py-1 min-w-[150px]"
+            onMouseDown={(e) => e.stopPropagation()}
+          >
+            {categories.map((c) => (
+              <div
+                key={c.id}
+                onClick={() => {
+                  onSave(c.id);
+                  setOpen(false);
+                }}
+                className="px-2 py-1 cursor-pointer hover:bg-accent"
+              >
+                <span
+                  className="px-2 py-0.5 rounded-full text-xs font-medium border"
+                  style={{ color: c.color, borderColor: c.color }}
+                >
+                  {c.name}
+                </span>
+              </div>
+            ))}
+          </div>,
+          document.body,
+        )}
     </>
   );
 }
@@ -225,7 +286,9 @@ function OwnerCell({ tx, onSave }: { tx: Transaction; onSave: (owner: Owner) => 
 
   useEffect(() => {
     if (!open) return;
-    function handle() { setOpen(false); }
+    function handle() {
+      setOpen(false);
+    }
     document.addEventListener("mousedown", handle);
     return () => document.removeEventListener("mousedown", handle);
   }, [open]);
@@ -236,9 +299,10 @@ function OwnerCell({ tx, onSave }: { tx: Transaction; onSave: (owner: Owner) => 
     if (triggerRef.current) {
       const rect = triggerRef.current.getBoundingClientRect();
       const spaceBelow = window.innerHeight - rect.bottom;
-      const top = spaceBelow >= OWNER_DROPDOWN_HEIGHT + 4
-        ? rect.bottom + 4
-        : rect.top - OWNER_DROPDOWN_HEIGHT - 4;
+      const top =
+        spaceBelow >= OWNER_DROPDOWN_HEIGHT + 4
+          ? rect.bottom + 4
+          : rect.top - OWNER_DROPDOWN_HEIGHT - 4;
       setPos({ top, left: rect.left });
     }
     setOpen((o) => !o);
@@ -253,29 +317,45 @@ function OwnerCell({ tx, onSave }: { tx: Transaction; onSave: (owner: Owner) => 
       >
         {tx.owner}
       </span>
-      {open && createPortal(
-        <div
-          style={{ position: "fixed", top: pos.top, left: pos.left, zIndex: 99999 }}
-          className="bg-popover border border-border rounded-md shadow-lg py-1 min-w-[100px]"
-          onMouseDown={(e) => e.stopPropagation()}
-        >
-          {(["Alex", "Casey", "Joint"] as Owner[]).map((o) => (
-            <div key={o} onClick={() => { onSave(o); setOpen(false); }} className="px-2 py-1 cursor-pointer hover:bg-accent">
-              <span className={`px-2 py-0.5 rounded-full text-xs font-medium border ${OWNER_STYLES[o]}`}>{o}</span>
-            </div>
-          ))}
-        </div>,
-        document.body
-      )}
+      {open &&
+        createPortal(
+          <div
+            style={{ position: "fixed", top: pos.top, left: pos.left, zIndex: 99999 }}
+            className="bg-popover border border-border rounded-md shadow-lg py-1 min-w-[100px]"
+            onMouseDown={(e) => e.stopPropagation()}
+          >
+            {(["Alex", "Casey", "Joint"] as Owner[]).map((o) => (
+              <div
+                key={o}
+                onClick={() => {
+                  onSave(o);
+                  setOpen(false);
+                }}
+                className="px-2 py-1 cursor-pointer hover:bg-accent"
+              >
+                <span
+                  className={`px-2 py-0.5 rounded-full text-xs font-medium border ${OWNER_STYLES[o]}`}
+                >
+                  {o}
+                </span>
+              </div>
+            ))}
+          </div>,
+          document.body,
+        )}
     </>
   );
 }
 
 // ─── Custom filters ───────────────────────────────────────────────────────────
 
-interface FilterModel { value: string }
+interface FilterModel {
+  value: string;
+}
 
-interface CategoryFilterExtraProps { categories: Category[] }
+interface CategoryFilterExtraProps {
+  categories: Category[];
+}
 
 function CategoryFilter({
   model,
@@ -343,7 +423,9 @@ function OwnerFilter({ model, onModelChange }: CustomFilterProps<Transaction, an
           onClick={() => onModelChange({ value: o })}
           className={`px-2 py-1 cursor-pointer rounded hover:bg-accent ${selected === o ? "bg-accent" : ""}`}
         >
-          <span className={`px-2 py-0.5 rounded-full text-xs font-medium border ${OWNER_STYLES[o]}`}>
+          <span
+            className={`px-2 py-0.5 rounded-full text-xs font-medium border ${OWNER_STYLES[o]}`}
+          >
             {o}
           </span>
         </div>
@@ -352,7 +434,16 @@ function OwnerFilter({ model, onModelChange }: CustomFilterProps<Transaction, an
   );
 }
 
-const SOURCES: BankSource[] = ["Monzo", "Amex", "Barclays", "Santander", "HSBC", "SoFi", "Chase", "Manual"];
+const SOURCES: BankSource[] = [
+  "Monzo",
+  "Amex",
+  "Barclays",
+  "Santander",
+  "HSBC",
+  "SoFi",
+  "Chase",
+  "Manual",
+];
 
 function SourceFilter({ model, onModelChange }: CustomFilterProps<Transaction, any, FilterModel>) {
   useGridFilter({
@@ -378,7 +469,9 @@ function SourceFilter({ model, onModelChange }: CustomFilterProps<Transaction, a
           onClick={() => onModelChange({ value: s })}
           className={`px-2 py-1 cursor-pointer rounded hover:bg-accent ${selected === s ? "bg-accent" : ""}`}
         >
-          <span className={`px-2 py-0.5 rounded-full text-xs font-medium border ${SOURCE_STYLES[s]}`}>
+          <span
+            className={`px-2 py-0.5 rounded-full text-xs font-medium border ${SOURCE_STYLES[s]}`}
+          >
             {s}
           </span>
         </div>
@@ -387,9 +480,14 @@ function SourceFilter({ model, onModelChange }: CustomFilterProps<Transaction, a
   );
 }
 
-interface ReviewedFilterModel { value: "reviewed" | "unreviewed" }
+interface ReviewedFilterModel {
+  value: "reviewed" | "unreviewed";
+}
 
-function ReviewedFilter({ model, onModelChange }: CustomFilterProps<Transaction, any, ReviewedFilterModel>) {
+function ReviewedFilter({
+  model,
+  onModelChange,
+}: CustomFilterProps<Transaction, any, ReviewedFilterModel>) {
   useGridFilter({
     doesFilterPass: (params) => {
       if (!model) return true;
@@ -401,7 +499,7 @@ function ReviewedFilter({ model, onModelChange }: CustomFilterProps<Transaction,
   const selected = model?.value ?? null;
   const options: { value: "reviewed" | "unreviewed"; label: string; className: string }[] = [
     { value: "unreviewed", label: "Unreviewed", className: "text-amber-600 border-amber-600" },
-    { value: "reviewed",   label: "Reviewed",   className: "text-green-600 border-green-600" },
+    { value: "reviewed", label: "Reviewed", className: "text-green-600 border-green-600" },
   ];
 
   return (
@@ -441,9 +539,18 @@ function NoteRenderer({ data, context }: CustomCellRendererProps<Transaction, st
   );
 }
 
-function CategoryRenderer({ data, context }: CustomCellRendererProps<Transaction, string, GridCtx>) {
+function CategoryRenderer({
+  data,
+  context,
+}: CustomCellRendererProps<Transaction, string, GridCtx>) {
   if (!data) return null;
-  return <CategoryCell tx={data} categories={context.categories} onSave={(categoryId) => context.update(data.id, { categoryId })} />;
+  return (
+    <CategoryCell
+      tx={data}
+      categories={context.categories}
+      onSave={(categoryId) => context.update(data.id, { categoryId })}
+    />
+  );
 }
 
 function OwnerRenderer({ data, context }: CustomCellRendererProps<Transaction, string, GridCtx>) {
@@ -455,7 +562,9 @@ function SourceRenderer({ data }: CustomCellRendererProps<Transaction>) {
   if (!data) return null;
   const source = bankSource(data.externalId);
   return (
-    <span className={`px-2 py-0.5 rounded-full text-xs font-medium border ${SOURCE_STYLES[source]}`}>
+    <span
+      className={`px-2 py-0.5 rounded-full text-xs font-medium border ${SOURCE_STYLES[source]}`}
+    >
       {source}
     </span>
   );
@@ -464,13 +573,19 @@ function SourceRenderer({ data }: CustomCellRendererProps<Transaction>) {
 function AmountRenderer({ data }: CustomCellRendererProps<Transaction>) {
   if (!data) return null;
   return (
-    <span className={`font-numeric font-semibold ${data.type === "Income" ? "text-[var(--signal)]" : "text-destructive"}`}>
-      {data.type === "Income" ? "+" : "−"}{fmt(Math.abs(parseFloat(data.amount)))}
+    <span
+      className={`font-numeric font-semibold ${data.type === "Income" ? "text-[var(--signal)]" : "text-destructive"}`}
+    >
+      {data.type === "Income" ? "+" : "−"}
+      {fmt(Math.abs(parseFloat(data.amount)))}
     </span>
   );
 }
 
-function ReviewedRenderer({ data, context }: CustomCellRendererProps<Transaction, boolean, GridCtx>) {
+function ReviewedRenderer({
+  data,
+  context,
+}: CustomCellRendererProps<Transaction, boolean, GridCtx>) {
   if (!data) return null;
   return (
     <button
@@ -487,10 +602,15 @@ function ReviewedRenderer({ data, context }: CustomCellRendererProps<Transaction
   );
 }
 
-
 // ─── Mobile card components ───────────────────────────────────────────────────
 
-function MobileNoteCell({ tx, onSave }: { tx: Transaction; onSave: (note: string | null) => void }) {
+function MobileNoteCell({
+  tx,
+  onSave,
+}: {
+  tx: Transaction;
+  onSave: (note: string | null) => void;
+}) {
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState(tx.note ?? "");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -517,7 +637,10 @@ function MobileNoteCell({ tx, onSave }: { tx: Transaction; onSave: (note: string
         onBlur={commit}
         onKeyDown={(e) => {
           if (e.key === "Enter") commit();
-          if (e.key === "Escape") { setValue(tx.note ?? ""); setEditing(false); }
+          if (e.key === "Escape") {
+            setValue(tx.note ?? "");
+            setEditing(false);
+          }
         }}
         className="w-full bg-transparent border-b border-primary outline-none text-sm py-0.5"
       />
@@ -526,17 +649,22 @@ function MobileNoteCell({ tx, onSave }: { tx: Transaction; onSave: (note: string
 
   return (
     <button onClick={start} className="text-left w-full">
-      {tx.note
-        ? <span className="text-sm text-muted-foreground">{tx.note}</span>
-        : <span className="text-xs text-muted-foreground/40 italic">Add note…</span>
-      }
+      {tx.note ? (
+        <span className="text-sm text-muted-foreground">{tx.note}</span>
+      ) : (
+        <span className="text-xs text-muted-foreground/40 italic">Add note…</span>
+      )}
     </button>
   );
 }
 
 type UpdatePatch = { note?: string | null; categoryId?: string; owner?: Owner; reviewed?: boolean };
 
-function MobileTransactionCard({ tx, categories, onUpdate }: {
+function MobileTransactionCard({
+  tx,
+  categories,
+  onUpdate,
+}: {
   tx: Transaction;
   categories: Category[];
   onUpdate: (id: string, patch: UpdatePatch) => void;
@@ -548,17 +676,26 @@ function MobileTransactionCard({ tx, categories, onUpdate }: {
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium leading-snug">{tx.description}</p>
           <p className="text-xs text-muted-foreground font-numeric mt-0.5">
-            {new Date(tx.date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
+            {new Date(tx.date).toLocaleDateString("en-GB", {
+              day: "numeric",
+              month: "short",
+              year: "numeric",
+            })}
           </p>
         </div>
         <div className="flex items-center gap-2.5 shrink-0">
-          <span className={`font-numeric font-semibold text-sm ${tx.type === "Income" ? "text-[var(--signal)]" : "text-destructive"}`}>
-            {tx.type === "Income" ? "+" : "−"}{fmt(Math.abs(parseFloat(tx.amount)))}
+          <span
+            className={`font-numeric font-semibold text-sm ${tx.type === "Income" ? "text-[var(--signal)]" : "text-destructive"}`}
+          >
+            {tx.type === "Income" ? "+" : "−"}
+            {fmt(Math.abs(parseFloat(tx.amount)))}
           </span>
           <button
             onClick={() => onUpdate(tx.id, { reviewed: !tx.reviewed })}
             className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors shrink-0 ${
-              tx.reviewed ? "bg-green-500 border-green-500 text-white" : "border-muted-foreground/40"
+              tx.reviewed
+                ? "bg-green-500 border-green-500 text-white"
+                : "border-muted-foreground/40"
             }`}
           >
             {tx.reviewed && <span className="text-[10px] leading-none">✓</span>}
@@ -566,9 +703,15 @@ function MobileTransactionCard({ tx, categories, onUpdate }: {
         </div>
       </div>
       <div className="flex items-center gap-1.5 flex-wrap">
-        <CategoryCell tx={tx} categories={categories} onSave={(categoryId) => onUpdate(tx.id, { categoryId })} />
+        <CategoryCell
+          tx={tx}
+          categories={categories}
+          onSave={(categoryId) => onUpdate(tx.id, { categoryId })}
+        />
         <OwnerCell tx={tx} onSave={(owner) => onUpdate(tx.id, { owner })} />
-        <span className={`px-2 py-0.5 rounded-full text-xs font-medium border ${SOURCE_STYLES[source]}`}>
+        <span
+          className={`px-2 py-0.5 rounded-full text-xs font-medium border ${SOURCE_STYLES[source]}`}
+        >
           {source}
         </span>
       </div>
@@ -583,12 +726,17 @@ export function DashboardPage() {
   const queryClient = useQueryClient();
   const gridApiRef = useRef<GridApi<Transaction>>();
   const noteEditTriggers = useRef<Map<string, () => void>>(new Map());
-  const registerNoteEdit = useCallback((id: string, fn: () => void) => { noteEditTriggers.current.set(id, fn); }, []);
-  const unregisterNoteEdit = useCallback((id: string) => { noteEditTriggers.current.delete(id); }, []);
+  const registerNoteEdit = useCallback((id: string, fn: () => void) => {
+    noteEditTriggers.current.set(id, fn);
+  }, []);
+  const unregisterNoteEdit = useCallback((id: string) => {
+    noteEditTriggers.current.delete(id);
+  }, []);
   const [hasFilters, setHasFilters] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [filteredCount, setFilteredCount] = useState<number | null>(null);
   const [filteredSum, setFilteredSum] = useState<number | null>(null);
+  const [pendingFilteredCount, setPendingFilteredCount] = useState<number | null>(null);
 
   const { data: summary } = useQuery<Summary>({
     queryKey: ["summary"],
@@ -606,8 +754,16 @@ export function DashboardPage() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, ...data }: { id: string; note?: string | null; categoryId?: string; owner?: Owner; reviewed?: boolean }) =>
-      api.patch<Transaction>(`/api/transactions/${id}`, data).then((r) => r.data),
+    mutationFn: ({
+      id,
+      ...data
+    }: {
+      id: string;
+      note?: string | null;
+      categoryId?: string;
+      owner?: Owner;
+      reviewed?: boolean;
+    }) => api.patch<Transaction>(`/api/transactions/${id}`, data).then((r) => r.data),
     onSuccess: (updated, variables) => {
       // Sync query cache with server truth
       queryClient.setQueryData<Transaction[]>(["transactions"], (prev) =>
@@ -641,7 +797,9 @@ export function DashboardPage() {
 
   function getFilteredIds(): string[] {
     const ids: string[] = [];
-    gridApiRef.current?.forEachNodeAfterFilter((node) => { if (node.data) ids.push(node.data.id); });
+    gridApiRef.current?.forEachNodeAfterFilter((node) => {
+      if (node.data) ids.push(node.data.id);
+    });
     return ids;
   }
 
@@ -679,7 +837,12 @@ export function DashboardPage() {
       if (mobileStatus === "Unreviewed" && tx.reviewed) return false;
       if (mobileCategoryId !== "All" && tx.categoryId !== mobileCategoryId) return false;
       if (mobileSource !== "All" && bankSource(tx.externalId) !== mobileSource) return false;
-      if (q && !tx.description.toLowerCase().includes(q) && !(tx.note ?? "").toLowerCase().includes(q)) return false;
+      if (
+        q &&
+        !tx.description.toLowerCase().includes(q) &&
+        !(tx.note ?? "").toLowerCase().includes(q)
+      )
+        return false;
       return true;
     });
   }, [sortedTransactions, mobileSearch, mobileOwner, mobileStatus, mobileCategoryId, mobileSource]);
@@ -702,142 +865,153 @@ export function DashboardPage() {
   function handleMobileUpdate(id: string, patch: UpdatePatch) {
     // Optimistic update in the query cache so cards re-render immediately
     queryClient.setQueryData<Transaction[]>(["transactions"], (prev) =>
-      prev ? prev.map((t) => {
-        if (t.id !== id) return t;
-        const updated = { ...t, ...patch };
-        if (patch.categoryId) {
-          const cat = categories.find((c) => c.id === patch.categoryId);
-          if (cat) updated.category = cat;
-        }
-        return updated;
-      }) : prev,
+      prev
+        ? prev.map((t) => {
+            if (t.id !== id) return t;
+            const updated = { ...t, ...patch };
+            if (patch.categoryId) {
+              const cat = categories.find((c) => c.id === patch.categoryId);
+              if (cat) updated.category = cat;
+            }
+            return updated;
+          })
+        : prev,
     );
     updateMutation.mutate({ id, ...patch });
   }
 
-  const columnDefs = useMemo((): ColDef<Transaction>[] => [
-    {
-      width: 40,
-      sortable: false,
-      filter: false,
-      floatingFilter: false,
-      resizable: false,
-      suppressHeaderMenuButton: true,
-    },
-    {
-      headerName: "DATE",
-      valueGetter: (p) => p.data ? new Date(p.data.date) : null,
-      valueFormatter: (p) => p.value ? (p.value as Date).toISOString().slice(0, 10) : "",
-      width: 120,
-      sort: "desc",
-      filter: "agDateColumnFilter",
-      filterParams: {
-        comparator: (filterDate: Date, cellValue: Date | null) => {
-          if (!cellValue) return -1;
-          const cell = new Date(cellValue);
-          cell.setHours(0, 0, 0, 0);
-          if (cell < filterDate) return -1;
-          if (cell > filterDate) return 1;
-          return 0;
+  const columnDefs = useMemo(
+    (): ColDef<Transaction>[] => [
+      {
+        width: 40,
+        sortable: false,
+        filter: false,
+        floatingFilter: false,
+        resizable: false,
+        suppressHeaderMenuButton: true,
+      },
+      {
+        headerName: "DATE",
+        valueGetter: (p) => (p.data ? new Date(p.data.date) : null),
+        valueFormatter: (p) => (p.value ? (p.value as Date).toISOString().slice(0, 10) : ""),
+        width: 120,
+        sort: "desc",
+        filter: "agDateColumnFilter",
+        filterParams: {
+          comparator: (filterDate: Date, cellValue: Date | null) => {
+            if (!cellValue) return -1;
+            const cell = new Date(cellValue);
+            cell.setHours(0, 0, 0, 0);
+            if (cell < filterDate) return -1;
+            if (cell > filterDate) return 1;
+            return 0;
+          },
         },
+        floatingFilter: true,
       },
-      floatingFilter: true,
-    },
-    {
-      field: "description",
-      headerName: "DESCRIPTION",
-      flex: 3,
-      filter: "agTextColumnFilter",
-      floatingFilter: true,
-    },
-    {
-      colId: "note",
-      headerName: "NOTE",
-      flex: 2,
-      cellRenderer: NoteRenderer,
-      valueGetter: (p) => p.data?.note ?? "",
-      filter: "agTextColumnFilter",
-      floatingFilter: true,
-      sortable: false,
-      cellStyle: { overflow: "visible" },
-    },
-    {
-      headerName: "CATEGORY",
-      flex: 1.5,
-      cellRenderer: CategoryRenderer,
-      valueGetter: (p) => p.data?.category?.name ?? "",
-      filter: CategoryFilter,
-      filterParams: { categories } as unknown as Record<string, unknown>,
-      floatingFilter: false,
-      cellStyle: { overflow: "visible" },
-    },
-    {
-      field: "owner",
-      headerName: "OWNER",
-      width: 110,
-      cellRenderer: OwnerRenderer,
-      filter: OwnerFilter,
-      floatingFilter: false,
-      cellStyle: { overflow: "visible" },
-    },
-    {
-      headerName: "SOURCE",
-      width: 120,
-      cellRenderer: SourceRenderer,
-      valueGetter: (p) => p.data ? bankSource(p.data.externalId) : "",
-      filter: SourceFilter,
-      floatingFilter: false,
-    },
-    {
-      headerName: "AMOUNT",
-      width: 140,
-      cellRenderer: AmountRenderer,
-      // Sort by signed value, filter by absolute numeric value
-      comparator: (_, __, nodeA, nodeB) => {
-        const sign = (t: Transaction) => (t.type === "Income" ? 1 : -1) * Math.abs(parseFloat(t.amount));
-        return sign(nodeA.data!) - sign(nodeB.data!);
+      {
+        field: "description",
+        headerName: "DESCRIPTION",
+        flex: 3,
+        filter: "agTextColumnFilter",
+        floatingFilter: true,
       },
-      filterValueGetter: (p) => p.data ? Math.abs(parseFloat(p.data.amount)) : null,
-      filter: "agNumberColumnFilter",
-      floatingFilter: true,
-    },
-    {
-      headerName: "✓",
-      width: 60,
-      cellRenderer: ReviewedRenderer,
-      valueGetter: (p) => p.data?.reviewed ?? false,
-      sortable: true,
-      filter: ReviewedFilter,
-      floatingFilter: false,
-      resizable: false,
-      cellStyle: { display: "flex", alignItems: "center", justifyContent: "center" },
-    },
-  ], [categories]);
+      {
+        colId: "note",
+        headerName: "NOTE",
+        flex: 2,
+        cellRenderer: NoteRenderer,
+        valueGetter: (p) => p.data?.note ?? "",
+        filter: "agTextColumnFilter",
+        floatingFilter: true,
+        sortable: false,
+        cellStyle: { overflow: "visible" },
+      },
+      {
+        headerName: "CATEGORY",
+        flex: 1.5,
+        cellRenderer: CategoryRenderer,
+        valueGetter: (p) => p.data?.category?.name ?? "",
+        filter: CategoryFilter,
+        filterParams: { categories } as unknown as Record<string, unknown>,
+        floatingFilter: false,
+        cellStyle: { overflow: "visible" },
+      },
+      {
+        field: "owner",
+        headerName: "OWNER",
+        width: 110,
+        cellRenderer: OwnerRenderer,
+        filter: OwnerFilter,
+        floatingFilter: false,
+        cellStyle: { overflow: "visible" },
+      },
+      {
+        headerName: "SOURCE",
+        width: 120,
+        cellRenderer: SourceRenderer,
+        valueGetter: (p) => (p.data ? bankSource(p.data.externalId) : ""),
+        filter: SourceFilter,
+        floatingFilter: false,
+      },
+      {
+        headerName: "AMOUNT",
+        width: 140,
+        cellRenderer: AmountRenderer,
+        // Sort by signed value, filter by absolute numeric value
+        comparator: (_, __, nodeA, nodeB) => {
+          const sign = (t: Transaction) =>
+            (t.type === "Income" ? 1 : -1) * Math.abs(parseFloat(t.amount));
+          return sign(nodeA.data!) - sign(nodeB.data!);
+        },
+        filterValueGetter: (p) => (p.data ? Math.abs(parseFloat(p.data.amount)) : null),
+        filter: "agNumberColumnFilter",
+        floatingFilter: true,
+      },
+      {
+        headerName: "✓",
+        width: 60,
+        cellRenderer: ReviewedRenderer,
+        valueGetter: (p) => p.data?.reviewed ?? false,
+        sortable: true,
+        filter: ReviewedFilter,
+        floatingFilter: false,
+        resizable: false,
+        cellStyle: { display: "flex", alignItems: "center", justifyContent: "center" },
+      },
+    ],
+    [categories],
+  );
 
-  const gridContext = useMemo((): GridCtx => ({
-    update: (id, patch) => {
-      // Immediately update the grid cell — don't wait for server
-      const node = gridApiRef.current?.getRowNode(id);
-      if (node?.data) {
-        const updated: Transaction = { ...node.data, ...patch };
-        if (patch.categoryId) {
-          const cat = categories.find((c) => c.id === patch.categoryId);
-          if (cat) updated.category = cat;
+  const gridContext = useMemo(
+    (): GridCtx => ({
+      update: (id, patch) => {
+        // Immediately update the grid cell — don't wait for server
+        const node = gridApiRef.current?.getRowNode(id);
+        if (node?.data) {
+          const updated: Transaction = { ...node.data, ...patch };
+          if (patch.categoryId) {
+            const cat = categories.find((c) => c.id === patch.categoryId);
+            if (cat) updated.category = cat;
+          }
+          gridApiRef.current?.applyTransaction({ update: [updated] });
         }
-        gridApiRef.current?.applyTransaction({ update: [updated] });
-      }
-      updateMutation.mutate({ id, ...patch });
-    },
-    categories,
-    registerNoteEdit,
-    unregisterNoteEdit,
-  }), [updateMutation, categories, registerNoteEdit, unregisterNoteEdit]);
+        updateMutation.mutate({ id, ...patch });
+      },
+      categories,
+      registerNoteEdit,
+      unregisterNoteEdit,
+    }),
+    [updateMutation, categories, registerNoteEdit, unregisterNoteEdit],
+  );
 
   return (
     <div className="max-w-[1400px] mx-auto space-y-8">
       <header className="rise rise-1 flex items-end justify-between gap-6">
         <div>
-          <p className="eyebrow mb-3">{new Date().toLocaleDateString("en-GB", { month: "long", year: "numeric" })}</p>
+          <p className="eyebrow mb-3">
+            {new Date().toLocaleDateString("en-GB", { month: "long", year: "numeric" })}
+          </p>
           <h1 className="font-display text-[44px] leading-[1.02] font-light tracking-tight text-foreground">
             <span className="italic text-primary">Transactions</span>
           </h1>
@@ -889,7 +1063,8 @@ export function DashboardPage() {
           <div
             className="absolute inset-0 pointer-events-none opacity-40"
             style={{
-              background: "radial-gradient(120% 80% at 100% 0%, color-mix(in oklab, var(--primary) 22%, transparent), transparent 60%)",
+              background:
+                "radial-gradient(120% 80% at 100% 0%, color-mix(in oklab, var(--primary) 22%, transparent), transparent 60%)",
             }}
             aria-hidden
           />
@@ -904,24 +1079,32 @@ export function DashboardPage() {
                   <p className="font-display text-[40px] leading-none font-light text-primary">
                     {fmt(Math.abs(summary.settlement))}
                   </p>
-                  <p className="text-xs text-muted-foreground mt-3 font-numeric tracking-tight">CASEY OWES POT</p>
+                  <p className="text-xs text-muted-foreground mt-3 font-numeric tracking-tight">
+                    CASEY OWES POT
+                  </p>
                 </>
               ) : summary.settlement > 0.005 ? (
                 <>
                   <p className="font-display text-[40px] leading-none font-light text-primary">
                     {fmt(summary.settlement)}
                   </p>
-                  <p className="text-xs text-muted-foreground mt-3 font-numeric tracking-tight">ALEX OWES CASEY</p>
+                  <p className="text-xs text-muted-foreground mt-3 font-numeric tracking-tight">
+                    ALEX OWES CASEY
+                  </p>
                 </>
               ) : (
                 <>
                   <p className="font-display text-[40px] leading-none font-light italic text-primary">
                     All square
                   </p>
-                  <p className="text-xs text-muted-foreground mt-3 font-numeric tracking-tight">NOTHING TO SETTLE</p>
+                  <p className="text-xs text-muted-foreground mt-3 font-numeric tracking-tight">
+                    NOTHING TO SETTLE
+                  </p>
                 </>
               )
-            ) : <p className="font-display text-[40px] font-light text-muted-foreground">—</p>}
+            ) : (
+              <p className="font-display text-[40px] font-light text-muted-foreground">—</p>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -933,9 +1116,14 @@ export function DashboardPage() {
             <div className="flex items-baseline gap-3">
               <CardTitle className="eyebrow">Transactions</CardTitle>
               <span className="text-xs text-muted-foreground font-numeric">
-                {mobileFiltersActive
-                  ? <>{mobileTransactions.length} <span className="text-muted-foreground/50">of</span> {transactions.length}</>
-                  : <>{transactions.length} entries</>}
+                {mobileFiltersActive ? (
+                  <>
+                    {mobileTransactions.length} <span className="text-muted-foreground/50">of</span>{" "}
+                    {transactions.length}
+                  </>
+                ) : (
+                  <>{transactions.length} entries</>
+                )}
               </span>
             </div>
             {mobileFiltersActive && (
@@ -1013,7 +1201,9 @@ export function DashboardPage() {
                 >
                   <option value="All">All categories</option>
                   {categories.map((c) => (
-                    <option key={c.id} value={c.id}>{c.name}</option>
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
                   ))}
                 </select>
                 <select
@@ -1023,7 +1213,9 @@ export function DashboardPage() {
                 >
                   <option value="All">All sources</option>
                   {SOURCES.map((s) => (
-                    <option key={s} value={s}>{s}</option>
+                    <option key={s} value={s}>
+                      {s}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -1034,14 +1226,16 @@ export function DashboardPage() {
               <div className="py-8 text-center text-sm text-muted-foreground">
                 No transactions match these filters.
               </div>
-            ) : mobileTransactions.map((tx) => (
-              <MobileTransactionCard
-                key={tx.id}
-                tx={tx}
-                categories={categories}
-                onUpdate={handleMobileUpdate}
-              />
-            ))}
+            ) : (
+              mobileTransactions.map((tx) => (
+                <MobileTransactionCard
+                  key={tx.id}
+                  tx={tx}
+                  categories={categories}
+                  onUpdate={handleMobileUpdate}
+                />
+              ))
+            )}
           </div>
         </CardContent>
       </Card>
@@ -1052,13 +1246,24 @@ export function DashboardPage() {
           <div className="flex items-baseline gap-3">
             <CardTitle className="eyebrow">Transactions</CardTitle>
             <span className="text-xs text-muted-foreground font-numeric">
-              {filteredCount !== null
-                ? <>{filteredCount} <span className="text-muted-foreground/50">of</span> {transactions.length}</>
-                : <>{transactions.length} entries</>}
+              {filteredCount !== null ? (
+                <>
+                  {filteredCount} <span className="text-muted-foreground/50">of</span>{" "}
+                  {transactions.length}
+                </>
+              ) : (
+                <>{transactions.length} entries</>
+              )}
             </span>
             {filteredSum !== null && (
               <span className="text-xs text-muted-foreground">
-                · Net <span className={`font-numeric font-semibold ${filteredSum >= 0 ? "text-[var(--signal)]" : "text-destructive"}`}>{filteredSum >= 0 ? "+" : ""}{fmt(filteredSum)}</span>
+                · Net{" "}
+                <span
+                  className={`font-numeric font-semibold ${filteredSum >= 0 ? "text-[var(--signal)]" : "text-destructive"}`}
+                >
+                  {filteredSum >= 0 ? "+" : ""}
+                  {fmt(filteredSum)}
+                </span>
               </span>
             )}
           </div>
@@ -1084,23 +1289,27 @@ export function DashboardPage() {
                   Unmark
                 </Button>
               </>
-            ) : hasFilters && (
-              <Button
-                variant="outline"
-                size="sm"
-                className="text-xs text-green-600 border-green-600/40 hover:bg-green-600/10"
-                disabled={bulkReviewMutation.isPending}
-                onClick={() => handleBulkReview(true)}
-              >
-                Mark filtered reviewed
-              </Button>
+            ) : (
+              hasFilters && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-xs text-green-600 border-green-600/40 hover:bg-green-600/10"
+                  disabled={bulkReviewMutation.isPending}
+                  onClick={() => setPendingFilteredCount(getFilteredIds().length)}
+                >
+                  Mark filtered reviewed
+                </Button>
+              )
             )}
             <Button
               variant="outline"
               size="sm"
               className="text-xs text-muted-foreground hover:text-foreground"
               disabled={!hasFilters}
-              onClick={() => { gridApiRef.current?.setFilterModel(null); }}
+              onClick={() => {
+                gridApiRef.current?.setFilterModel(null);
+              }}
             >
               Clear filters
             </Button>
@@ -1114,12 +1323,24 @@ export function DashboardPage() {
             context={gridContext}
             domLayout="autoHeight"
             defaultColDef={{ sortable: true, resizable: true, suppressMovable: true }}
-            rowSelection={{ mode: "multiRow", checkboxes: true, headerCheckbox: true, enableClickSelection: false }}
+            rowSelection={{
+              mode: "multiRow",
+              checkboxes: true,
+              headerCheckbox: true,
+              enableClickSelection: false,
+            }}
             enableCellTextSelection
             getRowId={(p) => p.data.id}
-            onGridReady={(e) => { gridApiRef.current = e.api; }}
+            onGridReady={(e) => {
+              gridApiRef.current = e.api;
+            }}
             onCellKeyDown={(params) => {
-              if (params.event?.key !== "Enter" || params.column.getColId() !== "note" || !params.data) return;
+              if (
+                params.event?.key !== "Enter" ||
+                params.column.getColId() !== "note" ||
+                !params.data
+              )
+                return;
               params.event.preventDefault();
               noteEditTriggers.current.get(params.data.id)?.();
             }}
@@ -1130,7 +1351,11 @@ export function DashboardPage() {
               const model = e.api.getFilterModel();
               const active = Object.keys(model).length > 0;
               setHasFilters(active);
-              if (!active) { setFilteredCount(null); setFilteredSum(null); return; }
+              if (!active) {
+                setFilteredCount(null);
+                setFilteredSum(null);
+                return;
+              }
               let sum = 0;
               e.api.forEachNodeAfterFilter((node) => {
                 const tx = node.data as Transaction | undefined;
@@ -1144,6 +1369,34 @@ export function DashboardPage() {
         </CardContent>
       </Card>
 
+      {/* Confirm bulk-mark of all filtered transactions */}
+      <AlertDialog
+        open={pendingFilteredCount !== null}
+        onOpenChange={(open) => !open && setPendingFilteredCount(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Mark filtered transactions as reviewed?</AlertDialogTitle>
+            <AlertDialogDescription>
+              You're about to mark {pendingFilteredCount?.toLocaleString("en-GB")}{" "}
+              {pendingFilteredCount === 1 ? "transaction" : "transactions"} as reviewed. This
+              applies to every row matching the current filters, not just what's on screen.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-green-600 hover:bg-green-700 text-white"
+              onClick={() => {
+                handleBulkReview(true);
+                setPendingFilteredCount(null);
+              }}
+            >
+              Mark reviewed
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
