@@ -4,7 +4,7 @@ import multer from "multer";
 import pdfParse from "pdf-parse";
 import { db } from "../db/client.js";
 import { convertWithFallback } from "../lib/fxRates.js";
-import { hsbcStatementTextSchema } from "../lib/statementValidation.js";
+import { statementSchemas } from "../lib/statementValidation.js";
 
 export const importRouter = Router();
 
@@ -295,6 +295,12 @@ importRouter.post("/import/amex", upload.single("file"), async (req, res) => {
     return;
   }
 
+  const statementCheck = statementSchemas.amex.safeParse(text);
+  if (!statementCheck.success) {
+    res.status(422).json({ error: statementCheck.error.issues[0].message });
+    return;
+  }
+
   let rows: AmexRow[];
   try {
     rows = parseAmexPdf(text);
@@ -484,6 +490,12 @@ importRouter.post("/import/barclays", upload.single("file"), async (req, res) =>
     text = (await pdfParse(req.file.buffer)).text;
   } catch {
     res.status(400).json({ error: "Failed to extract text from PDF" });
+    return;
+  }
+
+  const statementCheck = statementSchemas.barclays.safeParse(text);
+  if (!statementCheck.success) {
+    res.status(422).json({ error: statementCheck.error.issues[0].message });
     return;
   }
 
@@ -688,6 +700,12 @@ importRouter.post("/import/santander", upload.single("file"), async (req, res) =
     text = (await pdfParse(req.file.buffer)).text;
   } catch {
     res.status(400).json({ error: "Failed to extract text from PDF" });
+    return;
+  }
+
+  const statementCheck = statementSchemas.santander.safeParse(text);
+  if (!statementCheck.success) {
+    res.status(422).json({ error: statementCheck.error.issues[0].message });
     return;
   }
 
@@ -967,7 +985,7 @@ importRouter.post("/import/hsbc", upload.single("file"), async (req, res) => {
   }
 
   // Guard against the wrong bank's statement (e.g. an Amex PDF) being uploaded here.
-  const statementCheck = hsbcStatementTextSchema.safeParse(text);
+  const statementCheck = statementSchemas.hsbc.safeParse(text);
   if (!statementCheck.success) {
     res.status(422).json({ error: statementCheck.error.issues[0].message });
     return;
@@ -1094,6 +1112,12 @@ importRouter.post("/import/chase", upload.single("file"), async (req, res) => {
     text = (await pdfParse(req.file.buffer)).text;
   } catch {
     res.status(400).json({ error: "Failed to extract text from PDF" });
+    return;
+  }
+
+  const statementCheck = statementSchemas.chase.safeParse(text);
+  if (!statementCheck.success) {
+    res.status(422).json({ error: statementCheck.error.issues[0].message });
     return;
   }
 
@@ -1303,6 +1327,12 @@ importRouter.post("/import/sofi", upload.single("file"), async (req, res) => {
     text = (await pdfParse(req.file.buffer)).text;
   } catch {
     res.status(400).json({ error: "Failed to extract text from PDF" });
+    return;
+  }
+
+  const statementCheck = statementSchemas.sofi.safeParse(text);
+  if (!statementCheck.success) {
+    res.status(422).json({ error: statementCheck.error.issues[0].message });
     return;
   }
 

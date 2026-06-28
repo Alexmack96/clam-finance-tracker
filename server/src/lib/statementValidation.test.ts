@@ -1,31 +1,47 @@
 import { test, expect, describe } from "bun:test";
-import { hsbcStatementTextSchema } from "./statementValidation.js";
+import { statementSchemas, hsbcStatementTextSchema, type BankKey } from "./statementValidation.js";
 
-// Representative scraps of pdf-parse text from each statement type.
-const AMEX_TEXT = `American Express
-Mr A MACKINTOSH 31/05/26
-Membership Rewards
-Total new spend transactions
-Jan5Jan5SAINSBURYS LONDON 19.00`;
+// Representative scraps of pdf-parse text — each carries its issuing bank's name.
+const SAMPLES: Record<BankKey, string> = {
+  amex: "American Express\nMr A MACKINTOSH 31/05/26\nMembership Rewards\nTotal new spend transactions",
+  barclays: "Barclaycard\nBarclays Bank UK PLC\nHow you've used your card\n05 May SAINSBURYS £19.00",
+  santander: "Santander\nYour transactions\nBalance brought forward 1,000.00",
+  hsbc: "HSBC UK Bank plc\n1 May 2026 to 31 May 2026\nBALANCE BROUGHT FORWARD",
+  chase: "Chase\nwww.chase.com\nJPMorgan Chase Bank, N.A.\n01/12 Payment Thank You -100.00",
+  sofi: "SoFi Bank, N.A.\nChecking Account - 1234\nTransaction ID: abc",
+};
 
-const HSBC_TEXT = `HSBC UK Bank plc
-Your HSBC Bank Statement
-1 May 2026 to 31 May 2026
-BALANCE BROUGHT FORWARD
-02 May 26 DD SKY TV 51.00 11,867.05`;
+const BANKS = Object.keys(SAMPLES) as BankKey[];
 
-describe("hsbcStatementTextSchema", () => {
-  test("rejects an Amex statement uploaded to the HSBC endpoint", () => {
-    const result = hsbcStatementTextSchema.safeParse(AMEX_TEXT);
+describe("statement guards", () => {
+  for (const bank of BANKS) {
+    test(`${bank}: accepts a genuine ${bank} statement`, () => {
+      expect(statementSchemas[bank].safeParse(SAMPLES[bank]).success).toBe(true);
+    });
+
+    test(`${bank}: rejects every other bank's statement`, () => {
+      for (const other of BANKS) {
+        if (other === bank) continue;
+        const result = statementSchemas[bank].safeParse(SAMPLES[other]);
+        expect(result.success).toBe(false);
+      }
+    });
+  }
+
+  test("rejects unrelated text with no bank marker", () => {
+    expect(statementSchemas.hsbc.safeParse("just some random pdf text").success).toBe(false);
+  });
+
+  test("names the likely bank in the error message", () => {
+    const result = statementSchemas.hsbc.safeParse(SAMPLES.amex);
     expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues[0].message).toContain("American Express");
+    }
   });
 
-  test("accepts a genuine HSBC statement", () => {
-    const result = hsbcStatementTextSchema.safeParse(HSBC_TEXT);
-    expect(result.success).toBe(true);
-  });
-
-  test("rejects unrelated text with no HSBC marker", () => {
-    expect(hsbcStatementTextSchema.safeParse("just some random pdf text").success).toBe(false);
+  test("back-compat hsbcStatementTextSchema still works", () => {
+    expect(hsbcStatementTextSchema.safeParse(SAMPLES.hsbc).success).toBe(true);
+    expect(hsbcStatementTextSchema.safeParse(SAMPLES.amex).success).toBe(false);
   });
 });
