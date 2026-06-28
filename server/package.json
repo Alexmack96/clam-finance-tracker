@@ -12,6 +12,7 @@
     "db:generate": "bunx prisma generate",
     "db:seed": "bun src/db/seed.ts",
     "db:studio": "bunx prisma studio",
+    "test": "bun test",
     "lint": "eslint src"
   },
   "dependencies": {

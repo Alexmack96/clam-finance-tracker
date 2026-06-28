@@ -1,5 +1,6 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Info } from "lucide-react";
+import type { SavingType } from "@clam/core";
 import api from "../lib/api.js";
 import { findLatestSalary } from "../lib/salary.js";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card.js";
@@ -27,30 +28,16 @@ interface Tx {
   type: "Income" | "Expense";
   owner: string;
   excludeFromSavings: boolean;
-  category: { isFixed: boolean };
+  savingType: SavingType | null; // per-transaction override; null = inherit category
+  category: { savingType: SavingType };
 }
 
 interface MonthActual {
   key: string;
   label: string;
   saved: number;
-  // Discretionary (non-fixed) spend that month — drives the in-progress month footnote.
+  // Discretionary (Fun) spend that month — drives the in-progress month footnote.
   variable: number;
-}
-
-interface ExpenseItem {
-  id: string;
-  description: string;
-  amount: number;
-  owner: string;
-  key: string; // YYYY-MM
-  monthLabel: string;
-  excludeFromSavings: boolean;
-}
-
-interface SavingsData {
-  months: MonthActual[];
-  expenses: ExpenseItem[];
 }
 
 function useMonthlyIncome(owner: string) {
@@ -84,13 +71,14 @@ function useMonthlyActuals(owner: string) {
           const amount = parseFloat(t.amount) * weight;
           if (t.type === "Income") {
             agg[key].saved += amount;
-          } else {
-            // Discretionary spend = anything not in a fixed category (raw, for the footnote).
-            if (!t.category.isFixed) agg[key].variable += amount;
-            // Mandatory / one-off items (wedding ring, investment transfer) are excluded
-            // from the savings score so they don't drag it down.
-            if (!t.excludeFromSavings) agg[key].saved -= amount;
+            continue;
           }
+          const stype = t.savingType ?? t.category.savingType;
+          // Fun = the discretionary spend the footnote surfaces.
+          if (stype === "Fun") agg[key].variable += amount;
+          // Money set aside (Saving) counts as saved, not spent; manual one-off exclusions are
+          // ignored entirely. Everything else (Fixed/Fun) is spending that reduces savings.
+          if (stype !== "Saving" && !t.excludeFromSavings) agg[key].saved -= amount;
         }
       };
 
@@ -109,28 +97,7 @@ function useMonthlyActuals(owner: string) {
           return { key, label, saved: agg[key].saved, variable: agg[key].variable };
         });
 
-      // Flat expense list (Alex + Joint) for the exclude controls on the page.
-      const expenses: ExpenseItem[] = [...ownerTxs, ...jointTxs]
-        .filter((t) => t.type === "Expense")
-        .map((t) => {
-          const key = t.date.slice(0, 7);
-          const [yr, mo] = key.split("-");
-          const monthLabel = new Date(parseInt(yr), parseInt(mo) - 1, 1).toLocaleDateString(
-            "en-GB",
-            { month: "short", year: "numeric" },
-          );
-          return {
-            id: t.id,
-            description: t.description,
-            amount: parseFloat(t.amount),
-            owner: t.owner,
-            key,
-            monthLabel,
-            excludeFromSavings: t.excludeFromSavings,
-          };
-        });
-
-      return { months, expenses } satisfies SavingsData;
+      return months;
     },
   });
 }
@@ -234,18 +201,10 @@ export function SavingsPage() {
   // The savings score is Alex's: all of Alex + half of Joint, against 20% of Alex's income.
   const owner = "Alex";
 
-  const queryClient = useQueryClient();
   const { data: income, isLoading: incomeLoading } = useMonthlyIncome(owner);
-  const { data: savings, isLoading: actualsLoading } = useMonthlyActuals(owner);
-  const actuals = savings?.months;
+  const { data: actuals, isLoading: actualsLoading } = useMonthlyActuals(owner);
   const INCOME = income ?? 0;
   const SAVING = INCOME * 0.2;
-
-  const toggleExclude = useMutation({
-    mutationFn: ({ id, value }: { id: string; value: boolean }) =>
-      api.patch(`/api/transactions/${id}`, { excludeFromSavings: value }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["savings"] }),
-  });
 
   const categories = [
     {
@@ -302,12 +261,6 @@ export function SavingsPage() {
     .filter((m) => m.key.startsWith(`${now.getFullYear()}-`) && m.key !== currentMonthKey)
     .slice()
     .reverse();
-
-  // Biggest expenses from the scored + current month — candidates to flag as one-off / mandatory.
-  const excludable = (savings?.expenses ?? [])
-    .filter((e) => e.key === scoreMonthKey || e.key === currentMonthKey)
-    .sort((a, b) => b.amount - a.amount)
-    .slice(0, 8);
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
@@ -481,69 +434,6 @@ export function SavingsPage() {
               </div>
             )}
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Exclude one-off / mandatory items from the score */}
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-xs uppercase tracking-wide text-muted-foreground">
-            One-off &amp; mandatory items
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-xs text-muted-foreground mb-3">
-            Star a big one-off — a wedding ring, an investment transfer — to keep it out of your
-            savings score. Showing the largest items from {scoreMonthName} and {currentMonthName}.
-          </p>
-          {actualsLoading ? (
-            <p className="text-sm text-muted-foreground animate-pulse">Loading…</p>
-          ) : !excludable.length ? (
-            <p className="text-sm text-muted-foreground">No expenses to show yet.</p>
-          ) : (
-            <div className="divide-y divide-border">
-              {excludable.map((e) => (
-                <button
-                  key={e.id}
-                  onClick={() => toggleExclude.mutate({ id: e.id, value: !e.excludeFromSavings })}
-                  className="w-full flex items-center gap-3 py-2 text-left hover:bg-muted/40 -mx-2 px-2 rounded-md transition-colors"
-                >
-                  <span
-                    className={`w-5 h-5 shrink-0 rounded-full border-2 flex items-center justify-center transition-colors ${
-                      e.excludeFromSavings
-                        ? "bg-amber-500 border-amber-500 text-white"
-                        : "border-muted-foreground/40"
-                    }`}
-                  >
-                    {e.excludeFromSavings && <span className="text-[10px] leading-none">★</span>}
-                  </span>
-                  <div className="flex-1 min-w-0">
-                    <p
-                      className={`text-sm truncate ${
-                        e.excludeFromSavings
-                          ? "text-muted-foreground line-through"
-                          : "text-foreground"
-                      }`}
-                    >
-                      {e.description}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {e.monthLabel} · {e.owner}
-                    </p>
-                  </div>
-                  <span
-                    className={`text-sm font-semibold shrink-0 ${
-                      e.excludeFromSavings
-                        ? "text-muted-foreground line-through"
-                        : "text-foreground"
-                    }`}
-                  >
-                    {fmt(e.amount)}
-                  </span>
-                </button>
-              ))}
-            </div>
-          )}
         </CardContent>
       </Card>
 

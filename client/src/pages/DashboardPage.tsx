@@ -5,9 +5,12 @@ import { AllCommunityModule, ModuleRegistry, themeQuartz } from "ag-grid-communi
 import type { ColDef, GridApi } from "ag-grid-community";
 import { AgGridReact, useGridFilter } from "ag-grid-react";
 import type { CustomCellRendererProps, CustomFilterProps } from "ag-grid-react";
+import { ChevronDown } from "lucide-react";
+import { savingTypes, type SavingType } from "@clam/core";
 import { Button } from "../components/ui/button.js";
 import { Input } from "../components/ui/input.js";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card.js";
+import { Popover, PopoverContent, PopoverTrigger } from "../components/ui/popover.js";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -53,6 +56,7 @@ interface Category {
   id: string;
   name: string;
   color: string;
+  savingType: SavingType;
 }
 
 type BankSource =
@@ -71,6 +75,7 @@ interface Transaction {
   externalId: string | null;
   reviewed: boolean;
   excludeFromSavings: boolean;
+  savingType: SavingType | null; // per-transaction override; null = inherit category
 }
 
 interface Summary {
@@ -88,6 +93,8 @@ interface GridCtx {
       categoryId?: string;
       owner?: Owner;
       reviewed?: boolean;
+      excludeFromSavings?: boolean;
+      savingType?: SavingType | null;
     },
   ) => void;
   categories: Category[];
@@ -656,6 +663,80 @@ function ReviewedRenderer({
   );
 }
 
+// Collapsible per-transaction flags: SavingType override + exclude-from-savings.
+// Shared between the desktop grid cell and the mobile card.
+function FlagsControl({
+  tx,
+  onUpdate,
+}: {
+  tx: Transaction;
+  onUpdate: (patch: UpdatePatch) => void;
+}) {
+  const effective = tx.savingType ?? tx.category.savingType;
+  const hasOverride = tx.savingType !== null || tx.excludeFromSavings;
+  const chip = (active: boolean) =>
+    `px-1.5 py-0.5 rounded text-[11px] border transition-colors ${
+      active
+        ? "bg-primary text-primary-foreground border-primary"
+        : "border-border text-muted-foreground hover:text-foreground"
+    }`;
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <button
+          title="Saving type & flags"
+          className={`flex items-center gap-1 px-1.5 h-6 rounded border border-transparent hover:border-border transition-colors ${
+            hasOverride ? "text-primary" : "text-muted-foreground/70"
+          }`}
+        >
+          <span className="text-[10px] font-medium leading-none">{effective}</span>
+          {tx.excludeFromSavings && <span className="text-[10px] leading-none">∅</span>}
+          <ChevronDown className="size-3" />
+        </button>
+      </PopoverTrigger>
+      <PopoverContent align="end" className="w-56 p-3 space-y-3">
+        <div className="space-y-1.5">
+          <p className="text-xs font-semibold text-foreground">Saving type</p>
+          <div className="flex flex-wrap gap-1">
+            <button
+              className={chip(tx.savingType === null)}
+              onClick={() => onUpdate({ savingType: null })}
+            >
+              Inherit
+            </button>
+            {savingTypes.map((t) => (
+              <button
+                key={t}
+                className={chip(tx.savingType === t)}
+                onClick={() => onUpdate({ savingType: t })}
+              >
+                {t}
+              </button>
+            ))}
+          </div>
+          <p className="text-[10px] text-muted-foreground">
+            Inherit = {tx.category.savingType} (from {tx.category.name})
+          </p>
+        </div>
+        <label className="flex items-center gap-2 text-xs cursor-pointer">
+          <input
+            type="checkbox"
+            className="h-3.5 w-3.5"
+            checked={tx.excludeFromSavings}
+            onChange={(e) => onUpdate({ excludeFromSavings: e.target.checked })}
+          />
+          Exclude from savings score
+        </label>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+function FlagsRenderer({ data, context }: CustomCellRendererProps<Transaction, unknown, GridCtx>) {
+  if (!data) return null;
+  return <FlagsControl tx={data} onUpdate={(patch) => context.update(data.id, patch)} />;
+}
+
 // ─── Mobile card components ───────────────────────────────────────────────────
 
 function MobileNoteCell({
@@ -717,6 +798,8 @@ type UpdatePatch = {
   categoryId?: string;
   owner?: Owner;
   reviewed?: boolean;
+  excludeFromSavings?: boolean;
+  savingType?: SavingType | null;
 };
 
 function MobileTransactionCard({
@@ -773,6 +856,7 @@ function MobileTransactionCard({
         >
           {source}
         </span>
+        <FlagsControl tx={tx} onUpdate={(patch) => onUpdate(tx.id, patch)} />
       </div>
       <MobileNoteCell tx={tx} onSave={(note) => onUpdate(tx.id, { note })} />
     </div>
@@ -822,6 +906,8 @@ export function DashboardPage() {
       categoryId?: string;
       owner?: Owner;
       reviewed?: boolean;
+      excludeFromSavings?: boolean;
+      savingType?: SavingType | null;
     }) => api.patch<Transaction>(`/api/transactions/${id}`, data).then((r) => r.data),
     onSuccess: (updated, variables) => {
       // Sync query cache with server truth
@@ -830,9 +916,14 @@ export function DashboardPage() {
       );
       // Re-apply server truth to grid (handles any server-side normalization)
       gridApiRef.current?.applyTransaction({ update: [updated] });
-      // Category/owner changes ripple into the dashboard, savings score and analytics —
-      // refetch them so the numbers stay tied across pages.
-      if (variables.categoryId !== undefined || variables.owner !== undefined) {
+      // Category/owner/savingType/exclude changes ripple into the dashboard, savings score and
+      // analytics — refetch them so the numbers stay tied across pages.
+      if (
+        variables.categoryId !== undefined ||
+        variables.owner !== undefined ||
+        variables.savingType !== undefined ||
+        variables.excludeFromSavings !== undefined
+      ) {
         queryClient.invalidateQueries({ queryKey: ["summary"] });
         queryClient.invalidateQueries({ queryKey: ["savings"] });
         queryClient.invalidateQueries({ queryKey: ["income"] });
@@ -1042,6 +1133,16 @@ export function DashboardPage() {
         floatingFilter: false,
         resizable: false,
         cellStyle: { display: "flex", alignItems: "center", justifyContent: "center" },
+      },
+      {
+        headerName: "FLAGS",
+        width: 100,
+        cellRenderer: FlagsRenderer,
+        sortable: false,
+        filter: false,
+        floatingFilter: false,
+        resizable: false,
+        cellStyle: { display: "flex", alignItems: "center" },
       },
     ],
     [categories],

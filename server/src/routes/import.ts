@@ -4,6 +4,7 @@ import multer from "multer";
 import pdfParse from "pdf-parse";
 import { db } from "../db/client.js";
 import { convertWithFallback } from "../lib/fxRates.js";
+import { hsbcStatementTextSchema } from "../lib/statementValidation.js";
 
 export const importRouter = Router();
 
@@ -962,6 +963,13 @@ importRouter.post("/import/hsbc", upload.single("file"), async (req, res) => {
     text = (await pdfParse(req.file.buffer, { pagerender: hsbcPageRender })).text;
   } catch {
     res.status(400).json({ error: "Failed to extract text from PDF" });
+    return;
+  }
+
+  // Guard against the wrong bank's statement (e.g. an Amex PDF) being uploaded here.
+  const statementCheck = hsbcStatementTextSchema.safeParse(text);
+  if (!statementCheck.success) {
+    res.status(422).json({ error: statementCheck.error.issues[0].message });
     return;
   }
 

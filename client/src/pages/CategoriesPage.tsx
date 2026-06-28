@@ -4,7 +4,12 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosError } from "axios";
 import { Pencil, Trash2, Plus } from "lucide-react";
-import { createCategorySchema, type CreateCategoryInput, type Category } from "@clam/core";
+import {
+  createCategorySchema,
+  savingTypes,
+  type CreateCategoryInput,
+  type Category,
+} from "@clam/core";
 import api from "../lib/api.js";
 import { Card, CardContent } from "../components/ui/card.js";
 import { Button } from "../components/ui/button.js";
@@ -66,7 +71,7 @@ export function CategoriesPage() {
 
   const form = useForm<CreateCategoryInput>({
     resolver: zodResolver(createCategorySchema),
-    defaultValues: { name: "", color: DEFAULT_COLOR, isFixed: false, isDirectDebit: false },
+    defaultValues: { name: "", color: DEFAULT_COLOR, savingType: "Fun" },
   });
   const color = form.watch("color");
 
@@ -95,13 +100,8 @@ export function CategoriesPage() {
     saveMutation.reset();
     form.reset(
       cat
-        ? {
-            name: cat.name,
-            color: cat.color,
-            isFixed: cat.isFixed,
-            isDirectDebit: cat.isDirectDebit,
-          }
-        : { name: "", color: DEFAULT_COLOR, isFixed: false, isDirectDebit: false },
+        ? { name: cat.name, color: cat.color, savingType: cat.savingType }
+        : { name: "", color: DEFAULT_COLOR, savingType: "Fun" },
     );
     setEditorOpen(true);
   }
@@ -130,7 +130,7 @@ export function CategoriesPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Category</TableHead>
-                  <TableHead>Flags</TableHead>
+                  <TableHead>Type</TableHead>
                   <TableHead className="text-right">Transactions</TableHead>
                   <TableHead />
                 </TableRow>
@@ -148,10 +148,7 @@ export function CategoriesPage() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="flex flex-wrap gap-1.5">
-                        {c.isFixed && <Badge variant="secondary">Fixed</Badge>}
-                        {c.isDirectDebit && <Badge variant="secondary">Direct Debit</Badge>}
-                      </div>
+                      <Badge variant="secondary">{c.savingType}</Badge>
                     </TableCell>
                     <TableCell className="text-right font-mono text-muted-foreground">
                       {c.transactionCount.toLocaleString()}
@@ -231,15 +228,23 @@ export function CategoriesPage() {
                 )}
               </div>
 
-              <div className="flex items-center gap-6">
-                <label className="flex items-center gap-2 text-sm">
-                  <input type="checkbox" {...form.register("isFixed")} className="h-4 w-4" />
-                  Fixed cost
-                </label>
-                <label className="flex items-center gap-2 text-sm">
-                  <input type="checkbox" {...form.register("isDirectDebit")} className="h-4 w-4" />
-                  Direct debit
-                </label>
+              <div className="space-y-1">
+                <Label htmlFor="savingType">Saving type</Label>
+                <select
+                  id="savingType"
+                  {...form.register("savingType")}
+                  className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                >
+                  {savingTypes.map((t) => (
+                    <option key={t} value={t}>
+                      {t}
+                    </option>
+                  ))}
+                </select>
+                <p className="text-xs text-muted-foreground">
+                  Fixed = bills/rent · Fun = discretionary spend · Saving = money put aside (counts
+                  toward your savings score). Transactions inherit this but can override it.
+                </p>
               </div>
 
               {saveMutation.isError && (

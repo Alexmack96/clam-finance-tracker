@@ -25,6 +25,8 @@ const updateSchema = z.object({
   owner: z.enum(["Alex", "Casey", "Joint"]).optional(),
   reviewed: z.boolean().optional(),
   excludeFromSavings: z.boolean().optional(),
+  // null clears the override (inherit the category's savingType).
+  savingType: z.enum(["Fixed", "Fun", "Saving"]).nullable().optional(),
 });
 
 transactionsRouter.patch("/:id", async (req, res) => {
@@ -39,6 +41,7 @@ transactionsRouter.patch("/:id", async (req, res) => {
       ...(body.excludeFromSavings !== undefined
         ? { excludeFromSavings: body.excludeFromSavings }
         : {}),
+      ...(body.savingType !== undefined ? { savingType: body.savingType } : {}),
     },
     include: { category: true },
   });

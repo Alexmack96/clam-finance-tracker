@@ -69,14 +69,18 @@ dashboardRouter.get("/analytics", async (_req, res) => {
 
   const expenses = transactions.filter((t) => t.type === TransactionType.Expense);
 
+  // Effective SavingType = the transaction's override, or its category's default.
+  const stype = (t: (typeof expenses)[number]) => t.savingType ?? t.category.savingType;
+
   const fixedVsVariable = MONTHS.slice(0, currentMonthIdx + 1).map((month, i) => {
     const monthExp = expenses.filter((t) => new Date(t.date).getMonth() === i);
     return {
       month,
-      fixed: monthExp.filter((t) => t.category.isFixed).reduce((s, t) => s + Number(t.amount), 0),
-      variable: monthExp
-        .filter((t) => !t.category.isFixed)
+      fixed: monthExp
+        .filter((t) => stype(t) === "Fixed")
         .reduce((s, t) => s + Number(t.amount), 0),
+      // "Variable" = discretionary Fun spend; Saving-typed transfers aren't spending.
+      variable: monthExp.filter((t) => stype(t) === "Fun").reduce((s, t) => s + Number(t.amount), 0),
     };
   });
 
@@ -126,7 +130,7 @@ dashboardRouter.get("/analytics", async (_req, res) => {
   // Monthly fun budget = 30% of ~£5.5k salary. Tracks current-month variable (non-fixed) spend.
   const MONTHLY_FUN_BUDGET = 1650;
   const monthSpent = expenses
-    .filter((t) => !t.category.isFixed && new Date(t.date).getMonth() === currentMonthIdx)
+    .filter((t) => stype(t) === "Fun" && new Date(t.date).getMonth() === currentMonthIdx)
     .reduce((s, t) => s + Number(t.amount), 0);
   const budget = {
     spent: monthSpent,

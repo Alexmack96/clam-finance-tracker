@@ -1,29 +1,30 @@
 import { db } from "../db/client.js";
+import { SavingType } from "../generated/prisma/index.js";
 
 // ─── System categories ───────────────────────────────────────────────────────
 
-const SYSTEM_CATEGORIES: Record<string, { color: string; isFixed: boolean; isDirectDebit?: boolean }> = {
-  "Activities":     { color: "#8b5cf6", isFixed: false },
-  "Bank Sauce":     { color: "#0ea5e9", isFixed: false },
-  "Entertainment":  { color: "#7C3AED", isFixed: false },
-  "Food & Social":  { color: "#fb923c", isFixed: false },
-  "Groceries":      { color: "#22c55e", isFixed: false },
-  "Takeout":        { color: "#ef4444", isFixed: false },
-  "Personal Care":  { color: "#f43f5e", isFixed: false },
-  "Rent & Bills":   { color: "#64748b", isFixed: true  },
-  "Savings":        { color: "#a855f7", isFixed: true  },
-  "Transport":      { color: "#3b82f6", isFixed: true  },
-  "Uncategorised":  { color: "#d1d5db", isFixed: false },
-  "Vacation":       { color: "#eab308", isFixed: false },
+const SYSTEM_CATEGORIES: Record<string, { color: string; savingType: SavingType }> = {
+  "Activities":     { color: "#8b5cf6", savingType: SavingType.Fun    },
+  "Bank Sauce":     { color: "#0ea5e9", savingType: SavingType.Fun    },
+  "Entertainment":  { color: "#7C3AED", savingType: SavingType.Fun    },
+  "Food & Social":  { color: "#fb923c", savingType: SavingType.Fun    },
+  "Groceries":      { color: "#22c55e", savingType: SavingType.Fun    },
+  "Takeout":        { color: "#ef4444", savingType: SavingType.Fun    },
+  "Personal Care":  { color: "#f43f5e", savingType: SavingType.Fun    },
+  "Rent & Bills":   { color: "#64748b", savingType: SavingType.Fixed  },
+  "Savings":        { color: "#a855f7", savingType: SavingType.Saving },
+  "Transport":      { color: "#3b82f6", savingType: SavingType.Fixed  },
+  "Uncategorised":  { color: "#d1d5db", savingType: SavingType.Fun    },
+  "Vacation":       { color: "#eab308", savingType: SavingType.Fun    },
 };
 
 export async function initSystemCategories() {
-  for (const [name, { color, isFixed, isDirectDebit }] of Object.entries(SYSTEM_CATEGORIES)) {
+  for (const [name, { color, savingType }] of Object.entries(SYSTEM_CATEGORIES)) {
     try {
       await db.category.upsert({
         where: { name },
-        create: { name, color, isFixed, isDirectDebit: isDirectDebit ?? false },
-        update: { isFixed, isDirectDebit: isDirectDebit ?? false },
+        create: { name, color, savingType },
+        update: { savingType },
       });
       console.log(`[initSystemCategories] upserted: ${name}`);
     } catch (err) {

@@ -3,7 +3,9 @@ import tsparser from "@typescript-eslint/parser";
 
 export default [
   {
-    ignores: ["src/generated/**"],
+    // Test files run under `bun test` (its own types/runtime) and are excluded from the
+    // tsc build, so keep the type-aware linter off them too.
+    ignores: ["src/generated/**", "src/**/*.test.ts"],
   },
   {
     files: ["src/**/*.ts"],

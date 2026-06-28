@@ -13,6 +13,12 @@ enum TransactionType {
   Expense
 }
 
+enum SavingType {
+  Fixed
+  Fun
+  Saving
+}
+
 enum Owner {
   Alex
   Casey
@@ -44,12 +50,11 @@ model User {
 }
 
 model Category {
-  id            String        @id @default(cuid())
-  name          String        @unique
-  color         String
-  isFixed       Boolean       @default(false)
-  isDirectDebit Boolean       @default(false)
-  transactions  Transaction[]
+  id           String        @id @default(cuid())
+  name         String        @unique
+  color        String
+  savingType   SavingType    @default(Fun)
+  transactions Transaction[]
 }
 
 model Transaction {
@@ -66,6 +71,7 @@ model Transaction {
   owner              Owner           @default(Joint)
   reviewed           Boolean         @default(false)
   excludeFromSavings Boolean         @default(false)
+  savingType         SavingType? // per-transaction override; null = inherit from category
   originalAmount     Decimal?
   originalCurrency   String?
 }

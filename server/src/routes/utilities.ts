@@ -45,7 +45,6 @@ utilitiesRouter.get("/", async (req, res) => {
         id: cat.id,
         name: cat.name,
         color: cat.color,
-        isDirectDebit: cat.isDirectDebit,
         payments,
         totalThisMonth,
       };
