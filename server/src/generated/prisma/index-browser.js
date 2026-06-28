@@ -121,6 +121,7 @@ exports.Prisma.UserScalarFieldEnum = {
   id: 'id',
   email: 'email',
   name: 'name',
+  owner: 'owner',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   image: 'image'
@@ -347,6 +348,7 @@ exports.Prisma.InvestmentAccountScalarFieldEnum = {
   id: 'id',
   name: 'name',
   category: 'category',
+  owner: 'owner',
   rate: 'rate',
   sortOrder: 'sortOrder',
   createdAt: 'createdAt',
@@ -380,15 +382,15 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
-exports.TransactionType = exports.$Enums.TransactionType = {
-  Income: 'Income',
-  Expense: 'Expense'
-};
-
 exports.Owner = exports.$Enums.Owner = {
   Alex: 'Alex',
   Casey: 'Casey',
   Joint: 'Joint'
+};
+
+exports.TransactionType = exports.$Enums.TransactionType = {
+  Income: 'Income',
+  Expense: 'Expense'
 };
 
 exports.TabDirection = exports.$Enums.TabDirection = {

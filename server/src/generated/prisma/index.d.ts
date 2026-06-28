@@ -2764,6 +2764,7 @@ export namespace Prisma {
     id: string | null
     email: string | null
     name: string | null
+    owner: $Enums.Owner | null
     createdAt: Date | null
     updatedAt: Date | null
     image: string | null
@@ -2773,6 +2774,7 @@ export namespace Prisma {
     id: string | null
     email: string | null
     name: string | null
+    owner: $Enums.Owner | null
     createdAt: Date | null
     updatedAt: Date | null
     image: string | null
@@ -2782,6 +2784,7 @@ export namespace Prisma {
     id: number
     email: number
     name: number
+    owner: number
     createdAt: number
     updatedAt: number
     image: number
@@ -2793,6 +2796,7 @@ export namespace Prisma {
     id?: true
     email?: true
     name?: true
+    owner?: true
     createdAt?: true
     updatedAt?: true
     image?: true
@@ -2802,6 +2806,7 @@ export namespace Prisma {
     id?: true
     email?: true
     name?: true
+    owner?: true
     createdAt?: true
     updatedAt?: true
     image?: true
@@ -2811,6 +2816,7 @@ export namespace Prisma {
     id?: true
     email?: true
     name?: true
+    owner?: true
     createdAt?: true
     updatedAt?: true
     image?: true
@@ -2893,6 +2899,7 @@ export namespace Prisma {
     id: string
     email: string
     name: string
+    owner: $Enums.Owner | null
     createdAt: Date
     updatedAt: Date
     image: string | null
@@ -2919,6 +2926,7 @@ export namespace Prisma {
     id?: boolean
     email?: boolean
     name?: boolean
+    owner?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     image?: boolean
@@ -2931,6 +2939,7 @@ export namespace Prisma {
     id?: boolean
     email?: boolean
     name?: boolean
+    owner?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     image?: boolean
@@ -2940,6 +2949,7 @@ export namespace Prisma {
     id?: boolean
     email?: boolean
     name?: boolean
+    owner?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     image?: boolean
@@ -2949,12 +2959,13 @@ export namespace Prisma {
     id?: boolean
     email?: boolean
     name?: boolean
+    owner?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     image?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "name" | "createdAt" | "updatedAt" | "image", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "name" | "owner" | "createdAt" | "updatedAt" | "image", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     sessions?: boolean | User$sessionsArgs<ExtArgs>
     accounts?: boolean | User$accountsArgs<ExtArgs>
@@ -2973,6 +2984,7 @@ export namespace Prisma {
       id: string
       email: string
       name: string
+      owner: $Enums.Owner | null
       createdAt: Date
       updatedAt: Date
       image: string | null
@@ -3404,6 +3416,7 @@ export namespace Prisma {
     readonly id: FieldRef<"User", 'String'>
     readonly email: FieldRef<"User", 'String'>
     readonly name: FieldRef<"User", 'String'>
+    readonly owner: FieldRef<"User", 'Owner'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
     readonly image: FieldRef<"User", 'String'>
@@ -21593,6 +21606,7 @@ export namespace Prisma {
     id: string | null
     name: string | null
     category: string | null
+    owner: $Enums.Owner | null
     rate: number | null
     sortOrder: number | null
     createdAt: Date | null
@@ -21603,6 +21617,7 @@ export namespace Prisma {
     id: string | null
     name: string | null
     category: string | null
+    owner: $Enums.Owner | null
     rate: number | null
     sortOrder: number | null
     createdAt: Date | null
@@ -21613,6 +21628,7 @@ export namespace Prisma {
     id: number
     name: number
     category: number
+    owner: number
     rate: number
     sortOrder: number
     createdAt: number
@@ -21635,6 +21651,7 @@ export namespace Prisma {
     id?: true
     name?: true
     category?: true
+    owner?: true
     rate?: true
     sortOrder?: true
     createdAt?: true
@@ -21645,6 +21662,7 @@ export namespace Prisma {
     id?: true
     name?: true
     category?: true
+    owner?: true
     rate?: true
     sortOrder?: true
     createdAt?: true
@@ -21655,6 +21673,7 @@ export namespace Prisma {
     id?: true
     name?: true
     category?: true
+    owner?: true
     rate?: true
     sortOrder?: true
     createdAt?: true
@@ -21752,6 +21771,7 @@ export namespace Prisma {
     id: string
     name: string
     category: string
+    owner: $Enums.Owner
     rate: number | null
     sortOrder: number
     createdAt: Date
@@ -21781,6 +21801,7 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     category?: boolean
+    owner?: boolean
     rate?: boolean
     sortOrder?: boolean
     createdAt?: boolean
@@ -21793,6 +21814,7 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     category?: boolean
+    owner?: boolean
     rate?: boolean
     sortOrder?: boolean
     createdAt?: boolean
@@ -21803,6 +21825,7 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     category?: boolean
+    owner?: boolean
     rate?: boolean
     sortOrder?: boolean
     createdAt?: boolean
@@ -21813,13 +21836,14 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     category?: boolean
+    owner?: boolean
     rate?: boolean
     sortOrder?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type InvestmentAccountOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "category" | "rate" | "sortOrder" | "createdAt" | "updatedAt", ExtArgs["result"]["investmentAccount"]>
+  export type InvestmentAccountOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "category" | "owner" | "rate" | "sortOrder" | "createdAt" | "updatedAt", ExtArgs["result"]["investmentAccount"]>
   export type InvestmentAccountInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     snapshots?: boolean | InvestmentAccount$snapshotsArgs<ExtArgs>
     _count?: boolean | InvestmentAccountCountOutputTypeDefaultArgs<ExtArgs>
@@ -21836,6 +21860,7 @@ export namespace Prisma {
       id: string
       name: string
       category: string
+      owner: $Enums.Owner
       rate: number | null
       sortOrder: number
       createdAt: Date
@@ -22267,6 +22292,7 @@ export namespace Prisma {
     readonly id: FieldRef<"InvestmentAccount", 'String'>
     readonly name: FieldRef<"InvestmentAccount", 'String'>
     readonly category: FieldRef<"InvestmentAccount", 'String'>
+    readonly owner: FieldRef<"InvestmentAccount", 'Owner'>
     readonly rate: FieldRef<"InvestmentAccount", 'Float'>
     readonly sortOrder: FieldRef<"InvestmentAccount", 'Int'>
     readonly createdAt: FieldRef<"InvestmentAccount", 'DateTime'>
@@ -24838,6 +24864,7 @@ export namespace Prisma {
     id: 'id',
     email: 'email',
     name: 'name',
+    owner: 'owner',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     image: 'image'
@@ -25115,6 +25142,7 @@ export namespace Prisma {
     id: 'id',
     name: 'name',
     category: 'category',
+    owner: 'owner',
     rate: 'rate',
     sortOrder: 'sortOrder',
     createdAt: 'createdAt',
@@ -25177,6 +25205,13 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Owner'
+   */
+  export type EnumOwnerFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Owner'>
+    
+
+
+  /**
    * Reference to a field of type 'DateTime'
    */
   export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
@@ -25201,13 +25236,6 @@ export namespace Prisma {
    * Reference to a field of type 'TransactionType'
    */
   export type EnumTransactionTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TransactionType'>
-    
-
-
-  /**
-   * Reference to a field of type 'Owner'
-   */
-  export type EnumOwnerFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Owner'>
     
 
 
@@ -25249,6 +25277,7 @@ export namespace Prisma {
     id?: StringFilter<"User"> | string
     email?: StringFilter<"User"> | string
     name?: StringFilter<"User"> | string
+    owner?: EnumOwnerNullableFilter<"User"> | $Enums.Owner | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     image?: StringNullableFilter<"User"> | string | null
@@ -25260,6 +25289,7 @@ export namespace Prisma {
     id?: SortOrder
     email?: SortOrder
     name?: SortOrder
+    owner?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     image?: SortOrderInput | SortOrder
@@ -25274,6 +25304,7 @@ export namespace Prisma {
     OR?: UserWhereInput[]
     NOT?: UserWhereInput | UserWhereInput[]
     name?: StringFilter<"User"> | string
+    owner?: EnumOwnerNullableFilter<"User"> | $Enums.Owner | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     image?: StringNullableFilter<"User"> | string | null
@@ -25285,6 +25316,7 @@ export namespace Prisma {
     id?: SortOrder
     email?: SortOrder
     name?: SortOrder
+    owner?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     image?: SortOrderInput | SortOrder
@@ -25300,6 +25332,7 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"User"> | string
     email?: StringWithAggregatesFilter<"User"> | string
     name?: StringWithAggregatesFilter<"User"> | string
+    owner?: EnumOwnerNullableWithAggregatesFilter<"User"> | $Enums.Owner | null
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     image?: StringNullableWithAggregatesFilter<"User"> | string | null
@@ -26619,6 +26652,7 @@ export namespace Prisma {
     id?: StringFilter<"InvestmentAccount"> | string
     name?: StringFilter<"InvestmentAccount"> | string
     category?: StringFilter<"InvestmentAccount"> | string
+    owner?: EnumOwnerFilter<"InvestmentAccount"> | $Enums.Owner
     rate?: FloatNullableFilter<"InvestmentAccount"> | number | null
     sortOrder?: IntFilter<"InvestmentAccount"> | number
     createdAt?: DateTimeFilter<"InvestmentAccount"> | Date | string
@@ -26630,6 +26664,7 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     category?: SortOrder
+    owner?: SortOrder
     rate?: SortOrderInput | SortOrder
     sortOrder?: SortOrder
     createdAt?: SortOrder
@@ -26639,22 +26674,25 @@ export namespace Prisma {
 
   export type InvestmentAccountWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    name?: string
+    owner_name?: InvestmentAccountOwnerNameCompoundUniqueInput
     AND?: InvestmentAccountWhereInput | InvestmentAccountWhereInput[]
     OR?: InvestmentAccountWhereInput[]
     NOT?: InvestmentAccountWhereInput | InvestmentAccountWhereInput[]
+    name?: StringFilter<"InvestmentAccount"> | string
     category?: StringFilter<"InvestmentAccount"> | string
+    owner?: EnumOwnerFilter<"InvestmentAccount"> | $Enums.Owner
     rate?: FloatNullableFilter<"InvestmentAccount"> | number | null
     sortOrder?: IntFilter<"InvestmentAccount"> | number
     createdAt?: DateTimeFilter<"InvestmentAccount"> | Date | string
     updatedAt?: DateTimeFilter<"InvestmentAccount"> | Date | string
     snapshots?: InvestmentSnapshotListRelationFilter
-  }, "id" | "name">
+  }, "id" | "owner_name">
 
   export type InvestmentAccountOrderByWithAggregationInput = {
     id?: SortOrder
     name?: SortOrder
     category?: SortOrder
+    owner?: SortOrder
     rate?: SortOrderInput | SortOrder
     sortOrder?: SortOrder
     createdAt?: SortOrder
@@ -26673,6 +26711,7 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"InvestmentAccount"> | string
     name?: StringWithAggregatesFilter<"InvestmentAccount"> | string
     category?: StringWithAggregatesFilter<"InvestmentAccount"> | string
+    owner?: EnumOwnerWithAggregatesFilter<"InvestmentAccount"> | $Enums.Owner
     rate?: FloatNullableWithAggregatesFilter<"InvestmentAccount"> | number | null
     sortOrder?: IntWithAggregatesFilter<"InvestmentAccount"> | number
     createdAt?: DateTimeWithAggregatesFilter<"InvestmentAccount"> | Date | string
@@ -26803,6 +26842,7 @@ export namespace Prisma {
     id?: string
     email: string
     name: string
+    owner?: $Enums.Owner | null
     createdAt?: Date | string
     updatedAt?: Date | string
     image?: string | null
@@ -26814,6 +26854,7 @@ export namespace Prisma {
     id?: string
     email: string
     name: string
+    owner?: $Enums.Owner | null
     createdAt?: Date | string
     updatedAt?: Date | string
     image?: string | null
@@ -26825,6 +26866,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    owner?: NullableEnumOwnerFieldUpdateOperationsInput | $Enums.Owner | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     image?: NullableStringFieldUpdateOperationsInput | string | null
@@ -26836,6 +26878,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    owner?: NullableEnumOwnerFieldUpdateOperationsInput | $Enums.Owner | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     image?: NullableStringFieldUpdateOperationsInput | string | null
@@ -26847,6 +26890,7 @@ export namespace Prisma {
     id?: string
     email: string
     name: string
+    owner?: $Enums.Owner | null
     createdAt?: Date | string
     updatedAt?: Date | string
     image?: string | null
@@ -26856,6 +26900,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    owner?: NullableEnumOwnerFieldUpdateOperationsInput | $Enums.Owner | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     image?: NullableStringFieldUpdateOperationsInput | string | null
@@ -26865,6 +26910,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    owner?: NullableEnumOwnerFieldUpdateOperationsInput | $Enums.Owner | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     image?: NullableStringFieldUpdateOperationsInput | string | null
@@ -28379,6 +28425,7 @@ export namespace Prisma {
     id?: string
     name: string
     category: string
+    owner?: $Enums.Owner
     rate?: number | null
     sortOrder?: number
     createdAt?: Date | string
@@ -28390,6 +28437,7 @@ export namespace Prisma {
     id?: string
     name: string
     category: string
+    owner?: $Enums.Owner
     rate?: number | null
     sortOrder?: number
     createdAt?: Date | string
@@ -28401,6 +28449,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
+    owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
     rate?: NullableFloatFieldUpdateOperationsInput | number | null
     sortOrder?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28412,6 +28461,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
+    owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
     rate?: NullableFloatFieldUpdateOperationsInput | number | null
     sortOrder?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28423,6 +28473,7 @@ export namespace Prisma {
     id?: string
     name: string
     category: string
+    owner?: $Enums.Owner
     rate?: number | null
     sortOrder?: number
     createdAt?: Date | string
@@ -28433,6 +28484,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
+    owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
     rate?: NullableFloatFieldUpdateOperationsInput | number | null
     sortOrder?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28443,6 +28495,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
+    owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
     rate?: NullableFloatFieldUpdateOperationsInput | number | null
     sortOrder?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28588,6 +28641,13 @@ export namespace Prisma {
     not?: NestedStringFilter<$PrismaModel> | string
   }
 
+  export type EnumOwnerNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.Owner | EnumOwnerFieldRefInput<$PrismaModel> | null
+    in?: $Enums.Owner[] | null
+    notIn?: $Enums.Owner[] | null
+    not?: NestedEnumOwnerNullableFilter<$PrismaModel> | $Enums.Owner | null
+  }
+
   export type DateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[]
@@ -28642,6 +28702,7 @@ export namespace Prisma {
     id?: SortOrder
     email?: SortOrder
     name?: SortOrder
+    owner?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     image?: SortOrder
@@ -28651,6 +28712,7 @@ export namespace Prisma {
     id?: SortOrder
     email?: SortOrder
     name?: SortOrder
+    owner?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     image?: SortOrder
@@ -28660,6 +28722,7 @@ export namespace Prisma {
     id?: SortOrder
     email?: SortOrder
     name?: SortOrder
+    owner?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     image?: SortOrder
@@ -28680,6 +28743,16 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedStringFilter<$PrismaModel>
     _max?: NestedStringFilter<$PrismaModel>
+  }
+
+  export type EnumOwnerNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.Owner | EnumOwnerFieldRefInput<$PrismaModel> | null
+    in?: $Enums.Owner[] | null
+    notIn?: $Enums.Owner[] | null
+    not?: NestedEnumOwnerNullableWithAggregatesFilter<$PrismaModel> | $Enums.Owner | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumOwnerNullableFilter<$PrismaModel>
+    _max?: NestedEnumOwnerNullableFilter<$PrismaModel>
   }
 
   export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
@@ -29695,10 +29768,16 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
+  export type InvestmentAccountOwnerNameCompoundUniqueInput = {
+    owner: $Enums.Owner
+    name: string
+  }
+
   export type InvestmentAccountCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
     category?: SortOrder
+    owner?: SortOrder
     rate?: SortOrder
     sortOrder?: SortOrder
     createdAt?: SortOrder
@@ -29714,6 +29793,7 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     category?: SortOrder
+    owner?: SortOrder
     rate?: SortOrder
     sortOrder?: SortOrder
     createdAt?: SortOrder
@@ -29724,6 +29804,7 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     category?: SortOrder
+    owner?: SortOrder
     rate?: SortOrder
     sortOrder?: SortOrder
     createdAt?: SortOrder
@@ -29853,6 +29934,10 @@ export namespace Prisma {
 
   export type StringFieldUpdateOperationsInput = {
     set?: string
+  }
+
+  export type NullableEnumOwnerFieldUpdateOperationsInput = {
+    set?: $Enums.Owner | null
   }
 
   export type DateTimeFieldUpdateOperationsInput = {
@@ -30137,6 +30222,13 @@ export namespace Prisma {
     not?: NestedStringFilter<$PrismaModel> | string
   }
 
+  export type NestedEnumOwnerNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.Owner | EnumOwnerFieldRefInput<$PrismaModel> | null
+    in?: $Enums.Owner[] | null
+    notIn?: $Enums.Owner[] | null
+    not?: NestedEnumOwnerNullableFilter<$PrismaModel> | $Enums.Owner | null
+  }
+
   export type NestedDateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[]
@@ -30190,6 +30282,27 @@ export namespace Prisma {
     not?: NestedIntFilter<$PrismaModel> | number
   }
 
+  export type NestedEnumOwnerNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.Owner | EnumOwnerFieldRefInput<$PrismaModel> | null
+    in?: $Enums.Owner[] | null
+    notIn?: $Enums.Owner[] | null
+    not?: NestedEnumOwnerNullableWithAggregatesFilter<$PrismaModel> | $Enums.Owner | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumOwnerNullableFilter<$PrismaModel>
+    _max?: NestedEnumOwnerNullableFilter<$PrismaModel>
+  }
+
+  export type NestedIntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
   export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[]
@@ -30219,17 +30332,6 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedStringNullableFilter<$PrismaModel>
     _max?: NestedStringNullableFilter<$PrismaModel>
-  }
-
-  export type NestedIntNullableFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | null
-    notIn?: number[] | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
   export type NestedBoolFilter<$PrismaModel = never> = {
@@ -30724,6 +30826,7 @@ export namespace Prisma {
     id?: string
     email: string
     name: string
+    owner?: $Enums.Owner | null
     createdAt?: Date | string
     updatedAt?: Date | string
     image?: string | null
@@ -30734,6 +30837,7 @@ export namespace Prisma {
     id?: string
     email: string
     name: string
+    owner?: $Enums.Owner | null
     createdAt?: Date | string
     updatedAt?: Date | string
     image?: string | null
@@ -30760,6 +30864,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    owner?: NullableEnumOwnerFieldUpdateOperationsInput | $Enums.Owner | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     image?: NullableStringFieldUpdateOperationsInput | string | null
@@ -30770,6 +30875,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    owner?: NullableEnumOwnerFieldUpdateOperationsInput | $Enums.Owner | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     image?: NullableStringFieldUpdateOperationsInput | string | null
@@ -30780,6 +30886,7 @@ export namespace Prisma {
     id?: string
     email: string
     name: string
+    owner?: $Enums.Owner | null
     createdAt?: Date | string
     updatedAt?: Date | string
     image?: string | null
@@ -30790,6 +30897,7 @@ export namespace Prisma {
     id?: string
     email: string
     name: string
+    owner?: $Enums.Owner | null
     createdAt?: Date | string
     updatedAt?: Date | string
     image?: string | null
@@ -30816,6 +30924,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    owner?: NullableEnumOwnerFieldUpdateOperationsInput | $Enums.Owner | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     image?: NullableStringFieldUpdateOperationsInput | string | null
@@ -30826,6 +30935,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    owner?: NullableEnumOwnerFieldUpdateOperationsInput | $Enums.Owner | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     image?: NullableStringFieldUpdateOperationsInput | string | null
@@ -30889,6 +30999,7 @@ export namespace Prisma {
     id?: string
     name: string
     category: string
+    owner?: $Enums.Owner
     rate?: number | null
     sortOrder?: number
     createdAt?: Date | string
@@ -30899,6 +31010,7 @@ export namespace Prisma {
     id?: string
     name: string
     category: string
+    owner?: $Enums.Owner
     rate?: number | null
     sortOrder?: number
     createdAt?: Date | string
@@ -30925,6 +31037,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
+    owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
     rate?: NullableFloatFieldUpdateOperationsInput | number | null
     sortOrder?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -30935,6 +31048,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
+    owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
     rate?: NullableFloatFieldUpdateOperationsInput | number | null
     sortOrder?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string

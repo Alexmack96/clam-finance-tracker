@@ -29,6 +29,14 @@ import {
   DialogFooter,
 } from "../components/ui/dialog.js";
 import { Label } from "../components/ui/label.js";
+import { useSession } from "../lib/authClient.js";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select.js";
 import { TrendingUp, TrendingDown, Minus, Plus, Trash2 } from "lucide-react";
 import {
   AlertDialog,
@@ -270,8 +278,14 @@ function ChartTooltip({ active, payload, label }: any) {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
+type Person = "Alex" | "Casey";
+
 export function InvestmentsPage() {
   const queryClient = useQueryClient();
+  const { data: session } = useSession();
+  // Default the dropdown to whoever's logged in (ProtectedRoute guarantees a loaded session);
+  // either person can still switch to view the other's holdings.
+  const [person, setPerson] = useState<Person>(session?.user.owner === "Casey" ? "Casey" : "Alex");
   const [deleteAccountId, setDeleteAccountId] = useState<string | null>(null);
   const [deleteDatePending, setDeleteDatePending] = useState<string | null>(null);
   const [showAddAccount, setShowAddAccount] = useState(false);
@@ -290,8 +304,8 @@ export function InvestmentsPage() {
   });
 
   const { data, isLoading } = useQuery<InvestmentsData>({
-    queryKey: ["investments"],
-    queryFn: () => api.get("/api/investments").then((r) => r.data),
+    queryKey: ["investments", person],
+    queryFn: () => api.get("/api/investments", { params: { owner: person } }).then((r) => r.data),
   });
 
   const upsertMutation = useMutation({
@@ -307,7 +321,7 @@ export function InvestmentsPage() {
 
   const createAccountMutation = useMutation({
     mutationFn: (body: { name: string; category: InvCategory; rate: number | null }) =>
-      api.post("/api/investments/accounts", body),
+      api.post("/api/investments/accounts", { ...body, owner: person }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["investments"] });
       setShowAddAccount(false);
@@ -322,7 +336,8 @@ export function InvestmentsPage() {
   });
 
   const deleteSnapshotDateMutation = useMutation({
-    mutationFn: (day: string) => api.delete(`/api/investments/snapshots/date/${day}`),
+    mutationFn: (day: string) =>
+      api.delete(`/api/investments/snapshots/date/${day}`, { params: { owner: person } }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["investments"] }),
   });
 
@@ -585,6 +600,15 @@ export function InvestmentsPage() {
           </p>
         </div>
         <div className="flex gap-2 shrink-0">
+          <Select value={person} onValueChange={(v) => setPerson(v as Person)}>
+            <SelectTrigger className="h-9 w-[120px]" aria-label="Select person">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Alex">Alex</SelectItem>
+              <SelectItem value="Casey">Casey</SelectItem>
+            </SelectContent>
+          </Select>
           <Button size="sm" variant="outline" onClick={() => setShowAddDate(true)} className="h-9">
             <Plus className="size-3.5 mr-1" /> New Snapshot
           </Button>
