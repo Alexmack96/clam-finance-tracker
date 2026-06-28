@@ -43,8 +43,10 @@ Supported: Monzo ✓ — Amex, Barclays, Santander, Caseys banks coming soon.
 
 ---
 
-## Todo 27-Jun-2026
-[] why does zsxavings page still have this stuff for the exclusion items? [] ive figure out the right abstraction!! i think each transaciton row in the transaction page should have a collapseable extra fields underneath it, and a little arrow or something that pops out the extra flags, cos i realised i need one for exlcude from savings override, and SavingType (FIxed/Fun/Saving) enum, and possibly other properties about a transaction that i havent thought of yet , and isdirectdebit although i cant remember why we had that one maybe remove direct debit
+## Todo 28-Jun-2026
+[] duplicate ids on casey Amex
+[] check why hsbc latest date says 1st april, not 8th april, for casey apr statement
+[] why does the savings page still have this stuff for the exclusion items? [] ive figure out the right abstraction!! i think each transaciton row in the transaction page should have a collapseable extra fields underneath it, and a little arrow or something that pops out the extra flags, cos i realised i need one for exlcude from savings override, and SavingType (FIxed/Fun/Saving) enum, and possibly other properties about a transaction that i havent thought of yet , and isdirectdebit although i cant remember why we had that one maybe remove direct debit
 
 [] Rate my app so far as a personal finance tracker. give me the top 3 highest hitting wins that are missing that would be useful for personal finance tracking you must be storngly confident they are gonna be helkpful or typical that others would use it for?
 [] Categories should also have default mappings per bank we can enter in a nice looking table in the categories page, it should use a waterfall style table so i can apply to either all banks, or just alex oir jsut casey, or just one bank for example, tesco all banks --> groceries, amex alex lime --> transport, casey amex lime --> fixed costs something like that, and use the wildcard * to mean applies to all in this large table format! if that isnt how categoroies already work in this app, tell me if the landscape is more complicated than that, and if you feel it would bne realistic to make it work my way instead!!

@@ -1655,8 +1655,12 @@ importRouter.post("/process", async (_req, res) => {
     const isIncome = row.moneyIn !== null;
     const amountStr = row.moneyIn ?? row.moneyOut ?? "";
     const amountNum = parseFloat(amountStr.replace(/,/g, ""));
+    const parsedDate = new Date(row.date);
     let next: StagedStatus;
-    if (isNaN(amountNum)) {
+    // A row with an unparseable amount or date (e.g. junk from a non-HSBC PDF that slipped in
+    // before the upload guard) is marked errored and skipped — never let one bad row throw and
+    // abort the whole /process run.
+    if (isNaN(amountNum) || isNaN(parsedDate.getTime())) {
       next = "errored";
       errored++;
     } else if (amountNum === 0) {
@@ -1676,7 +1680,7 @@ importRouter.post("/process", async (_req, res) => {
             description: row.description,
             amount: amountNum,
             type: isIncome ? "Income" : "Expense",
-            date: new Date(row.date),
+            date: parsedDate,
             categoryId: category.id,
             externalId: hsbcExtId,
             owner: row.owner as "Alex" | "Casey" | "Joint",
