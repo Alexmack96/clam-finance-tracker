@@ -5,7 +5,6 @@ import { LoginPage } from "./pages/LoginPage.js";
 import { LoggedOutPage } from "./pages/LoggedOutPage.js";
 import { DashboardPage } from "./pages/DashboardPage.js";
 import { AnalyticsPage } from "./pages/AnalyticsPage.js";
-import { UsersPage } from "./pages/UsersPage.js";
 import { ImportPage } from "./pages/ImportPage.js";
 import { CategoriesPage } from "./pages/CategoriesPage.js";
 import { SavingsPage } from "./pages/SavingsPage.js";
@@ -27,7 +26,6 @@ export function App() {
           <Route path="/investments" element={<InvestmentsPage />} />
           <Route path="/tabs" element={<TabsPage />} />
           <Route path="/tasks" element={<TasksPage />} />
-          <Route path="/users" element={<UsersPage />} />
           <Route path="/import" element={<ImportPage />} />
           <Route path="/categories" element={<CategoriesPage />} />
         </Route>

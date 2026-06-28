@@ -65,8 +65,8 @@ app.get("/api/health", (_req, res) => {
 });
 
 app.get("/api/me", requireAuth, (req, res) => {
-  const { id, email, name, role } = req.user!;
-  res.json({ user: { id, email, name, role } });
+  const { id, email, name } = req.user!;
+  res.json({ user: { id, email, name } });
 });
 
 app.use("/api/admin/users", requireAuth, usersRouter);

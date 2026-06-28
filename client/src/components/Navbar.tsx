@@ -11,7 +11,6 @@ const links = [
   { to: "/investments", label: "Investments" },
   { to: "/tabs", label: "Tabs" },
   { to: "/tasks", label: "Tasks" },
-  { to: "/users", label: "Users" },
   { to: "/import", label: "Import" },
   { to: "/categories", label: "Categories" },
 ] as const;

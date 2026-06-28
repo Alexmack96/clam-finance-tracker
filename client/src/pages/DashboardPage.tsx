@@ -88,7 +88,6 @@ interface GridCtx {
       categoryId?: string;
       owner?: Owner;
       reviewed?: boolean;
-      excludeFromSavings?: boolean;
     },
   ) => void;
   categories: Category[];
@@ -657,31 +656,6 @@ function ReviewedRenderer({
   );
 }
 
-function ExcludeSavingsRenderer({
-  data,
-  context,
-}: CustomCellRendererProps<Transaction, boolean, GridCtx>) {
-  if (!data || data.type !== "Expense") return null;
-  const excluded = data.excludeFromSavings;
-  return (
-    <button
-      onClick={() => context.update(data.id, { excludeFromSavings: !excluded })}
-      title={
-        excluded
-          ? "Counts against savings — click to exclude"
-          : "Excluded from savings score (mandatory / one-off)"
-      }
-      className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
-        excluded
-          ? "bg-amber-500 border-amber-500 text-white"
-          : "border-muted-foreground/40 hover:border-amber-400"
-      }`}
-    >
-      {excluded && <span className="text-[10px] leading-none">★</span>}
-    </button>
-  );
-}
-
 // ─── Mobile card components ───────────────────────────────────────────────────
 
 function MobileNoteCell({
@@ -743,7 +717,6 @@ type UpdatePatch = {
   categoryId?: string;
   owner?: Owner;
   reviewed?: boolean;
-  excludeFromSavings?: boolean;
 };
 
 function MobileTransactionCard({
@@ -776,21 +749,6 @@ function MobileTransactionCard({
             {tx.type === "Income" ? "+" : "−"}
             {fmt(Math.abs(parseFloat(tx.amount)))}
           </span>
-          {tx.type === "Expense" && (
-            <button
-              onClick={() => onUpdate(tx.id, { excludeFromSavings: !tx.excludeFromSavings })}
-              title={
-                tx.excludeFromSavings ? "Excluded from savings score" : "Exclude from savings score"
-              }
-              className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors shrink-0 ${
-                tx.excludeFromSavings
-                  ? "bg-amber-500 border-amber-500 text-white"
-                  : "border-muted-foreground/40"
-              }`}
-            >
-              {tx.excludeFromSavings && <span className="text-[10px] leading-none">★</span>}
-            </button>
-          )}
           <button
             onClick={() => onUpdate(tx.id, { reviewed: !tx.reviewed })}
             className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors shrink-0 ${
@@ -864,7 +822,6 @@ export function DashboardPage() {
       categoryId?: string;
       owner?: Owner;
       reviewed?: boolean;
-      excludeFromSavings?: boolean;
     }) => api.patch<Transaction>(`/api/transactions/${id}`, data).then((r) => r.data),
     onSuccess: (updated, variables) => {
       // Sync query cache with server truth
@@ -873,8 +830,13 @@ export function DashboardPage() {
       );
       // Re-apply server truth to grid (handles any server-side normalization)
       gridApiRef.current?.applyTransaction({ update: [updated] });
+      // Category/owner changes ripple into the dashboard, savings score and analytics —
+      // refetch them so the numbers stay tied across pages.
       if (variables.categoryId !== undefined || variables.owner !== undefined) {
         queryClient.invalidateQueries({ queryKey: ["summary"] });
+        queryClient.invalidateQueries({ queryKey: ["savings"] });
+        queryClient.invalidateQueries({ queryKey: ["income"] });
+        queryClient.invalidateQueries({ queryKey: ["analytics"] });
       }
     },
     onError: (_, variables) => {
@@ -1077,18 +1039,6 @@ export function DashboardPage() {
         valueGetter: (p) => p.data?.reviewed ?? false,
         sortable: true,
         filter: ReviewedFilter,
-        floatingFilter: false,
-        resizable: false,
-        cellStyle: { display: "flex", alignItems: "center", justifyContent: "center" },
-      },
-      {
-        headerName: "★",
-        headerTooltip: "Exclude from savings score (mandatory / one-off)",
-        width: 56,
-        cellRenderer: ExcludeSavingsRenderer,
-        valueGetter: (p) => p.data?.excludeFromSavings ?? false,
-        sortable: true,
-        filter: false,
         floatingFilter: false,
         resizable: false,
         cellStyle: { display: "flex", alignItems: "center", justifyContent: "center" },

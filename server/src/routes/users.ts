@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { randomUUID } from "crypto";
 import { db } from "../db/client.js";
-import { Prisma, UserRole } from "../generated/prisma/index.js";
+import { Prisma } from "../generated/prisma/index.js";
 import { hashPassword } from "better-auth/crypto";
 import { createUserSchema } from "@clam/core";
 
@@ -27,8 +27,8 @@ usersRouter.post("/", async (req, res) => {
   try {
     const user = await db.$transaction(async (tx) => {
       const created = await tx.user.create({
-        data: { name, email, role: UserRole.User },
-        select: { id: true, name: true, email: true, role: true, createdAt: true },
+        data: { name, email },
+        select: { id: true, name: true, email: true, createdAt: true },
       });
       await tx.account.create({
         data: {
@@ -58,7 +58,6 @@ usersRouter.get("/", async (_req, res) => {
       id: true,
       name: true,
       email: true,
-      role: true,
       createdAt: true,
     },
     orderBy: { createdAt: "desc" },

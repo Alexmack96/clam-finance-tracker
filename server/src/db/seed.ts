@@ -1,6 +1,5 @@
 import "dotenv/config";
 import { db } from "./client.js";
-import { UserRole } from "../generated/prisma/index.js";
 import { hashPassword } from "better-auth/crypto";
 import { randomUUID } from "crypto";
 import { env } from "../config/env.js";
@@ -21,7 +20,6 @@ async function main() {
       id: userId,
       email: env.ADMIN_EMAIL,
       name: "Admin",
-      role: UserRole.Admin,
     },
   });
 

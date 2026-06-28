@@ -121,7 +121,6 @@ exports.Prisma.UserScalarFieldEnum = {
   id: 'id',
   email: 'email',
   name: 'name',
-  role: 'role',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   image: 'image'
@@ -381,11 +380,6 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
-exports.UserRole = exports.$Enums.UserRole = {
-  Admin: 'Admin',
-  User: 'User'
-};
-
 exports.TransactionType = exports.$Enums.TransactionType = {
   Income: 'Income',
   Expense: 'Expense'
