@@ -5,6 +5,7 @@ import pdfParse from "pdf-parse";
 import { db } from "../db/client.js";
 import { convertWithFallback } from "../lib/fxRates.js";
 import { statementSchemas } from "../lib/statementValidation.js";
+import { resolveRuleCategory } from "../lib/categoryRules.js";
 
 export const importRouter = Router();
 
@@ -20,14 +21,14 @@ const MONZO_API_CATEGORY_MAP: Record<string, string> = {
   entertainment: "Entertainment",
   groceries: "Groceries",
   holidays: "Vacation",
-  income: "Bank Sauce",
+  income: "Net",
   personal_care: "Personal Care",
   savings: "Investments",
   shopping: "Uncategorised",
-  transfers: "Bank Sauce",
+  transfers: "Net",
   transport: "Transport",
   bills: "Uncategorised",
-  finances: "Bank Sauce",
+  finances: "Net",
   general: "Uncategorised",
 };
 
@@ -74,7 +75,7 @@ const ALEX_PATTERNS = [/mackintosh/i, /\balex\b/i];
 const CASEY_PATTERNS = [/liddy/i, /\bcasey\b/i];
 
 function resolveOwner(categoryName: string, merchantName: string): "Alex" | "Casey" | "Joint" {
-  if (categoryName === "Bank Sauce") {
+  if (categoryName === "Net") {
     for (const p of ALEX_PATTERNS) if (p.test(merchantName)) return "Alex";
     for (const p of CASEY_PATTERNS) if (p.test(merchantName)) return "Casey";
   }
@@ -1502,6 +1503,8 @@ importRouter.post("/process", async (_req, res) => {
   let skipped = 0;
   let errored = 0;
 
+  const categoryRules = await db.categoryRule.findMany({ include: { category: true } });
+
   // ── Monzo ──────────────────────────────────────────────────────────────────
   const pendingMonzo = await db.monzoApiTransaction.findMany({ where: { status: "pending" } });
 
@@ -1510,7 +1513,8 @@ importRouter.post("/process", async (_req, res) => {
     const amount = Math.abs(row.amountPence) / 100;
     const name = row.merchantName ?? row.description;
     const categoryName = resolveCategory(row.monzoCategory, name);
-    const category = await findCategory(categoryName);
+    const category =
+      resolveRuleCategory(categoryRules, "monzo", name) ?? (await findCategory(categoryName));
     const owner = resolveOwner(categoryName, name);
     const externalId = `monzo:${row.monzoId}`;
     const exists = await db.transaction.findUnique({ where: { externalId }, select: { id: true } });
@@ -1541,7 +1545,9 @@ importRouter.post("/process", async (_req, res) => {
       errored++;
     } else {
       const categoryName = resolveCategoryByMerchant(row.description);
-      const category = await findCategory(categoryName);
+      const category =
+        resolveRuleCategory(categoryRules, "amex", row.description) ??
+        (await findCategory(categoryName));
       const amexExtId = `amex:${row.transactionId}`;
       const amexExists = await db.transaction.findUnique({
         where: { externalId: amexExtId },
@@ -1583,7 +1589,9 @@ importRouter.post("/process", async (_req, res) => {
         errored++;
       } else {
         const categoryName = resolveCategoryByMerchant(row.description);
-        const category = await findCategory(categoryName);
+        const category =
+          resolveRuleCategory(categoryRules, "barclays", row.description) ??
+          (await findCategory(categoryName));
         const barclaysExtId = `barclays:${row.transactionId ?? row.id}`;
         const barclaysExists = await db.transaction.findUnique({
           where: { externalId: barclaysExtId },
@@ -1624,7 +1632,9 @@ importRouter.post("/process", async (_req, res) => {
       skipped++;
     } else {
       const categoryName = resolveCategoryByMerchant(row.description);
-      const category = await findCategory(categoryName);
+      const category =
+        resolveRuleCategory(categoryRules, "santander", row.description) ??
+        (await findCategory(categoryName));
       const santanderExtId = `santander:${row.transactionId ?? row.id}`;
       const santanderExists = await db.transaction.findUnique({
         where: { externalId: santanderExtId },
@@ -1668,7 +1678,9 @@ importRouter.post("/process", async (_req, res) => {
       skipped++;
     } else {
       const categoryName = resolveCategoryByMerchant(row.description);
-      const category = await findCategory(categoryName);
+      const category =
+        resolveRuleCategory(categoryRules, "hsbc", row.description) ??
+        (await findCategory(categoryName));
       const hsbcExtId = `hsbc:${row.transactionId}`;
       const hsbcExists = await db.transaction.findUnique({
         where: { externalId: hsbcExtId },
@@ -1709,7 +1721,9 @@ importRouter.post("/process", async (_req, res) => {
       skipped++;
     } else {
       const categoryName = resolveCategoryByMerchant(row.description);
-      const category = await findCategory(categoryName);
+      const category =
+        resolveRuleCategory(categoryRules, "sofi", row.description) ??
+        (await findCategory(categoryName));
       const sofiExtId = `sofi:${row.transactionId}`;
       const sofiExists = await db.transaction.findUnique({
         where: { externalId: sofiExtId },
@@ -1761,7 +1775,9 @@ importRouter.post("/process", async (_req, res) => {
       skipped++;
     } else {
       const categoryName = resolveCategoryByMerchant(row.description);
-      const category = await findCategory(categoryName);
+      const category =
+        resolveRuleCategory(categoryRules, "chase", row.description) ??
+        (await findCategory(categoryName));
       const chaseExtId = `chase:${row.transactionId}`;
       const chaseExists = await db.transaction.findUnique({
         where: { externalId: chaseExtId },

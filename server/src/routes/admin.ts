@@ -9,7 +9,6 @@ const SYSTEM_CATEGORIES: Record<string, { color: string; savingType: SavingType 
   "Entertainment":  { color: "#7C3AED", savingType: SavingType.Fun    },
   "Food & Social":  { color: "#fb923c", savingType: SavingType.Fun    },
   "Groceries":      { color: "#22c55e", savingType: SavingType.Fun    },
-  "Net":            { color: "#0ea5e9", savingType: SavingType.Fun    },
   "Takeout":        { color: "#ef4444", savingType: SavingType.Fun    },
   "Personal Care":  { color: "#f43f5e", savingType: SavingType.Fun    },
   "Rent & Bills":   { color: "#64748b", savingType: SavingType.Fixed  },

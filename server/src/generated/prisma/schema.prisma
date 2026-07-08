@@ -50,11 +50,25 @@ model User {
 }
 
 model Category {
-  id           String        @id @default(cuid())
-  name         String        @unique
-  color        String
-  savingType   SavingType    @default(Fun)
-  transactions Transaction[]
+  id            String         @id @default(cuid())
+  name          String         @unique
+  color         String
+  savingType    SavingType     @default(Fun)
+  transactions  Transaction[]
+  categoryRules CategoryRule[]
+}
+
+// Auto-categorize rule: a description pattern (optionally scoped to a bank)
+// that maps to a category. Applied during /process and backfilled on create.
+model CategoryRule {
+  id         String   @id @default(cuid())
+  pattern    String
+  bank       String?
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@unique([pattern, bank])
 }
 
 model Transaction {

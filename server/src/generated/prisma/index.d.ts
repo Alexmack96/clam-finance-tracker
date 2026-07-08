@@ -24,6 +24,11 @@ export type User = $Result.DefaultSelection<Prisma.$UserPayload>
  */
 export type Category = $Result.DefaultSelection<Prisma.$CategoryPayload>
 /**
+ * Model CategoryRule
+ * 
+ */
+export type CategoryRule = $Result.DefaultSelection<Prisma.$CategoryRulePayload>
+/**
  * Model Transaction
  * 
  */
@@ -321,6 +326,16 @@ export class PrismaClient<
     * ```
     */
   get category(): Prisma.CategoryDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.categoryRule`: Exposes CRUD operations for the **CategoryRule** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more CategoryRules
+    * const categoryRules = await prisma.categoryRule.findMany()
+    * ```
+    */
+  get categoryRule(): Prisma.CategoryRuleDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.transaction`: Exposes CRUD operations for the **Transaction** model.
@@ -937,6 +952,7 @@ export namespace Prisma {
   export const ModelName: {
     User: 'User',
     Category: 'Category',
+    CategoryRule: 'CategoryRule',
     Transaction: 'Transaction',
     MonzoApiTransaction: 'MonzoApiTransaction',
     PlaidItem: 'PlaidItem',
@@ -970,7 +986,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "category" | "transaction" | "monzoApiTransaction" | "plaidItem" | "plaidTransaction" | "monzoCredential" | "amexTransaction" | "barclaysTransaction" | "santanderTransaction" | "hsbcTransaction" | "chaseTransaction" | "sofiTransaction" | "session" | "account" | "note" | "tab" | "investmentAccount" | "investmentSnapshot" | "verification"
+      modelProps: "user" | "category" | "categoryRule" | "transaction" | "monzoApiTransaction" | "plaidItem" | "plaidTransaction" | "monzoCredential" | "amexTransaction" | "barclaysTransaction" | "santanderTransaction" | "hsbcTransaction" | "chaseTransaction" | "sofiTransaction" | "session" | "account" | "note" | "tab" | "investmentAccount" | "investmentSnapshot" | "verification"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1119,6 +1135,80 @@ export namespace Prisma {
           count: {
             args: Prisma.CategoryCountArgs<ExtArgs>
             result: $Utils.Optional<CategoryCountAggregateOutputType> | number
+          }
+        }
+      }
+      CategoryRule: {
+        payload: Prisma.$CategoryRulePayload<ExtArgs>
+        fields: Prisma.CategoryRuleFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.CategoryRuleFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CategoryRulePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.CategoryRuleFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CategoryRulePayload>
+          }
+          findFirst: {
+            args: Prisma.CategoryRuleFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CategoryRulePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.CategoryRuleFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CategoryRulePayload>
+          }
+          findMany: {
+            args: Prisma.CategoryRuleFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CategoryRulePayload>[]
+          }
+          create: {
+            args: Prisma.CategoryRuleCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CategoryRulePayload>
+          }
+          createMany: {
+            args: Prisma.CategoryRuleCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.CategoryRuleCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CategoryRulePayload>[]
+          }
+          delete: {
+            args: Prisma.CategoryRuleDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CategoryRulePayload>
+          }
+          update: {
+            args: Prisma.CategoryRuleUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CategoryRulePayload>
+          }
+          deleteMany: {
+            args: Prisma.CategoryRuleDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.CategoryRuleUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.CategoryRuleUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CategoryRulePayload>[]
+          }
+          upsert: {
+            args: Prisma.CategoryRuleUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CategoryRulePayload>
+          }
+          aggregate: {
+            args: Prisma.CategoryRuleAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateCategoryRule>
+          }
+          groupBy: {
+            args: Prisma.CategoryRuleGroupByArgs<ExtArgs>
+            result: $Utils.Optional<CategoryRuleGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.CategoryRuleCountArgs<ExtArgs>
+            result: $Utils.Optional<CategoryRuleCountAggregateOutputType> | number
           }
         }
       }
@@ -2564,6 +2654,7 @@ export namespace Prisma {
   export type GlobalOmitConfig = {
     user?: UserOmit
     category?: CategoryOmit
+    categoryRule?: CategoryRuleOmit
     transaction?: TransactionOmit
     monzoApiTransaction?: MonzoApiTransactionOmit
     plaidItem?: PlaidItemOmit
@@ -2703,10 +2794,12 @@ export namespace Prisma {
 
   export type CategoryCountOutputType = {
     transactions: number
+    categoryRules: number
   }
 
   export type CategoryCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     transactions?: boolean | CategoryCountOutputTypeCountTransactionsArgs
+    categoryRules?: boolean | CategoryCountOutputTypeCountCategoryRulesArgs
   }
 
   // Custom InputTypes
@@ -2725,6 +2818,13 @@ export namespace Prisma {
    */
   export type CategoryCountOutputTypeCountTransactionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: TransactionWhereInput
+  }
+
+  /**
+   * CategoryCountOutputType without action
+   */
+  export type CategoryCountOutputTypeCountCategoryRulesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CategoryRuleWhereInput
   }
 
 
@@ -4047,6 +4147,7 @@ export namespace Prisma {
     color?: boolean
     savingType?: boolean
     transactions?: boolean | Category$transactionsArgs<ExtArgs>
+    categoryRules?: boolean | Category$categoryRulesArgs<ExtArgs>
     _count?: boolean | CategoryCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["category"]>
 
@@ -4074,6 +4175,7 @@ export namespace Prisma {
   export type CategoryOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "color" | "savingType", ExtArgs["result"]["category"]>
   export type CategoryInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     transactions?: boolean | Category$transactionsArgs<ExtArgs>
+    categoryRules?: boolean | Category$categoryRulesArgs<ExtArgs>
     _count?: boolean | CategoryCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type CategoryIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -4083,6 +4185,7 @@ export namespace Prisma {
     name: "Category"
     objects: {
       transactions: Prisma.$TransactionPayload<ExtArgs>[]
+      categoryRules: Prisma.$CategoryRulePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -4484,6 +4587,7 @@ export namespace Prisma {
   export interface Prisma__CategoryClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     transactions<T extends Category$transactionsArgs<ExtArgs> = {}>(args?: Subset<T, Category$transactionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    categoryRules<T extends Category$categoryRulesArgs<ExtArgs> = {}>(args?: Subset<T, Category$categoryRulesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CategoryRulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4932,6 +5036,30 @@ export namespace Prisma {
   }
 
   /**
+   * Category.categoryRules
+   */
+  export type Category$categoryRulesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CategoryRule
+     */
+    select?: CategoryRuleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CategoryRule
+     */
+    omit?: CategoryRuleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CategoryRuleInclude<ExtArgs> | null
+    where?: CategoryRuleWhereInput
+    orderBy?: CategoryRuleOrderByWithRelationInput | CategoryRuleOrderByWithRelationInput[]
+    cursor?: CategoryRuleWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: CategoryRuleScalarFieldEnum | CategoryRuleScalarFieldEnum[]
+  }
+
+  /**
    * Category without action
    */
   export type CategoryDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4947,6 +5075,1067 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: CategoryInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model CategoryRule
+   */
+
+  export type AggregateCategoryRule = {
+    _count: CategoryRuleCountAggregateOutputType | null
+    _min: CategoryRuleMinAggregateOutputType | null
+    _max: CategoryRuleMaxAggregateOutputType | null
+  }
+
+  export type CategoryRuleMinAggregateOutputType = {
+    id: string | null
+    pattern: string | null
+    bank: string | null
+    categoryId: string | null
+    createdAt: Date | null
+  }
+
+  export type CategoryRuleMaxAggregateOutputType = {
+    id: string | null
+    pattern: string | null
+    bank: string | null
+    categoryId: string | null
+    createdAt: Date | null
+  }
+
+  export type CategoryRuleCountAggregateOutputType = {
+    id: number
+    pattern: number
+    bank: number
+    categoryId: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type CategoryRuleMinAggregateInputType = {
+    id?: true
+    pattern?: true
+    bank?: true
+    categoryId?: true
+    createdAt?: true
+  }
+
+  export type CategoryRuleMaxAggregateInputType = {
+    id?: true
+    pattern?: true
+    bank?: true
+    categoryId?: true
+    createdAt?: true
+  }
+
+  export type CategoryRuleCountAggregateInputType = {
+    id?: true
+    pattern?: true
+    bank?: true
+    categoryId?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type CategoryRuleAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CategoryRule to aggregate.
+     */
+    where?: CategoryRuleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CategoryRules to fetch.
+     */
+    orderBy?: CategoryRuleOrderByWithRelationInput | CategoryRuleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: CategoryRuleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CategoryRules from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CategoryRules.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned CategoryRules
+    **/
+    _count?: true | CategoryRuleCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: CategoryRuleMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: CategoryRuleMaxAggregateInputType
+  }
+
+  export type GetCategoryRuleAggregateType<T extends CategoryRuleAggregateArgs> = {
+        [P in keyof T & keyof AggregateCategoryRule]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateCategoryRule[P]>
+      : GetScalarType<T[P], AggregateCategoryRule[P]>
+  }
+
+
+
+
+  export type CategoryRuleGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CategoryRuleWhereInput
+    orderBy?: CategoryRuleOrderByWithAggregationInput | CategoryRuleOrderByWithAggregationInput[]
+    by: CategoryRuleScalarFieldEnum[] | CategoryRuleScalarFieldEnum
+    having?: CategoryRuleScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: CategoryRuleCountAggregateInputType | true
+    _min?: CategoryRuleMinAggregateInputType
+    _max?: CategoryRuleMaxAggregateInputType
+  }
+
+  export type CategoryRuleGroupByOutputType = {
+    id: string
+    pattern: string
+    bank: string | null
+    categoryId: string
+    createdAt: Date
+    _count: CategoryRuleCountAggregateOutputType | null
+    _min: CategoryRuleMinAggregateOutputType | null
+    _max: CategoryRuleMaxAggregateOutputType | null
+  }
+
+  type GetCategoryRuleGroupByPayload<T extends CategoryRuleGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<CategoryRuleGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof CategoryRuleGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], CategoryRuleGroupByOutputType[P]>
+            : GetScalarType<T[P], CategoryRuleGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type CategoryRuleSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    pattern?: boolean
+    bank?: boolean
+    categoryId?: boolean
+    createdAt?: boolean
+    category?: boolean | CategoryDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["categoryRule"]>
+
+  export type CategoryRuleSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    pattern?: boolean
+    bank?: boolean
+    categoryId?: boolean
+    createdAt?: boolean
+    category?: boolean | CategoryDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["categoryRule"]>
+
+  export type CategoryRuleSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    pattern?: boolean
+    bank?: boolean
+    categoryId?: boolean
+    createdAt?: boolean
+    category?: boolean | CategoryDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["categoryRule"]>
+
+  export type CategoryRuleSelectScalar = {
+    id?: boolean
+    pattern?: boolean
+    bank?: boolean
+    categoryId?: boolean
+    createdAt?: boolean
+  }
+
+  export type CategoryRuleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "pattern" | "bank" | "categoryId" | "createdAt", ExtArgs["result"]["categoryRule"]>
+  export type CategoryRuleInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    category?: boolean | CategoryDefaultArgs<ExtArgs>
+  }
+  export type CategoryRuleIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    category?: boolean | CategoryDefaultArgs<ExtArgs>
+  }
+  export type CategoryRuleIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    category?: boolean | CategoryDefaultArgs<ExtArgs>
+  }
+
+  export type $CategoryRulePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "CategoryRule"
+    objects: {
+      category: Prisma.$CategoryPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      pattern: string
+      bank: string | null
+      categoryId: string
+      createdAt: Date
+    }, ExtArgs["result"]["categoryRule"]>
+    composites: {}
+  }
+
+  type CategoryRuleGetPayload<S extends boolean | null | undefined | CategoryRuleDefaultArgs> = $Result.GetResult<Prisma.$CategoryRulePayload, S>
+
+  type CategoryRuleCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<CategoryRuleFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: CategoryRuleCountAggregateInputType | true
+    }
+
+  export interface CategoryRuleDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['CategoryRule'], meta: { name: 'CategoryRule' } }
+    /**
+     * Find zero or one CategoryRule that matches the filter.
+     * @param {CategoryRuleFindUniqueArgs} args - Arguments to find a CategoryRule
+     * @example
+     * // Get one CategoryRule
+     * const categoryRule = await prisma.categoryRule.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends CategoryRuleFindUniqueArgs>(args: SelectSubset<T, CategoryRuleFindUniqueArgs<ExtArgs>>): Prisma__CategoryRuleClient<$Result.GetResult<Prisma.$CategoryRulePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one CategoryRule that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {CategoryRuleFindUniqueOrThrowArgs} args - Arguments to find a CategoryRule
+     * @example
+     * // Get one CategoryRule
+     * const categoryRule = await prisma.categoryRule.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends CategoryRuleFindUniqueOrThrowArgs>(args: SelectSubset<T, CategoryRuleFindUniqueOrThrowArgs<ExtArgs>>): Prisma__CategoryRuleClient<$Result.GetResult<Prisma.$CategoryRulePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first CategoryRule that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CategoryRuleFindFirstArgs} args - Arguments to find a CategoryRule
+     * @example
+     * // Get one CategoryRule
+     * const categoryRule = await prisma.categoryRule.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends CategoryRuleFindFirstArgs>(args?: SelectSubset<T, CategoryRuleFindFirstArgs<ExtArgs>>): Prisma__CategoryRuleClient<$Result.GetResult<Prisma.$CategoryRulePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first CategoryRule that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CategoryRuleFindFirstOrThrowArgs} args - Arguments to find a CategoryRule
+     * @example
+     * // Get one CategoryRule
+     * const categoryRule = await prisma.categoryRule.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends CategoryRuleFindFirstOrThrowArgs>(args?: SelectSubset<T, CategoryRuleFindFirstOrThrowArgs<ExtArgs>>): Prisma__CategoryRuleClient<$Result.GetResult<Prisma.$CategoryRulePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more CategoryRules that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CategoryRuleFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all CategoryRules
+     * const categoryRules = await prisma.categoryRule.findMany()
+     * 
+     * // Get first 10 CategoryRules
+     * const categoryRules = await prisma.categoryRule.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const categoryRuleWithIdOnly = await prisma.categoryRule.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends CategoryRuleFindManyArgs>(args?: SelectSubset<T, CategoryRuleFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CategoryRulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a CategoryRule.
+     * @param {CategoryRuleCreateArgs} args - Arguments to create a CategoryRule.
+     * @example
+     * // Create one CategoryRule
+     * const CategoryRule = await prisma.categoryRule.create({
+     *   data: {
+     *     // ... data to create a CategoryRule
+     *   }
+     * })
+     * 
+     */
+    create<T extends CategoryRuleCreateArgs>(args: SelectSubset<T, CategoryRuleCreateArgs<ExtArgs>>): Prisma__CategoryRuleClient<$Result.GetResult<Prisma.$CategoryRulePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many CategoryRules.
+     * @param {CategoryRuleCreateManyArgs} args - Arguments to create many CategoryRules.
+     * @example
+     * // Create many CategoryRules
+     * const categoryRule = await prisma.categoryRule.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends CategoryRuleCreateManyArgs>(args?: SelectSubset<T, CategoryRuleCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many CategoryRules and returns the data saved in the database.
+     * @param {CategoryRuleCreateManyAndReturnArgs} args - Arguments to create many CategoryRules.
+     * @example
+     * // Create many CategoryRules
+     * const categoryRule = await prisma.categoryRule.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many CategoryRules and only return the `id`
+     * const categoryRuleWithIdOnly = await prisma.categoryRule.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends CategoryRuleCreateManyAndReturnArgs>(args?: SelectSubset<T, CategoryRuleCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CategoryRulePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a CategoryRule.
+     * @param {CategoryRuleDeleteArgs} args - Arguments to delete one CategoryRule.
+     * @example
+     * // Delete one CategoryRule
+     * const CategoryRule = await prisma.categoryRule.delete({
+     *   where: {
+     *     // ... filter to delete one CategoryRule
+     *   }
+     * })
+     * 
+     */
+    delete<T extends CategoryRuleDeleteArgs>(args: SelectSubset<T, CategoryRuleDeleteArgs<ExtArgs>>): Prisma__CategoryRuleClient<$Result.GetResult<Prisma.$CategoryRulePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one CategoryRule.
+     * @param {CategoryRuleUpdateArgs} args - Arguments to update one CategoryRule.
+     * @example
+     * // Update one CategoryRule
+     * const categoryRule = await prisma.categoryRule.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends CategoryRuleUpdateArgs>(args: SelectSubset<T, CategoryRuleUpdateArgs<ExtArgs>>): Prisma__CategoryRuleClient<$Result.GetResult<Prisma.$CategoryRulePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more CategoryRules.
+     * @param {CategoryRuleDeleteManyArgs} args - Arguments to filter CategoryRules to delete.
+     * @example
+     * // Delete a few CategoryRules
+     * const { count } = await prisma.categoryRule.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends CategoryRuleDeleteManyArgs>(args?: SelectSubset<T, CategoryRuleDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more CategoryRules.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CategoryRuleUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many CategoryRules
+     * const categoryRule = await prisma.categoryRule.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends CategoryRuleUpdateManyArgs>(args: SelectSubset<T, CategoryRuleUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more CategoryRules and returns the data updated in the database.
+     * @param {CategoryRuleUpdateManyAndReturnArgs} args - Arguments to update many CategoryRules.
+     * @example
+     * // Update many CategoryRules
+     * const categoryRule = await prisma.categoryRule.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more CategoryRules and only return the `id`
+     * const categoryRuleWithIdOnly = await prisma.categoryRule.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends CategoryRuleUpdateManyAndReturnArgs>(args: SelectSubset<T, CategoryRuleUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CategoryRulePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one CategoryRule.
+     * @param {CategoryRuleUpsertArgs} args - Arguments to update or create a CategoryRule.
+     * @example
+     * // Update or create a CategoryRule
+     * const categoryRule = await prisma.categoryRule.upsert({
+     *   create: {
+     *     // ... data to create a CategoryRule
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the CategoryRule we want to update
+     *   }
+     * })
+     */
+    upsert<T extends CategoryRuleUpsertArgs>(args: SelectSubset<T, CategoryRuleUpsertArgs<ExtArgs>>): Prisma__CategoryRuleClient<$Result.GetResult<Prisma.$CategoryRulePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of CategoryRules.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CategoryRuleCountArgs} args - Arguments to filter CategoryRules to count.
+     * @example
+     * // Count the number of CategoryRules
+     * const count = await prisma.categoryRule.count({
+     *   where: {
+     *     // ... the filter for the CategoryRules we want to count
+     *   }
+     * })
+    **/
+    count<T extends CategoryRuleCountArgs>(
+      args?: Subset<T, CategoryRuleCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], CategoryRuleCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a CategoryRule.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CategoryRuleAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends CategoryRuleAggregateArgs>(args: Subset<T, CategoryRuleAggregateArgs>): Prisma.PrismaPromise<GetCategoryRuleAggregateType<T>>
+
+    /**
+     * Group by CategoryRule.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CategoryRuleGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends CategoryRuleGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: CategoryRuleGroupByArgs['orderBy'] }
+        : { orderBy?: CategoryRuleGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, CategoryRuleGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetCategoryRuleGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the CategoryRule model
+   */
+  readonly fields: CategoryRuleFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for CategoryRule.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__CategoryRuleClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    category<T extends CategoryDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CategoryDefaultArgs<ExtArgs>>): Prisma__CategoryClient<$Result.GetResult<Prisma.$CategoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the CategoryRule model
+   */
+  interface CategoryRuleFieldRefs {
+    readonly id: FieldRef<"CategoryRule", 'String'>
+    readonly pattern: FieldRef<"CategoryRule", 'String'>
+    readonly bank: FieldRef<"CategoryRule", 'String'>
+    readonly categoryId: FieldRef<"CategoryRule", 'String'>
+    readonly createdAt: FieldRef<"CategoryRule", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * CategoryRule findUnique
+   */
+  export type CategoryRuleFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CategoryRule
+     */
+    select?: CategoryRuleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CategoryRule
+     */
+    omit?: CategoryRuleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CategoryRuleInclude<ExtArgs> | null
+    /**
+     * Filter, which CategoryRule to fetch.
+     */
+    where: CategoryRuleWhereUniqueInput
+  }
+
+  /**
+   * CategoryRule findUniqueOrThrow
+   */
+  export type CategoryRuleFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CategoryRule
+     */
+    select?: CategoryRuleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CategoryRule
+     */
+    omit?: CategoryRuleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CategoryRuleInclude<ExtArgs> | null
+    /**
+     * Filter, which CategoryRule to fetch.
+     */
+    where: CategoryRuleWhereUniqueInput
+  }
+
+  /**
+   * CategoryRule findFirst
+   */
+  export type CategoryRuleFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CategoryRule
+     */
+    select?: CategoryRuleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CategoryRule
+     */
+    omit?: CategoryRuleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CategoryRuleInclude<ExtArgs> | null
+    /**
+     * Filter, which CategoryRule to fetch.
+     */
+    where?: CategoryRuleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CategoryRules to fetch.
+     */
+    orderBy?: CategoryRuleOrderByWithRelationInput | CategoryRuleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CategoryRules.
+     */
+    cursor?: CategoryRuleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CategoryRules from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CategoryRules.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CategoryRules.
+     */
+    distinct?: CategoryRuleScalarFieldEnum | CategoryRuleScalarFieldEnum[]
+  }
+
+  /**
+   * CategoryRule findFirstOrThrow
+   */
+  export type CategoryRuleFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CategoryRule
+     */
+    select?: CategoryRuleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CategoryRule
+     */
+    omit?: CategoryRuleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CategoryRuleInclude<ExtArgs> | null
+    /**
+     * Filter, which CategoryRule to fetch.
+     */
+    where?: CategoryRuleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CategoryRules to fetch.
+     */
+    orderBy?: CategoryRuleOrderByWithRelationInput | CategoryRuleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CategoryRules.
+     */
+    cursor?: CategoryRuleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CategoryRules from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CategoryRules.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CategoryRules.
+     */
+    distinct?: CategoryRuleScalarFieldEnum | CategoryRuleScalarFieldEnum[]
+  }
+
+  /**
+   * CategoryRule findMany
+   */
+  export type CategoryRuleFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CategoryRule
+     */
+    select?: CategoryRuleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CategoryRule
+     */
+    omit?: CategoryRuleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CategoryRuleInclude<ExtArgs> | null
+    /**
+     * Filter, which CategoryRules to fetch.
+     */
+    where?: CategoryRuleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CategoryRules to fetch.
+     */
+    orderBy?: CategoryRuleOrderByWithRelationInput | CategoryRuleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing CategoryRules.
+     */
+    cursor?: CategoryRuleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CategoryRules from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CategoryRules.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CategoryRules.
+     */
+    distinct?: CategoryRuleScalarFieldEnum | CategoryRuleScalarFieldEnum[]
+  }
+
+  /**
+   * CategoryRule create
+   */
+  export type CategoryRuleCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CategoryRule
+     */
+    select?: CategoryRuleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CategoryRule
+     */
+    omit?: CategoryRuleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CategoryRuleInclude<ExtArgs> | null
+    /**
+     * The data needed to create a CategoryRule.
+     */
+    data: XOR<CategoryRuleCreateInput, CategoryRuleUncheckedCreateInput>
+  }
+
+  /**
+   * CategoryRule createMany
+   */
+  export type CategoryRuleCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many CategoryRules.
+     */
+    data: CategoryRuleCreateManyInput | CategoryRuleCreateManyInput[]
+  }
+
+  /**
+   * CategoryRule createManyAndReturn
+   */
+  export type CategoryRuleCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CategoryRule
+     */
+    select?: CategoryRuleSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the CategoryRule
+     */
+    omit?: CategoryRuleOmit<ExtArgs> | null
+    /**
+     * The data used to create many CategoryRules.
+     */
+    data: CategoryRuleCreateManyInput | CategoryRuleCreateManyInput[]
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CategoryRuleIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * CategoryRule update
+   */
+  export type CategoryRuleUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CategoryRule
+     */
+    select?: CategoryRuleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CategoryRule
+     */
+    omit?: CategoryRuleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CategoryRuleInclude<ExtArgs> | null
+    /**
+     * The data needed to update a CategoryRule.
+     */
+    data: XOR<CategoryRuleUpdateInput, CategoryRuleUncheckedUpdateInput>
+    /**
+     * Choose, which CategoryRule to update.
+     */
+    where: CategoryRuleWhereUniqueInput
+  }
+
+  /**
+   * CategoryRule updateMany
+   */
+  export type CategoryRuleUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update CategoryRules.
+     */
+    data: XOR<CategoryRuleUpdateManyMutationInput, CategoryRuleUncheckedUpdateManyInput>
+    /**
+     * Filter which CategoryRules to update
+     */
+    where?: CategoryRuleWhereInput
+    /**
+     * Limit how many CategoryRules to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * CategoryRule updateManyAndReturn
+   */
+  export type CategoryRuleUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CategoryRule
+     */
+    select?: CategoryRuleSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the CategoryRule
+     */
+    omit?: CategoryRuleOmit<ExtArgs> | null
+    /**
+     * The data used to update CategoryRules.
+     */
+    data: XOR<CategoryRuleUpdateManyMutationInput, CategoryRuleUncheckedUpdateManyInput>
+    /**
+     * Filter which CategoryRules to update
+     */
+    where?: CategoryRuleWhereInput
+    /**
+     * Limit how many CategoryRules to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CategoryRuleIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * CategoryRule upsert
+   */
+  export type CategoryRuleUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CategoryRule
+     */
+    select?: CategoryRuleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CategoryRule
+     */
+    omit?: CategoryRuleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CategoryRuleInclude<ExtArgs> | null
+    /**
+     * The filter to search for the CategoryRule to update in case it exists.
+     */
+    where: CategoryRuleWhereUniqueInput
+    /**
+     * In case the CategoryRule found by the `where` argument doesn't exist, create a new CategoryRule with this data.
+     */
+    create: XOR<CategoryRuleCreateInput, CategoryRuleUncheckedCreateInput>
+    /**
+     * In case the CategoryRule was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<CategoryRuleUpdateInput, CategoryRuleUncheckedUpdateInput>
+  }
+
+  /**
+   * CategoryRule delete
+   */
+  export type CategoryRuleDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CategoryRule
+     */
+    select?: CategoryRuleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CategoryRule
+     */
+    omit?: CategoryRuleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CategoryRuleInclude<ExtArgs> | null
+    /**
+     * Filter which CategoryRule to delete.
+     */
+    where: CategoryRuleWhereUniqueInput
+  }
+
+  /**
+   * CategoryRule deleteMany
+   */
+  export type CategoryRuleDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CategoryRules to delete
+     */
+    where?: CategoryRuleWhereInput
+    /**
+     * Limit how many CategoryRules to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * CategoryRule without action
+   */
+  export type CategoryRuleDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CategoryRule
+     */
+    select?: CategoryRuleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CategoryRule
+     */
+    omit?: CategoryRuleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CategoryRuleInclude<ExtArgs> | null
   }
 
 
@@ -24896,6 +26085,17 @@ export namespace Prisma {
   export type CategoryScalarFieldEnum = (typeof CategoryScalarFieldEnum)[keyof typeof CategoryScalarFieldEnum]
 
 
+  export const CategoryRuleScalarFieldEnum: {
+    id: 'id',
+    pattern: 'pattern',
+    bank: 'bank',
+    categoryId: 'categoryId',
+    createdAt: 'createdAt'
+  };
+
+  export type CategoryRuleScalarFieldEnum = (typeof CategoryRuleScalarFieldEnum)[keyof typeof CategoryRuleScalarFieldEnum]
+
+
   export const TransactionScalarFieldEnum: {
     id: 'id',
     description: 'description',
@@ -25367,6 +26567,7 @@ export namespace Prisma {
     color?: StringFilter<"Category"> | string
     savingType?: EnumSavingTypeFilter<"Category"> | $Enums.SavingType
     transactions?: TransactionListRelationFilter
+    categoryRules?: CategoryRuleListRelationFilter
   }
 
   export type CategoryOrderByWithRelationInput = {
@@ -25375,6 +26576,7 @@ export namespace Prisma {
     color?: SortOrder
     savingType?: SortOrder
     transactions?: TransactionOrderByRelationAggregateInput
+    categoryRules?: CategoryRuleOrderByRelationAggregateInput
   }
 
   export type CategoryWhereUniqueInput = Prisma.AtLeast<{
@@ -25386,6 +26588,7 @@ export namespace Prisma {
     color?: StringFilter<"Category"> | string
     savingType?: EnumSavingTypeFilter<"Category"> | $Enums.SavingType
     transactions?: TransactionListRelationFilter
+    categoryRules?: CategoryRuleListRelationFilter
   }, "id" | "name">
 
   export type CategoryOrderByWithAggregationInput = {
@@ -25406,6 +26609,62 @@ export namespace Prisma {
     name?: StringWithAggregatesFilter<"Category"> | string
     color?: StringWithAggregatesFilter<"Category"> | string
     savingType?: EnumSavingTypeWithAggregatesFilter<"Category"> | $Enums.SavingType
+  }
+
+  export type CategoryRuleWhereInput = {
+    AND?: CategoryRuleWhereInput | CategoryRuleWhereInput[]
+    OR?: CategoryRuleWhereInput[]
+    NOT?: CategoryRuleWhereInput | CategoryRuleWhereInput[]
+    id?: StringFilter<"CategoryRule"> | string
+    pattern?: StringFilter<"CategoryRule"> | string
+    bank?: StringNullableFilter<"CategoryRule"> | string | null
+    categoryId?: StringFilter<"CategoryRule"> | string
+    createdAt?: DateTimeFilter<"CategoryRule"> | Date | string
+    category?: XOR<CategoryScalarRelationFilter, CategoryWhereInput>
+  }
+
+  export type CategoryRuleOrderByWithRelationInput = {
+    id?: SortOrder
+    pattern?: SortOrder
+    bank?: SortOrderInput | SortOrder
+    categoryId?: SortOrder
+    createdAt?: SortOrder
+    category?: CategoryOrderByWithRelationInput
+  }
+
+  export type CategoryRuleWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    pattern_bank?: CategoryRulePatternBankCompoundUniqueInput
+    AND?: CategoryRuleWhereInput | CategoryRuleWhereInput[]
+    OR?: CategoryRuleWhereInput[]
+    NOT?: CategoryRuleWhereInput | CategoryRuleWhereInput[]
+    pattern?: StringFilter<"CategoryRule"> | string
+    bank?: StringNullableFilter<"CategoryRule"> | string | null
+    categoryId?: StringFilter<"CategoryRule"> | string
+    createdAt?: DateTimeFilter<"CategoryRule"> | Date | string
+    category?: XOR<CategoryScalarRelationFilter, CategoryWhereInput>
+  }, "id" | "pattern_bank">
+
+  export type CategoryRuleOrderByWithAggregationInput = {
+    id?: SortOrder
+    pattern?: SortOrder
+    bank?: SortOrderInput | SortOrder
+    categoryId?: SortOrder
+    createdAt?: SortOrder
+    _count?: CategoryRuleCountOrderByAggregateInput
+    _max?: CategoryRuleMaxOrderByAggregateInput
+    _min?: CategoryRuleMinOrderByAggregateInput
+  }
+
+  export type CategoryRuleScalarWhereWithAggregatesInput = {
+    AND?: CategoryRuleScalarWhereWithAggregatesInput | CategoryRuleScalarWhereWithAggregatesInput[]
+    OR?: CategoryRuleScalarWhereWithAggregatesInput[]
+    NOT?: CategoryRuleScalarWhereWithAggregatesInput | CategoryRuleScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"CategoryRule"> | string
+    pattern?: StringWithAggregatesFilter<"CategoryRule"> | string
+    bank?: StringNullableWithAggregatesFilter<"CategoryRule"> | string | null
+    categoryId?: StringWithAggregatesFilter<"CategoryRule"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"CategoryRule"> | Date | string
   }
 
   export type TransactionWhereInput = {
@@ -26942,6 +28201,7 @@ export namespace Prisma {
     color: string
     savingType?: $Enums.SavingType
     transactions?: TransactionCreateNestedManyWithoutCategoryInput
+    categoryRules?: CategoryRuleCreateNestedManyWithoutCategoryInput
   }
 
   export type CategoryUncheckedCreateInput = {
@@ -26950,6 +28210,7 @@ export namespace Prisma {
     color: string
     savingType?: $Enums.SavingType
     transactions?: TransactionUncheckedCreateNestedManyWithoutCategoryInput
+    categoryRules?: CategoryRuleUncheckedCreateNestedManyWithoutCategoryInput
   }
 
   export type CategoryUpdateInput = {
@@ -26958,6 +28219,7 @@ export namespace Prisma {
     color?: StringFieldUpdateOperationsInput | string
     savingType?: EnumSavingTypeFieldUpdateOperationsInput | $Enums.SavingType
     transactions?: TransactionUpdateManyWithoutCategoryNestedInput
+    categoryRules?: CategoryRuleUpdateManyWithoutCategoryNestedInput
   }
 
   export type CategoryUncheckedUpdateInput = {
@@ -26966,6 +28228,7 @@ export namespace Prisma {
     color?: StringFieldUpdateOperationsInput | string
     savingType?: EnumSavingTypeFieldUpdateOperationsInput | $Enums.SavingType
     transactions?: TransactionUncheckedUpdateManyWithoutCategoryNestedInput
+    categoryRules?: CategoryRuleUncheckedUpdateManyWithoutCategoryNestedInput
   }
 
   export type CategoryCreateManyInput = {
@@ -26987,6 +28250,61 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     savingType?: EnumSavingTypeFieldUpdateOperationsInput | $Enums.SavingType
+  }
+
+  export type CategoryRuleCreateInput = {
+    id?: string
+    pattern: string
+    bank?: string | null
+    createdAt?: Date | string
+    category: CategoryCreateNestedOneWithoutCategoryRulesInput
+  }
+
+  export type CategoryRuleUncheckedCreateInput = {
+    id?: string
+    pattern: string
+    bank?: string | null
+    categoryId: string
+    createdAt?: Date | string
+  }
+
+  export type CategoryRuleUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    pattern?: StringFieldUpdateOperationsInput | string
+    bank?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    category?: CategoryUpdateOneRequiredWithoutCategoryRulesNestedInput
+  }
+
+  export type CategoryRuleUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    pattern?: StringFieldUpdateOperationsInput | string
+    bank?: NullableStringFieldUpdateOperationsInput | string | null
+    categoryId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CategoryRuleCreateManyInput = {
+    id?: string
+    pattern: string
+    bank?: string | null
+    categoryId: string
+    createdAt?: Date | string
+  }
+
+  export type CategoryRuleUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    pattern?: StringFieldUpdateOperationsInput | string
+    bank?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CategoryRuleUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    pattern?: StringFieldUpdateOperationsInput | string
+    bank?: NullableStringFieldUpdateOperationsInput | string | null
+    categoryId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type TransactionCreateInput = {
@@ -28819,7 +30137,17 @@ export namespace Prisma {
     none?: TransactionWhereInput
   }
 
+  export type CategoryRuleListRelationFilter = {
+    every?: CategoryRuleWhereInput
+    some?: CategoryRuleWhereInput
+    none?: CategoryRuleWhereInput
+  }
+
   export type TransactionOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type CategoryRuleOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -28852,6 +30180,40 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumSavingTypeFilter<$PrismaModel>
     _max?: NestedEnumSavingTypeFilter<$PrismaModel>
+  }
+
+  export type CategoryScalarRelationFilter = {
+    is?: CategoryWhereInput
+    isNot?: CategoryWhereInput
+  }
+
+  export type CategoryRulePatternBankCompoundUniqueInput = {
+    pattern: string
+    bank: string
+  }
+
+  export type CategoryRuleCountOrderByAggregateInput = {
+    id?: SortOrder
+    pattern?: SortOrder
+    bank?: SortOrder
+    categoryId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type CategoryRuleMaxOrderByAggregateInput = {
+    id?: SortOrder
+    pattern?: SortOrder
+    bank?: SortOrder
+    categoryId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type CategoryRuleMinOrderByAggregateInput = {
+    id?: SortOrder
+    pattern?: SortOrder
+    bank?: SortOrder
+    categoryId?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type DecimalFilter<$PrismaModel = never> = {
@@ -28900,11 +30262,6 @@ export namespace Prisma {
     gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
     gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
     not?: NestedDecimalNullableFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
-  }
-
-  export type CategoryScalarRelationFilter = {
-    is?: CategoryWhereInput
-    isNot?: CategoryWhereInput
   }
 
   export type TransactionCountOrderByAggregateInput = {
@@ -30065,11 +31422,25 @@ export namespace Prisma {
     connect?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
   }
 
+  export type CategoryRuleCreateNestedManyWithoutCategoryInput = {
+    create?: XOR<CategoryRuleCreateWithoutCategoryInput, CategoryRuleUncheckedCreateWithoutCategoryInput> | CategoryRuleCreateWithoutCategoryInput[] | CategoryRuleUncheckedCreateWithoutCategoryInput[]
+    connectOrCreate?: CategoryRuleCreateOrConnectWithoutCategoryInput | CategoryRuleCreateOrConnectWithoutCategoryInput[]
+    createMany?: CategoryRuleCreateManyCategoryInputEnvelope
+    connect?: CategoryRuleWhereUniqueInput | CategoryRuleWhereUniqueInput[]
+  }
+
   export type TransactionUncheckedCreateNestedManyWithoutCategoryInput = {
     create?: XOR<TransactionCreateWithoutCategoryInput, TransactionUncheckedCreateWithoutCategoryInput> | TransactionCreateWithoutCategoryInput[] | TransactionUncheckedCreateWithoutCategoryInput[]
     connectOrCreate?: TransactionCreateOrConnectWithoutCategoryInput | TransactionCreateOrConnectWithoutCategoryInput[]
     createMany?: TransactionCreateManyCategoryInputEnvelope
     connect?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
+  }
+
+  export type CategoryRuleUncheckedCreateNestedManyWithoutCategoryInput = {
+    create?: XOR<CategoryRuleCreateWithoutCategoryInput, CategoryRuleUncheckedCreateWithoutCategoryInput> | CategoryRuleCreateWithoutCategoryInput[] | CategoryRuleUncheckedCreateWithoutCategoryInput[]
+    connectOrCreate?: CategoryRuleCreateOrConnectWithoutCategoryInput | CategoryRuleCreateOrConnectWithoutCategoryInput[]
+    createMany?: CategoryRuleCreateManyCategoryInputEnvelope
+    connect?: CategoryRuleWhereUniqueInput | CategoryRuleWhereUniqueInput[]
   }
 
   export type EnumSavingTypeFieldUpdateOperationsInput = {
@@ -30090,6 +31461,20 @@ export namespace Prisma {
     deleteMany?: TransactionScalarWhereInput | TransactionScalarWhereInput[]
   }
 
+  export type CategoryRuleUpdateManyWithoutCategoryNestedInput = {
+    create?: XOR<CategoryRuleCreateWithoutCategoryInput, CategoryRuleUncheckedCreateWithoutCategoryInput> | CategoryRuleCreateWithoutCategoryInput[] | CategoryRuleUncheckedCreateWithoutCategoryInput[]
+    connectOrCreate?: CategoryRuleCreateOrConnectWithoutCategoryInput | CategoryRuleCreateOrConnectWithoutCategoryInput[]
+    upsert?: CategoryRuleUpsertWithWhereUniqueWithoutCategoryInput | CategoryRuleUpsertWithWhereUniqueWithoutCategoryInput[]
+    createMany?: CategoryRuleCreateManyCategoryInputEnvelope
+    set?: CategoryRuleWhereUniqueInput | CategoryRuleWhereUniqueInput[]
+    disconnect?: CategoryRuleWhereUniqueInput | CategoryRuleWhereUniqueInput[]
+    delete?: CategoryRuleWhereUniqueInput | CategoryRuleWhereUniqueInput[]
+    connect?: CategoryRuleWhereUniqueInput | CategoryRuleWhereUniqueInput[]
+    update?: CategoryRuleUpdateWithWhereUniqueWithoutCategoryInput | CategoryRuleUpdateWithWhereUniqueWithoutCategoryInput[]
+    updateMany?: CategoryRuleUpdateManyWithWhereWithoutCategoryInput | CategoryRuleUpdateManyWithWhereWithoutCategoryInput[]
+    deleteMany?: CategoryRuleScalarWhereInput | CategoryRuleScalarWhereInput[]
+  }
+
   export type TransactionUncheckedUpdateManyWithoutCategoryNestedInput = {
     create?: XOR<TransactionCreateWithoutCategoryInput, TransactionUncheckedCreateWithoutCategoryInput> | TransactionCreateWithoutCategoryInput[] | TransactionUncheckedCreateWithoutCategoryInput[]
     connectOrCreate?: TransactionCreateOrConnectWithoutCategoryInput | TransactionCreateOrConnectWithoutCategoryInput[]
@@ -30102,6 +31487,34 @@ export namespace Prisma {
     update?: TransactionUpdateWithWhereUniqueWithoutCategoryInput | TransactionUpdateWithWhereUniqueWithoutCategoryInput[]
     updateMany?: TransactionUpdateManyWithWhereWithoutCategoryInput | TransactionUpdateManyWithWhereWithoutCategoryInput[]
     deleteMany?: TransactionScalarWhereInput | TransactionScalarWhereInput[]
+  }
+
+  export type CategoryRuleUncheckedUpdateManyWithoutCategoryNestedInput = {
+    create?: XOR<CategoryRuleCreateWithoutCategoryInput, CategoryRuleUncheckedCreateWithoutCategoryInput> | CategoryRuleCreateWithoutCategoryInput[] | CategoryRuleUncheckedCreateWithoutCategoryInput[]
+    connectOrCreate?: CategoryRuleCreateOrConnectWithoutCategoryInput | CategoryRuleCreateOrConnectWithoutCategoryInput[]
+    upsert?: CategoryRuleUpsertWithWhereUniqueWithoutCategoryInput | CategoryRuleUpsertWithWhereUniqueWithoutCategoryInput[]
+    createMany?: CategoryRuleCreateManyCategoryInputEnvelope
+    set?: CategoryRuleWhereUniqueInput | CategoryRuleWhereUniqueInput[]
+    disconnect?: CategoryRuleWhereUniqueInput | CategoryRuleWhereUniqueInput[]
+    delete?: CategoryRuleWhereUniqueInput | CategoryRuleWhereUniqueInput[]
+    connect?: CategoryRuleWhereUniqueInput | CategoryRuleWhereUniqueInput[]
+    update?: CategoryRuleUpdateWithWhereUniqueWithoutCategoryInput | CategoryRuleUpdateWithWhereUniqueWithoutCategoryInput[]
+    updateMany?: CategoryRuleUpdateManyWithWhereWithoutCategoryInput | CategoryRuleUpdateManyWithWhereWithoutCategoryInput[]
+    deleteMany?: CategoryRuleScalarWhereInput | CategoryRuleScalarWhereInput[]
+  }
+
+  export type CategoryCreateNestedOneWithoutCategoryRulesInput = {
+    create?: XOR<CategoryCreateWithoutCategoryRulesInput, CategoryUncheckedCreateWithoutCategoryRulesInput>
+    connectOrCreate?: CategoryCreateOrConnectWithoutCategoryRulesInput
+    connect?: CategoryWhereUniqueInput
+  }
+
+  export type CategoryUpdateOneRequiredWithoutCategoryRulesNestedInput = {
+    create?: XOR<CategoryCreateWithoutCategoryRulesInput, CategoryUncheckedCreateWithoutCategoryRulesInput>
+    connectOrCreate?: CategoryCreateOrConnectWithoutCategoryRulesInput
+    upsert?: CategoryUpsertWithoutCategoryRulesInput
+    connect?: CategoryWhereUniqueInput
+    update?: XOR<XOR<CategoryUpdateToOneWithWhereWithoutCategoryRulesInput, CategoryUpdateWithoutCategoryRulesInput>, CategoryUncheckedUpdateWithoutCategoryRulesInput>
   }
 
   export type CategoryCreateNestedOneWithoutTransactionsInput = {
@@ -30836,6 +32249,29 @@ export namespace Prisma {
     data: TransactionCreateManyCategoryInput | TransactionCreateManyCategoryInput[]
   }
 
+  export type CategoryRuleCreateWithoutCategoryInput = {
+    id?: string
+    pattern: string
+    bank?: string | null
+    createdAt?: Date | string
+  }
+
+  export type CategoryRuleUncheckedCreateWithoutCategoryInput = {
+    id?: string
+    pattern: string
+    bank?: string | null
+    createdAt?: Date | string
+  }
+
+  export type CategoryRuleCreateOrConnectWithoutCategoryInput = {
+    where: CategoryRuleWhereUniqueInput
+    create: XOR<CategoryRuleCreateWithoutCategoryInput, CategoryRuleUncheckedCreateWithoutCategoryInput>
+  }
+
+  export type CategoryRuleCreateManyCategoryInputEnvelope = {
+    data: CategoryRuleCreateManyCategoryInput | CategoryRuleCreateManyCategoryInput[]
+  }
+
   export type TransactionUpsertWithWhereUniqueWithoutCategoryInput = {
     where: TransactionWhereUniqueInput
     update: XOR<TransactionUpdateWithoutCategoryInput, TransactionUncheckedUpdateWithoutCategoryInput>
@@ -30873,11 +32309,87 @@ export namespace Prisma {
     originalCurrency?: StringNullableFilter<"Transaction"> | string | null
   }
 
+  export type CategoryRuleUpsertWithWhereUniqueWithoutCategoryInput = {
+    where: CategoryRuleWhereUniqueInput
+    update: XOR<CategoryRuleUpdateWithoutCategoryInput, CategoryRuleUncheckedUpdateWithoutCategoryInput>
+    create: XOR<CategoryRuleCreateWithoutCategoryInput, CategoryRuleUncheckedCreateWithoutCategoryInput>
+  }
+
+  export type CategoryRuleUpdateWithWhereUniqueWithoutCategoryInput = {
+    where: CategoryRuleWhereUniqueInput
+    data: XOR<CategoryRuleUpdateWithoutCategoryInput, CategoryRuleUncheckedUpdateWithoutCategoryInput>
+  }
+
+  export type CategoryRuleUpdateManyWithWhereWithoutCategoryInput = {
+    where: CategoryRuleScalarWhereInput
+    data: XOR<CategoryRuleUpdateManyMutationInput, CategoryRuleUncheckedUpdateManyWithoutCategoryInput>
+  }
+
+  export type CategoryRuleScalarWhereInput = {
+    AND?: CategoryRuleScalarWhereInput | CategoryRuleScalarWhereInput[]
+    OR?: CategoryRuleScalarWhereInput[]
+    NOT?: CategoryRuleScalarWhereInput | CategoryRuleScalarWhereInput[]
+    id?: StringFilter<"CategoryRule"> | string
+    pattern?: StringFilter<"CategoryRule"> | string
+    bank?: StringNullableFilter<"CategoryRule"> | string | null
+    categoryId?: StringFilter<"CategoryRule"> | string
+    createdAt?: DateTimeFilter<"CategoryRule"> | Date | string
+  }
+
+  export type CategoryCreateWithoutCategoryRulesInput = {
+    id?: string
+    name: string
+    color: string
+    savingType?: $Enums.SavingType
+    transactions?: TransactionCreateNestedManyWithoutCategoryInput
+  }
+
+  export type CategoryUncheckedCreateWithoutCategoryRulesInput = {
+    id?: string
+    name: string
+    color: string
+    savingType?: $Enums.SavingType
+    transactions?: TransactionUncheckedCreateNestedManyWithoutCategoryInput
+  }
+
+  export type CategoryCreateOrConnectWithoutCategoryRulesInput = {
+    where: CategoryWhereUniqueInput
+    create: XOR<CategoryCreateWithoutCategoryRulesInput, CategoryUncheckedCreateWithoutCategoryRulesInput>
+  }
+
+  export type CategoryUpsertWithoutCategoryRulesInput = {
+    update: XOR<CategoryUpdateWithoutCategoryRulesInput, CategoryUncheckedUpdateWithoutCategoryRulesInput>
+    create: XOR<CategoryCreateWithoutCategoryRulesInput, CategoryUncheckedCreateWithoutCategoryRulesInput>
+    where?: CategoryWhereInput
+  }
+
+  export type CategoryUpdateToOneWithWhereWithoutCategoryRulesInput = {
+    where?: CategoryWhereInput
+    data: XOR<CategoryUpdateWithoutCategoryRulesInput, CategoryUncheckedUpdateWithoutCategoryRulesInput>
+  }
+
+  export type CategoryUpdateWithoutCategoryRulesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    color?: StringFieldUpdateOperationsInput | string
+    savingType?: EnumSavingTypeFieldUpdateOperationsInput | $Enums.SavingType
+    transactions?: TransactionUpdateManyWithoutCategoryNestedInput
+  }
+
+  export type CategoryUncheckedUpdateWithoutCategoryRulesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    color?: StringFieldUpdateOperationsInput | string
+    savingType?: EnumSavingTypeFieldUpdateOperationsInput | $Enums.SavingType
+    transactions?: TransactionUncheckedUpdateManyWithoutCategoryNestedInput
+  }
+
   export type CategoryCreateWithoutTransactionsInput = {
     id?: string
     name: string
     color: string
     savingType?: $Enums.SavingType
+    categoryRules?: CategoryRuleCreateNestedManyWithoutCategoryInput
   }
 
   export type CategoryUncheckedCreateWithoutTransactionsInput = {
@@ -30885,6 +32397,7 @@ export namespace Prisma {
     name: string
     color: string
     savingType?: $Enums.SavingType
+    categoryRules?: CategoryRuleUncheckedCreateNestedManyWithoutCategoryInput
   }
 
   export type CategoryCreateOrConnectWithoutTransactionsInput = {
@@ -30908,6 +32421,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     savingType?: EnumSavingTypeFieldUpdateOperationsInput | $Enums.SavingType
+    categoryRules?: CategoryRuleUpdateManyWithoutCategoryNestedInput
   }
 
   export type CategoryUncheckedUpdateWithoutTransactionsInput = {
@@ -30915,6 +32429,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     savingType?: EnumSavingTypeFieldUpdateOperationsInput | $Enums.SavingType
+    categoryRules?: CategoryRuleUncheckedUpdateManyWithoutCategoryNestedInput
   }
 
   export type UserCreateWithoutSessionsInput = {
@@ -31267,6 +32782,13 @@ export namespace Prisma {
     originalCurrency?: string | null
   }
 
+  export type CategoryRuleCreateManyCategoryInput = {
+    id?: string
+    pattern: string
+    bank?: string | null
+    createdAt?: Date | string
+  }
+
   export type TransactionUpdateWithoutCategoryInput = {
     id?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
@@ -31316,6 +32838,27 @@ export namespace Prisma {
     savingType?: NullableEnumSavingTypeFieldUpdateOperationsInput | $Enums.SavingType | null
     originalAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type CategoryRuleUpdateWithoutCategoryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    pattern?: StringFieldUpdateOperationsInput | string
+    bank?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CategoryRuleUncheckedUpdateWithoutCategoryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    pattern?: StringFieldUpdateOperationsInput | string
+    bank?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CategoryRuleUncheckedUpdateManyWithoutCategoryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    pattern?: StringFieldUpdateOperationsInput | string
+    bank?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type InvestmentSnapshotCreateManyAccountInput = {

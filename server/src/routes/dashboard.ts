@@ -13,7 +13,12 @@ dashboardRouter.get("/summary", async (_req, res) => {
 
   for (const t of all) {
     const amount = Number(t.amount);
-    if (t.category.name === "Net" && t.owner === "Casey" && t.type === TransactionType.Income) {
+    if (
+      t.category.name === "Net" &&
+      t.owner === "Casey" &&
+      t.externalId?.startsWith("monzo:") &&
+      t.type === TransactionType.Income
+    ) {
       caseyIn += amount;
     } else if (t.owner === "Joint") {
       const signed = t.type === TransactionType.Expense ? amount : -amount;

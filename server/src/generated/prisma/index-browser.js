@@ -134,6 +134,14 @@ exports.Prisma.CategoryScalarFieldEnum = {
   savingType: 'savingType'
 };
 
+exports.Prisma.CategoryRuleScalarFieldEnum = {
+  id: 'id',
+  pattern: 'pattern',
+  bank: 'bank',
+  categoryId: 'categoryId',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.TransactionScalarFieldEnum = {
   id: 'id',
   description: 'description',
@@ -412,6 +420,7 @@ exports.TabStatus = exports.$Enums.TabStatus = {
 exports.Prisma.ModelName = {
   User: 'User',
   Category: 'Category',
+  CategoryRule: 'CategoryRule',
   Transaction: 'Transaction',
   MonzoApiTransaction: 'MonzoApiTransaction',
   PlaidItem: 'PlaidItem',

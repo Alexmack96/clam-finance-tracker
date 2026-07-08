@@ -22,6 +22,7 @@ import { rescueSofiChaseFx } from "./migrations/rescueSofiChaseFx.js";
 import { usersRouter } from "./routes/users.js";
 import { importRouter } from "./routes/import.js";
 import { categoriesRouter } from "./routes/categories.js";
+import { categoryRulesRouter } from "./routes/categoryRules.js";
 import { transactionsRouter } from "./routes/transactions.js";
 import { dashboardRouter } from "./routes/dashboard.js";
 import { utilitiesRouter } from "./routes/utilities.js";
@@ -72,6 +73,7 @@ app.get("/api/me", requireAuth, (req, res) => {
 app.use("/api/admin/users", requireAuth, usersRouter);
 app.use("/api/admin", requireAuth, importRouter);
 app.use("/api/categories", requireAuth, categoriesRouter);
+app.use("/api/category-rules", requireAuth, categoryRulesRouter);
 app.use("/api/transactions", requireAuth, transactionsRouter);
 app.use("/api/dashboard", requireAuth, dashboardRouter);
 app.use("/api/utilities", requireAuth, utilitiesRouter);
