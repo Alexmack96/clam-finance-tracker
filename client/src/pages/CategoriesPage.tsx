@@ -56,6 +56,7 @@ const DEFAULT_COLOR = "#14b8a6";
 
 const BANK_LABELS: Record<KnownBank, BankSource> = {
   monzo: "Monzo",
+  flex: "Flex",
   amex: "Amex",
   barclays: "Barclays",
   santander: "Santander",

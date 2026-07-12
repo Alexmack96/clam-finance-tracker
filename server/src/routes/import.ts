@@ -74,12 +74,16 @@ function resolveCategoryByMerchant(merchantName: string): string {
 const ALEX_PATTERNS = [/mackintosh/i, /\balex\b/i];
 const CASEY_PATTERNS = [/liddy/i, /\bcasey\b/i];
 
-function resolveOwner(categoryName: string, merchantName: string): "Alex" | "Casey" | "Joint" {
+function resolveOwner(
+  categoryName: string,
+  merchantName: string,
+  defaultOwner: "Alex" | "Casey" | "Joint" = "Joint",
+): "Alex" | "Casey" | "Joint" {
   if (categoryName === "Net") {
     for (const p of ALEX_PATTERNS) if (p.test(merchantName)) return "Alex";
     for (const p of CASEY_PATTERNS) if (p.test(merchantName)) return "Casey";
   }
-  return "Joint";
+  return defaultOwner;
 }
 
 async function findCategory(name: string) {
@@ -1506,17 +1510,23 @@ importRouter.post("/process", async (_req, res) => {
   const categoryRules = await db.categoryRule.findMany({ include: { category: true } });
 
   // ── Monzo ──────────────────────────────────────────────────────────────────
+  // The retail (debit) account's ID is the "primary" one stored on the credential.
+  // Any other account synced (currently just Flex) is everything else — treated
+  // as its own bank/card so it gets its own externalId namespace and rule scope.
   const pendingMonzo = await db.monzoApiTransaction.findMany({ where: { status: "pending" } });
+  const monzoCredential = await db.monzoCredential.findFirst({ select: { accountId: true } });
 
   for (const row of pendingMonzo) {
+    const isFlex = !!monzoCredential?.accountId && row.accountId !== monzoCredential.accountId;
+    const bank = isFlex ? "flex" : "monzo";
     const type = row.amountPence >= 0 ? "Income" : "Expense";
     const amount = Math.abs(row.amountPence) / 100;
     const name = row.merchantName ?? row.description;
     const categoryName = resolveCategory(row.monzoCategory, name);
     const category =
-      resolveRuleCategory(categoryRules, "monzo", name) ?? (await findCategory(categoryName));
-    const owner = resolveOwner(categoryName, name);
-    const externalId = `monzo:${row.monzoId}`;
+      resolveRuleCategory(categoryRules, bank, name) ?? (await findCategory(categoryName));
+    const owner = resolveOwner(categoryName, name, "Alex");
+    const externalId = `${bank}:${row.monzoId}`;
     const exists = await db.transaction.findUnique({ where: { externalId }, select: { id: true } });
     if (!exists)
       await db.transaction.create({

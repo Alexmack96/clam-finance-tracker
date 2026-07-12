@@ -26,7 +26,6 @@ export async function initSystemCategories() {
         create: { name, color, savingType },
         update: { savingType },
       });
-      console.log(`[initSystemCategories] upserted: ${name}`);
     } catch (err) {
       console.error(`[initSystemCategories] failed for ${name}:`, err);
     }
@@ -36,7 +35,6 @@ export async function initSystemCategories() {
 export async function mapMonzoCategories() {
   const monzoMap: Record<string, string> = {
     "Eating out":    "Food & Social",
-    "Entertainment": "Entertainment",
     "Golf":          "Activities",
     "Holidays":      "Vacation",
     "Income":        "Bank Sauce",

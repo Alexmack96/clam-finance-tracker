@@ -3,13 +3,11 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   ComposedChart,
   Area,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Legend,
   PieChart,
   Pie,
   Cell,
@@ -365,11 +363,8 @@ export function InvestmentsPage() {
             const snap = a.snapshots.find((sp) => sp.date.slice(0, 10) === day);
             return s + (snap?.value ?? 0);
           }, 0);
-      const cash = get("cash");
-      const equity = get("equity");
-      const crypto = get("crypto");
-      const debt = Math.abs(get("debt")); // stored negative
-      return { label: labelDate(iso), cash, equity, crypto, nav: cash + equity + crypto - debt };
+      const nav = get("cash") + get("equity") + get("crypto") - Math.abs(get("debt"));
+      return { label: labelDate(iso), nav };
     });
   }, [data]);
 
@@ -720,23 +715,18 @@ export function InvestmentsPage() {
         {/* Area chart: 2 cols */}
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle className="eyebrow">Portfolio Over Time</CardTitle>
+            <CardTitle className="eyebrow">Portfolio Value Over Time</CardTitle>
+            <p className="text-xs text-muted-foreground/60">
+              Total liquid value — see Allocation for the breakdown by asset
+            </p>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={280}>
               <ComposedChart data={chartData} margin={{ top: 10, right: 20, left: 10, bottom: 0 }}>
                 <defs>
-                  <linearGradient id="cashGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#22c55e" stopOpacity={0.45} />
-                    <stop offset="95%" stopColor="#22c55e" stopOpacity={0.05} />
-                  </linearGradient>
-                  <linearGradient id="equityGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.45} />
-                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.05} />
-                  </linearGradient>
-                  <linearGradient id="cryptoGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#f97316" stopOpacity={0.45} />
-                    <stop offset="95%" stopColor="#f97316" stopOpacity={0.05} />
+                  <linearGradient id="navGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="oklch(0.527 0.154 150.069)" stopOpacity={0.28} />
+                    <stop offset="95%" stopColor="oklch(0.527 0.154 150.069)" stopOpacity={0.02} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid
@@ -751,40 +741,13 @@ export function InvestmentsPage() {
                   domain={[0, "auto"]}
                 />
                 <Tooltip content={<ChartTooltip />} />
-                <Legend wrapperStyle={{ fontSize: 11 }} />
                 <Area
-                  stackId="a"
-                  type="monotone"
-                  dataKey="cash"
-                  name="Cash"
-                  stroke="#22c55e"
-                  fill="url(#cashGrad)"
-                  strokeWidth={1.5}
-                />
-                <Area
-                  stackId="a"
-                  type="monotone"
-                  dataKey="equity"
-                  name="Index Funds"
-                  stroke="#3b82f6"
-                  fill="url(#equityGrad)"
-                  strokeWidth={1.5}
-                />
-                <Area
-                  stackId="a"
-                  type="monotone"
-                  dataKey="crypto"
-                  name="Crypto"
-                  stroke="#f97316"
-                  fill="url(#cryptoGrad)"
-                  strokeWidth={1.5}
-                />
-                <Line
                   type="monotone"
                   dataKey="nav"
-                  name="NAV (net)"
+                  name="Portfolio Value"
                   stroke="oklch(0.527 0.154 150.069)"
-                  strokeWidth={2.5}
+                  fill="url(#navGrad)"
+                  strokeWidth={2}
                   dot={false}
                   activeDot={{ r: 4 }}
                 />

@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export const KNOWN_BANKS = [
   "monzo",
+  "flex",
   "amex",
   "barclays",
   "santander",

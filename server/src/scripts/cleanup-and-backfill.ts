@@ -2,7 +2,7 @@
  * One-shot, idempotent deploy task. Runs on every deploy (wired into the
  * Dockerfile CMD, after `prisma migrate deploy` and the seed); safe to re-run.
  *
- * It does two things, in order:
+ * It does four things, in order:
  *
  *   1. CLEANUP — remove the surplus copies a double-uploaded Barclays file created,
  *      KEEPING THE FIRST copy of each real transaction (no data loss, no re-upload).
@@ -23,6 +23,19 @@
  *      the new `bank:<transactionId>` scheme. Only rows with a NULL transactionId
  *      are touched, so this is also a no-op once complete.
  *
+ *   3. FLEX MIGRATE — re-namespace Monzo Flex transactions that were processed
+ *      before the Monzo/Flex split existed, from `monzo:<id>` to `flex:<id>`, so
+ *      they show as their own card in the UI. Only rows on a non-retail Monzo
+ *      account whose Transaction still has the old externalId are touched, so
+ *      this is a no-op once complete.
+ *
+ *   4. CATEGORY CLEANUP — one-off category consolidations that used to run on
+ *      every server boot (mapMonzoCategories, consolidateFoodCategories,
+ *      migrateTakeout, migrateOwners, defined in ../routes/admin.ts). They only
+ *      ever have work to do right after the historical data they target first
+ *      appears, so — like everything else here — they belong at deploy time,
+ *      not on every local `bun --watch` restart.
+ *
  * Cleanup runs BEFORE backfill on purpose: the duplicated transactions still use
  * the old `barclays:<id>` externalId, which is how cleanup finds and deletes them.
  */
@@ -30,6 +43,12 @@
 import "dotenv/config";
 import { createHash } from "crypto";
 import { db } from "../db/client.js";
+import {
+  mapMonzoCategories,
+  consolidateFoodCategories,
+  migrateTakeout,
+  migrateOwners,
+} from "../routes/admin.js";
 
 function hash16(s: string): string {
   return createHash("sha256").update(s).digest("hex").slice(0, 16);
@@ -189,10 +208,57 @@ async function backfillSantander() {
   );
 }
 
+// ─── 3. Re-namespace Monzo Flex transactions ─────────────────────────────────
+
+async function migrateFlexTransactions() {
+  const credential = await db.monzoCredential.findFirst({ select: { accountId: true } });
+  if (!credential?.accountId) return; // Monzo not connected — nothing to do
+
+  const flexRows = await db.monzoApiTransaction.findMany({
+    where: { accountId: { not: credential.accountId } },
+    select: { monzoId: true },
+  });
+  if (flexRows.length === 0) return;
+
+  let migrated = 0;
+  let reowned = 0;
+  for (const row of flexRows) {
+    const oldExt = `monzo:${row.monzoId}`;
+    const newExt = `flex:${row.monzoId}`;
+    const tx = await db.transaction.findUnique({
+      where: { externalId: oldExt },
+      select: { id: true, owner: true, reviewed: true },
+    });
+    if (!tx) continue; // not yet processed, or already migrated
+
+    // Flex now defaults new syncs to owner "Alex" instead of "Joint" — apply the
+    // same fix here, but only to rows still at the untouched default so a manual
+    // owner edit (reviewed: true, or already re-owned) is never overwritten.
+    const reowning = tx.owner === "Joint" && !tx.reviewed;
+    await db.transaction.update({
+      where: { id: tx.id },
+      data: { externalId: newExt, ...(reowning ? { owner: "Alex" } : {}) },
+    });
+    migrated++;
+    if (reowning) reowned++;
+  }
+  if (migrated > 0) {
+    console.log(
+      `[flex-migrate] re-namespaced ${migrated} Monzo Flex transaction externalId(s) monzo: → flex: ` +
+        `(${reowned} also re-owned Joint → Alex).`,
+    );
+  }
+}
+
 async function main() {
   await cleanupDuplicatedBarclaysStatements();
   await backfillBarclays();
   await backfillSantander();
+  await migrateFlexTransactions();
+  await consolidateFoodCategories();
+  await migrateTakeout();
+  await mapMonzoCategories();
+  await migrateOwners();
   console.log("[cleanup-and-backfill] done.");
 }
 

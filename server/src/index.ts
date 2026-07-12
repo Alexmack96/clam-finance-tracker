@@ -11,13 +11,7 @@ import { auth } from "./lib/auth.js";
 import { env } from "./config/env.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { requireAuth } from "./middleware/auth.js";
-import {
-  initSystemCategories,
-  mapMonzoCategories,
-  migrateOwners,
-  consolidateFoodCategories,
-  migrateTakeout,
-} from "./routes/admin.js";
+import { initSystemCategories } from "./routes/admin.js";
 import { rescueSofiChaseFx } from "./migrations/rescueSofiChaseFx.js";
 import { usersRouter } from "./routes/users.js";
 import { importRouter } from "./routes/import.js";
@@ -99,10 +93,6 @@ app.use(errorHandler);
 app.listen(env.PORT, async () => {
   console.log(`Backend running on port ${env.PORT}`);
   await initSystemCategories();
-  await consolidateFoodCategories();
-  await migrateTakeout();
-  await mapMonzoCategories();
-  await migrateOwners();
   try {
     await rescueSofiChaseFx();
   } catch (err) {
