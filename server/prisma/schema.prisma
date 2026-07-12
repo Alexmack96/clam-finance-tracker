@@ -94,7 +94,8 @@ model Transaction {
 // One staging model per bank — each preserves that bank's raw CSV schema exactly.
 // The process step normalises all of them into the shared Transaction model.
 
-// Monzo: synced directly from the Monzo Developer API.
+// Monzo: synced directly from the Monzo Developer API, covering both the
+// uk_retail (debit) and uk_monzo_flex (Flex credit card) accounts.
 // Fields mirror the API response — no CSV quirks.
 model MonzoApiTransaction {
   id                 String    @id @default(cuid())

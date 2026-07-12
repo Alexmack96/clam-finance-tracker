@@ -438,8 +438,8 @@ export function ImportPage() {
           ) : !monzoStatus.connected ? (
             <>
               <p className="text-sm text-muted-foreground">
-                Connect your Monzo account — tokens refresh automatically, no more manual
-                copy-paste.
+                Connect your Monzo account — pulls both your debit account and Flex card, tokens
+                refresh automatically, no more manual copy-paste.
               </p>
               <a href="/api/admin/monzo/auth">
                 <Button>Connect Monzo</Button>

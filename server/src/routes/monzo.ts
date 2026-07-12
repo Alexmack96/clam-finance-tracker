@@ -232,6 +232,11 @@ type MonzoTx = {
   merchant?: { name?: string; emoji?: string; address?: { short_formatted?: string } } | null;
 };
 
+// Account types we pull transactions from. uk_monzo_flex is undocumented but
+// real — confirmed via the Monzo developer community. Its backing_loan sibling
+// account returns 403 on every endpoint, so it's deliberately excluded.
+const SYNCED_ACCOUNT_TYPES = new Set(["uk_retail", "uk_monzo_flex"]);
+
 monzoRouter.post("/sync", requireAuth, async (_req, res) => {
   if (!monzoGuard(res)) return;
 
@@ -244,103 +249,111 @@ monzoRouter.post("/sync", requireAuth, async (_req, res) => {
   // Auto-refresh if needed — throws 401 if refresh token is also dead
   credential = await ensureFreshToken(credential);
 
-  // Resolve account ID if not yet stored
-  if (!credential.accountId) {
-    console.log("[monzo:sync] no accountId stored, fetching from API");
-    const accountsResp = await fetch("https://api.monzo.com/accounts?account_type=uk_retail", {
-      headers: { Authorization: `Bearer ${credential.accessToken}` },
-    });
-    if (!accountsResp.ok) {
-      const body = await accountsResp.text();
-      res.status(502).json({ error: `Could not fetch Monzo account ID: ${body}` });
-      return;
-    }
-    const { accounts } = (await accountsResp.json()) as {
-      accounts: { id: string; closed: boolean }[];
-    };
-    console.log(
-      "[monzo:sync] accounts:",
-      accounts.map((a) => ({ id: a.id, closed: a.closed })),
-    );
-    const account = accounts.find((a) => !a.closed);
-    if (!account) {
-      res.status(502).json({ error: "No open Monzo account found" });
-      return;
-    }
-    credential = await db.monzoCredential.update({
-      where: { id: credential.id },
-      data: { accountId: account.id },
-    });
-    console.log("[monzo:sync] accountId saved:", account.id);
-  }
-
-  const latest = await db.monzoApiTransaction.findFirst({
-    orderBy: { created: "desc" },
-    select: { monzoId: true },
+  const accountsResp = await fetch("https://api.monzo.com/accounts", {
+    headers: { Authorization: `Bearer ${credential.accessToken}` },
   });
-  const since = latest?.monzoId ?? "2025-12-31T23:59:59.000Z";
-
-  const allTxs: MonzoTx[] = [];
-  let cursor = since;
-
-  for (let page = 0; page < 50; page++) {
-    const url = new URL("https://api.monzo.com/transactions");
-    url.searchParams.set("account_id", credential.accountId!);
-    url.searchParams.set("since", cursor);
-    url.searchParams.set("limit", "100");
-    url.searchParams.set("expand[]", "merchant");
-
-    const txResp = await fetch(url.toString(), {
-      headers: { Authorization: `Bearer ${credential.accessToken}` },
-    });
-    if (!txResp.ok) {
-      const body = await txResp.text();
-      res.status(502).json({ error: `Monzo /transactions failed: ${body}` });
-      return;
-    }
-
-    const data = (await txResp.json()) as { transactions: MonzoTx[] };
-    allTxs.push(...data.transactions.filter((tx) => tx.settled && !tx.decline_reason));
-    if (data.transactions.length < 100) break;
-    cursor = data.transactions[data.transactions.length - 1].id;
+  if (!accountsResp.ok) {
+    const body = await accountsResp.text();
+    res.status(502).json({ error: `Could not fetch Monzo accounts: ${body}` });
+    return;
   }
+  const { accounts } = (await accountsResp.json()) as {
+    accounts: { id: string; type: string; closed: boolean }[];
+  };
+  console.log(
+    "[monzo:sync] accounts:",
+    accounts.map((a) => ({ id: a.id, type: a.type, closed: a.closed })),
+  );
 
-  if (allTxs.length === 0) {
-    res.json({ imported: 0, duplicates: 0 });
+  const syncAccounts = accounts.filter((a) => !a.closed && SYNCED_ACCOUNT_TYPES.has(a.type));
+  if (syncAccounts.length === 0) {
+    res.status(502).json({ error: "No open Monzo retail or Flex account found" });
     return;
   }
 
-  const ids = allTxs.map((tx) => tx.id);
-  const existing = await db.monzoApiTransaction.findMany({
-    where: { monzoId: { in: ids } },
-    select: { monzoId: true },
-  });
-  const existingSet = new Set(existing.map((r) => r.monzoId));
+  // Resolve primary (retail) account ID if not yet stored — used only for status display.
+  if (!credential.accountId) {
+    const retail = syncAccounts.find((a) => a.type === "uk_retail") ?? syncAccounts[0];
+    credential = await db.monzoCredential.update({
+      where: { id: credential.id },
+      data: { accountId: retail.id },
+    });
+    console.log("[monzo:sync] accountId saved:", retail.id);
+  }
 
-  const toInsert: Prisma.MonzoApiTransactionCreateManyInput[] = allTxs
-    .filter((tx) => !existingSet.has(tx.id))
-    .map((tx) => ({
-      monzoId: tx.id,
-      created: new Date(tx.created),
-      settled: tx.settled ? new Date(tx.settled) : null,
-      amountPence: tx.amount,
-      currency: tx.currency,
-      localAmountPence: tx.local_amount,
-      localCurrency: tx.local_currency,
-      description: tx.description,
-      notes: tx.notes || null,
-      monzoCategory: tx.category,
-      merchantName: tx.merchant?.name ?? null,
-      merchantEmoji: tx.merchant?.emoji ?? null,
-      merchantAddress: tx.merchant?.address?.short_formatted ?? null,
-      scheme: tx.scheme ?? null,
-      includeInSpending: tx.include_in_spending,
-      accountId: credential!.accountId!,
-    }));
+  let totalImported = 0;
+  let totalDuplicates = 0;
 
-  if (toInsert.length > 0) await db.monzoApiTransaction.createMany({ data: toInsert });
+  for (const account of syncAccounts) {
+    // "since" must be a timestamp or a transaction ID belonging to *this* account,
+    // so the cursor is tracked per account rather than globally.
+    const latest = await db.monzoApiTransaction.findFirst({
+      where: { accountId: account.id },
+      orderBy: { created: "desc" },
+      select: { monzoId: true },
+    });
+    let cursor = latest?.monzoId ?? "2025-12-31T23:59:59.000Z";
 
-  res.json({ imported: toInsert.length, duplicates: allTxs.length - toInsert.length });
+    const allTxs: MonzoTx[] = [];
+    for (let page = 0; page < 50; page++) {
+      const url = new URL("https://api.monzo.com/transactions");
+      url.searchParams.set("account_id", account.id);
+      url.searchParams.set("since", cursor);
+      url.searchParams.set("limit", "100");
+      url.searchParams.set("expand[]", "merchant");
+
+      const txResp = await fetch(url.toString(), {
+        headers: { Authorization: `Bearer ${credential.accessToken}` },
+      });
+      if (!txResp.ok) {
+        const body = await txResp.text();
+        res.status(502).json({ error: `Monzo /transactions failed for ${account.type}: ${body}` });
+        return;
+      }
+
+      const data = (await txResp.json()) as { transactions: MonzoTx[] };
+      allTxs.push(...data.transactions.filter((tx) => tx.settled && !tx.decline_reason));
+      if (data.transactions.length < 100) break;
+      cursor = data.transactions[data.transactions.length - 1].id;
+    }
+
+    if (allTxs.length === 0) continue;
+
+    const ids = allTxs.map((tx) => tx.id);
+    const existing = await db.monzoApiTransaction.findMany({
+      where: { monzoId: { in: ids } },
+      select: { monzoId: true },
+    });
+    const existingSet = new Set(existing.map((r) => r.monzoId));
+
+    const toInsert: Prisma.MonzoApiTransactionCreateManyInput[] = allTxs
+      .filter((tx) => !existingSet.has(tx.id))
+      .map((tx) => ({
+        monzoId: tx.id,
+        created: new Date(tx.created),
+        settled: tx.settled ? new Date(tx.settled) : null,
+        amountPence: tx.amount,
+        currency: tx.currency,
+        localAmountPence: tx.local_amount,
+        localCurrency: tx.local_currency,
+        description: tx.description,
+        notes: tx.notes || null,
+        monzoCategory: tx.category,
+        merchantName: tx.merchant?.name ?? null,
+        merchantEmoji: tx.merchant?.emoji ?? null,
+        merchantAddress: tx.merchant?.address?.short_formatted ?? null,
+        scheme: tx.scheme ?? null,
+        includeInSpending: tx.include_in_spending,
+        accountId: account.id,
+      }));
+
+    if (toInsert.length > 0) await db.monzoApiTransaction.createMany({ data: toInsert });
+
+    totalImported += toInsert.length;
+    totalDuplicates += allTxs.length - toInsert.length;
+  }
+
+  res.json({ imported: totalImported, duplicates: totalDuplicates });
 });
 
 // ─── POST /api/admin/monzo/disconnect ────────────────────────────────────────
