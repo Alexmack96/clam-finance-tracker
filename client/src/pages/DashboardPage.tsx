@@ -136,6 +136,12 @@ const OWNER_STYLES: Record<Owner, string> = {
 const fmt = (n: number) =>
   new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP" }).format(n);
 
+// Short buzz to confirm the reviewed toggle actually landed — mobile PWA has no
+// native tap feedback, so this is the only "it worked" signal on touch devices.
+function hapticFeedback() {
+  if (typeof navigator !== "undefined" && "vibrate" in navigator) navigator.vibrate(15);
+}
+
 // ─── Inline cell components ───────────────────────────────────────────────────
 
 function NoteCell({
@@ -652,13 +658,13 @@ function ReviewedRenderer({
     <button
       onClick={() => context.update(data.id, { reviewed: !data.reviewed })}
       title={data.reviewed ? "Mark as unreviewed" : "Mark as reviewed"}
-      className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
+      className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
         data.reviewed
           ? "bg-green-500 border-green-500 text-white"
           : "border-muted-foreground/40 hover:border-green-400"
       }`}
     >
-      {data.reviewed && <span className="text-[10px] leading-none">✓</span>}
+      {data.reviewed && <span className="text-xs leading-none">✓</span>}
     </button>
   );
 }
@@ -834,13 +840,13 @@ function MobileTransactionCard({
           </span>
           <button
             onClick={() => onUpdate(tx.id, { reviewed: !tx.reviewed })}
-            className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors shrink-0 ${
+            className={`w-7 h-7 rounded-full border-2 flex items-center justify-center transition-colors shrink-0 ${
               tx.reviewed
                 ? "bg-green-500 border-green-500 text-white"
                 : "border-muted-foreground/40"
             }`}
           >
-            {tx.reviewed && <span className="text-[10px] leading-none">✓</span>}
+            {tx.reviewed && <span className="text-xs leading-none">✓</span>}
           </button>
         </div>
       </div>
@@ -911,6 +917,7 @@ export function DashboardPage() {
       savingType?: SavingType | null;
     }) => api.patch<Transaction>(`/api/transactions/${id}`, data).then((r) => r.data),
     onSuccess: (updated, variables) => {
+      if (variables.reviewed !== undefined) hapticFeedback();
       // Sync query cache with server truth
       queryClient.setQueryData<Transaction[]>(["transactions"], (prev) =>
         prev ? prev.map((t) => (t.id === updated.id ? updated : t)) : prev,
