@@ -1,7 +1,20 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { AllCommunityModule, ModuleRegistry, themeQuartz } from "ag-grid-community";
+import {
+  ClientSideRowModelModule,
+  ClientSideRowModelApiModule,
+  RowApiModule,
+  CustomFilterModule,
+  DateFilterModule,
+  TextFilterModule,
+  NumberFilterModule,
+  RowSelectionModule,
+  CellStyleModule,
+  ValidationModule,
+  ModuleRegistry,
+  themeQuartz,
+} from "ag-grid-community";
 import type { ColDef, GridApi } from "ag-grid-community";
 import { AgGridReact, useGridFilter } from "ag-grid-react";
 import type { CustomCellRendererProps, CustomFilterProps } from "ag-grid-react";
@@ -23,8 +36,20 @@ import {
 } from "../components/ui/alert-dialog.js";
 import api from "../lib/api.js";
 import { bankSource, SOURCE_STYLES, type BankSource } from "../lib/bankSource.js";
+import { useIsDesktop } from "../lib/useIsDesktop.js";
 
-ModuleRegistry.registerModules([AllCommunityModule]);
+ModuleRegistry.registerModules([
+  ClientSideRowModelModule,
+  ClientSideRowModelApiModule,
+  RowApiModule,
+  CustomFilterModule,
+  DateFilterModule,
+  TextFilterModule,
+  NumberFilterModule,
+  RowSelectionModule,
+  CellStyleModule,
+  ValidationModule,
+]);
 
 // ─── Theme ────────────────────────────────────────────────────────────────────
 
@@ -842,6 +867,7 @@ function MobileTransactionCard({
 
 export function DashboardPage() {
   const queryClient = useQueryClient();
+  const isDesktop = useIsDesktop();
   const gridApiRef = useRef<GridApi<Transaction>>();
   const noteEditTriggers = useRef<Map<string, () => void>>(new Map());
   const registerNoteEdit = useCallback((id: string, fn: () => void) => {
@@ -1249,265 +1275,274 @@ export function DashboardPage() {
         </Card>
       </div>
 
-      {/* Transactions — mobile card list */}
-      <Card className="rise rise-6 overflow-hidden md:hidden">
-        <CardHeader className="pb-2">
-          <div className="flex items-baseline justify-between gap-3">
+      {/* Transactions — mobile card list. Gated on a real media query, not
+          `md:hidden`, so the ~1.8k cards never mount on desktop. */}
+      {!isDesktop && (
+        <Card className="rise rise-6 overflow-hidden">
+          <CardHeader className="pb-2">
+            <div className="flex items-baseline justify-between gap-3">
+              <div className="flex items-baseline gap-3">
+                <CardTitle className="eyebrow">Transactions</CardTitle>
+                <span className="text-xs text-muted-foreground font-numeric">
+                  {mobileFiltersActive ? (
+                    <>
+                      {mobileTransactions.length}{" "}
+                      <span className="text-muted-foreground/50">of</span> {transactions.length}
+                    </>
+                  ) : (
+                    <>{transactions.length} entries</>
+                  )}
+                </span>
+              </div>
+              {mobileFiltersActive && (
+                <button
+                  onClick={resetMobileFilters}
+                  className="text-xs text-muted-foreground hover:text-foreground underline-offset-2 hover:underline"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="px-4 pb-3 space-y-2">
+              <Input
+                placeholder="Search description or note…"
+                value={mobileSearch}
+                onChange={(e) => setMobileSearch(e.target.value)}
+                className="h-9 bg-background/40 text-sm"
+              />
+              <div className="flex items-center gap-1.5 overflow-x-auto -mx-1 px-1 pb-0.5">
+                {(["All", "Alex", "Casey", "Joint"] as const).map((o) => (
+                  <button
+                    key={o}
+                    onClick={() => setMobileOwner(o)}
+                    className={`shrink-0 px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${
+                      mobileOwner === o
+                        ? o === "All"
+                          ? "bg-foreground text-background border-foreground"
+                          : `${OWNER_STYLES[o as Owner]} bg-accent/50`
+                        : o === "All"
+                          ? "text-muted-foreground border-border hover:bg-accent"
+                          : `${OWNER_STYLES[o as Owner]} opacity-60 hover:opacity-100`
+                    }`}
+                  >
+                    {o}
+                  </button>
+                ))}
+              </div>
+              <div className="flex items-center gap-1.5 overflow-x-auto -mx-1 px-1 pb-0.5">
+                {(["All", "Unreviewed", "Reviewed"] as const).map((s) => (
+                  <button
+                    key={s}
+                    onClick={() => setMobileStatus(s)}
+                    className={`shrink-0 px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${
+                      mobileStatus === s
+                        ? s === "Reviewed"
+                          ? "text-green-600 border-green-600 bg-green-600/10"
+                          : s === "Unreviewed"
+                            ? "text-amber-600 border-amber-600 bg-amber-600/10"
+                            : "bg-foreground text-background border-foreground"
+                        : "text-muted-foreground border-border hover:bg-accent"
+                    }`}
+                  >
+                    {s}
+                  </button>
+                ))}
+                <button
+                  onClick={() => setMobileFiltersOpen((v) => !v)}
+                  className={`shrink-0 ml-auto px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${
+                    mobileCategoryId !== "All" || mobileSource !== "All"
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "text-muted-foreground border-border hover:bg-accent"
+                  }`}
+                >
+                  {mobileFiltersOpen ? "Less" : "More"}
+                </button>
+              </div>
+              {mobileFiltersOpen && (
+                <div className="flex items-center gap-2 pt-1">
+                  <select
+                    value={mobileCategoryId}
+                    onChange={(e) => setMobileCategoryId(e.target.value)}
+                    className="flex-1 border border-input bg-background/40 text-foreground rounded-md px-2 h-9 text-xs"
+                  >
+                    <option value="All">All categories</option>
+                    {categories.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    value={mobileSource}
+                    onChange={(e) => setMobileSource(e.target.value as "All" | BankSource)}
+                    className="flex-1 border border-input bg-background/40 text-foreground rounded-md px-2 h-9 text-xs"
+                  >
+                    <option value="All">All sources</option>
+                    {SOURCES.map((s) => (
+                      <option key={s} value={s}>
+                        {s}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+            </div>
+            <div className="divide-y divide-border px-4">
+              {mobileTransactions.length === 0 ? (
+                <div className="py-8 text-center text-sm text-muted-foreground">
+                  No transactions match these filters.
+                </div>
+              ) : (
+                mobileTransactions.map((tx) => (
+                  <MobileTransactionCard
+                    key={tx.id}
+                    tx={tx}
+                    categories={categories}
+                    onUpdate={handleMobileUpdate}
+                  />
+                ))
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Transactions — desktop AG Grid */}
+      {isDesktop && (
+        <Card className="rise rise-6 overflow-hidden">
+          <CardHeader className="pb-3 flex flex-row items-center justify-between">
             <div className="flex items-baseline gap-3">
               <CardTitle className="eyebrow">Transactions</CardTitle>
               <span className="text-xs text-muted-foreground font-numeric">
-                {mobileFiltersActive ? (
+                {filteredCount !== null ? (
                   <>
-                    {mobileTransactions.length} <span className="text-muted-foreground/50">of</span>{" "}
+                    {filteredCount} <span className="text-muted-foreground/50">of</span>{" "}
                     {transactions.length}
                   </>
                 ) : (
                   <>{transactions.length} entries</>
                 )}
               </span>
+              {filteredSum !== null && (
+                <span className="text-xs text-muted-foreground">
+                  · Net{" "}
+                  <span
+                    className={`font-numeric font-semibold ${filteredSum >= 0 ? "text-[var(--signal)]" : "text-destructive"}`}
+                  >
+                    {filteredSum >= 0 ? "+" : ""}
+                    {fmt(filteredSum)}
+                  </span>
+                </span>
+              )}
             </div>
-            {mobileFiltersActive && (
-              <button
-                onClick={resetMobileFilters}
-                className="text-xs text-muted-foreground hover:text-foreground underline-offset-2 hover:underline"
-              >
-                Clear
-              </button>
-            )}
-          </div>
-        </CardHeader>
-        <CardContent className="p-0">
-          <div className="px-4 pb-3 space-y-2">
-            <Input
-              placeholder="Search description or note…"
-              value={mobileSearch}
-              onChange={(e) => setMobileSearch(e.target.value)}
-              className="h-9 bg-background/40 text-sm"
-            />
-            <div className="flex items-center gap-1.5 overflow-x-auto -mx-1 px-1 pb-0.5">
-              {(["All", "Alex", "Casey", "Joint"] as const).map((o) => (
-                <button
-                  key={o}
-                  onClick={() => setMobileOwner(o)}
-                  className={`shrink-0 px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${
-                    mobileOwner === o
-                      ? o === "All"
-                        ? "bg-foreground text-background border-foreground"
-                        : `${OWNER_STYLES[o as Owner]} bg-accent/50`
-                      : o === "All"
-                        ? "text-muted-foreground border-border hover:bg-accent"
-                        : `${OWNER_STYLES[o as Owner]} opacity-60 hover:opacity-100`
-                  }`}
-                >
-                  {o}
-                </button>
-              ))}
-            </div>
-            <div className="flex items-center gap-1.5 overflow-x-auto -mx-1 px-1 pb-0.5">
-              {(["All", "Unreviewed", "Reviewed"] as const).map((s) => (
-                <button
-                  key={s}
-                  onClick={() => setMobileStatus(s)}
-                  className={`shrink-0 px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${
-                    mobileStatus === s
-                      ? s === "Reviewed"
-                        ? "text-green-600 border-green-600 bg-green-600/10"
-                        : s === "Unreviewed"
-                          ? "text-amber-600 border-amber-600 bg-amber-600/10"
-                          : "bg-foreground text-background border-foreground"
-                      : "text-muted-foreground border-border hover:bg-accent"
-                  }`}
-                >
-                  {s}
-                </button>
-              ))}
-              <button
-                onClick={() => setMobileFiltersOpen((v) => !v)}
-                className={`shrink-0 ml-auto px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${
-                  mobileCategoryId !== "All" || mobileSource !== "All"
-                    ? "bg-primary text-primary-foreground border-primary"
-                    : "text-muted-foreground border-border hover:bg-accent"
-                }`}
-              >
-                {mobileFiltersOpen ? "Less" : "More"}
-              </button>
-            </div>
-            {mobileFiltersOpen && (
-              <div className="flex items-center gap-2 pt-1">
-                <select
-                  value={mobileCategoryId}
-                  onChange={(e) => setMobileCategoryId(e.target.value)}
-                  className="flex-1 border border-input bg-background/40 text-foreground rounded-md px-2 h-9 text-xs"
-                >
-                  <option value="All">All categories</option>
-                  {categories.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}
-                    </option>
-                  ))}
-                </select>
-                <select
-                  value={mobileSource}
-                  onChange={(e) => setMobileSource(e.target.value as "All" | BankSource)}
-                  className="flex-1 border border-input bg-background/40 text-foreground rounded-md px-2 h-9 text-xs"
-                >
-                  <option value="All">All sources</option>
-                  {SOURCES.map((s) => (
-                    <option key={s} value={s}>
-                      {s}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
-          </div>
-          <div className="divide-y divide-border px-4">
-            {mobileTransactions.length === 0 ? (
-              <div className="py-8 text-center text-sm text-muted-foreground">
-                No transactions match these filters.
-              </div>
-            ) : (
-              mobileTransactions.map((tx) => (
-                <MobileTransactionCard
-                  key={tx.id}
-                  tx={tx}
-                  categories={categories}
-                  onUpdate={handleMobileUpdate}
-                />
-              ))
-            )}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Transactions — desktop AG Grid */}
-      <Card className="rise rise-6 overflow-hidden hidden md:block">
-        <CardHeader className="pb-3 flex flex-row items-center justify-between">
-          <div className="flex items-baseline gap-3">
-            <CardTitle className="eyebrow">Transactions</CardTitle>
-            <span className="text-xs text-muted-foreground font-numeric">
-              {filteredCount !== null ? (
+            <div className="flex items-center gap-2">
+              {selectedIds.length > 0 ? (
                 <>
-                  {filteredCount} <span className="text-muted-foreground/50">of</span>{" "}
-                  {transactions.length}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-xs text-green-600 border-green-600/40 hover:bg-green-600/10"
+                    disabled={bulkReviewMutation.isPending}
+                    onClick={() => handleBulkReview(true)}
+                  >
+                    Mark {selectedIds.length} reviewed
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-xs text-muted-foreground hover:text-foreground"
+                    disabled={bulkReviewMutation.isPending}
+                    onClick={() => handleBulkReview(false)}
+                  >
+                    Unmark
+                  </Button>
                 </>
               ) : (
-                <>{transactions.length} entries</>
+                hasFilters && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-xs text-green-600 border-green-600/40 hover:bg-green-600/10"
+                    disabled={bulkReviewMutation.isPending}
+                    onClick={() => setPendingFilteredCount(getFilteredIds().length)}
+                  >
+                    Mark filtered reviewed
+                  </Button>
+                )
               )}
-            </span>
-            {filteredSum !== null && (
-              <span className="text-xs text-muted-foreground">
-                · Net{" "}
-                <span
-                  className={`font-numeric font-semibold ${filteredSum >= 0 ? "text-[var(--signal)]" : "text-destructive"}`}
-                >
-                  {filteredSum >= 0 ? "+" : ""}
-                  {fmt(filteredSum)}
-                </span>
-              </span>
-            )}
-          </div>
-          <div className="flex items-center gap-2">
-            {selectedIds.length > 0 ? (
-              <>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="text-xs text-green-600 border-green-600/40 hover:bg-green-600/10"
-                  disabled={bulkReviewMutation.isPending}
-                  onClick={() => handleBulkReview(true)}
-                >
-                  Mark {selectedIds.length} reviewed
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="text-xs text-muted-foreground hover:text-foreground"
-                  disabled={bulkReviewMutation.isPending}
-                  onClick={() => handleBulkReview(false)}
-                >
-                  Unmark
-                </Button>
-              </>
-            ) : (
-              hasFilters && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="text-xs text-green-600 border-green-600/40 hover:bg-green-600/10"
-                  disabled={bulkReviewMutation.isPending}
-                  onClick={() => setPendingFilteredCount(getFilteredIds().length)}
-                >
-                  Mark filtered reviewed
-                </Button>
-              )
-            )}
-            <Button
-              variant="outline"
-              size="sm"
-              className="text-xs text-muted-foreground hover:text-foreground"
-              disabled={!hasFilters}
-              onClick={() => {
-                gridApiRef.current?.setFilterModel(null);
-              }}
-            >
-              Clear filters
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent className="p-0">
-          <AgGridReact<Transaction>
-            theme={gridTheme}
-            rowData={transactions}
-            columnDefs={columnDefs}
-            context={gridContext}
-            domLayout="autoHeight"
-            defaultColDef={{ sortable: true, resizable: true, suppressMovable: true }}
-            rowSelection={{
-              mode: "multiRow",
-              checkboxes: true,
-              headerCheckbox: true,
-              enableClickSelection: false,
-            }}
-            enableCellTextSelection
-            getRowId={(p) => p.data.id}
-            onGridReady={(e) => {
-              gridApiRef.current = e.api;
-            }}
-            onCellKeyDown={(params) => {
-              if (
-                params.event?.key !== "Enter" ||
-                params.column.getColId() !== "note" ||
-                !params.data
-              )
-                return;
-              params.event.preventDefault();
-              noteEditTriggers.current.get(params.data.id)?.();
-            }}
-            onSelectionChanged={(e) => {
-              setSelectedIds(e.api.getSelectedRows().map((r) => r.id));
-            }}
-            onFilterChanged={(e) => {
-              const model = e.api.getFilterModel();
-              const active = Object.keys(model).length > 0;
-              setHasFilters(active);
-              if (!active) {
-                setFilteredCount(null);
-                setFilteredSum(null);
-                return;
-              }
-              let sum = 0;
-              e.api.forEachNodeAfterFilter((node) => {
-                const tx = node.data as Transaction | undefined;
-                if (!tx) return;
-                sum += tx.type === "Income" ? parseFloat(tx.amount) : -parseFloat(tx.amount);
-              });
-              setFilteredCount(e.api.getDisplayedRowCount());
-              setFilteredSum(sum);
-            }}
-          />
-        </CardContent>
-      </Card>
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-xs text-muted-foreground hover:text-foreground"
+                disabled={!hasFilters}
+                onClick={() => {
+                  gridApiRef.current?.setFilterModel(null);
+                }}
+              >
+                Clear filters
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="p-0">
+            {/* Fixed height (not domLayout="autoHeight") so AG Grid keeps row
+              virtualisation. autoHeight renders every row into the DOM, which
+              at ~1.8k rows × 10 columns froze the page for seconds. */}
+            <div style={{ height: "70vh", minHeight: 420 }}>
+              <AgGridReact<Transaction>
+                theme={gridTheme}
+                rowData={transactions}
+                columnDefs={columnDefs}
+                context={gridContext}
+                defaultColDef={{ sortable: true, resizable: true, suppressMovable: true }}
+                rowSelection={{
+                  mode: "multiRow",
+                  checkboxes: true,
+                  headerCheckbox: true,
+                  enableClickSelection: false,
+                }}
+                enableCellTextSelection
+                getRowId={(p) => p.data.id}
+                onGridReady={(e) => {
+                  gridApiRef.current = e.api;
+                }}
+                onCellKeyDown={(params) => {
+                  if (
+                    params.event?.key !== "Enter" ||
+                    params.column.getColId() !== "note" ||
+                    !params.data
+                  )
+                    return;
+                  params.event.preventDefault();
+                  noteEditTriggers.current.get(params.data.id)?.();
+                }}
+                onSelectionChanged={(e) => {
+                  setSelectedIds(e.api.getSelectedRows().map((r) => r.id));
+                }}
+                onFilterChanged={(e) => {
+                  const model = e.api.getFilterModel();
+                  const active = Object.keys(model).length > 0;
+                  setHasFilters(active);
+                  if (!active) {
+                    setFilteredCount(null);
+                    setFilteredSum(null);
+                    return;
+                  }
+                  let sum = 0;
+                  e.api.forEachNodeAfterFilter((node) => {
+                    const tx = node.data as Transaction | undefined;
+                    if (!tx) return;
+                    sum += tx.type === "Income" ? parseFloat(tx.amount) : -parseFloat(tx.amount);
+                  });
+                  setFilteredCount(e.api.getDisplayedRowCount());
+                  setFilteredSum(sum);
+                }}
+              />
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Confirm bulk-mark of all filtered transactions */}
       <AlertDialog

@@ -12,7 +12,16 @@ import {
   Pie,
   Cell,
 } from "recharts";
-import { AllCommunityModule, ModuleRegistry, themeQuartz } from "ag-grid-community";
+import {
+  ClientSideRowModelModule,
+  TextEditorModule,
+  NumberEditorModule,
+  PinnedRowModule,
+  CellStyleModule,
+  ValidationModule,
+  ModuleRegistry,
+  themeQuartz,
+} from "ag-grid-community";
 import type { ColDef, CellValueChangedEvent, GetRowIdParams } from "ag-grid-community";
 import type { CustomCellRendererProps } from "ag-grid-react";
 import { AgGridReact } from "ag-grid-react";
@@ -48,7 +57,14 @@ import {
 } from "../components/ui/alert-dialog.js";
 import api from "../lib/api.js";
 
-ModuleRegistry.registerModules([AllCommunityModule]);
+ModuleRegistry.registerModules([
+  ClientSideRowModelModule,
+  TextEditorModule,
+  NumberEditorModule,
+  PinnedRowModule,
+  CellStyleModule,
+  ValidationModule,
+]);
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 

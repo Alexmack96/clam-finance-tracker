@@ -115,13 +115,15 @@ dashboardRouter.get("/analytics", async (_req, res) => {
     .map(([owner, amount]) => ({ owner, amount }))
     .filter((o) => o.amount > 0);
 
-  const merchantMap: Record<string, number> = {};
-  for (const t of expenses)
-    merchantMap[t.description] = (merchantMap[t.description] ?? 0) + Number(t.amount);
-  const topMerchants = Object.entries(merchantMap)
-    .map(([name, amount]) => ({ name, amount }))
-    .sort((a, b) => b.amount - a.amount)
-    .slice(0, 10);
+  const golfCat = await db.category.findUnique({ where: { name: "Golf" } });
+  const monthlyGolf = MONTHS.slice(0, currentMonthIdx + 1).map((month, i) => ({
+    month,
+    amount: golfCat
+      ? expenses
+          .filter((t) => t.categoryId === golfCat.id && new Date(t.date).getMonth() === i)
+          .reduce((s, t) => s + Number(t.amount), 0)
+      : 0,
+  }));
 
   const funCategories = FUN_CATEGORIES.map((name) => ({
     name,
@@ -183,6 +185,6 @@ dashboardRouter.get("/analytics", async (_req, res) => {
     foodCategories,
     spendingByCategory,
     ownerBreakdown,
-    topMerchants,
+    monthlyGolf,
   });
 });

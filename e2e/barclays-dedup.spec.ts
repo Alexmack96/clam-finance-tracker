@@ -93,7 +93,7 @@ const EXPECTED_STAGED_COUNT = 7;
 function clearTestData() {
   runBunScript(
     `import { Database } from 'bun:sqlite';\n` +
-    `const db = new Database('${dbPath}');\n` +
+    `const db = new Database('${dbPath}'); db.run('PRAGMA busy_timeout = 15000');\n` +
     `db.run("DELETE FROM barclays_transaction WHERE description LIKE 'E2EDEDUP%'");\n` +
     `db.run("DELETE FROM \\"transaction\\" WHERE description LIKE 'E2EDEDUP%'");\n`,
   );
@@ -102,7 +102,7 @@ function clearTestData() {
 function countTransactionRows(): number {
   const out = runBunScript(
     `import { Database } from 'bun:sqlite';\n` +
-    `const db = new Database('${dbPath}');\n` +
+    `const db = new Database('${dbPath}'); db.run('PRAGMA busy_timeout = 15000');\n` +
     `const r = db.query("SELECT COUNT(*) as cnt FROM \\"transaction\\" WHERE description LIKE 'E2EDEDUP%'").get();\n` +
     `process.stdout.write(String(r.cnt) + '\\n');\n`,
   );

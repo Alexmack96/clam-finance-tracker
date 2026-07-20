@@ -14,83 +14,25 @@ const upload = multer({
   limits: { fileSize: 20 * 1024 * 1024 },
 });
 
-// ─── Monzo API category slug → system category ──────────────────────────────
-
-const MONZO_API_CATEGORY_MAP: Record<string, string> = {
-  eating_out: "Food & Social",
-  entertainment: "Entertainment",
-  groceries: "Groceries",
-  holidays: "Vacation",
-  income: "Net",
-  personal_care: "Personal Care",
-  savings: "Investments",
-  shopping: "Uncategorised",
-  transfers: "Net",
-  transport: "Transport",
-  bills: "Uncategorised",
-  finances: "Net",
-  general: "Uncategorised",
-};
-
-// ─── Merchant name overrides ─────────────────────────────────────────────────
-
-const MERCHANT_OVERRIDES: { pattern: RegExp; category: string }[] = [
-  {
-    pattern:
-      /sainsbury|tesco|waitrose|lidl|aldi|asda|morrisons|whole\s*foods|co-op|budgens|marks.*partner|m&s\s*food|zabka|udderlicious|dusty\s*knuckle|avoman|venchi|cocoamore/i,
-    category: "Groceries",
-  },
-  {
-    pattern:
-      /trainline|easyjet|ryanair|british\s*airways|tfl\s*travel|lul\s*ticket|transport\s*for\s*london|lime\*ride|lime\*\d|uber/i,
-    category: "Transport",
-  },
-  {
-    pattern: /vanguard|coinbase/i,
-    category: "Investments",
-  },
-  {
-    pattern: /deliveroo|uber.?eats|wingstop/i,
-    category: "Takeout",
-  },
-];
-
-function resolveCategory(monzoCategory: string, merchantName: string): string {
-  for (const { pattern, category } of MERCHANT_OVERRIDES) {
-    if (pattern.test(merchantName)) return category;
-  }
-  return MONZO_API_CATEGORY_MAP[monzoCategory] ?? "Uncategorised";
-}
-
-function resolveCategoryByMerchant(merchantName: string): string {
-  for (const { pattern, category } of MERCHANT_OVERRIDES) {
-    if (pattern.test(merchantName)) return category;
-  }
-  return "Uncategorised";
-}
-
 // ─── Owner detection ─────────────────────────────────────────────────────────
+// Only used for Monzo transfers/income, to route joint-account money movements
+// to whichever person the description names. Everything else defaults to the
+// account owner. This is independent of category assignment, which is rules-only.
 
+const NET_MONZO_CATEGORIES = new Set(["income", "transfers", "finances"]);
 const ALEX_PATTERNS = [/mackintosh/i, /\balex\b/i];
 const CASEY_PATTERNS = [/liddy/i, /\bcasey\b/i];
 
 function resolveOwner(
-  categoryName: string,
+  monzoCategory: string,
   merchantName: string,
   defaultOwner: "Alex" | "Casey" | "Joint" = "Joint",
 ): "Alex" | "Casey" | "Joint" {
-  if (categoryName === "Net") {
+  if (NET_MONZO_CATEGORIES.has(monzoCategory)) {
     for (const p of ALEX_PATTERNS) if (p.test(merchantName)) return "Alex";
     for (const p of CASEY_PATTERNS) if (p.test(merchantName)) return "Casey";
   }
   return defaultOwner;
-}
-
-async function findCategory(name: string) {
-  return (
-    (await db.category.findUnique({ where: { name } })) ??
-    (await db.category.findUniqueOrThrow({ where: { name: "Uncategorised" } }))
-  );
 }
 
 // ─── Shared date helpers ─────────────────────────────────────────────────────
@@ -1508,6 +1450,7 @@ importRouter.post("/process", async (_req, res) => {
   let errored = 0;
 
   const categoryRules = await db.categoryRule.findMany({ include: { category: true } });
+  const uncategorised = await db.category.findUniqueOrThrow({ where: { name: "Uncategorised" } });
 
   // ── Monzo ──────────────────────────────────────────────────────────────────
   // The retail (debit) account's ID is the "primary" one stored on the credential.
@@ -1522,10 +1465,8 @@ importRouter.post("/process", async (_req, res) => {
     const type = row.amountPence >= 0 ? "Income" : "Expense";
     const amount = Math.abs(row.amountPence) / 100;
     const name = row.merchantName ?? row.description;
-    const categoryName = resolveCategory(row.monzoCategory, name);
-    const category =
-      resolveRuleCategory(categoryRules, bank, name) ?? (await findCategory(categoryName));
-    const owner = resolveOwner(categoryName, name, "Alex");
+    const category = resolveRuleCategory(categoryRules, bank, name) ?? uncategorised;
+    const owner = resolveOwner(row.monzoCategory, name, "Alex");
     const externalId = `${bank}:${row.monzoId}`;
     const exists = await db.transaction.findUnique({ where: { externalId }, select: { id: true } });
     if (!exists)
@@ -1554,10 +1495,7 @@ importRouter.post("/process", async (_req, res) => {
       next = "errored";
       errored++;
     } else {
-      const categoryName = resolveCategoryByMerchant(row.description);
-      const category =
-        resolveRuleCategory(categoryRules, "amex", row.description) ??
-        (await findCategory(categoryName));
+      const category = resolveRuleCategory(categoryRules, "amex", row.description) ?? uncategorised;
       const amexExtId = `amex:${row.transactionId}`;
       const amexExists = await db.transaction.findUnique({
         where: { externalId: amexExtId },
@@ -1598,10 +1536,8 @@ importRouter.post("/process", async (_req, res) => {
         next = "errored";
         errored++;
       } else {
-        const categoryName = resolveCategoryByMerchant(row.description);
         const category =
-          resolveRuleCategory(categoryRules, "barclays", row.description) ??
-          (await findCategory(categoryName));
+          resolveRuleCategory(categoryRules, "barclays", row.description) ?? uncategorised;
         const barclaysExtId = `barclays:${row.transactionId ?? row.id}`;
         const barclaysExists = await db.transaction.findUnique({
           where: { externalId: barclaysExtId },
@@ -1641,10 +1577,8 @@ importRouter.post("/process", async (_req, res) => {
       next = "skipped";
       skipped++;
     } else {
-      const categoryName = resolveCategoryByMerchant(row.description);
       const category =
-        resolveRuleCategory(categoryRules, "santander", row.description) ??
-        (await findCategory(categoryName));
+        resolveRuleCategory(categoryRules, "santander", row.description) ?? uncategorised;
       const santanderExtId = `santander:${row.transactionId ?? row.id}`;
       const santanderExists = await db.transaction.findUnique({
         where: { externalId: santanderExtId },
@@ -1687,10 +1621,7 @@ importRouter.post("/process", async (_req, res) => {
       next = "skipped";
       skipped++;
     } else {
-      const categoryName = resolveCategoryByMerchant(row.description);
-      const category =
-        resolveRuleCategory(categoryRules, "hsbc", row.description) ??
-        (await findCategory(categoryName));
+      const category = resolveRuleCategory(categoryRules, "hsbc", row.description) ?? uncategorised;
       const hsbcExtId = `hsbc:${row.transactionId}`;
       const hsbcExists = await db.transaction.findUnique({
         where: { externalId: hsbcExtId },
@@ -1730,10 +1661,7 @@ importRouter.post("/process", async (_req, res) => {
       next = "skipped";
       skipped++;
     } else {
-      const categoryName = resolveCategoryByMerchant(row.description);
-      const category =
-        resolveRuleCategory(categoryRules, "sofi", row.description) ??
-        (await findCategory(categoryName));
+      const category = resolveRuleCategory(categoryRules, "sofi", row.description) ?? uncategorised;
       const sofiExtId = `sofi:${row.transactionId}`;
       const sofiExists = await db.transaction.findUnique({
         where: { externalId: sofiExtId },
@@ -1784,10 +1712,7 @@ importRouter.post("/process", async (_req, res) => {
       next = "skipped";
       skipped++;
     } else {
-      const categoryName = resolveCategoryByMerchant(row.description);
-      const category =
-        resolveRuleCategory(categoryRules, "chase", row.description) ??
-        (await findCategory(categoryName));
+      const category = resolveRuleCategory(categoryRules, "chase", row.description) ?? uncategorised;
       const chaseExtId = `chase:${row.transactionId}`;
       const chaseExists = await db.transaction.findUnique({
         where: { externalId: chaseExtId },
@@ -1835,8 +1760,8 @@ importRouter.post("/process", async (_req, res) => {
       next = "skipped";
       skipped++;
     } else {
-      const categoryName = resolveCategoryByMerchant(row.description);
-      const category = await findCategory(categoryName);
+      const category =
+        resolveRuleCategory(categoryRules, "santander", row.description) ?? uncategorised;
       const extId = `santander-plaid:${row.transactionId}`;
       const exists = await db.transaction.findUnique({
         where: { externalId: extId },

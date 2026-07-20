@@ -346,8 +346,8 @@ export function CategoriesPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete "{deleteTarget?.name}"?</AlertDialogTitle>
             <AlertDialogDescription>
-              This permanently removes the category and any auto-categorize rules that target it.
-              It can't be deleted while transactions still use it.
+              This permanently removes the category and any auto-categorize rules that target it. It
+              can't be deleted while transactions still use it.
             </AlertDialogDescription>
           </AlertDialogHeader>
           {deleteError && <p className="text-sm text-destructive">{deleteError}</p>}
@@ -407,7 +407,9 @@ function CategoryRulesPanel({ category, rules }: { category: CategoryRow; rules:
     onSuccess: ({ recategorized }) => {
       queryClient.invalidateQueries({ queryKey: ["categories"] });
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
-      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      // Recategorising shifts every per-category aggregate.
+      queryClient.invalidateQueries({ queryKey: ["summary"] });
+      queryClient.invalidateQueries({ queryKey: ["analytics"] });
       setMessage(
         `Recategorized ${recategorized} existing transaction${recategorized === 1 ? "" : "s"}.`,
       );
@@ -536,15 +538,15 @@ function CategoryRulesPanel({ category, rules }: { category: CategoryRow; rules:
             <AlertDialogTitle>Run this rule over existing transactions?</AlertDialogTitle>
             <AlertDialogDescription>
               "{pendingApplyRule?.pattern}"
-              {pendingApplyRule?.bank ? ` on ${BANK_LABELS[pendingApplyRule.bank]}` : " on any bank"}{" "}
+              {pendingApplyRule?.bank
+                ? ` on ${BANK_LABELS[pendingApplyRule.bank]}`
+                : " on any bank"}{" "}
               will recategorize any matching transaction into "{category.name}". The rule applies to
               future imports either way — this only affects transactions you already have.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setPendingApplyRule(null)}>
-              Not now
-            </AlertDialogCancel>
+            <AlertDialogCancel onClick={() => setPendingApplyRule(null)}>Not now</AlertDialogCancel>
             <AlertDialogAction
               onClick={(e) => {
                 e.preventDefault();

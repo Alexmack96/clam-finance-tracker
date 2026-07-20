@@ -36,7 +36,7 @@ interface AnalyticsData {
   monthlyFood: Record<string, number | string>[];
   foodCategories: { name: string; color: string }[];
   spendingByCategory: { name: string; color: string; value: number }[];
-  topMerchants: { name: string; amount: number }[];
+  monthlyGolf: { month: string; amount: number }[];
 }
 
 function ChartSkeleton() {
@@ -329,51 +329,52 @@ export function AnalyticsPage() {
           </CardContent>
         </Card>
 
-        {/* Top merchants */}
+        {/* Golf spending */}
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-xs uppercase tracking-wide text-muted-foreground">
-              Top Merchants
+              Monthly Golf Spending
             </CardTitle>
           </CardHeader>
           <CardContent>
             {isPending ? (
-              <div className="space-y-3">
-                {Array.from({ length: 8 }).map((_, i) => (
-                  <div key={i} className="flex items-center gap-3">
-                    <Skeleton className="h-4 w-4 rounded-full" />
-                    <Skeleton className="h-4 flex-1" />
-                    <Skeleton className="h-4 w-16" />
-                  </div>
-                ))}
-              </div>
+              <ChartSkeleton />
             ) : (
-              <ol className="space-y-2">
-                {data!.topMerchants.map((m, i) => {
-                  const max = data!.topMerchants[0].amount;
-                  return (
-                    <li key={i} className="flex items-center gap-3 text-sm">
-                      <span className="text-muted-foreground/50 w-4 text-right shrink-0">
-                        {i + 1}
-                      </span>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between mb-0.5">
-                          <span className="truncate text-foreground">{m.name}</span>
-                          <span className="text-muted-foreground ml-2 shrink-0">
-                            {fmt(m.amount)}
-                          </span>
-                        </div>
-                        <div className="h-1 rounded-full bg-muted overflow-hidden">
-                          <div
-                            className="h-full rounded-full bg-primary"
-                            style={{ width: `${(m.amount / max) * 100}%` }}
-                          />
-                        </div>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ol>
+              <ResponsiveContainer width="100%" height={280}>
+                <BarChart
+                  data={data!.monthlyGolf}
+                  margin={{ top: 4, right: 16, left: 8, bottom: 0 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" stroke={GRID} />
+                  <XAxis
+                    dataKey="month"
+                    tick={{ fill: TICK, fontSize: 12 }}
+                    axisLine={false}
+                    tickLine={false}
+                  />
+                  <YAxis
+                    tickFormatter={(v) => `£${v}`}
+                    tick={{ fill: TICK, fontSize: 11 }}
+                    axisLine={false}
+                    tickLine={false}
+                    width={56}
+                  />
+                  <Tooltip
+                    formatter={(v) => fmt(v as number)}
+                    contentStyle={{
+                      background: "var(--popover)",
+                      border: "1px solid var(--border)",
+                      borderRadius: 8,
+                    }}
+                  />
+                  <Bar
+                    dataKey="amount"
+                    name="Golf"
+                    fill="#22c55e"
+                    radius={[4, 4, 0, 0]}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
             )}
           </CardContent>
         </Card>

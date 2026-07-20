@@ -1,9 +1,28 @@
+import { useEffect } from "react";
 import { Navigate, Outlet } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { useSession } from "../lib/authClient.js";
 import { Skeleton } from "./ui/skeleton.js";
+import api from "../lib/api.js";
 
 export function ProtectedRoute() {
   const { data: session, isPending } = useSession();
+  const queryClient = useQueryClient();
+
+  // The app lands on Analytics after login; warm the Transactions page's data
+  // in the background so it's already cached by the time the user clicks over.
+  useEffect(() => {
+    if (!session) return;
+    queryClient.prefetchQuery({
+      queryKey: ["transactions"],
+      queryFn: () => api.get("/api/transactions").then((r) => r.data),
+    });
+    queryClient.prefetchQuery({
+      queryKey: ["categories"],
+      queryFn: () => api.get("/api/categories").then((r) => r.data),
+    });
+  }, [session, queryClient]);
+
   if (isPending)
     return (
       <div className="flex flex-col items-center justify-center h-screen gap-4">

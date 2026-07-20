@@ -18,11 +18,20 @@
  *     and duplicate tests, returning fake JSON — the real server endpoint is
  *     never called
  *
+ * Note on the pipeline shape: staging and processing used to be two manual
+ * steps, with a "Process staged" button and an "N pending" card on the Import
+ * page. That UI is gone — ImportPage now fires processMutation automatically
+ * from each sync/upload onSuccess, so a sync drains straight through to real
+ * Transactions. The server still exposes POST /api/admin/process and still
+ * drains pending monzo_api_transaction rows; only the manual trigger went away.
+ *
  * Tests:
- *   1. Sync — mock returns { imported: 2, duplicates: 0 }; verify "2 rows staged"
- *   2. Process — two pending rows seeded directly; "Process staged" succeeds
+ *   1. Sync — mock returns { imported: 2, duplicates: 0 }; verify
+ *      "2 transactions synced"
+ *   2. Auto-process — two pending rows seeded directly; a sync drains them into
+ *      Transaction rows without any manual step
  *   3. Duplicate sync — mock returns { imported: 0, duplicates: 2 };
- *      verify "0 rows staged · 2 already existed"
+ *      verify "0 transactions synced · 2 already existed"
  */
 
 import { test, expect } from "./fixtures.js";
@@ -72,7 +81,7 @@ function runBunScript(script: string): string {
 function getAdminUserId(): string {
   const raw = runBunScript(
     `import { Database } from 'bun:sqlite';` +
-    `const db = new Database('${dbPath}');` +
+    `const db = new Database('${dbPath}'); db.run('PRAGMA busy_timeout = 15000');` +
     `const r = db.query('SELECT id FROM \\"user\\" WHERE email = ?').get('${testEnv.ADMIN_EMAIL}');` +
     `console.log(r ? r.id : '');`,
   );
@@ -83,7 +92,7 @@ function getAdminUserId(): string {
 function clearMonzoData(_adminUserId: string) {
   const script =
     `import { Database } from 'bun:sqlite';` +
-    `const db = new Database('${dbPath}');` +
+    `const db = new Database('${dbPath}'); db.run('PRAGMA busy_timeout = 15000');` +
     `db.run("DELETE FROM monzo_api_transaction WHERE id LIKE 'e2e-%' OR monzoId LIKE 'tx_e2etest%'");` +
     `db.run("DELETE FROM \\"transaction\\" WHERE externalId LIKE 'monzo:tx_e2etest%'");` +
     `db.run("DELETE FROM monzo_credential WHERE id = 'e2e-cred'");`;
@@ -94,16 +103,29 @@ function upsertMonzoCredential(adminUserId: string) {
   const futureIso = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
   const script =
     `import { Database } from 'bun:sqlite';` +
-    `const db = new Database('${dbPath}');` +
+    `const db = new Database('${dbPath}'); db.run('PRAGMA busy_timeout = 15000');` +
     `db.run(\`INSERT OR REPLACE INTO monzo_credential (id, userId, accessToken, refreshToken, expiresAt, accountId, createdAt, updatedAt)` +
     ` VALUES ('e2e-cred', '${adminUserId}', 'fake-access', 'fake-refresh', '${futureIso}', 'acc_test123', datetime('now'), datetime('now'))\`);`;
   runBunScript(script);
 }
 
+/** How many of the seeded Monzo rows have been drained into real Transactions. */
+function countProcessedMonzoTxs(): number {
+  const raw = runBunScript(
+    `import { Database } from 'bun:sqlite';` +
+      `const db = new Database('${dbPath}'); db.run('PRAGMA busy_timeout = 15000');` +
+      `const r = db.query("SELECT COUNT(*) AS c FROM \\"Transaction\\" WHERE externalId LIKE 'monzo:tx_e2etest%'").get();` +
+      // process.stdout.write, not console.log — bun colourises logged *numbers*
+      // with ANSI codes, which would make Number(raw) NaN.
+      `process.stdout.write(String(r.c));`,
+  );
+  return Number(raw);
+}
+
 function seedPendingMonzoTxs() {
   const script =
     `import { Database } from 'bun:sqlite';` +
-    `const db = new Database('${dbPath}');` +
+    `const db = new Database('${dbPath}'); db.run('PRAGMA busy_timeout = 15000');` +
     `db.run(\`INSERT OR IGNORE INTO monzo_api_transaction` +
     ` (id, monzoId, created, amountPence, currency, localAmountPence, localCurrency, description, monzoCategory, includeInSpending, accountId, status, importedAt)` +
     ` VALUES` +
@@ -173,32 +195,35 @@ test.describe("Monzo sync → stage → process", () => {
     await expect(page.getByRole("button", { name: "Sync now" })).toBeVisible();
     await page.getByRole("button", { name: "Sync now" }).click();
 
-    // Success banner in the Monzo card: "2 rows staged"
-    await expect(page.getByText("2 rows staged")).toBeVisible();
+    // Success banner in the Monzo card: "2 transactions synced"
+    await expect(page.getByText("2 transactions synced")).toBeVisible();
   });
 
   // ── 2. Process ────────────────────────────────────────────────────────────
 
-  test("process staged drains pending rows and shows transactions added", async ({ page }) => {
+  test("a sync auto-processes pending rows into transactions", async ({ page }) => {
     seedPendingMonzoTxs();
+    expect(countProcessedMonzoTxs()).toBe(0);
 
-    // Status mock — totalStaged=2 so the staging card is visible on load
     await mockMonzoConnected(page, 2);
 
+    // Only the Monzo sync call is mocked. POST /api/admin/process is left to hit
+    // the real server, which is what actually drains the seeded pending rows.
+    await page.route("**/api/admin/monzo/sync", (route) => {
+      route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({ imported: 2, duplicates: 0 }),
+      });
+    });
+
     await page.goto("/import");
+    await page.getByRole("button", { name: "Sync now" }).click();
+    await expect(page.getByText("2 transactions synced")).toBeVisible();
 
-    // Staging card shows 2 pending (the real /staged endpoint returns live data)
-    await expect(page.getByText("2 pending")).toBeVisible();
-
-    const processBtn = page.getByRole("button", { name: "Process staged" });
-    await expect(processBtn).toBeEnabled();
-    await processBtn.click();
-
-    // Success message: "N transactions added"
-    await expect(page.getByText(/transactions added/i)).toBeVisible();
-
-    // Staging section collapses or shows 0 pending
-    await expect(page.getByText("2 pending")).not.toBeVisible();
+    // Processing is fired automatically from the sync's onSuccess, so poll the
+    // DB rather than waiting on a button or a "processed" banner.
+    await expect.poll(() => countProcessedMonzoTxs(), { timeout: 15_000 }).toBe(2);
   });
 
   // ── 3. Duplicate sync ─────────────────────────────────────────────────────
@@ -219,8 +244,8 @@ test.describe("Monzo sync → stage → process", () => {
     await expect(page.getByRole("button", { name: "Sync now" })).toBeVisible();
     await page.getByRole("button", { name: "Sync now" }).click();
 
-    // "0 rows staged · 2 already existed"
-    await expect(page.getByText("0 rows staged")).toBeVisible();
+    // "0 transactions synced · 2 already existed"
+    await expect(page.getByText("0 transactions synced")).toBeVisible();
     await expect(page.getByText("2 already existed")).toBeVisible();
   });
 });

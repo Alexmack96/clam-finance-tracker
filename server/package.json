@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "predev": "bun ../scripts/free-ports.ts 3000",
     "dev": "bun --watch --env-file ../.env src/index.ts",
     "build": "tsc",
     "start": "bun src/index.ts",
@@ -11,6 +12,7 @@
     "db:migrate:deploy": "bunx prisma migrate deploy",
     "db:generate": "bunx prisma generate",
     "db:seed": "bun src/db/seed.ts",
+    "db:reset-dev-password": "bun scripts/reset-dev-admin-password.ts",
     "db:studio": "bunx prisma studio",
     "test": "bun test",
     "lint": "eslint src"

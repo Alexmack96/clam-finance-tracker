@@ -274,21 +274,29 @@ export function ImportPage() {
   const sofiOwner = "Casey";
   const chaseOwner = "Casey";
 
+  // Both are live import-status reads: opt out of the global staleTime so
+  // opening this page always shows the real current state, never a cached one.
   const { data: lastStatement, refetch: refetchLastStatement } = useQuery<LastStatement>({
     queryKey: ["last-statement"],
     queryFn: () => api.get("/api/admin/last-statement").then((r) => r.data),
+    staleTime: 0,
   });
 
   const { data: monzoStatus, refetch: refetchMonzoStatus } = useQuery<MonzoStatus>({
     queryKey: ["monzo-status"],
     queryFn: () => api.get("/api/admin/monzo/status").then((r) => r.data),
+    staleTime: 0,
   });
 
   const processMutation = useMutation<ProcessResult, Error>({
     mutationFn: () => api.post("/api/admin/process").then((r) => r.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
-      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      // New transactions land in every aggregate, not just the dashboard.
+      queryClient.invalidateQueries({ queryKey: ["summary"] });
+      queryClient.invalidateQueries({ queryKey: ["analytics"] });
+      queryClient.invalidateQueries({ queryKey: ["savings"] });
+      queryClient.invalidateQueries({ queryKey: ["income"] });
       refetchLastStatement();
     },
   });

@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "predev": "bun ../scripts/free-ports.ts 5173 5174 5175 5176 5177",
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",

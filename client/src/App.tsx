@@ -1,16 +1,20 @@
+import { lazy } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { ProtectedRoute } from "./components/ProtectedRoute.js";
 import { Layout } from "./components/Layout.js";
 import { LoginPage } from "./pages/LoginPage.js";
 import { LoggedOutPage } from "./pages/LoggedOutPage.js";
-import { DashboardPage } from "./pages/DashboardPage.js";
-import { AnalyticsPage } from "./pages/AnalyticsPage.js";
-import { ImportPage } from "./pages/ImportPage.js";
-import { CategoriesPage } from "./pages/CategoriesPage.js";
-import { SavingsPage } from "./pages/SavingsPage.js";
-import { InvestmentsPage } from "./pages/InvestmentsPage.js";
-import { TabsPage } from "./pages/TabsPage.js";
-import { TasksPage } from "./pages/TasksPage.js";
+
+// Lazy-loaded: each page's JS (AG Grid, Recharts, etc.) is fetched only when
+// its route is visited, instead of all being bundled into one upfront chunk.
+const DashboardPage = lazy(() => import("./pages/DashboardPage.js").then((m) => ({ default: m.DashboardPage })));
+const AnalyticsPage = lazy(() => import("./pages/AnalyticsPage.js").then((m) => ({ default: m.AnalyticsPage })));
+const ImportPage = lazy(() => import("./pages/ImportPage.js").then((m) => ({ default: m.ImportPage })));
+const CategoriesPage = lazy(() => import("./pages/CategoriesPage.js").then((m) => ({ default: m.CategoriesPage })));
+const SavingsPage = lazy(() => import("./pages/SavingsPage.js").then((m) => ({ default: m.SavingsPage })));
+const InvestmentsPage = lazy(() => import("./pages/InvestmentsPage.js").then((m) => ({ default: m.InvestmentsPage })));
+const TabsPage = lazy(() => import("./pages/TabsPage.js").then((m) => ({ default: m.TabsPage })));
+const TasksPage = lazy(() => import("./pages/TasksPage.js").then((m) => ({ default: m.TasksPage })));
 
 export function App() {
   return (

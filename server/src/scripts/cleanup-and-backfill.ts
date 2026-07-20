@@ -2,7 +2,7 @@
  * One-shot, idempotent deploy task. Runs on every deploy (wired into the
  * Dockerfile CMD, after `prisma migrate deploy` and the seed); safe to re-run.
  *
- * It does four things, in order:
+ * It does three things, in order:
  *
  *   1. CLEANUP — remove the surplus copies a double-uploaded Barclays file created,
  *      KEEPING THE FIRST copy of each real transaction (no data loss, no re-upload).
@@ -29,26 +29,16 @@
  *      account whose Transaction still has the old externalId are touched, so
  *      this is a no-op once complete.
  *
- *   4. CATEGORY CLEANUP — one-off category consolidations that used to run on
- *      every server boot (mapMonzoCategories, consolidateFoodCategories,
- *      migrateTakeout, migrateOwners, defined in ../routes/admin.ts). They only
- *      ever have work to do right after the historical data they target first
- *      appears, so — like everything else here — they belong at deploy time,
- *      not on every local `bun --watch` restart.
- *
  * Cleanup runs BEFORE backfill on purpose: the duplicated transactions still use
  * the old `barclays:<id>` externalId, which is how cleanup finds and deletes them.
+ *
+ * Category data is never touched here. Categories users add in prod persist
+ * forever — nothing in this repo consolidates, remaps, or deletes them.
  */
 
 import "dotenv/config";
 import { createHash } from "crypto";
 import { db } from "../db/client.js";
-import {
-  mapMonzoCategories,
-  consolidateFoodCategories,
-  migrateTakeout,
-  migrateOwners,
-} from "../routes/admin.js";
 
 function hash16(s: string): string {
   return createHash("sha256").update(s).digest("hex").slice(0, 16);
@@ -255,10 +245,6 @@ async function main() {
   await backfillBarclays();
   await backfillSantander();
   await migrateFlexTransactions();
-  await consolidateFoodCategories();
-  await migrateTakeout();
-  await mapMonzoCategories();
-  await migrateOwners();
   console.log("[cleanup-and-backfill] done.");
 }
 
