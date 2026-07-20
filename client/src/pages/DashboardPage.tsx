@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -656,7 +656,10 @@ function ReviewedRenderer({
   if (!data) return null;
   return (
     <button
-      onClick={() => context.update(data.id, { reviewed: !data.reviewed })}
+      onClick={() => {
+        hapticFeedback();
+        context.update(data.id, { reviewed: !data.reviewed });
+      }}
       title={data.reviewed ? "Mark as unreviewed" : "Mark as reviewed"}
       className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
         data.reviewed
@@ -808,7 +811,7 @@ type UpdatePatch = {
   savingType?: SavingType | null;
 };
 
-function MobileTransactionCard({
+const MobileTransactionCard = memo(function MobileTransactionCard({
   tx,
   categories,
   onUpdate,
@@ -839,7 +842,10 @@ function MobileTransactionCard({
             {fmt(Math.abs(parseFloat(tx.amount)))}
           </span>
           <button
-            onClick={() => onUpdate(tx.id, { reviewed: !tx.reviewed })}
+            onClick={() => {
+              hapticFeedback();
+              onUpdate(tx.id, { reviewed: !tx.reviewed });
+            }}
             className={`w-7 h-7 rounded-full border-2 flex items-center justify-center transition-colors shrink-0 ${
               tx.reviewed
                 ? "bg-green-500 border-green-500 text-white"
@@ -867,7 +873,7 @@ function MobileTransactionCard({
       <MobileNoteCell tx={tx} onSave={(note) => onUpdate(tx.id, { note })} />
     </div>
   );
-}
+});
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
@@ -917,7 +923,6 @@ export function DashboardPage() {
       savingType?: SavingType | null;
     }) => api.patch<Transaction>(`/api/transactions/${id}`, data).then((r) => r.data),
     onSuccess: (updated, variables) => {
-      if (variables.reviewed !== undefined) hapticFeedback();
       // Sync query cache with server truth
       queryClient.setQueryData<Transaction[]>(["transactions"], (prev) =>
         prev ? prev.map((t) => (t.id === updated.id ? updated : t)) : prev,
@@ -1025,23 +1030,30 @@ export function DashboardPage() {
     setMobileSource("All");
   }
 
-  function handleMobileUpdate(id: string, patch: UpdatePatch) {
-    // Optimistic update in the query cache so cards re-render immediately
-    queryClient.setQueryData<Transaction[]>(["transactions"], (prev) =>
-      prev
-        ? prev.map((t) => {
-            if (t.id !== id) return t;
-            const updated = { ...t, ...patch };
-            if (patch.categoryId) {
-              const cat = categories.find((c) => c.id === patch.categoryId);
-              if (cat) updated.category = cat;
-            }
-            return updated;
-          })
-        : prev,
-    );
-    updateMutation.mutate({ id, ...patch });
-  }
+  const handleMobileUpdate = useCallback(
+    (id: string, patch: UpdatePatch) => {
+      // Optimistic update in the query cache so cards re-render immediately.
+      // Untouched transactions keep their object reference so memoized cards skip re-rendering.
+      queryClient.setQueryData<Transaction[]>(["transactions"], (prev) =>
+        prev
+          ? prev.map((t) => {
+              if (t.id !== id) return t;
+              const updated = { ...t, ...patch };
+              if (patch.categoryId) {
+                const cat = categories.find((c) => c.id === patch.categoryId);
+                if (cat) updated.category = cat;
+              }
+              return updated;
+            })
+          : prev,
+      );
+      updateMutation.mutate({ id, ...patch });
+    },
+    // updateMutation.mutate is stable across renders; depending on the whole mutation object
+    // would recreate this callback every render and defeat MobileTransactionCard's memoization.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [queryClient, categories, updateMutation.mutate],
+  );
 
   const columnDefs = useMemo(
     (): ColDef<Transaction>[] => [
