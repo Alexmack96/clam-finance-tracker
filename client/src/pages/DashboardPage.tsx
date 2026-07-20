@@ -846,7 +846,7 @@ const MobileTransactionCard = memo(function MobileTransactionCard({
               hapticFeedback();
               onUpdate(tx.id, { reviewed: !tx.reviewed });
             }}
-            className={`w-7 h-7 rounded-full border-2 flex items-center justify-center transition-colors shrink-0 ${
+            className={`w-7 h-7 rounded-full border-2 flex items-center justify-center shrink-0 touch-manipulation [-webkit-tap-highlight-color:transparent] transition-[transform,background-color,border-color,color] duration-100 active:scale-90 ${
               tx.reviewed
                 ? "bg-green-500 border-green-500 text-white"
                 : "border-muted-foreground/40"
