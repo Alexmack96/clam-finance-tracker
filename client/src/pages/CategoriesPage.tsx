@@ -121,6 +121,11 @@ export function CategoriesPage() {
         : api.post("/api/categories", body).then((r) => r.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] });
+      // Renaming/recolouring a category changes how every transaction referencing it
+      // should render, plus every aggregate that groups by category name.
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["summary"] });
+      queryClient.invalidateQueries({ queryKey: ["analytics"] });
       setEditorOpen(false);
     },
   });

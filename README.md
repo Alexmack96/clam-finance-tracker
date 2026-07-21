@@ -44,6 +44,7 @@ Supported: Monzo ✓ — Amex, Barclays, Santander, Caseys banks coming soon.
 ---
 
 ## Todo 28-Jun-2026
+[] HSBC april is messed up, e.g. missing 1k input 
 [] duplicate ids on casey Amex
 [] check why hsbc latest date says 1st april, not 8th april, for casey apr statement
 [] why does the savings page still have this stuff for the exclusion items? [] ive figure out the right abstraction!! i think each transaciton row in the transaction page should have a collapseable extra fields underneath it, and a little arrow or something that pops out the extra flags, cos i realised i need one for exlcude from savings override, and SavingType (FIxed/Fun/Saving) enum, and possibly other properties about a transaction that i havent thought of yet , and isdirectdebit although i cant remember why we had that one maybe remove direct debit
