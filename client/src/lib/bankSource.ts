@@ -1,6 +1,19 @@
 export type BankSource =
   "Monzo" | "Flex" | "Amex" | "Barclays" | "Santander" | "HSBC" | "SoFi" | "Chase" | "Manual";
 
+/** Every source `bankSource` can return, in dropdown/display order. Single source of truth. */
+export const BANK_SOURCES: BankSource[] = [
+  "Monzo",
+  "Flex",
+  "Amex",
+  "Barclays",
+  "Santander",
+  "HSBC",
+  "SoFi",
+  "Chase",
+  "Manual",
+];
+
 export function bankSource(externalId: string | null): BankSource {
   if (!externalId) return "Manual";
   if (externalId.startsWith("monzo:")) return "Monzo";

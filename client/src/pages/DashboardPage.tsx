@@ -35,7 +35,7 @@ import {
   AlertDialogTitle,
 } from "../components/ui/alert-dialog.js";
 import api from "../lib/api.js";
-import { bankSource, SOURCE_STYLES, type BankSource } from "../lib/bankSource.js";
+import { bankSource, BANK_SOURCES, SOURCE_STYLES, type BankSource } from "../lib/bankSource.js";
 import { useIsDesktop } from "../lib/useIsDesktop.js";
 
 ModuleRegistry.registerModules([
@@ -420,6 +420,88 @@ interface FilterModel {
   value: string;
 }
 
+/** One selectable row in a filter dropdown. */
+interface FilterOption {
+  value: string;
+  label: string;
+  badgeClassName?: string;
+  badgeStyle?: React.CSSProperties;
+}
+
+/**
+ * Shared dropdown body for every column filter: an optional typeahead search box,
+ * an "All" reset row, and a scrollable badge list. Pass `searchable` to show the
+ * search input (matches the inline cell-editor pattern).
+ */
+function FilterList({
+  options,
+  selected,
+  onSelect,
+  minWidth,
+  searchable = false,
+  searchPlaceholder,
+}: {
+  options: FilterOption[];
+  selected: string | null;
+  onSelect: (value: string | null) => void;
+  minWidth: number;
+  searchable?: boolean;
+  searchPlaceholder?: string;
+}) {
+  const [query, setQuery] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (searchable) inputRef.current?.focus();
+  }, [searchable]);
+
+  const matches = useMemo(() => {
+    if (!searchable) return options;
+    const q = query.trim().toLowerCase();
+    return q ? options.filter((o) => o.label.toLowerCase().includes(q)) : options;
+  }, [options, query, searchable]);
+
+  return (
+    <div className="p-2" style={{ minWidth }}>
+      {searchable && (
+        <input
+          ref={inputRef}
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder={searchPlaceholder}
+          className="w-full mb-1 px-2 py-1 text-xs rounded-sm border border-border bg-background outline-none focus:ring-1 focus:ring-ring"
+        />
+      )}
+      <div className="max-h-[260px] overflow-y-auto">
+        <div
+          onClick={() => onSelect(null)}
+          className={`px-2 py-1 cursor-pointer rounded text-xs text-muted-foreground mb-1 hover:bg-accent ${!selected ? "bg-accent" : ""}`}
+        >
+          All
+        </div>
+        {matches.length === 0 ? (
+          <div className="px-2 py-1 text-xs text-muted-foreground">No matches</div>
+        ) : (
+          matches.map((o) => (
+            <div
+              key={o.value}
+              onClick={() => onSelect(o.value)}
+              className={`px-2 py-1 cursor-pointer rounded hover:bg-accent ${selected === o.value ? "bg-accent" : ""}`}
+            >
+              <span
+                className={`px-2 py-0.5 rounded-full text-xs font-medium border ${o.badgeClassName ?? ""}`}
+                style={o.badgeStyle}
+              >
+                {o.label}
+              </span>
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  );
+}
+
 interface CategoryFilterExtraProps {
   categories: Category[];
 }
@@ -436,31 +518,25 @@ function CategoryFilter({
     },
   });
 
-  const selected = model?.value ?? null;
+  const options = useMemo<FilterOption[]>(
+    () =>
+      categories.map((c) => ({
+        value: c.name,
+        label: c.name,
+        badgeStyle: { color: c.color, borderColor: c.color },
+      })),
+    [categories],
+  );
 
   return (
-    <div className="p-2 min-w-[160px] max-h-[260px] overflow-y-auto">
-      <div
-        onClick={() => onModelChange(null)}
-        className={`px-2 py-1 cursor-pointer rounded text-xs text-muted-foreground mb-1 hover:bg-accent ${!selected ? "bg-accent" : ""}`}
-      >
-        All
-      </div>
-      {categories.map((c) => (
-        <div
-          key={c.id}
-          onClick={() => onModelChange({ value: c.name })}
-          className={`px-2 py-1 cursor-pointer rounded hover:bg-accent ${selected === c.name ? "bg-accent" : ""}`}
-        >
-          <span
-            className="px-2 py-0.5 rounded-full text-xs font-medium border"
-            style={{ color: c.color, borderColor: c.color }}
-          >
-            {c.name}
-          </span>
-        </div>
-      ))}
-    </div>
+    <FilterList
+      options={options}
+      selected={model?.value ?? null}
+      onSelect={(value) => onModelChange(value ? { value } : null)}
+      minWidth={160}
+      searchable
+      searchPlaceholder="Search categories…"
+    />
   );
 }
 
@@ -474,43 +550,21 @@ function OwnerFilter({ model, onModelChange }: CustomFilterProps<Transaction, an
     },
   });
 
-  const selected = model?.value ?? null;
+  const options: FilterOption[] = OWNERS.map((o) => ({
+    value: o,
+    label: o,
+    badgeClassName: OWNER_STYLES[o],
+  }));
 
   return (
-    <div className="p-2 min-w-[130px]">
-      <div
-        onClick={() => onModelChange(null)}
-        className={`px-2 py-1 cursor-pointer rounded text-xs text-muted-foreground mb-1 hover:bg-accent ${!selected ? "bg-accent" : ""}`}
-      >
-        All
-      </div>
-      {OWNERS.map((o) => (
-        <div
-          key={o}
-          onClick={() => onModelChange({ value: o })}
-          className={`px-2 py-1 cursor-pointer rounded hover:bg-accent ${selected === o ? "bg-accent" : ""}`}
-        >
-          <span
-            className={`px-2 py-0.5 rounded-full text-xs font-medium border ${OWNER_STYLES[o]}`}
-          >
-            {o}
-          </span>
-        </div>
-      ))}
-    </div>
+    <FilterList
+      options={options}
+      selected={model?.value ?? null}
+      onSelect={(value) => onModelChange(value ? { value } : null)}
+      minWidth={130}
+    />
   );
 }
-
-const SOURCES: BankSource[] = [
-  "Monzo",
-  "Amex",
-  "Barclays",
-  "Santander",
-  "HSBC",
-  "SoFi",
-  "Chase",
-  "Manual",
-];
 
 function SourceFilter({ model, onModelChange }: CustomFilterProps<Transaction, any, FilterModel>) {
   useGridFilter({
@@ -520,30 +574,21 @@ function SourceFilter({ model, onModelChange }: CustomFilterProps<Transaction, a
     },
   });
 
-  const selected = model?.value ?? null;
+  const options: FilterOption[] = BANK_SOURCES.map((s) => ({
+    value: s,
+    label: s,
+    badgeClassName: SOURCE_STYLES[s],
+  }));
 
   return (
-    <div className="p-2 min-w-[140px]">
-      <div
-        onClick={() => onModelChange(null)}
-        className={`px-2 py-1 cursor-pointer rounded text-xs text-muted-foreground mb-1 hover:bg-accent ${!selected ? "bg-accent" : ""}`}
-      >
-        All
-      </div>
-      {SOURCES.map((s) => (
-        <div
-          key={s}
-          onClick={() => onModelChange({ value: s })}
-          className={`px-2 py-1 cursor-pointer rounded hover:bg-accent ${selected === s ? "bg-accent" : ""}`}
-        >
-          <span
-            className={`px-2 py-0.5 rounded-full text-xs font-medium border ${SOURCE_STYLES[s]}`}
-          >
-            {s}
-          </span>
-        </div>
-      ))}
-    </div>
+    <FilterList
+      options={options}
+      selected={model?.value ?? null}
+      onSelect={(value) => onModelChange(value ? { value } : null)}
+      minWidth={140}
+      searchable
+      searchPlaceholder="Search sources…"
+    />
   );
 }
 
@@ -563,32 +608,20 @@ function ReviewedFilter({
     },
   });
 
-  const selected = model?.value ?? null;
-  const options: { value: "reviewed" | "unreviewed"; label: string; className: string }[] = [
-    { value: "unreviewed", label: "Unreviewed", className: "text-amber-600 border-amber-600" },
-    { value: "reviewed", label: "Reviewed", className: "text-green-600 border-green-600" },
+  const options: FilterOption[] = [
+    { value: "unreviewed", label: "Unreviewed", badgeClassName: "text-amber-600 border-amber-600" },
+    { value: "reviewed", label: "Reviewed", badgeClassName: "text-green-600 border-green-600" },
   ];
 
   return (
-    <div className="p-2 min-w-[140px]">
-      <div
-        onClick={() => onModelChange(null)}
-        className={`px-2 py-1 cursor-pointer rounded text-xs text-muted-foreground mb-1 hover:bg-accent ${!selected ? "bg-accent" : ""}`}
-      >
-        All
-      </div>
-      {options.map((o) => (
-        <div
-          key={o.value}
-          onClick={() => onModelChange({ value: o.value })}
-          className={`px-2 py-1 cursor-pointer rounded hover:bg-accent ${selected === o.value ? "bg-accent" : ""}`}
-        >
-          <span className={`px-2 py-0.5 rounded-full text-xs font-medium border ${o.className}`}>
-            {o.label}
-          </span>
-        </div>
-      ))}
-    </div>
+    <FilterList
+      options={options}
+      selected={model?.value ?? null}
+      onSelect={(value) =>
+        onModelChange(value ? { value: value as "reviewed" | "unreviewed" } : null)
+      }
+      minWidth={140}
+    />
   );
 }
 
@@ -1399,7 +1432,7 @@ export function DashboardPage() {
                     className="flex-1 border border-input bg-background/40 text-foreground rounded-md px-2 h-9 text-xs"
                   >
                     <option value="All">All sources</option>
-                    {SOURCES.map((s) => (
+                    {BANK_SOURCES.map((s) => (
                       <option key={s} value={s}>
                         {s}
                       </option>
