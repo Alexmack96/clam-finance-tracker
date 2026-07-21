@@ -5,11 +5,11 @@
     "": {
       "name": "helpdesk",
       "dependencies": {
+        "@fontsource-variable/fraunces": "^5.2.9",
         "@fontsource-variable/jetbrains-mono": "^5.3.0",
         "@fontsource-variable/manrope": "^5.3.0",
       },
       "devDependencies": {
-        "@fontsource-variable/fraunces": "^5.2.9",
         "@napi-rs/canvas": "^1.0.1",
         "@playwright/test": "^1.59.1",
         "@types/node": "^25.5.0",
@@ -27,6 +27,7 @@
         "@hookform/resolvers": "^5.2.2",
         "@sentry/react": "^10.51.0",
         "@tanstack/react-query": "^5.96.2",
+        "@tanstack/react-virtual": "^3.14.7",
         "ag-grid-community": "^35.2.1",
         "ag-grid-react": "^35.2.1",
         "axios": "^1.14.0",
@@ -969,6 +970,10 @@
     "@tanstack/query-core": ["@tanstack/query-core@5.96.2", "", {}, "sha512-hzI6cTVh4KNRk8UtoIBS7Lv9g6BnJPXvBKsvYH1aGWvv0347jT3BnSvztOE+kD76XGvZnRC/t6qdW1CaIfwCeA=="],
 
     "@tanstack/react-query": ["@tanstack/react-query@5.96.2", "", { "dependencies": { "@tanstack/query-core": "5.96.2" }, "peerDependencies": { "react": "^18 || ^19" } }, "sha512-sYyzzJT4G0g02azzJ8o55VFFV31XvFpdUpG+unxS0vSaYsJnSPKGoI6WdPwUucJL1wpgGfwfmntNX/Ub1uOViA=="],
+
+    "@tanstack/react-virtual": ["@tanstack/react-virtual@3.14.7", "", { "dependencies": { "@tanstack/virtual-core": "3.17.5" }, "peerDependencies": { "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0", "react-dom": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0" } }, "sha512-11uSrj77IDijNBqizD4lY4y1laMyRrqMLSxjnWy5CvWkCjyRDW+gGmxYq0lwQKVas/sq7zyzYWXbL/BvBzR32g=="],
+
+    "@tanstack/virtual-core": ["@tanstack/virtual-core@3.17.5", "", {}, "sha512-AXfBC3sq6PuYSwyxYORqqgHCNjPGAvKJvZuBBJ1klhztWBB5cgqgwsq8+fNfaQJG7/K4xYBja9S90QFn2zmQAg=="],
 
     "@testing-library/dom": ["@testing-library/dom@10.4.1", "", { "dependencies": { "@babel/code-frame": "^7.10.4", "@babel/runtime": "^7.12.5", "@types/aria-query": "^5.0.1", "aria-query": "5.3.0", "dom-accessibility-api": "^0.5.9", "lz-string": "^1.5.0", "picocolors": "1.1.1", "pretty-format": "^27.0.2" } }, "sha512-o4PXJQidqJl82ckFaXUeoAW+XysPLauYI43Abki5hABd853iMhitooc6znOnczgbTYmEP6U6/y1ZyKAIsvMKGg=="],
 

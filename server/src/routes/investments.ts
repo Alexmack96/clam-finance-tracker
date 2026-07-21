@@ -8,7 +8,7 @@ export const investmentsRouter = Router();
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 /** Resolve the owner query param to a valid Owner, defaulting to Alex. */
-function parseOwner(value: unknown): Owner {
+export function parseOwner(value: unknown): Owner {
   return Object.values(Owner).includes(value as Owner) ? (value as Owner) : Owner.Alex;
 }
 

@@ -1,6 +1,7 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useVirtualizer } from "@tanstack/react-virtual";
 import {
   ClientSideRowModelModule,
   ClientSideRowModelApiModule,
@@ -138,8 +139,10 @@ const fmt = (n: number) =>
 
 // Short buzz to confirm the reviewed toggle actually landed — mobile PWA has no
 // native tap feedback, so this is the only "it worked" signal on touch devices.
+// 15ms was below the actuation latency of some phones' vibration motors and
+// went unfelt; 35ms is long enough to register without feeling like a lag.
 function hapticFeedback() {
-  if (typeof navigator !== "undefined" && "vibrate" in navigator) navigator.vibrate(15);
+  if (typeof navigator !== "undefined" && "vibrate" in navigator) navigator.vibrate(35);
 }
 
 // ─── Inline cell components ───────────────────────────────────────────────────
@@ -440,6 +443,7 @@ function FilterList({
   minWidth,
   searchable = false,
   searchPlaceholder,
+  focusSignal,
 }: {
   options: FilterOption[];
   selected: string | null;
@@ -447,13 +451,17 @@ function FilterList({
   minWidth: number;
   searchable?: boolean;
   searchPlaceholder?: string;
+  // Bumped by the parent's `afterGuiAttached` each time AG Grid actually shows the popup —
+  // the component itself stays mounted (hidden) between opens, so a mount-only effect
+  // would call .focus() while the input is still display:none and silently no-op.
+  focusSignal?: number;
 }) {
   const [query, setQuery] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (searchable) inputRef.current?.focus();
-  }, [searchable]);
+  }, [searchable, focusSignal]);
 
   const matches = useMemo(() => {
     if (!searchable) return options;
@@ -511,11 +519,13 @@ function CategoryFilter({
   onModelChange,
   categories,
 }: CustomFilterProps<Transaction, any, FilterModel> & CategoryFilterExtraProps) {
+  const [attachTick, setAttachTick] = useState(0);
   useGridFilter({
     doesFilterPass: (params) => {
       if (!model) return true;
       return (params.data as Transaction)?.category?.name === model.value;
     },
+    afterGuiAttached: () => setAttachTick((t) => t + 1),
   });
 
   const options = useMemo<FilterOption[]>(
@@ -536,6 +546,7 @@ function CategoryFilter({
       minWidth={160}
       searchable
       searchPlaceholder="Search categories…"
+      focusSignal={attachTick}
     />
   );
 }
@@ -567,11 +578,13 @@ function OwnerFilter({ model, onModelChange }: CustomFilterProps<Transaction, an
 }
 
 function SourceFilter({ model, onModelChange }: CustomFilterProps<Transaction, any, FilterModel>) {
+  const [attachTick, setAttachTick] = useState(0);
   useGridFilter({
     doesFilterPass: (params) => {
       if (!model) return true;
       return bankSource((params.data as Transaction)?.externalId) === model.value;
     },
+    afterGuiAttached: () => setAttachTick((t) => t + 1),
   });
 
   const options: FilterOption[] = BANK_SOURCES.map((s) => ({
@@ -588,6 +601,7 @@ function SourceFilter({ model, onModelChange }: CustomFilterProps<Transaction, a
       minWidth={140}
       searchable
       searchPlaceholder="Search sources…"
+      focusSignal={attachTick}
     />
   );
 }
@@ -1055,6 +1069,16 @@ export function DashboardPage() {
     mobileCategoryId !== "All" ||
     mobileSource !== "All";
 
+  // Cards vary in height (note text, wrapped badges), so we let the virtualizer
+  // measure them after mount rather than assuming a fixed row size.
+  const mobileListRef = useRef<HTMLDivElement>(null);
+  const mobileRowVirtualizer = useVirtualizer({
+    count: mobileTransactions.length,
+    getScrollElement: () => mobileListRef.current,
+    estimateSize: () => 110,
+    overscan: 6,
+  });
+
   function resetMobileFilters() {
     setMobileSearch("");
     setMobileOwner("All");
@@ -1441,22 +1465,56 @@ export function DashboardPage() {
                 </div>
               )}
             </div>
-            <div className="divide-y divide-border px-4">
-              {mobileTransactions.length === 0 ? (
-                <div className="py-8 text-center text-sm text-muted-foreground">
-                  No transactions match these filters.
+            {mobileTransactions.length === 0 ? (
+              <div className="px-4 py-8 text-center text-sm text-muted-foreground">
+                No transactions match these filters.
+              </div>
+            ) : (
+              // Fixed height + internal virtualized scroll, same reasoning as the
+              // desktop grid below: mounting all ~1.8k cards at once froze the page.
+              <div
+                ref={mobileListRef}
+                className="px-4 overflow-y-auto overscroll-contain"
+                style={{ maxHeight: "65vh" }}
+              >
+                <div
+                  style={{
+                    height: mobileRowVirtualizer.getTotalSize(),
+                    width: "100%",
+                    position: "relative",
+                  }}
+                >
+                  {mobileRowVirtualizer.getVirtualItems().map((virtualRow) => {
+                    const tx = mobileTransactions[virtualRow.index];
+                    return (
+                      <div
+                        key={tx.id}
+                        data-index={virtualRow.index}
+                        ref={mobileRowVirtualizer.measureElement}
+                        className={
+                          virtualRow.index < mobileTransactions.length - 1
+                            ? "border-b border-border"
+                            : ""
+                        }
+                        style={{
+                          position: "absolute",
+                          top: 0,
+                          left: 0,
+                          width: "100%",
+                          transform: `translateY(${virtualRow.start}px)`,
+                        }}
+                      >
+                        <MobileTransactionCard
+                          tx={tx}
+                          categories={categories}
+                          onUpdate={handleMobileUpdate}
+                        />
+                      </div>
+                    );
+                  })}
                 </div>
-              ) : (
-                mobileTransactions.map((tx) => (
-                  <MobileTransactionCard
-                    key={tx.id}
-                    tx={tx}
-                    categories={categories}
-                    onUpdate={handleMobileUpdate}
-                  />
-                ))
-              )}
-            </div>
+              </div>
+            )}
           </CardContent>
         </Card>
       )}

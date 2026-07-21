@@ -12,8 +12,17 @@ import {
   RadialBar,
   PolarAngleAxis,
 } from "recharts";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card.js";
 import { Skeleton } from "../components/ui/skeleton.js";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select.js";
+import { useSession } from "../lib/authClient.js";
 import api from "../lib/api.js";
 
 const fmt = (n: number) =>
@@ -86,10 +95,18 @@ function BudgetGauge({ budget }: { budget: AnalyticsData["budget"] }) {
   );
 }
 
+type Person = "Alex" | "Casey";
+
 export function AnalyticsPage() {
+  const { data: session } = useSession();
+  // Default the fun-budget owner to whoever's logged in (same pattern as Investments);
+  // either person can still switch to view the other's budget.
+  const [person, setPerson] = useState<Person>(session?.user.owner === "Casey" ? "Casey" : "Alex");
+
   const { data, isPending } = useQuery<AnalyticsData>({
-    queryKey: ["analytics"],
-    queryFn: () => api.get("/api/dashboard/analytics").then((r) => r.data),
+    queryKey: ["analytics", person],
+    queryFn: () =>
+      api.get("/api/dashboard/analytics", { params: { owner: person } }).then((r) => r.data),
   });
 
   return (
@@ -103,10 +120,19 @@ export function AnalyticsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Fun budget gauge */}
         <Card>
-          <CardHeader className="pb-2">
+          <CardHeader className="pb-2 flex-row items-center justify-between space-y-0">
             <CardTitle className="text-xs uppercase tracking-wide text-muted-foreground">
               {isPending ? "Fun Budget" : `${data!.budget.month} Fun Budget`}
             </CardTitle>
+            <Select value={person} onValueChange={(v) => setPerson(v as Person)}>
+              <SelectTrigger className="h-7 w-[100px] text-xs" aria-label="Select person">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Alex">Alex</SelectItem>
+                <SelectItem value="Casey">Casey</SelectItem>
+              </SelectContent>
+            </Select>
           </CardHeader>
           <CardContent>
             {isPending ? <ChartSkeleton /> : <BudgetGauge budget={data!.budget} />}

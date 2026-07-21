@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { db } from "../db/client.js";
-import { TransactionType } from "../generated/prisma/index.js";
+import { TransactionType, Owner } from "../generated/prisma/index.js";
+import { parseOwner } from "./investments.js";
 
 export const dashboardRouter = Router();
 
@@ -43,7 +44,10 @@ dashboardRouter.get("/summary", async (_req, res) => {
   });
 });
 
-dashboardRouter.get("/analytics", async (_req, res) => {
+dashboardRouter.get("/analytics", async (req, res) => {
+  // Which person's Fun budget to show — client defaults this to whoever's logged in
+  // (same pattern as the Investments page) but either person can switch to view the other's.
+  const owner = parseOwner(req.query.owner);
   const now = new Date();
   const yearStart = new Date(now.getFullYear(), 0, 1);
   const MONTHS = [
@@ -130,14 +134,30 @@ dashboardRouter.get("/analytics", async (_req, res) => {
     color: funCatMap[name]?.color ?? "#888",
   }));
 
-  // Monthly fun budget = 30% of ~£5.5k salary. Tracks current-month variable (non-fixed) spend.
-  const MONTHLY_FUN_BUDGET = 1650;
+  // Monthly fun budget = 30% of this person's latest salary (50/30/20 needs/wants/savings
+  // split — "wants" is the fun allowance). Falls back to a flat figure when we can't
+  // identify a per-person salary (e.g. no Salary-categorised income yet).
+  const FALLBACK_FUN_BUDGET = 1650;
+  let monthlyFunBudget = FALLBACK_FUN_BUDGET;
+  if (owner === Owner.Alex || owner === Owner.Casey) {
+    const salaryCategory = await db.category.findUnique({ where: { name: "Salary" } });
+    const latestSalary = salaryCategory
+      ? await db.transaction.findFirst({
+          where: { categoryId: salaryCategory.id, owner, type: TransactionType.Income },
+          orderBy: { date: "desc" },
+        })
+      : null;
+    if (latestSalary) monthlyFunBudget = Math.round(Number(latestSalary.amount) * 0.3);
+  }
+
   const monthSpent = expenses
-    .filter((t) => stype(t) === "Fun" && new Date(t.date).getMonth() === currentMonthIdx)
+    .filter(
+      (t) => stype(t) === "Fun" && new Date(t.date).getMonth() === currentMonthIdx && t.owner === owner,
+    )
     .reduce((s, t) => s + Number(t.amount), 0);
   const budget = {
     spent: monthSpent,
-    limit: MONTHLY_FUN_BUDGET,
+    limit: monthlyFunBudget,
     month: MONTHS[currentMonthIdx],
     day: now.getDate(),
     daysInMonth: new Date(now.getFullYear(), currentMonthIdx + 1, 0).getDate(),
