@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { randomBytes } from "crypto";
+import * as Sentry from "@sentry/node";
 import { db } from "../db/client.js";
 import { env } from "../config/env.js";
 import { requireAuth } from "../middleware/auth.js";
@@ -11,12 +12,10 @@ export const monzoRouter = Router();
 
 function monzoGuard(res: import("express").Response): boolean {
   if (!env.MONZO_CLIENT_ID || !env.MONZO_CLIENT_SECRET || !env.MONZO_REDIRECT_URI) {
-    res
-      .status(503)
-      .json({
-        error:
-          "Monzo OAuth not configured — set MONZO_CLIENT_ID, MONZO_CLIENT_SECRET, MONZO_REDIRECT_URI in .env",
-      });
+    res.status(503).json({
+      error:
+        "Monzo OAuth not configured — set MONZO_CLIENT_ID, MONZO_CLIENT_SECRET, MONZO_REDIRECT_URI in .env",
+    });
     return false;
   }
   return true;
@@ -237,38 +236,172 @@ type MonzoTx = {
 // account returns 403 on every endpoint, so it's deliberately excluded.
 const SYNCED_ACCOUNT_TYPES = new Set(["uk_retail", "uk_monzo_flex"]);
 
-monzoRouter.post("/sync", requireAuth, async (_req, res) => {
-  if (!monzoGuard(res)) return;
+// Fetch every transaction for an account from `since` onward, following Monzo's
+// cursor pagination. `since` may be an ISO timestamp or a transaction id. Returns
+// the raw (unfiltered) transactions so callers decide how to filter. Throws with a
+// `.status` on a non-2xx response.
+async function fetchMonzoTransactions(
+  accountId: string,
+  accessToken: string,
+  since: string,
+): Promise<MonzoTx[]> {
+  const all: MonzoTx[] = [];
+  let cursor = since;
+  for (let page = 0; page < 50; page++) {
+    const url = new URL("https://api.monzo.com/transactions");
+    url.searchParams.set("account_id", accountId);
+    url.searchParams.set("since", cursor);
+    url.searchParams.set("limit", "100");
+    url.searchParams.set("expand[]", "merchant");
 
-  let credential = await db.monzoCredential.findFirst();
-  if (!credential) {
-    res.status(400).json({ error: "Monzo not connected — click Connect Monzo first" });
-    return;
+    const resp = await fetch(url.toString(), {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    if (!resp.ok) {
+      throw Object.assign(new Error(await resp.text()), { status: resp.status });
+    }
+
+    const data = (await resp.json()) as { transactions: MonzoTx[] };
+    all.push(...data.transactions);
+    if (data.transactions.length < 100) break;
+    cursor = data.transactions[data.transactions.length - 1].id;
+  }
+  return all;
+}
+
+// Shape of a single missing transaction recorded in a rec run's results.
+type RecMissingTx = {
+  id: string;
+  created: string;
+  amountPence: number;
+  description: string;
+};
+
+// Per-account outcome of a rec pass, persisted as JSON on MonzoRecRun.results.
+type RecAccountResult = {
+  accountId: string;
+  accountType: string;
+  apiSettledCount: number;
+  missingCount: number;
+  missing: RecMissingTx[];
+  error?: string;
+};
+
+// Independently pull the full last-90-day window (the most the Monzo API serves
+// once a token is >5 min past authentication) and report any settled transaction
+// present in the API but absent from our staging table. The incremental sync only
+// fetches forward from each account's newest stored transaction, so a transaction
+// an earlier sync missed would never be re-fetched — this pass is the safety net
+// that surfaces such gaps. Every run is persisted (MonzoRecRun) and gaps are also
+// reported to Sentry. Best-effort: never throws into the caller.
+async function reconcileLast90Days(
+  syncAccounts: { id: string; type: string }[],
+  accessToken: string,
+  trigger: "sync" | "manual",
+) {
+  const windowStart = new Date(Date.now() - 89 * 24 * 60 * 60 * 1000);
+  const results: RecAccountResult[] = [];
+  let totalMissing = 0;
+
+  for (const account of syncAccounts) {
+    let apiTxs: MonzoTx[];
+    try {
+      apiTxs = await fetchMonzoTransactions(account.id, accessToken, windowStart.toISOString());
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      Sentry.captureMessage(
+        `Monzo 90-day rec fetch failed for ${account.type} (${account.id}): ${message}`,
+        "warning",
+      );
+      results.push({
+        accountId: account.id,
+        accountType: account.type,
+        apiSettledCount: 0,
+        missingCount: 0,
+        missing: [],
+        error: message,
+      });
+      continue;
+    }
+
+    const settled = apiTxs.filter((tx) => tx.settled && !tx.decline_reason);
+    const present = await db.monzoApiTransaction.findMany({
+      where: { monzoId: { in: settled.map((tx) => tx.id) } },
+      select: { monzoId: true },
+    });
+    const presentSet = new Set(present.map((r) => r.monzoId));
+    const missing: RecMissingTx[] = settled
+      .filter((tx) => !presentSet.has(tx.id))
+      .map((tx) => ({
+        id: tx.id,
+        created: new Date(tx.created).toISOString(),
+        amountPence: tx.amount,
+        description: tx.merchant?.name ?? tx.description,
+      }));
+
+    totalMissing += missing.length;
+    results.push({
+      accountId: account.id,
+      accountType: account.type,
+      apiSettledCount: settled.length,
+      missingCount: missing.length,
+      missing,
+    });
+
+    if (missing.length > 0) {
+      Sentry.withScope((scope) => {
+        scope.setTag("monzo_account_type", account.type);
+        scope.setContext("monzo_rec", {
+          accountId: account.id,
+          windowStart: windowStart.toISOString(),
+          missingCount: missing.length,
+          missing,
+        });
+        Sentry.captureMessage(
+          `Monzo 90-day rec: ${missing.length} settled transaction(s) in the API missing from staging for ${account.type} (${account.id})`,
+          "error",
+        );
+      });
+    }
   }
 
-  // Auto-refresh if needed — throws 401 if refresh token is also dead
+  return db.monzoRecRun.create({
+    data: { window: "90d", trigger, totalMissing, results: JSON.stringify(results) },
+  });
+}
+
+// Resolve a fresh credential and the set of accounts we sync/reconcile against.
+// Shared by /sync and /rec/run. Returns a discriminated result so the caller owns
+// the HTTP response. `ensureFreshToken` may still throw 401 (dead refresh token) —
+// that propagates to the Express error handler, same as before.
+async function resolveMonzoSync(): Promise<
+  | { ok: true; credential: MonzoCredential; syncAccounts: { id: string; type: string }[] }
+  | { ok: false; status: number; error: string }
+> {
+  let credential = await db.monzoCredential.findFirst();
+  if (!credential) {
+    return { ok: false, status: 400, error: "Monzo not connected — click Connect Monzo first" };
+  }
+
   credential = await ensureFreshToken(credential);
 
   const accountsResp = await fetch("https://api.monzo.com/accounts", {
     headers: { Authorization: `Bearer ${credential.accessToken}` },
   });
   if (!accountsResp.ok) {
-    const body = await accountsResp.text();
-    res.status(502).json({ error: `Could not fetch Monzo accounts: ${body}` });
-    return;
+    return {
+      ok: false,
+      status: 502,
+      error: `Could not fetch Monzo accounts: ${await accountsResp.text()}`,
+    };
   }
   const { accounts } = (await accountsResp.json()) as {
     accounts: { id: string; type: string; closed: boolean }[];
   };
-  console.log(
-    "[monzo:sync] accounts:",
-    accounts.map((a) => ({ id: a.id, type: a.type, closed: a.closed })),
-  );
 
   const syncAccounts = accounts.filter((a) => !a.closed && SYNCED_ACCOUNT_TYPES.has(a.type));
   if (syncAccounts.length === 0) {
-    res.status(502).json({ error: "No open Monzo retail or Flex account found" });
-    return;
+    return { ok: false, status: 502, error: "No open Monzo retail or Flex account found" };
   }
 
   // Resolve primary (retail) account ID if not yet stored — used only for status display.
@@ -278,8 +411,20 @@ monzoRouter.post("/sync", requireAuth, async (_req, res) => {
       where: { id: credential.id },
       data: { accountId: retail.id },
     });
-    console.log("[monzo:sync] accountId saved:", retail.id);
   }
+
+  return { ok: true, credential, syncAccounts };
+}
+
+monzoRouter.post("/sync", requireAuth, async (_req, res) => {
+  if (!monzoGuard(res)) return;
+
+  const ctx = await resolveMonzoSync();
+  if (!ctx.ok) {
+    res.status(ctx.status).json({ error: ctx.error });
+    return;
+  }
+  const { credential, syncAccounts } = ctx;
 
   let totalImported = 0;
   let totalDuplicates = 0;
@@ -292,31 +437,18 @@ monzoRouter.post("/sync", requireAuth, async (_req, res) => {
       orderBy: { created: "desc" },
       select: { monzoId: true },
     });
-    let cursor = latest?.monzoId ?? "2025-12-31T23:59:59.000Z";
+    const cursor = latest?.monzoId ?? "2025-12-31T23:59:59.000Z";
 
-    const allTxs: MonzoTx[] = [];
-    for (let page = 0; page < 50; page++) {
-      const url = new URL("https://api.monzo.com/transactions");
-      url.searchParams.set("account_id", account.id);
-      url.searchParams.set("since", cursor);
-      url.searchParams.set("limit", "100");
-      url.searchParams.set("expand[]", "merchant");
-
-      const txResp = await fetch(url.toString(), {
-        headers: { Authorization: `Bearer ${credential.accessToken}` },
-      });
-      if (!txResp.ok) {
-        const body = await txResp.text();
-        res.status(502).json({ error: `Monzo /transactions failed for ${account.type}: ${body}` });
-        return;
-      }
-
-      const data = (await txResp.json()) as { transactions: MonzoTx[] };
-      allTxs.push(...data.transactions.filter((tx) => tx.settled && !tx.decline_reason));
-      if (data.transactions.length < 100) break;
-      cursor = data.transactions[data.transactions.length - 1].id;
+    let rawTxs: MonzoTx[];
+    try {
+      rawTxs = await fetchMonzoTransactions(account.id, credential.accessToken, cursor);
+    } catch (err) {
+      const body = err instanceof Error ? err.message : String(err);
+      res.status(502).json({ error: `Monzo /transactions failed for ${account.type}: ${body}` });
+      return;
     }
 
+    const allTxs = rawTxs.filter((tx) => tx.settled && !tx.decline_reason);
     if (allTxs.length === 0) continue;
 
     const ids = allTxs.map((tx) => tx.id);
@@ -353,7 +485,37 @@ monzoRouter.post("/sync", requireAuth, async (_req, res) => {
     totalDuplicates += allTxs.length - toInsert.length;
   }
 
-  res.json({ imported: totalImported, duplicates: totalDuplicates });
+  // Safety-net rec against the full 90-day window — persists a MonzoRecRun and
+  // logs gaps to Sentry, without blocking the sync response.
+  const recRun = await reconcileLast90Days(syncAccounts, credential.accessToken, "sync");
+
+  res.json({
+    imported: totalImported,
+    duplicates: totalDuplicates,
+    reconciled: { window: "90d", missing: recRun.totalMissing },
+  });
+});
+
+// ─── GET /api/admin/monzo/rec — recent reconciliation runs ────────────────────
+
+monzoRouter.get("/rec", requireAuth, async (_req, res) => {
+  const runs = await db.monzoRecRun.findMany({ orderBy: { ranAt: "desc" }, take: 20 });
+  res.json(runs.map((run) => ({ ...run, results: JSON.parse(run.results) })));
+});
+
+// ─── POST /api/admin/monzo/rec/run — run a reconciliation now ─────────────────
+
+monzoRouter.post("/rec/run", requireAuth, async (_req, res) => {
+  if (!monzoGuard(res)) return;
+
+  const ctx = await resolveMonzoSync();
+  if (!ctx.ok) {
+    res.status(ctx.status).json({ error: ctx.error });
+    return;
+  }
+
+  const run = await reconcileLast90Days(ctx.syncAccounts, ctx.credential.accessToken, "manual");
+  res.json({ ...run, results: JSON.parse(run.results) });
 });
 
 // ─── POST /api/admin/monzo/disconnect ────────────────────────────────────────

@@ -215,6 +215,15 @@ exports.Prisma.MonzoCredentialScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.MonzoRecRunScalarFieldEnum = {
+  id: 'id',
+  ranAt: 'ranAt',
+  window: 'window',
+  trigger: 'trigger',
+  totalMissing: 'totalMissing',
+  results: 'results'
+};
+
 exports.Prisma.AmexTransactionScalarFieldEnum = {
   transactionId: 'transactionId',
   transactionDate: 'transactionDate',
@@ -426,6 +435,7 @@ exports.Prisma.ModelName = {
   PlaidItem: 'PlaidItem',
   PlaidTransaction: 'PlaidTransaction',
   MonzoCredential: 'MonzoCredential',
+  MonzoRecRun: 'MonzoRecRun',
   AmexTransaction: 'AmexTransaction',
   BarclaysTransaction: 'BarclaysTransaction',
   SantanderTransaction: 'SantanderTransaction',

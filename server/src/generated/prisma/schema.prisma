@@ -162,6 +162,20 @@ model MonzoCredential {
   @@map("monzo_credential")
 }
 
+// One row per 90-day reconciliation pass (run after every Monzo sync, or manually
+// from the Admin page). `results` is a JSON string: one entry per synced account
+// with its API-vs-staging diff and the details of any missing transactions.
+model MonzoRecRun {
+  id           String   @id @default(cuid())
+  ranAt        DateTime @default(now())
+  window       String   @default("90d")
+  trigger      String   @default("sync") // "sync" | "manual"
+  totalMissing Int      @default(0)
+  results      String // JSON — per-account summary + missing tx details
+
+  @@map("monzo_rec_run")
+}
+
 model AmexTransaction {
   transactionId   String   @id
   transactionDate String

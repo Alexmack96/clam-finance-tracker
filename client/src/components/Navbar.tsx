@@ -13,6 +13,7 @@ const links = [
   { to: "/tasks", label: "Tasks" },
   { to: "/import", label: "Import" },
   { to: "/categories", label: "Categories" },
+  { to: "/admin", label: "Admin" },
 ] as const;
 
 export function Navbar({ onSignOut }: { onSignOut: () => void }) {
