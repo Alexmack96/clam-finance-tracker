@@ -12,19 +12,34 @@ import {
   NumberFilterModule,
   RowSelectionModule,
   CellStyleModule,
+  CsvExportModule,
   ValidationModule,
   ModuleRegistry,
   themeQuartz,
 } from "ag-grid-community";
-import type { ColDef, GridApi } from "ag-grid-community";
+import type {
+  ColDef,
+  GridApi,
+  CsvExportParams,
+  ProcessCellForExportParams,
+  ProcessHeaderForExportParams,
+} from "ag-grid-community";
 import { AgGridReact, useGridFilter } from "ag-grid-react";
 import type { CustomCellRendererProps, CustomFilterProps } from "ag-grid-react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Copy, Download } from "lucide-react";
 import { savingTypes, type SavingType } from "@clam/core";
 import { Button } from "../components/ui/button.js";
 import { Input } from "../components/ui/input.js";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card.js";
 import { Popover, PopoverContent, PopoverTrigger } from "../components/ui/popover.js";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuShortcut,
+  ContextMenuTrigger,
+} from "../components/ui/context-menu.js";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -37,6 +52,7 @@ import {
 } from "../components/ui/alert-dialog.js";
 import api from "../lib/api.js";
 import { bankSource, BANK_SOURCES, SOURCE_STYLES, type BankSource } from "../lib/bankSource.js";
+import { copyToClipboard, flashToast } from "../lib/clipboard.js";
 import { useIsDesktop } from "../lib/useIsDesktop.js";
 
 ModuleRegistry.registerModules([
@@ -49,6 +65,7 @@ ModuleRegistry.registerModules([
   NumberFilterModule,
   RowSelectionModule,
   CellStyleModule,
+  CsvExportModule,
   ValidationModule,
 ]);
 
@@ -136,6 +153,56 @@ const OWNER_STYLES: Record<Owner, string> = {
 
 const fmt = (n: number) =>
   new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP" }).format(n);
+
+// ─── CSV / clipboard export ────────────────────────────────────────────────────
+
+// Columns to include in export/copy, in order. Keyed by colId (set on each column).
+const EXPORT_COLUMNS = [
+  "date",
+  "description",
+  "note",
+  "category",
+  "owner",
+  "source",
+  "amount",
+  "reviewed",
+] as const;
+
+// Friendly header labels — the grid's own headers are terse ("✓") or all-caps.
+const EXPORT_HEADERS: Record<string, string> = {
+  date: "Date",
+  description: "Description",
+  note: "Note",
+  category: "Category",
+  owner: "Owner",
+  source: "Source",
+  amount: "Amount",
+  reviewed: "Reviewed",
+};
+
+// Shared value/header formatting for both CSV download and clipboard copy.
+function buildExportParams(onlySelected: boolean): CsvExportParams {
+  return {
+    columnKeys: [...EXPORT_COLUMNS],
+    onlySelected,
+    processHeaderCallback: (p: ProcessHeaderForExportParams) =>
+      EXPORT_HEADERS[p.column.getColId()] ?? p.column.getColId(),
+    processCellCallback: (p: ProcessCellForExportParams) => {
+      switch (p.column.getColId()) {
+        case "date": {
+          const d = p.value as Date | null;
+          return d ? d.toISOString().slice(0, 10) : "";
+        }
+        case "reviewed":
+          return p.value ? "Yes" : "No";
+        case "amount":
+          return typeof p.value === "number" ? p.value.toFixed(2) : "";
+        default:
+          return p.value ?? "";
+      }
+    },
+  };
+}
 
 // Short buzz to confirm the reviewed toggle actually landed — mobile PWA has no
 // native tap feedback, so this is the only "it worked" signal on touch devices.
@@ -1031,6 +1098,36 @@ export function DashboardPage() {
     bulkReviewMutation.mutate({ ids, reviewed });
   }
 
+  // Copy the checkbox-selected rows (or, if none selected, every row currently in
+  // view after filtering) to the clipboard as TSV with a header row — pastes into
+  // Sheets/Excel as proper columns. Tab-separated + unquoted is the format
+  // spreadsheets expect from the clipboard.
+  async function handleCopyWithHeaders() {
+    const api = gridApiRef.current;
+    if (!api) return;
+    const hasSelection = api.getSelectedRows().length > 0;
+    const tsv = api.getDataAsCsv({
+      ...buildExportParams(hasSelection),
+      columnSeparator: "\t",
+      suppressQuotes: true,
+    });
+    if (!tsv) return;
+    const ok = await copyToClipboard(tsv);
+    const rows = hasSelection ? api.getSelectedRows().length : api.getDisplayedRowCount();
+    flashToast(ok ? `Copied ${rows} row${rows === 1 ? "" : "s"} with headers` : "Copy failed");
+  }
+
+  // Download all filtered+sorted rows as a CSV file (selection is ignored here —
+  // export means "the table", copy means "what I picked").
+  function handleExportCsv() {
+    const api = gridApiRef.current;
+    if (!api) return;
+    api.exportDataAsCsv({
+      ...buildExportParams(false),
+      fileName: `transactions-${new Date().toISOString().slice(0, 10)}.csv`,
+    });
+  }
+
   const sortedTransactions = useMemo(
     () => [...transactions].sort((a, b) => b.date.localeCompare(a.date)),
     [transactions],
@@ -1123,6 +1220,7 @@ export function DashboardPage() {
         suppressHeaderMenuButton: true,
       },
       {
+        colId: "date",
         headerName: "DATE",
         valueGetter: (p) => (p.data ? new Date(p.data.date) : null),
         valueFormatter: (p) => (p.value ? (p.value as Date).toISOString().slice(0, 10) : ""),
@@ -1160,6 +1258,7 @@ export function DashboardPage() {
         cellStyle: { overflow: "visible" },
       },
       {
+        colId: "category",
         headerName: "CATEGORY",
         flex: 1.5,
         cellRenderer: CategoryRenderer,
@@ -1179,6 +1278,7 @@ export function DashboardPage() {
         cellStyle: { overflow: "visible" },
       },
       {
+        colId: "source",
         headerName: "SOURCE",
         width: 120,
         cellRenderer: SourceRenderer,
@@ -1187,9 +1287,13 @@ export function DashboardPage() {
         floatingFilter: false,
       },
       {
+        colId: "amount",
         headerName: "AMOUNT",
         width: 140,
         cellRenderer: AmountRenderer,
+        // Signed value for CSV/clipboard export (renderer ignores this and reads data.amount).
+        valueGetter: (p) =>
+          p.data ? (p.data.type === "Income" ? 1 : -1) * Math.abs(parseFloat(p.data.amount)) : null,
         // Sort by signed value, filter by absolute numeric value
         comparator: (_, __, nodeA, nodeB) => {
           const sign = (t: Transaction) =>
@@ -1201,6 +1305,7 @@ export function DashboardPage() {
         floatingFilter: true,
       },
       {
+        colId: "reviewed",
         headerName: "✓",
         width: 60,
         cellRenderer: ReviewedRenderer,
@@ -1599,57 +1704,83 @@ export function DashboardPage() {
             {/* Fixed height (not domLayout="autoHeight") so AG Grid keeps row
               virtualisation. autoHeight renders every row into the DOM, which
               at ~1.8k rows × 10 columns froze the page for seconds. */}
-            <div style={{ height: "70vh", minHeight: 420 }}>
-              <AgGridReact<Transaction>
-                theme={gridTheme}
-                rowData={transactions}
-                columnDefs={columnDefs}
-                context={gridContext}
-                defaultColDef={{ sortable: true, resizable: true, suppressMovable: true }}
-                rowSelection={{
-                  mode: "multiRow",
-                  checkboxes: true,
-                  headerCheckbox: true,
-                  enableClickSelection: false,
-                }}
-                enableCellTextSelection
-                getRowId={(p) => p.data.id}
-                onGridReady={(e) => {
-                  gridApiRef.current = e.api;
-                }}
-                onCellKeyDown={(params) => {
-                  if (
-                    params.event?.key !== "Enter" ||
-                    params.column.getColId() !== "note" ||
-                    !params.data
-                  )
-                    return;
-                  params.event.preventDefault();
-                  noteEditTriggers.current.get(params.data.id)?.();
-                }}
-                onSelectionChanged={(e) => {
-                  setSelectedIds(e.api.getSelectedRows().map((r) => r.id));
-                }}
-                onFilterChanged={(e) => {
-                  const model = e.api.getFilterModel();
-                  const active = Object.keys(model).length > 0;
-                  setHasFilters(active);
-                  if (!active) {
-                    setFilteredCount(null);
-                    setFilteredSum(null);
-                    return;
-                  }
-                  let sum = 0;
-                  e.api.forEachNodeAfterFilter((node) => {
-                    const tx = node.data as Transaction | undefined;
-                    if (!tx) return;
-                    sum += tx.type === "Income" ? parseFloat(tx.amount) : -parseFloat(tx.amount);
-                  });
-                  setFilteredCount(e.api.getDisplayedRowCount());
-                  setFilteredSum(sum);
-                }}
-              />
-            </div>
+            <ContextMenu>
+              <ContextMenuTrigger asChild>
+                <div
+                  style={{ height: "70vh", minHeight: 420 }}
+                  // Capture so we win the key before AG Grid's own handling.
+                  onKeyDownCapture={(e) => {
+                    if (e.ctrlKey && e.altKey && (e.key === "c" || e.key === "C")) {
+                      e.preventDefault();
+                      handleCopyWithHeaders();
+                    }
+                  }}
+                >
+                  <AgGridReact<Transaction>
+                    theme={gridTheme}
+                    rowData={transactions}
+                    columnDefs={columnDefs}
+                    context={gridContext}
+                    defaultColDef={{ sortable: true, resizable: true, suppressMovable: true }}
+                    rowSelection={{
+                      mode: "multiRow",
+                      checkboxes: true,
+                      headerCheckbox: true,
+                      enableClickSelection: false,
+                    }}
+                    enableCellTextSelection
+                    getRowId={(p) => p.data.id}
+                    onGridReady={(e) => {
+                      gridApiRef.current = e.api;
+                    }}
+                    onCellKeyDown={(params) => {
+                      if (
+                        params.event?.key !== "Enter" ||
+                        params.column.getColId() !== "note" ||
+                        !params.data
+                      )
+                        return;
+                      params.event.preventDefault();
+                      noteEditTriggers.current.get(params.data.id)?.();
+                    }}
+                    onSelectionChanged={(e) => {
+                      setSelectedIds(e.api.getSelectedRows().map((r) => r.id));
+                    }}
+                    onFilterChanged={(e) => {
+                      const model = e.api.getFilterModel();
+                      const active = Object.keys(model).length > 0;
+                      setHasFilters(active);
+                      if (!active) {
+                        setFilteredCount(null);
+                        setFilteredSum(null);
+                        return;
+                      }
+                      let sum = 0;
+                      e.api.forEachNodeAfterFilter((node) => {
+                        const tx = node.data as Transaction | undefined;
+                        if (!tx) return;
+                        sum +=
+                          tx.type === "Income" ? parseFloat(tx.amount) : -parseFloat(tx.amount);
+                      });
+                      setFilteredCount(e.api.getDisplayedRowCount());
+                      setFilteredSum(sum);
+                    }}
+                  />
+                </div>
+              </ContextMenuTrigger>
+              <ContextMenuContent className="w-52">
+                <ContextMenuItem onSelect={handleCopyWithHeaders}>
+                  <Copy />
+                  Copy with headers
+                  <ContextMenuShortcut>Ctrl+Alt+C</ContextMenuShortcut>
+                </ContextMenuItem>
+                <ContextMenuSeparator />
+                <ContextMenuItem onSelect={handleExportCsv}>
+                  <Download />
+                  Export to CSV
+                </ContextMenuItem>
+              </ContextMenuContent>
+            </ContextMenu>
           </CardContent>
         </Card>
       )}

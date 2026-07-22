@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   ComposedChart,
@@ -18,11 +18,20 @@ import {
   NumberEditorModule,
   PinnedRowModule,
   CellStyleModule,
+  CsvExportModule,
   ValidationModule,
   ModuleRegistry,
   themeQuartz,
 } from "ag-grid-community";
-import type { ColDef, CellValueChangedEvent, GetRowIdParams } from "ag-grid-community";
+import type {
+  ColDef,
+  CellValueChangedEvent,
+  GetRowIdParams,
+  GridApi,
+  CsvExportParams,
+  ProcessCellForExportParams,
+  ProcessHeaderForExportParams,
+} from "ag-grid-community";
 import type { CustomCellRendererProps } from "ag-grid-react";
 import { AgGridReact } from "ag-grid-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card.js";
@@ -44,7 +53,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select.js";
-import { TrendingUp, TrendingDown, Minus, Plus, Trash2 } from "lucide-react";
+import { TrendingUp, TrendingDown, Minus, Plus, Trash2, Copy, Download } from "lucide-react";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuShortcut,
+  ContextMenuTrigger,
+} from "../components/ui/context-menu.js";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -56,6 +73,7 @@ import {
   AlertDialogTitle,
 } from "../components/ui/alert-dialog.js";
 import api from "../lib/api.js";
+import { copyToClipboard, flashToast } from "../lib/clipboard.js";
 
 ModuleRegistry.registerModules([
   ClientSideRowModelModule,
@@ -63,6 +81,7 @@ ModuleRegistry.registerModules([
   NumberEditorModule,
   PinnedRowModule,
   CellStyleModule,
+  CsvExportModule,
   ValidationModule,
 ]);
 
@@ -124,6 +143,14 @@ const CATEGORY_OPTIONS: InvCategory[] = [
   "commodity",
   "debt",
 ];
+
+// Friendly export headers for the fixed columns (date columns keep their own
+// month-year headers). Mirrors the transactions grid's CSV/clipboard export.
+const EXPORT_HEADERS: Record<string, string> = {
+  name: "Investment",
+  category: "Type",
+  rate: "Rate %",
+};
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -296,6 +323,7 @@ type Person = "Alex" | "Casey";
 
 export function InvestmentsPage() {
   const queryClient = useQueryClient();
+  const gridApiRef = useRef<GridApi>(undefined);
   const { data: session } = useSession();
   // Default the dropdown to whoever's logged in (ProtectedRoute guarantees a loaded session);
   // either person can still switch to view the other's holdings.
@@ -496,6 +524,60 @@ export function InvestmentsPage() {
 
     return [...fixed, ...dateCols];
   }, [allDates]);
+
+  // ── CSV / clipboard export ────────────────────────────────────────────────
+  // Same value/header formatting for both the CSV download and clipboard copy.
+  // The holdings grid has no row selection, so both act on every holding.
+  function buildExportParams(): CsvExportParams {
+    return {
+      columnKeys: ["name", "category", "rate", ...allDates.map(fieldKey)],
+      processHeaderCallback: (p: ProcessHeaderForExportParams) =>
+        EXPORT_HEADERS[p.column.getColId()] ??
+        p.column.getColDef().headerName ??
+        p.column.getColId(),
+      processCellCallback: (p: ProcessCellForExportParams) => {
+        switch (p.column.getColId()) {
+          case "category": {
+            const v = p.value;
+            if (v == null || v === "__total") return "";
+            return CAT_CONFIG[v as InvCategory]?.label ?? String(v);
+          }
+          case "rate":
+            return p.value == null || p.value === "" ? "" : String(p.value);
+          case "name":
+            return p.value ?? "";
+          default:
+            // Date columns hold plain numeric values (blank when unset).
+            return p.value == null || p.value === "" ? "" : String(p.value);
+        }
+      },
+    };
+  }
+
+  // Copy every holding to the clipboard as TSV with a header row — pastes into
+  // Sheets/Excel as proper columns.
+  async function handleCopyWithHeaders() {
+    const api = gridApiRef.current;
+    if (!api) return;
+    const tsv = api.getDataAsCsv({
+      ...buildExportParams(),
+      columnSeparator: "\t",
+      suppressQuotes: true,
+    });
+    if (!tsv) return;
+    const ok = await copyToClipboard(tsv);
+    flashToast(ok ? "Copied holdings with headers" : "Copy failed");
+  }
+
+  // Download every holding as a CSV file.
+  function handleExportCsv() {
+    const api = gridApiRef.current;
+    if (!api) return;
+    api.exportDataAsCsv({
+      ...buildExportParams(),
+      fileName: `investments-${person.toLowerCase()}-${new Date().toISOString().slice(0, 10)}.csv`,
+    });
+  }
 
   function onCellValueChanged(e: CellValueChangedEvent) {
     const field = e.colDef.field;
@@ -857,19 +939,48 @@ export function InvestmentsPage() {
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0 overflow-hidden">
-          <AgGridReact
-            theme={gridTheme}
-            rowData={rowData}
-            columnDefs={columnDefs}
-            pinnedBottomRowData={pinnedBottomRowData}
-            domLayout="autoHeight"
-            defaultColDef={{ sortable: true, resizable: true, suppressMovable: true }}
-            suppressCellFocus={false}
-            getRowId={(p: GetRowIdParams) => p.data.id}
-            onCellValueChanged={onCellValueChanged}
-            singleClickEdit
-            stopEditingWhenCellsLoseFocus
-          />
+          <ContextMenu>
+            <ContextMenuTrigger asChild>
+              <div
+                // Capture so we win the key before AG Grid's own handling.
+                onKeyDownCapture={(e) => {
+                  if (e.ctrlKey && e.altKey && (e.key === "c" || e.key === "C")) {
+                    e.preventDefault();
+                    handleCopyWithHeaders();
+                  }
+                }}
+              >
+                <AgGridReact
+                  theme={gridTheme}
+                  rowData={rowData}
+                  columnDefs={columnDefs}
+                  pinnedBottomRowData={pinnedBottomRowData}
+                  domLayout="autoHeight"
+                  defaultColDef={{ sortable: true, resizable: true, suppressMovable: true }}
+                  suppressCellFocus={false}
+                  getRowId={(p: GetRowIdParams) => p.data.id}
+                  onGridReady={(e) => {
+                    gridApiRef.current = e.api;
+                  }}
+                  onCellValueChanged={onCellValueChanged}
+                  singleClickEdit
+                  stopEditingWhenCellsLoseFocus
+                />
+              </div>
+            </ContextMenuTrigger>
+            <ContextMenuContent className="w-52">
+              <ContextMenuItem onSelect={handleCopyWithHeaders}>
+                <Copy />
+                Copy with headers
+                <ContextMenuShortcut>Ctrl+Alt+C</ContextMenuShortcut>
+              </ContextMenuItem>
+              <ContextMenuSeparator />
+              <ContextMenuItem onSelect={handleExportCsv}>
+                <Download />
+                Export to CSV
+              </ContextMenuItem>
+            </ContextMenuContent>
+          </ContextMenu>
         </CardContent>
       </Card>
 

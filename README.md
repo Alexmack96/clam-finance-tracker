@@ -44,7 +44,9 @@ Supported: Monzo ✓ — Amex, Barclays, Santander, Caseys banks coming soon.
 ---
 
 ## Todo 28-Jun-2026
-[] HSBC april is messed up, e.g. missing 1k input 
+[] Needs/Wants/Savings/Ignore should be the 4 categories, reove inherit concept. instad, you should be able to set up your own mappings similar to the cateogries where i can know that for example, investments category goes to savings, and my rent goes to needs etc. so i dont need to do much work re-categorising, but equally if its unclear which it should be, we should leave uncategorised I think. Default is unset, but it wont show that in the UI as that another option, once youve chosen one you cant go back to null, simply can flip between them
+[X] Export to csv.. or consider solo dev enterprise?? I need a basic way to do the current view, cant be hard! So i can do analysis :)
+[] HSBC april is messed up, e.g. missing 1k input , we need to add checksum on each new statement or we can never be sure! fail an upload if its doesnt match 
 [] duplicate ids on casey Amex
 [] check why hsbc latest date says 1st april, not 8th april, for casey apr statement
 [] why does the savings page still have this stuff for the exclusion items? [] ive figure out the right abstraction!! i think each transaciton row in the transaction page should have a collapseable extra fields underneath it, and a little arrow or something that pops out the extra flags, cos i realised i need one for exlcude from savings override, and SavingType (FIxed/Fun/Saving) enum, and possibly other properties about a transaction that i havent thought of yet , and isdirectdebit although i cant remember why we had that one maybe remove direct debit
