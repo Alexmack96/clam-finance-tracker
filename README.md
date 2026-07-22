@@ -44,6 +44,8 @@ Supported: Monzo ✓ — Amex, Barclays, Santander, Caseys banks coming soon.
 ---
 
 ## Todo 28-Jun-2026
+[] Y - Amex recs - try out YTD check first. GBP and all sums correctly. ignore 2025. 
+[] - Run a monzo YTD rec against the transactions API to make sure it reconciles. For now it can appear 
 [] Needs/Wants/Savings/Ignore should be the 4 categories, reove inherit concept. instad, you should be able to set up your own mappings similar to the cateogries where i can know that for example, investments category goes to savings, and my rent goes to needs etc. so i dont need to do much work re-categorising, but equally if its unclear which it should be, we should leave uncategorised I think. Default is unset, but it wont show that in the UI as that another option, once youve chosen one you cant go back to null, simply can flip between them
 [X] Export to csv.. or consider solo dev enterprise?? I need a basic way to do the current view, cant be hard! So i can do analysis :)
 [] HSBC april is messed up, e.g. missing 1k input , we need to add checksum on each new statement or we can never be sure! fail an upload if its doesnt match 

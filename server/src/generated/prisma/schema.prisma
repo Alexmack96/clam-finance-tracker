@@ -13,10 +13,13 @@ enum TransactionType {
   Expense
 }
 
-enum SavingType {
-  Fixed
-  Fun
-  Saving
+// 50/30/20 classification. A Bucket total is a signed net (expense +, income −);
+// Savings and Ignore are excluded from savings maths in both directions.
+enum Bucket {
+  Needs
+  Wants
+  Savings
+  Ignore
 }
 
 enum Owner {
@@ -53,7 +56,7 @@ model Category {
   id            String         @id @default(cuid())
   name          String         @unique
   color         String
-  savingType    SavingType     @default(Fun)
+  bucket        Bucket? // default Bucket mapping; stamped onto expenses at import. null = unmapped
   transactions  Transaction[]
   categoryRules CategoryRule[]
 }
@@ -72,28 +75,28 @@ model CategoryRule {
 }
 
 model Transaction {
-  id                 String          @id @default(cuid())
-  description        String
-  amount             Decimal
-  type               TransactionType
-  date               DateTime        @default(now())
-  createdAt          DateTime        @default(now())
-  categoryId         String
-  category           Category        @relation(fields: [categoryId], references: [id])
-  externalId         String?         @unique
-  note               String?
-  owner              Owner           @default(Joint)
-  reviewed           Boolean         @default(false)
-  excludeFromSavings Boolean         @default(false)
-  savingType         SavingType? // per-transaction override; null = inherit from category
-  originalAmount     Decimal?
-  originalCurrency   String?
+  id               String          @id @default(cuid())
+  description      String
+  amount           Decimal
+  type             TransactionType
+  date             DateTime        @default(now())
+  createdAt        DateTime        @default(now())
+  categoryId       String
+  category         Category        @relation(fields: [categoryId], references: [id])
+  externalId       String?         @unique
+  note             String?
+  owner            Owner           @default(Joint)
+  reviewed         Boolean         @default(false)
+  bucket           Bucket? // 50/30/20 classification; null = uncategorised. Source of truth for savings maths
+  originalAmount   Decimal?
+  originalCurrency String?
 }
 
 // One staging model per bank — each preserves that bank's raw CSV schema exactly.
 // The process step normalises all of them into the shared Transaction model.
 
-// Monzo: synced directly from the Monzo Developer API.
+// Monzo: synced directly from the Monzo Developer API, covering both the
+// uk_retail (debit) and uk_monzo_flex (Flex credit card) accounts.
 // Fields mirror the API response — no CSV quirks.
 model MonzoApiTransaction {
   id                String    @id @default(cuid())

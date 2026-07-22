@@ -7,7 +7,7 @@ import { Pencil, Trash2, Plus, ChevronRight } from "lucide-react";
 import {
   createCategorySchema,
   createCategoryRuleSchema,
-  savingTypes,
+  buckets,
   KNOWN_BANKS,
   type CreateCategoryInput,
   type CreateCategoryRuleInput,
@@ -110,7 +110,7 @@ export function CategoriesPage() {
 
   const form = useForm<CreateCategoryInput>({
     resolver: zodResolver(createCategorySchema),
-    defaultValues: { name: "", color: DEFAULT_COLOR, savingType: "Fun" },
+    defaultValues: { name: "", color: DEFAULT_COLOR, bucket: undefined },
   });
   const color = form.watch("color");
 
@@ -145,8 +145,8 @@ export function CategoriesPage() {
     saveMutation.reset();
     form.reset(
       cat
-        ? { name: cat.name, color: cat.color, savingType: cat.savingType }
-        : { name: "", color: DEFAULT_COLOR, savingType: "Fun" },
+        ? { name: cat.name, color: cat.color, bucket: cat.bucket ?? undefined }
+        : { name: "", color: DEFAULT_COLOR, bucket: undefined },
     );
     setEditorOpen(true);
   }
@@ -176,7 +176,7 @@ export function CategoriesPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Category</TableHead>
-                  <TableHead>Type</TableHead>
+                  <TableHead>Bucket</TableHead>
                   <TableHead className="text-right">Transactions</TableHead>
                   <TableHead />
                 </TableRow>
@@ -212,7 +212,11 @@ export function CategoriesPage() {
                           </button>
                         </TableCell>
                         <TableCell>
-                          <Badge variant="secondary">{c.savingType}</Badge>
+                          {c.bucket ? (
+                            <Badge variant="secondary">{c.bucket}</Badge>
+                          ) : (
+                            <span className="text-xs text-muted-foreground">—</span>
+                          )}
                         </TableCell>
                         <TableCell className="text-right font-mono text-muted-foreground">
                           {c.transactionCount.toLocaleString()}
@@ -302,21 +306,26 @@ export function CategoriesPage() {
               </div>
 
               <div className="space-y-1">
-                <Label htmlFor="savingType">Saving type</Label>
+                <Label htmlFor="bucket">Bucket</Label>
                 <select
-                  id="savingType"
-                  {...form.register("savingType")}
+                  id="bucket"
+                  {...form.register("bucket", {
+                    setValueAs: (v) => (v === "" ? undefined : v),
+                  })}
                   className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                 >
-                  {savingTypes.map((t) => (
-                    <option key={t} value={t}>
-                      {t}
+                  {/* Unset is birth-only — offered while the category has no Bucket, gone once chosen. */}
+                  {!editing?.bucket && <option value="">Unset</option>}
+                  {buckets.map((b) => (
+                    <option key={b} value={b}>
+                      {b}
                     </option>
                   ))}
                 </select>
                 <p className="text-xs text-muted-foreground">
-                  Fixed = bills/rent · Fun = discretionary spend · Saving = money put aside (counts
-                  toward your savings score). Transactions inherit this but can override it.
+                  Needs = bills/rent · Wants = discretionary spend · Savings = money put aside ·
+                  Ignore = skip. Stamped onto this category's expenses on import; leave Unset if
+                  unclear.
                 </p>
               </div>
 

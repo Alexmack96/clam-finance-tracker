@@ -1,8 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { Info } from "lucide-react";
-import type { SavingType } from "@clam/core";
+import type { Bucket } from "@clam/core";
 import api from "../lib/api.js";
 import { findLatestSalary } from "../lib/salary.js";
+import { aggregateMonthlySavings } from "../lib/savings.js";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card.js";
 import { Popover, PopoverContent, PopoverTrigger } from "../components/ui/popover.js";
 
@@ -27,9 +28,7 @@ interface Tx {
   date: string;
   type: "Income" | "Expense";
   owner: string;
-  excludeFromSavings: boolean;
-  savingType: SavingType | null; // per-transaction override; null = inherit category
-  category: { savingType: SavingType };
+  bucket: Bucket | null; // null = uncategorised; Savings/Ignore excluded from the score
 }
 
 interface MonthActual {
@@ -63,27 +62,8 @@ function useMonthlyActuals(owner: string) {
         api.get<Tx[]>("/api/transactions", { params: { owner: "Joint" } }),
       ]);
 
-      const agg: Record<string, { saved: number; variable: number }> = {};
-      const add = (txs: Tx[], weight: number) => {
-        for (const t of txs) {
-          const key = t.date.slice(0, 7);
-          if (!agg[key]) agg[key] = { saved: 0, variable: 0 };
-          const amount = parseFloat(t.amount) * weight;
-          if (t.type === "Income") {
-            agg[key].saved += amount;
-            continue;
-          }
-          const stype = t.savingType ?? t.category.savingType;
-          // Fun = the discretionary spend the footnote surfaces.
-          if (stype === "Fun") agg[key].variable += amount;
-          // Money set aside (Saving) counts as saved, not spent; manual one-off exclusions are
-          // ignored entirely. Everything else (Fixed/Fun) is spending that reduces savings.
-          if (stype !== "Saving" && !t.excludeFromSavings) agg[key].saved -= amount;
-        }
-      };
-
-      add(ownerTxs, 1);
-      add(jointTxs, 0.5);
+      // Owner weighting (self ×1, Joint ×½) is applied inside the aggregator by `owner`.
+      const agg = aggregateMonthlySavings([...ownerTxs, ...jointTxs], owner);
 
       const months: MonthActual[] = Object.keys(agg)
         .filter((k) => k >= "2025-01")
@@ -300,8 +280,8 @@ export function SavingsPage() {
                   20% of your take-home income. Hitting or beating the target scores 100.
                 </p>
                 <p className="text-muted-foreground">
-                  Tip: mark one-off or mandatory items (a wedding ring, an investment transfer) as
-                  excluded on the transactions table — they won't count against your score.
+                  Tip: set one-off or mandatory items (a wedding ring, an investment transfer) to
+                  the Ignore bucket on the transactions table — they won't count against your score.
                 </p>
               </PopoverContent>
             </Popover>
@@ -336,9 +316,9 @@ export function SavingsPage() {
                       saving 20% of your take-home income. Hitting or beating the target scores 100.
                     </p>
                     <p className="text-muted-foreground">
-                      Tip: mark one-off or mandatory items (a wedding ring, an investment transfer)
-                      as excluded on the transactions table — they won't count against your score.
-                      Unplanned overspend stays in scope.
+                      Tip: set one-off or mandatory items (a wedding ring, an investment transfer)
+                      to the Ignore bucket on the transactions table — they won't count against your
+                      score. Unplanned overspend stays in scope.
                     </p>
                   </PopoverContent>
                 </Popover>

@@ -2,6 +2,7 @@ import { Router } from "express";
 import { db } from "../db/client.js";
 import { TransactionType, Owner } from "../generated/prisma/index.js";
 import { parseOwner } from "./investments.js";
+import { netBucketSpent } from "../lib/bucketMath.js";
 
 export const dashboardRouter = Router();
 
@@ -74,18 +75,15 @@ dashboardRouter.get("/analytics", async (req, res) => {
 
   const expenses = transactions.filter((t) => t.type === TransactionType.Expense);
 
-  // Effective SavingType = the transaction's override, or its category's default.
-  const stype = (t: (typeof expenses)[number]) => t.savingType ?? t.category.savingType;
-
   const fixedVsVariable = MONTHS.slice(0, currentMonthIdx + 1).map((month, i) => {
     const monthExp = expenses.filter((t) => new Date(t.date).getMonth() === i);
     return {
       month,
-      fixed: monthExp
-        .filter((t) => stype(t) === "Fixed")
+      // Needs = fixed essentials; Wants = discretionary. Savings/Ignore aren't spending.
+      fixed: monthExp.filter((t) => t.bucket === "Needs").reduce((s, t) => s + Number(t.amount), 0),
+      variable: monthExp
+        .filter((t) => t.bucket === "Wants")
         .reduce((s, t) => s + Number(t.amount), 0),
-      // "Variable" = discretionary Fun spend; Saving-typed transfers aren't spending.
-      variable: monthExp.filter((t) => stype(t) === "Fun").reduce((s, t) => s + Number(t.amount), 0),
     };
   });
 
@@ -150,11 +148,14 @@ dashboardRouter.get("/analytics", async (req, res) => {
     if (latestSalary) monthlyFunBudget = Math.round(Number(latestSalary.amount) * 0.3);
   }
 
-  const monthSpent = expenses
-    .filter(
-      (t) => stype(t) === "Fun" && new Date(t.date).getMonth() === currentMonthIdx && t.owner === owner,
-    )
-    .reduce((s, t) => s + Number(t.amount), 0);
+  // Wants Budget = net Wants spend this month, owner-weighted like the savings score:
+  // the selected person in full plus half of Joint. Refunds (income tagged Wants) net
+  // off; Savings/Ignore never appear. Uses all transactions, not just expenses, so the
+  // income side of the net is included.
+  const monthWants = transactions
+    .filter((t) => new Date(t.date).getMonth() === currentMonthIdx)
+    .map((t) => ({ owner: t.owner, type: t.type, amount: Number(t.amount), bucket: t.bucket }));
+  const monthSpent = netBucketSpent(monthWants, "Wants", owner);
   const budget = {
     spent: monthSpent,
     limit: monthlyFunBudget,

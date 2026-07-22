@@ -14,10 +14,13 @@ enum TransactionType {
   Expense
 }
 
-enum SavingType {
-  Fixed
-  Fun
-  Saving
+// 50/30/20 classification. A Bucket total is a signed net (expense +, income −);
+// Savings and Ignore are excluded from savings maths in both directions.
+enum Bucket {
+  Needs
+  Wants
+  Savings
+  Ignore
 }
 
 enum Owner {
@@ -54,7 +57,7 @@ model Category {
   id             String        @id @default(cuid())
   name           String        @unique
   color          String
-  savingType     SavingType    @default(Fun)
+  bucket         Bucket?       // default Bucket mapping; stamped onto expenses at import. null = unmapped
   transactions   Transaction[]
   categoryRules  CategoryRule[]
 }
@@ -85,8 +88,7 @@ model Transaction {
   note             String?
   owner            Owner           @default(Joint)
   reviewed         Boolean         @default(false)
-  excludeFromSavings Boolean       @default(false)
-  savingType       SavingType?     // per-transaction override; null = inherit from category
+  bucket           Bucket?         // 50/30/20 classification; null = uncategorised. Source of truth for savings maths
   originalAmount   Decimal?
   originalCurrency String?
 }

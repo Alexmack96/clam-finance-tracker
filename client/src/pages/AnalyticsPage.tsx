@@ -118,11 +118,11 @@ export function AnalyticsPage() {
 
       {/* Top row — budget gauge + monthly fun */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Fun budget gauge */}
+        {/* Wants budget gauge */}
         <Card>
           <CardHeader className="pb-2 flex-row items-center justify-between space-y-0">
             <CardTitle className="text-xs uppercase tracking-wide text-muted-foreground">
-              {isPending ? "Fun Budget" : `${data!.budget.month} Fun Budget`}
+              {isPending ? "Wants Budget" : `${data!.budget.month} Wants Budget`}
             </CardTitle>
             <Select value={person} onValueChange={(v) => setPerson(v as Person)}>
               <SelectTrigger className="h-7 w-[100px] text-xs" aria-label="Select person">
@@ -143,7 +143,7 @@ export function AnalyticsPage() {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-xs uppercase tracking-wide text-muted-foreground">
-              Monthly Fun Spending
+              Monthly Wants Spending
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -393,12 +393,7 @@ export function AnalyticsPage() {
                       borderRadius: 8,
                     }}
                   />
-                  <Bar
-                    dataKey="amount"
-                    name="Golf"
-                    fill="#22c55e"
-                    radius={[4, 4, 0, 0]}
-                  />
+                  <Bar dataKey="amount" name="Golf" fill="#22c55e" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             )}

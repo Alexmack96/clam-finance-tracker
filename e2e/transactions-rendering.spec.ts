@@ -89,8 +89,8 @@ function runBunScript(script: string): string {
 // ---------------------------------------------------------------------------
 // Seed data — 1 category + TX_COUNT transactions, all id-prefixed so cleanup
 // is a simple LIKE delete. Only columns without a schema default are
-// supplied; owner/reviewed/excludeFromSavings/externalId/note/savingType all
-// fall back to their column defaults (Joint / false / false / null / null / null).
+// supplied; owner/reviewed/bucket/externalId/note all fall back to their column
+// defaults (Joint / false / null / null / null).
 // ---------------------------------------------------------------------------
 
 const TX_COUNT = 1500;
@@ -102,7 +102,7 @@ function seedTransactions() {
   const script =
     `import { Database } from 'bun:sqlite';\n` +
     `const db = new Database('${dbPath}'); db.run('PRAGMA busy_timeout = 15000');\n` +
-    `db.run(\`INSERT OR IGNORE INTO "Category" (id, name, color, savingType) VALUES ('e2e-render-cat', 'E2E Render Category', '#22c55e', 'Fun')\`);\n` +
+    `db.run(\`INSERT OR IGNORE INTO "Category" (id, name, color) VALUES ('e2e-render-cat', 'E2E Render Category', '#22c55e')\`);\n` +
     `const insert = db.prepare('INSERT INTO "Transaction" (id, description, amount, type, date, categoryId) VALUES (?, ?, ?, ?, ?, ?)');\n` +
     `const insertMany = db.transaction((rows) => { for (const r of rows) insert.run(...r); });\n` +
     `const rows = [];\n` +

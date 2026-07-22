@@ -27,7 +27,7 @@ import type {
 import { AgGridReact, useGridFilter } from "ag-grid-react";
 import type { CustomCellRendererProps, CustomFilterProps } from "ag-grid-react";
 import { ChevronDown, Copy, Download } from "lucide-react";
-import { savingTypes, type SavingType } from "@clam/core";
+import { buckets, type Bucket } from "@clam/core";
 import { Button } from "../components/ui/button.js";
 import { Input } from "../components/ui/input.js";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card.js";
@@ -100,7 +100,7 @@ interface Category {
   id: string;
   name: string;
   color: string;
-  savingType: SavingType;
+  bucket: Bucket | null;
 }
 
 interface Transaction {
@@ -115,8 +115,7 @@ interface Transaction {
   owner: Owner;
   externalId: string | null;
   reviewed: boolean;
-  excludeFromSavings: boolean;
-  savingType: SavingType | null; // per-transaction override; null = inherit category
+  bucket: Bucket | null; // null = uncategorised; source of truth for savings maths
 }
 
 interface Summary {
@@ -134,8 +133,7 @@ interface GridCtx {
       categoryId?: string;
       owner?: Owner;
       reviewed?: boolean;
-      excludeFromSavings?: boolean;
-      savingType?: SavingType | null;
+      bucket?: Bucket;
     },
   ) => void;
   categories: Category[];
@@ -786,7 +784,8 @@ function ReviewedRenderer({
   );
 }
 
-// Collapsible per-transaction flags: SavingType override + exclude-from-savings.
+// Per-transaction Bucket control (Needs/Wants/Savings/Ignore). Null is birth-only:
+// shown as "—" until you pick, then you can flip freely but never clear it back.
 // Shared between the desktop grid cell and the mobile card.
 function FlagsControl({
   tx,
@@ -795,8 +794,6 @@ function FlagsControl({
   tx: Transaction;
   onUpdate: (patch: UpdatePatch) => void;
 }) {
-  const effective = tx.savingType ?? tx.category.savingType;
-  const hasOverride = tx.savingType !== null || tx.excludeFromSavings;
   const chip = (active: boolean) =>
     `px-1.5 py-0.5 rounded text-[11px] border transition-colors ${
       active
@@ -807,49 +804,33 @@ function FlagsControl({
     <Popover>
       <PopoverTrigger asChild>
         <button
-          title="Saving type & flags"
+          title="Bucket"
           className={`flex items-center gap-1 px-1.5 h-6 rounded border border-transparent hover:border-border transition-colors ${
-            hasOverride ? "text-primary" : "text-muted-foreground/70"
+            tx.bucket ? "text-primary" : "text-muted-foreground/70"
           }`}
         >
-          <span className="text-[10px] font-medium leading-none">{effective}</span>
-          {tx.excludeFromSavings && <span className="text-[10px] leading-none">∅</span>}
+          <span className="text-[10px] font-medium leading-none">{tx.bucket ?? "—"}</span>
           <ChevronDown className="size-3" />
         </button>
       </PopoverTrigger>
-      <PopoverContent align="end" className="w-56 p-3 space-y-3">
-        <div className="space-y-1.5">
-          <p className="text-xs font-semibold text-foreground">Saving type</p>
-          <div className="flex flex-wrap gap-1">
+      <PopoverContent align="end" className="w-56 p-3 space-y-2">
+        <p className="text-xs font-semibold text-foreground">Bucket</p>
+        <div className="flex flex-wrap gap-1">
+          {buckets.map((b) => (
             <button
-              className={chip(tx.savingType === null)}
-              onClick={() => onUpdate({ savingType: null })}
+              key={b}
+              className={chip(tx.bucket === b)}
+              onClick={() => onUpdate({ bucket: b })}
             >
-              Inherit
+              {b}
             </button>
-            {savingTypes.map((t) => (
-              <button
-                key={t}
-                className={chip(tx.savingType === t)}
-                onClick={() => onUpdate({ savingType: t })}
-              >
-                {t}
-              </button>
-            ))}
-          </div>
-          <p className="text-[10px] text-muted-foreground">
-            Inherit = {tx.category.savingType} (from {tx.category.name})
-          </p>
+          ))}
         </div>
-        <label className="flex items-center gap-2 text-xs cursor-pointer">
-          <input
-            type="checkbox"
-            className="h-3.5 w-3.5"
-            checked={tx.excludeFromSavings}
-            onChange={(e) => onUpdate({ excludeFromSavings: e.target.checked })}
-          />
-          Exclude from savings score
-        </label>
+        <p className="text-[10px] text-muted-foreground">
+          {tx.bucket
+            ? "Flip freely — a Bucket can't be cleared once set."
+            : "Pick one to classify this transaction."}
+        </p>
       </PopoverContent>
     </Popover>
   );
@@ -921,8 +902,7 @@ type UpdatePatch = {
   categoryId?: string;
   owner?: Owner;
   reviewed?: boolean;
-  excludeFromSavings?: boolean;
-  savingType?: SavingType | null;
+  bucket?: Bucket;
 };
 
 const MobileTransactionCard = memo(function MobileTransactionCard({
@@ -1033,8 +1013,7 @@ export function DashboardPage() {
       categoryId?: string;
       owner?: Owner;
       reviewed?: boolean;
-      excludeFromSavings?: boolean;
-      savingType?: SavingType | null;
+      bucket?: Bucket;
     }) => api.patch<Transaction>(`/api/transactions/${id}`, data).then((r) => r.data),
     onSuccess: (updated, variables) => {
       // Sync query cache with server truth
@@ -1043,13 +1022,12 @@ export function DashboardPage() {
       );
       // Re-apply server truth to grid (handles any server-side normalization)
       gridApiRef.current?.applyTransaction({ update: [updated] });
-      // Category/owner/savingType/exclude changes ripple into the dashboard, savings score and
+      // Category/owner/bucket changes ripple into the dashboard, savings score and
       // analytics — refetch them so the numbers stay tied across pages.
       if (
         variables.categoryId !== undefined ||
         variables.owner !== undefined ||
-        variables.savingType !== undefined ||
-        variables.excludeFromSavings !== undefined
+        variables.bucket !== undefined
       ) {
         queryClient.invalidateQueries({ queryKey: ["summary"] });
         queryClient.invalidateQueries({ queryKey: ["savings"] });

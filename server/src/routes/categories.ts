@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { db } from "../db/client.js";
-import { Prisma } from "../generated/prisma/index.js";
+import { Prisma, TransactionType } from "../generated/prisma/index.js";
 import { createCategorySchema, updateCategorySchema } from "@clam/core";
 
 export const categoriesRouter = Router();
@@ -44,6 +44,17 @@ categoriesRouter.patch("/:id", async (req, res) => {
       where: { id: req.params.id as string },
       data: parsed.data,
     });
+
+    // Setting/changing the Bucket mapping stamps only the still-unset expenses in this
+    // category — manual overrides (already non-null) are preserved. Income is never
+    // auto-bucketed, so genuine income keeps counting as real income.
+    if (parsed.data.bucket !== undefined) {
+      await db.transaction.updateMany({
+        where: { categoryId: category.id, bucket: null, type: TransactionType.Expense },
+        data: { bucket: parsed.data.bucket },
+      });
+    }
+
     res.json(category);
   } catch (err) {
     if (err instanceof Prisma.PrismaClientKnownRequestError) {

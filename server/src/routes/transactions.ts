@@ -24,9 +24,9 @@ const updateSchema = z.object({
   categoryId: z.string().min(1).optional(),
   owner: z.enum(["Alex", "Casey", "Joint"]).optional(),
   reviewed: z.boolean().optional(),
-  excludeFromSavings: z.boolean().optional(),
-  // null clears the override (inherit the category's savingType).
-  savingType: z.enum(["Fixed", "Fun", "Saving"]).nullable().optional(),
+  // The Bucket is the source of truth for savings maths. Once set it can only be
+  // flipped between the four — the client never sends null to clear it.
+  bucket: z.enum(["Needs", "Wants", "Savings", "Ignore"]).optional(),
 });
 
 transactionsRouter.patch("/:id", async (req, res) => {
@@ -38,10 +38,7 @@ transactionsRouter.patch("/:id", async (req, res) => {
       ...(body.categoryId ? { categoryId: body.categoryId } : {}),
       ...(body.owner ? { owner: body.owner } : {}),
       ...(body.reviewed !== undefined ? { reviewed: body.reviewed } : {}),
-      ...(body.excludeFromSavings !== undefined
-        ? { excludeFromSavings: body.excludeFromSavings }
-        : {}),
-      ...(body.savingType !== undefined ? { savingType: body.savingType } : {}),
+      ...(body.bucket !== undefined ? { bucket: body.bucket } : {}),
     },
     include: { category: true },
   });

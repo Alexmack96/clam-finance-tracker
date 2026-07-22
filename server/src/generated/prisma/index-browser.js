@@ -131,7 +131,7 @@ exports.Prisma.CategoryScalarFieldEnum = {
   id: 'id',
   name: 'name',
   color: 'color',
-  savingType: 'savingType'
+  bucket: 'bucket'
 };
 
 exports.Prisma.CategoryRuleScalarFieldEnum = {
@@ -154,8 +154,7 @@ exports.Prisma.TransactionScalarFieldEnum = {
   note: 'note',
   owner: 'owner',
   reviewed: 'reviewed',
-  excludeFromSavings: 'excludeFromSavings',
-  savingType: 'savingType',
+  bucket: 'bucket',
   originalAmount: 'originalAmount',
   originalCurrency: 'originalCurrency'
 };
@@ -396,10 +395,11 @@ exports.Owner = exports.$Enums.Owner = {
   Joint: 'Joint'
 };
 
-exports.SavingType = exports.$Enums.SavingType = {
-  Fixed: 'Fixed',
-  Fun: 'Fun',
-  Saving: 'Saving'
+exports.Bucket = exports.$Enums.Bucket = {
+  Needs: 'Needs',
+  Wants: 'Wants',
+  Savings: 'Savings',
+  Ignore: 'Ignore'
 };
 
 exports.TransactionType = exports.$Enums.TransactionType = {
