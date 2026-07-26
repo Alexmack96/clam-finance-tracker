@@ -45,7 +45,9 @@ Supported: Monzo ✓ — Amex, Barclays, Santander, Caseys banks coming soon.
 
 ## Todo 28-Jun-2026
 
-[] Store the PDFs in persistent volume and create a statement entity
+[X] Store the PDFs in persistent volume and create a statement entity
+[] ANDROID PWA EXPERIENCE COULD IMPORVE, SHOPW TOP 10 BY TXNS FOR THAT USER, NOT BY ALPHABETICAL AND DONT LAUNCH KEYBOARD SO LIKELY WE ARE TAPPIUNG ONCE, ADD SCOLLY BAR INSTEAD
+[] quick question - how better could i be interracting with my data right now? rather than get you to write janky ralways scripts, better i eventually maybe a rest api i can just called endpoints to mess around and dlete bulk by id or by statement id or something?
 [] IOS PWA experience is garbage - I shared from safari rather than instlal fgrom chrome.. is that why? on android itypically install from chrome
 [] S - Mobile all - stop zoom on IOS specifically 
 [] S - Mobile all - dont open keyboard immediately, instead add a scrolly bar so you likely will never type. But you could if you prefer to tap the text and do that.

@@ -428,13 +428,13 @@ export async function parseAmexBuffer(buffer: Buffer): Promise<AmexParseOutcome>
   return { ok: true, rows, statementDate: rows[0]?.statementDate ?? null };
 }
 
-/// Stage parsed rows, skipping any whose id already exists. Returns what was
-/// inserted vs. recognised as a duplicate.
-export async function stageAmexRows(
+/// Split parsed rows into the ones not yet staged and the ones already present.
+/// Writes nothing, so the upload route can reject an all-duplicate statement
+/// *before* it commits a StatementFile row or puts a PDF on the volume.
+export async function partitionAmexRows(
   rows: AmexRow[],
   owner: string,
-  statementFileId: string | null,
-): Promise<{ imported: number; duplicates: string[] }> {
+): Promise<{ toInsert: (AmexRow & { transactionId: string })[]; duplicates: string[] }> {
   const existing = await db.amexTransaction.findMany({ select: { transactionId: true } });
   const existingIds = new Set(existing.map((r) => r.transactionId));
 
@@ -445,11 +445,33 @@ export async function stageAmexRows(
     if (existingIds.has(row.transactionId)) duplicates.push(row.transactionId);
     else toInsert.push(row);
   }
+  return { toInsert, duplicates };
+}
+
+/// Stage parsed rows, skipping any whose id already exists. Returns what was
+/// inserted vs. recognised as a duplicate.
+export async function stageAmexRows(
+  rows: AmexRow[],
+  owner: string,
+  statementFileId: string | null,
+): Promise<{ imported: number; duplicates: string[] }> {
+  const { toInsert, duplicates } = await partitionAmexRows(rows, owner);
 
   if (toInsert.length > 0)
     await db.amexTransaction.createMany({
       data: toInsert.map((r) => ({ ...r, owner, statementFileId })),
     });
+
+  // A duplicate row staged before this feature existed carries no statementFileId,
+  // so the PDF we just stored would account for fewer rows than it actually covers.
+  // Claim the unowned ones rather than dropping the link. Rows already belonging to
+  // another statement are left alone — first file to claim a row keeps it.
+  if (statementFileId && duplicates.length > 0)
+    await db.amexTransaction.updateMany({
+      where: { transactionId: { in: duplicates }, statementFileId: null },
+      data: { statementFileId },
+    });
+
   return { imported: toInsert.length, duplicates };
 }
 
@@ -475,6 +497,19 @@ importRouter.post("/import/amex", upload.single("file"), async (req, res) => {
   const parsed = await parseAmexBuffer(req.file.buffer);
   if (!parsed.ok) {
     res.status(parsed.status).json({ error: parsed.error });
+    return;
+  }
+
+  // Decide before anything is persisted. The contentHash check above catches the
+  // identical file; this catches the same statement arriving as different bytes
+  // (re-downloaded, re-rendered). Either way it adds no rows, so it must not leave
+  // a StatementFile row or an orphaned PDF on the volume behind.
+  const { toInsert, duplicates } = await partitionAmexRows(parsed.rows, owner);
+  if (toInsert.length === 0) {
+    res.status(409).json({
+      error: `Every transaction on this statement (${duplicates.length}) is already imported, so nothing was stored.`,
+      duplicates: duplicates.length,
+    });
     return;
   }
 
