@@ -221,6 +221,7 @@ exports.Prisma.MonzoRecRunScalarFieldEnum = {
   window: 'window',
   trigger: 'trigger',
   totalMissing: 'totalMissing',
+  totalBackfilled: 'totalBackfilled',
   results: 'results'
 };
 

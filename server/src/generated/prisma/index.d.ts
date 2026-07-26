@@ -11837,10 +11837,12 @@ export namespace Prisma {
 
   export type MonzoRecRunAvgAggregateOutputType = {
     totalMissing: number | null
+    totalBackfilled: number | null
   }
 
   export type MonzoRecRunSumAggregateOutputType = {
     totalMissing: number | null
+    totalBackfilled: number | null
   }
 
   export type MonzoRecRunMinAggregateOutputType = {
@@ -11849,6 +11851,7 @@ export namespace Prisma {
     window: string | null
     trigger: string | null
     totalMissing: number | null
+    totalBackfilled: number | null
     results: string | null
   }
 
@@ -11858,6 +11861,7 @@ export namespace Prisma {
     window: string | null
     trigger: string | null
     totalMissing: number | null
+    totalBackfilled: number | null
     results: string | null
   }
 
@@ -11867,6 +11871,7 @@ export namespace Prisma {
     window: number
     trigger: number
     totalMissing: number
+    totalBackfilled: number
     results: number
     _all: number
   }
@@ -11874,10 +11879,12 @@ export namespace Prisma {
 
   export type MonzoRecRunAvgAggregateInputType = {
     totalMissing?: true
+    totalBackfilled?: true
   }
 
   export type MonzoRecRunSumAggregateInputType = {
     totalMissing?: true
+    totalBackfilled?: true
   }
 
   export type MonzoRecRunMinAggregateInputType = {
@@ -11886,6 +11893,7 @@ export namespace Prisma {
     window?: true
     trigger?: true
     totalMissing?: true
+    totalBackfilled?: true
     results?: true
   }
 
@@ -11895,6 +11903,7 @@ export namespace Prisma {
     window?: true
     trigger?: true
     totalMissing?: true
+    totalBackfilled?: true
     results?: true
   }
 
@@ -11904,6 +11913,7 @@ export namespace Prisma {
     window?: true
     trigger?: true
     totalMissing?: true
+    totalBackfilled?: true
     results?: true
     _all?: true
   }
@@ -12000,6 +12010,7 @@ export namespace Prisma {
     window: string
     trigger: string
     totalMissing: number
+    totalBackfilled: number
     results: string
     _count: MonzoRecRunCountAggregateOutputType | null
     _avg: MonzoRecRunAvgAggregateOutputType | null
@@ -12028,6 +12039,7 @@ export namespace Prisma {
     window?: boolean
     trigger?: boolean
     totalMissing?: boolean
+    totalBackfilled?: boolean
     results?: boolean
   }, ExtArgs["result"]["monzoRecRun"]>
 
@@ -12037,6 +12049,7 @@ export namespace Prisma {
     window?: boolean
     trigger?: boolean
     totalMissing?: boolean
+    totalBackfilled?: boolean
     results?: boolean
   }, ExtArgs["result"]["monzoRecRun"]>
 
@@ -12046,6 +12059,7 @@ export namespace Prisma {
     window?: boolean
     trigger?: boolean
     totalMissing?: boolean
+    totalBackfilled?: boolean
     results?: boolean
   }, ExtArgs["result"]["monzoRecRun"]>
 
@@ -12055,10 +12069,11 @@ export namespace Prisma {
     window?: boolean
     trigger?: boolean
     totalMissing?: boolean
+    totalBackfilled?: boolean
     results?: boolean
   }
 
-  export type MonzoRecRunOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "ranAt" | "window" | "trigger" | "totalMissing" | "results", ExtArgs["result"]["monzoRecRun"]>
+  export type MonzoRecRunOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "ranAt" | "window" | "trigger" | "totalMissing" | "totalBackfilled" | "results", ExtArgs["result"]["monzoRecRun"]>
 
   export type $MonzoRecRunPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "MonzoRecRun"
@@ -12069,6 +12084,7 @@ export namespace Prisma {
       window: string
       trigger: string
       totalMissing: number
+      totalBackfilled: number
       results: string
     }, ExtArgs["result"]["monzoRecRun"]>
     composites: {}
@@ -12498,6 +12514,7 @@ export namespace Prisma {
     readonly window: FieldRef<"MonzoRecRun", 'String'>
     readonly trigger: FieldRef<"MonzoRecRun", 'String'>
     readonly totalMissing: FieldRef<"MonzoRecRun", 'Int'>
+    readonly totalBackfilled: FieldRef<"MonzoRecRun", 'Int'>
     readonly results: FieldRef<"MonzoRecRun", 'String'>
   }
     
@@ -27314,6 +27331,7 @@ export namespace Prisma {
     window: 'window',
     trigger: 'trigger',
     totalMissing: 'totalMissing',
+    totalBackfilled: 'totalBackfilled',
     results: 'results'
   };
 
@@ -28245,6 +28263,7 @@ export namespace Prisma {
     window?: StringFilter<"MonzoRecRun"> | string
     trigger?: StringFilter<"MonzoRecRun"> | string
     totalMissing?: IntFilter<"MonzoRecRun"> | number
+    totalBackfilled?: IntFilter<"MonzoRecRun"> | number
     results?: StringFilter<"MonzoRecRun"> | string
   }
 
@@ -28254,6 +28273,7 @@ export namespace Prisma {
     window?: SortOrder
     trigger?: SortOrder
     totalMissing?: SortOrder
+    totalBackfilled?: SortOrder
     results?: SortOrder
   }
 
@@ -28266,6 +28286,7 @@ export namespace Prisma {
     window?: StringFilter<"MonzoRecRun"> | string
     trigger?: StringFilter<"MonzoRecRun"> | string
     totalMissing?: IntFilter<"MonzoRecRun"> | number
+    totalBackfilled?: IntFilter<"MonzoRecRun"> | number
     results?: StringFilter<"MonzoRecRun"> | string
   }, "id">
 
@@ -28275,6 +28296,7 @@ export namespace Prisma {
     window?: SortOrder
     trigger?: SortOrder
     totalMissing?: SortOrder
+    totalBackfilled?: SortOrder
     results?: SortOrder
     _count?: MonzoRecRunCountOrderByAggregateInput
     _avg?: MonzoRecRunAvgOrderByAggregateInput
@@ -28292,6 +28314,7 @@ export namespace Prisma {
     window?: StringWithAggregatesFilter<"MonzoRecRun"> | string
     trigger?: StringWithAggregatesFilter<"MonzoRecRun"> | string
     totalMissing?: IntWithAggregatesFilter<"MonzoRecRun"> | number
+    totalBackfilled?: IntWithAggregatesFilter<"MonzoRecRun"> | number
     results?: StringWithAggregatesFilter<"MonzoRecRun"> | string
   }
 
@@ -30012,6 +30035,7 @@ export namespace Prisma {
     window?: string
     trigger?: string
     totalMissing?: number
+    totalBackfilled?: number
     results: string
   }
 
@@ -30021,6 +30045,7 @@ export namespace Prisma {
     window?: string
     trigger?: string
     totalMissing?: number
+    totalBackfilled?: number
     results: string
   }
 
@@ -30030,6 +30055,7 @@ export namespace Prisma {
     window?: StringFieldUpdateOperationsInput | string
     trigger?: StringFieldUpdateOperationsInput | string
     totalMissing?: IntFieldUpdateOperationsInput | number
+    totalBackfilled?: IntFieldUpdateOperationsInput | number
     results?: StringFieldUpdateOperationsInput | string
   }
 
@@ -30039,6 +30065,7 @@ export namespace Prisma {
     window?: StringFieldUpdateOperationsInput | string
     trigger?: StringFieldUpdateOperationsInput | string
     totalMissing?: IntFieldUpdateOperationsInput | number
+    totalBackfilled?: IntFieldUpdateOperationsInput | number
     results?: StringFieldUpdateOperationsInput | string
   }
 
@@ -30048,6 +30075,7 @@ export namespace Prisma {
     window?: string
     trigger?: string
     totalMissing?: number
+    totalBackfilled?: number
     results: string
   }
 
@@ -30057,6 +30085,7 @@ export namespace Prisma {
     window?: StringFieldUpdateOperationsInput | string
     trigger?: StringFieldUpdateOperationsInput | string
     totalMissing?: IntFieldUpdateOperationsInput | number
+    totalBackfilled?: IntFieldUpdateOperationsInput | number
     results?: StringFieldUpdateOperationsInput | string
   }
 
@@ -30066,6 +30095,7 @@ export namespace Prisma {
     window?: StringFieldUpdateOperationsInput | string
     trigger?: StringFieldUpdateOperationsInput | string
     totalMissing?: IntFieldUpdateOperationsInput | number
+    totalBackfilled?: IntFieldUpdateOperationsInput | number
     results?: StringFieldUpdateOperationsInput | string
   }
 
@@ -31894,11 +31924,13 @@ export namespace Prisma {
     window?: SortOrder
     trigger?: SortOrder
     totalMissing?: SortOrder
+    totalBackfilled?: SortOrder
     results?: SortOrder
   }
 
   export type MonzoRecRunAvgOrderByAggregateInput = {
     totalMissing?: SortOrder
+    totalBackfilled?: SortOrder
   }
 
   export type MonzoRecRunMaxOrderByAggregateInput = {
@@ -31907,6 +31939,7 @@ export namespace Prisma {
     window?: SortOrder
     trigger?: SortOrder
     totalMissing?: SortOrder
+    totalBackfilled?: SortOrder
     results?: SortOrder
   }
 
@@ -31916,11 +31949,13 @@ export namespace Prisma {
     window?: SortOrder
     trigger?: SortOrder
     totalMissing?: SortOrder
+    totalBackfilled?: SortOrder
     results?: SortOrder
   }
 
   export type MonzoRecRunSumOrderByAggregateInput = {
     totalMissing?: SortOrder
+    totalBackfilled?: SortOrder
   }
 
   export type AmexTransactionCountOrderByAggregateInput = {

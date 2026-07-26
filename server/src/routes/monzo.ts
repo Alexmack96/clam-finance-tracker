@@ -269,12 +269,37 @@ async function fetchMonzoTransactions(
   return all;
 }
 
-// Shape of a single missing transaction recorded in a rec run's results.
+// Map a raw Monzo API transaction to a staging row. Shared by the incremental
+// /sync and the reconciliation backfill so both stage identical rows.
+function toMonzoApiRow(tx: MonzoTx, accountId: string): Prisma.MonzoApiTransactionCreateManyInput {
+  return {
+    monzoId: tx.id,
+    created: new Date(tx.created),
+    settled: tx.settled ? new Date(tx.settled) : null,
+    amountPence: tx.amount,
+    currency: tx.currency,
+    localAmountPence: tx.local_amount,
+    localCurrency: tx.local_currency,
+    description: tx.description,
+    notes: tx.notes || null,
+    monzoCategory: tx.category,
+    merchantName: tx.merchant?.name ?? null,
+    merchantEmoji: tx.merchant?.emoji ?? null,
+    merchantAddress: tx.merchant?.address?.short_formatted ?? null,
+    scheme: tx.scheme ?? null,
+    includeInSpending: tx.include_in_spending,
+    accountId,
+  };
+}
+
+// A gap the rec found: present in the Monzo API, absent from staging. `recovered`
+// records whether the backfill actually staged it.
 type RecMissingTx = {
   id: string;
   created: string;
   amountPence: number;
   description: string;
+  recovered: boolean;
 };
 
 // Per-account outcome of a rec pass, persisted as JSON on MonzoRecRun.results.
@@ -283,17 +308,23 @@ type RecAccountResult = {
   accountType: string;
   apiSettledCount: number;
   missingCount: number;
+  backfilledCount: number;
   missing: RecMissingTx[];
   error?: string;
 };
 
 // Independently pull the full last-90-day window (the most the Monzo API serves
-// once a token is >5 min past authentication) and report any settled transaction
-// present in the API but absent from our staging table. The incremental sync only
-// fetches forward from each account's newest stored transaction, so a transaction
-// an earlier sync missed would never be re-fetched — this pass is the safety net
-// that surfaces such gaps. Every run is persisted (MonzoRecRun) and gaps are also
-// reported to Sentry. Best-effort: never throws into the caller.
+// once a token is >5 min past authentication), find any settled transaction present
+// in the API but absent from our staging table, and BACKFILL it. The incremental
+// sync only fetches forward from each account's newest stored transaction, so a
+// transaction an earlier sync missed would never be re-fetched — this pass is the
+// safety net that both surfaces and closes such gaps.
+//
+// Backfilled rows are staged exactly as /sync would stage them (status "pending"),
+// so they flow through the normal /process step into Transaction. Every run is
+// persisted (MonzoRecRun) and gaps are reported to Sentry — recovering a gap still
+// means the incremental sync dropped something, which is worth knowing.
+// Best-effort: never throws into the caller.
 async function reconcileLast90Days(
   syncAccounts: { id: string; type: string }[],
   accessToken: string,
@@ -302,6 +333,7 @@ async function reconcileLast90Days(
   const windowStart = new Date(Date.now() - 89 * 24 * 60 * 60 * 1000);
   const results: RecAccountResult[] = [];
   let totalMissing = 0;
+  let totalBackfilled = 0;
 
   for (const account of syncAccounts) {
     let apiTxs: MonzoTx[];
@@ -318,6 +350,7 @@ async function reconcileLast90Days(
         accountType: account.type,
         apiSettledCount: 0,
         missingCount: 0,
+        backfilledCount: 0,
         missing: [],
         error: message,
       });
@@ -330,22 +363,50 @@ async function reconcileLast90Days(
       select: { monzoId: true },
     });
     const presentSet = new Set(present.map((r) => r.monzoId));
-    const missing: RecMissingTx[] = settled
-      .filter((tx) => !presentSet.has(tx.id))
-      .map((tx) => ({
+    const missingTxs = settled.filter((tx) => !presentSet.has(tx.id));
+
+    // Close the gap one row at a time: SQLite has no `createMany({ skipDuplicates })`,
+    // and a concurrent sync may stage the same row between the read above and this
+    // write. `upsert` with an empty update is idempotent either way, and per-row
+    // insertion means one bad row can't sink the whole backfill.
+    const missing: RecMissingTx[] = [];
+    let backfilledCount = 0;
+    let backfillError: string | undefined;
+
+    for (const tx of missingTxs) {
+      let recovered = true;
+      try {
+        await db.monzoApiTransaction.upsert({
+          where: { monzoId: tx.id },
+          create: toMonzoApiRow(tx, account.id),
+          update: {},
+        });
+        backfilledCount++;
+      } catch (err) {
+        recovered = false;
+        if (!backfillError) backfillError = err instanceof Error ? err.message : String(err);
+      }
+      missing.push({
         id: tx.id,
         created: new Date(tx.created).toISOString(),
         amountPence: tx.amount,
         description: tx.merchant?.name ?? tx.description,
-      }));
+        recovered,
+      });
+    }
+
+    const recoveredAll = backfilledCount === missingTxs.length;
 
     totalMissing += missing.length;
+    totalBackfilled += backfilledCount;
     results.push({
       accountId: account.id,
       accountType: account.type,
       apiSettledCount: settled.length,
       missingCount: missing.length,
+      backfilledCount,
       missing,
+      error: backfillError,
     });
 
     if (missing.length > 0) {
@@ -355,18 +416,30 @@ async function reconcileLast90Days(
           accountId: account.id,
           windowStart: windowStart.toISOString(),
           missingCount: missing.length,
+          backfilledCount,
+          backfillError,
           missing,
         });
+        // A recovered gap is a warning (self-healed); one we could not stage is an
+        // error — that transaction is still absent from our data.
         Sentry.captureMessage(
-          `Monzo 90-day rec: ${missing.length} settled transaction(s) in the API missing from staging for ${account.type} (${account.id})`,
-          "error",
+          recoveredAll
+            ? `Monzo 90-day rec: backfilled ${backfilledCount} settled transaction(s) the incremental sync missed for ${account.type} (${account.id})`
+            : `Monzo 90-day rec: ${missing.length} settled transaction(s) missing from staging for ${account.type} (${account.id}); only ${backfilledCount} could be backfilled`,
+          recoveredAll ? "warning" : "error",
         );
       });
     }
   }
 
   return db.monzoRecRun.create({
-    data: { window: "90d", trigger, totalMissing, results: JSON.stringify(results) },
+    data: {
+      window: "90d",
+      trigger,
+      totalMissing,
+      totalBackfilled,
+      results: JSON.stringify(results),
+    },
   });
 }
 
@@ -460,24 +533,7 @@ monzoRouter.post("/sync", requireAuth, async (_req, res) => {
 
     const toInsert: Prisma.MonzoApiTransactionCreateManyInput[] = allTxs
       .filter((tx) => !existingSet.has(tx.id))
-      .map((tx) => ({
-        monzoId: tx.id,
-        created: new Date(tx.created),
-        settled: tx.settled ? new Date(tx.settled) : null,
-        amountPence: tx.amount,
-        currency: tx.currency,
-        localAmountPence: tx.local_amount,
-        localCurrency: tx.local_currency,
-        description: tx.description,
-        notes: tx.notes || null,
-        monzoCategory: tx.category,
-        merchantName: tx.merchant?.name ?? null,
-        merchantEmoji: tx.merchant?.emoji ?? null,
-        merchantAddress: tx.merchant?.address?.short_formatted ?? null,
-        scheme: tx.scheme ?? null,
-        includeInSpending: tx.include_in_spending,
-        accountId: account.id,
-      }));
+      .map((tx) => toMonzoApiRow(tx, account.id));
 
     if (toInsert.length > 0) await db.monzoApiTransaction.createMany({ data: toInsert });
 
@@ -485,14 +541,19 @@ monzoRouter.post("/sync", requireAuth, async (_req, res) => {
     totalDuplicates += allTxs.length - toInsert.length;
   }
 
-  // Safety-net rec against the full 90-day window — persists a MonzoRecRun and
-  // logs gaps to Sentry, without blocking the sync response.
+  // Safety-net rec against the full 90-day window — backfills anything the
+  // incremental pass above missed, persists a MonzoRecRun, and logs gaps to Sentry.
   const recRun = await reconcileLast90Days(syncAccounts, credential.accessToken, "sync");
 
   res.json({
-    imported: totalImported,
+    // Backfilled rows are staged imports too, so the headline count includes them.
+    imported: totalImported + recRun.totalBackfilled,
     duplicates: totalDuplicates,
-    reconciled: { window: "90d", missing: recRun.totalMissing },
+    reconciled: {
+      window: "90d",
+      missing: recRun.totalMissing,
+      backfilled: recRun.totalBackfilled,
+    },
   });
 });
 

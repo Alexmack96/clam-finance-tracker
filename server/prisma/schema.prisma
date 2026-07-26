@@ -167,12 +167,13 @@ model MonzoCredential {
 // from the Admin page). `results` is a JSON string: one entry per synced account
 // with its API-vs-staging diff and the details of any missing transactions.
 model MonzoRecRun {
-  id           String   @id @default(cuid())
-  ranAt        DateTime @default(now())
-  window       String   @default("90d")
-  trigger      String   @default("sync") // "sync" | "manual"
-  totalMissing Int      @default(0)
-  results      String // JSON — per-account summary + missing tx details
+  id              String   @id @default(cuid())
+  ranAt           DateTime @default(now())
+  window          String   @default("90d")
+  trigger         String   @default("sync") // "sync" | "manual"
+  totalMissing    Int      @default(0) // gaps found in staging
+  totalBackfilled Int      @default(0) // of those gaps, how many we recovered
+  results         String // JSON — per-account summary + recovered tx details
 
   @@map("monzo_rec_run")
 }
