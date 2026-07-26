@@ -45,6 +45,7 @@ Supported: Monzo ✓ — Amex, Barclays, Santander, Caseys banks coming soon.
 
 ## Todo 28-Jun-2026
 
+[] Store the PDFs in persistent volume and create a statement entity
 [] IOS PWA experience is garbage - I shared from safari rather than instlal fgrom chrome.. is that why? on android itypically install from chrome
 [] S - Mobile all - stop zoom on IOS specifically 
 [] S - Mobile all - dont open keyboard immediately, instead add a scrolly bar so you likely will never type. But you could if you prefer to tap the text and do that.

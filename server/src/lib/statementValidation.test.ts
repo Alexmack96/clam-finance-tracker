@@ -4,7 +4,8 @@ import { statementSchemas, hsbcStatementTextSchema, type BankKey } from "./state
 // Representative scraps of pdf-parse text — each carries its issuing bank's name.
 const SAMPLES: Record<BankKey, string> = {
   amex: "American Express\nMr A MACKINTOSH 31/05/26\nMembership Rewards\nTotal new spend transactions",
-  barclays: "Barclaycard\nBarclays Bank UK PLC\nHow you've used your card\n05 May SAINSBURYS £19.00",
+  barclays:
+    "Barclaycard\nBarclays Bank UK PLC\nHow you've used your card\n05 May SAINSBURYS £19.00",
   santander: "Santander\nYour transactions\nBalance brought forward 1,000.00",
   hsbc: "HSBC UK Bank plc\n1 May 2026 to 31 May 2026\nBALANCE BROUGHT FORWARD",
   chase: "Chase\nwww.chase.com\nJPMorgan Chase Bank, N.A.\n01/12 Payment Thank You -100.00",

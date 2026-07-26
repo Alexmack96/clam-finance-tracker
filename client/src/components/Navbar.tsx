@@ -1,7 +1,7 @@
 import { NavLink, Link } from "react-router-dom";
 import { useSession } from "../lib/authClient.js";
 import { Sun, Moon, LogOut } from "lucide-react";
-import { useTheme } from "../context/ThemeContext.js";
+import { useTheme } from "../context/theme.js";
 import { Button } from "./ui/button.js";
 
 const links = [

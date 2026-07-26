@@ -52,7 +52,14 @@ function gcd(a: number, b: number): number {
 
 async function cleanupDuplicatedBarclaysStatements() {
   const rows = await db.barclaysTransaction.findMany({
-    select: { id: true, statementDate: true, date: true, description: true, amount: true, isCredit: true },
+    select: {
+      id: true,
+      statementDate: true,
+      date: true,
+      description: true,
+      amount: true,
+      isCredit: true,
+    },
   });
 
   const byStatement = new Map<string, typeof rows>();
@@ -91,12 +98,14 @@ async function cleanupDuplicatedBarclaysStatements() {
 
     try {
       await db.$transaction(async (tx) => {
-        const txResult  = await tx.transaction.deleteMany({ where: { externalId: { in: extIds } } });
-        const stgResult = await tx.barclaysTransaction.deleteMany({ where: { id: { in: dupeIds } } });
+        const txResult = await tx.transaction.deleteMany({ where: { externalId: { in: extIds } } });
+        const stgResult = await tx.barclaysTransaction.deleteMany({
+          where: { id: { in: dupeIds } },
+        });
         console.log(
           `[cleanup] Barclays "${statementDate}": uploaded ${k}×, ${group.length} staged rows. ` +
-          `Removing ${expected} duplicate copies (keeping the first of each) → ` +
-          `deleted ${txResult.count} transactions and ${stgResult.count} staging rows.`,
+            `Removing ${expected} duplicate copies (keeping the first of each) → ` +
+            `deleted ${txResult.count} transactions and ${stgResult.count} staging rows.`,
         );
         // Safety: every duplicate staging row should map to exactly one processed
         // transaction. If the transaction delete count doesn't match the plan,
@@ -109,14 +118,21 @@ async function cleanupDuplicatedBarclaysStatements() {
         }
       });
     } catch (err) {
-      console.error(`[cleanup] ROLLED BACK Barclays "${statementDate}":`, err instanceof Error ? err.message : err);
+      console.error(
+        `[cleanup] ROLLED BACK Barclays "${statementDate}":`,
+        err instanceof Error ? err.message : err,
+      );
     }
   }
 }
 
 // ─── 2. Backfill business keys + migrate transaction externalIds ─────────────
 
-interface BackfillRow { id: number; transactionId: string | null; contentKey: string }
+interface BackfillRow {
+  id: number;
+  transactionId: string | null;
+  contentKey: string;
+}
 
 /**
  * Assign a unique `transactionId` to every staging row that lacks one, then point
@@ -151,16 +167,24 @@ async function backfill(
     const oldExt = `${bank}:${row.id}`;
     const newExt = `${bank}:${transactionId}`;
     if (oldExt === newExt) continue;
-    const tx = await db.transaction.findUnique({ where: { externalId: oldExt }, select: { id: true } });
+    const tx = await db.transaction.findUnique({
+      where: { externalId: oldExt },
+      select: { id: true },
+    });
     if (!tx) continue;
-    const clash = await db.transaction.findUnique({ where: { externalId: newExt }, select: { id: true } });
+    const clash = await db.transaction.findUnique({
+      where: { externalId: newExt },
+      select: { id: true },
+    });
     if (clash) continue; // target already taken — leave the old row as-is rather than collide
     await db.transaction.update({ where: { id: tx.id }, data: { externalId: newExt } });
     reExternalised++;
   }
 
   if (keyed > 0 || reExternalised > 0) {
-    console.log(`[backfill] ${bank}: keyed ${keyed} staging rows, migrated ${reExternalised} transaction externalIds.`);
+    console.log(
+      `[backfill] ${bank}: keyed ${keyed} staging rows, migrated ${reExternalised} transaction externalIds.`,
+    );
   }
 }
 
@@ -169,7 +193,14 @@ async function backfillBarclays() {
     "barclays",
     async () => {
       const rows = await db.barclaysTransaction.findMany({
-        select: { id: true, transactionId: true, date: true, description: true, amount: true, isCredit: true },
+        select: {
+          id: true,
+          transactionId: true,
+          date: true,
+          description: true,
+          amount: true,
+          isCredit: true,
+        },
       });
       return rows.map((r) => ({
         id: r.id,
@@ -177,7 +208,8 @@ async function backfillBarclays() {
         contentKey: `${r.date}|${r.description}|${r.amount}|${r.isCredit}`,
       }));
     },
-    (id, transactionId) => db.barclaysTransaction.update({ where: { id }, data: { transactionId } }),
+    (id, transactionId) =>
+      db.barclaysTransaction.update({ where: { id }, data: { transactionId } }),
   );
 }
 
@@ -186,7 +218,15 @@ async function backfillSantander() {
     "santander",
     async () => {
       const rows = await db.santanderTransaction.findMany({
-        select: { id: true, transactionId: true, date: true, description: true, moneyIn: true, moneyOut: true, balance: true },
+        select: {
+          id: true,
+          transactionId: true,
+          date: true,
+          description: true,
+          moneyIn: true,
+          moneyOut: true,
+          balance: true,
+        },
       });
       return rows.map((r) => ({
         id: r.id,
@@ -194,7 +234,8 @@ async function backfillSantander() {
         contentKey: `${r.date}|${r.description}|${r.moneyIn ?? ""}|${r.moneyOut ?? ""}|${r.balance}`,
       }));
     },
-    (id, transactionId) => db.santanderTransaction.update({ where: { id }, data: { transactionId } }),
+    (id, transactionId) =>
+      db.santanderTransaction.update({ where: { id }, data: { transactionId } }),
   );
 }
 

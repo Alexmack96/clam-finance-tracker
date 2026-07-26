@@ -5,6 +5,7 @@ import pdfParse from "pdf-parse";
 import { db } from "../db/client.js";
 import { convertWithFallback } from "../lib/fxRates.js";
 import { statementSchemas } from "../lib/statementValidation.js";
+import { statementStore } from "../lib/statementStorage.js";
 import { resolveRuleCategory } from "../lib/categoryRules.js";
 
 export const importRouter = Router();
@@ -391,43 +392,49 @@ export function assignAmexIds(
     });
 }
 
-importRouter.post("/import/amex", upload.single("file"), async (req, res) => {
-  if (!req.file) {
-    res.status(400).json({ error: "No file uploaded" });
-    return;
-  }
-  const owner = VALID_OWNERS.has(req.body.owner) ? req.body.owner : "Alex";
+/// Parse + reconcile an Amex PDF buffer. Returns either the rows or the HTTP
+/// status and message to reject with, so the upload and re-parse routes share one
+/// definition of "is this statement acceptable".
+export type AmexParseOutcome =
+  | { ok: true; rows: AmexRow[]; statementDate: string | null }
+  | { ok: false; status: number; error: string };
 
+export async function parseAmexBuffer(buffer: Buffer): Promise<AmexParseOutcome> {
   let text: string;
   try {
-    text = (await pdfParse(req.file.buffer, { pagerender: amexPageRender })).text;
+    text = (await pdfParse(buffer, { pagerender: amexPageRender })).text;
   } catch {
-    res.status(400).json({ error: "Failed to extract text from PDF" });
-    return;
+    return { ok: false, status: 400, error: "Failed to extract text from PDF" };
   }
 
   const statementCheck = statementSchemas.amex.safeParse(text);
-  if (!statementCheck.success) {
-    res.status(422).json({ error: statementCheck.error.issues[0].message });
-    return;
-  }
+  if (!statementCheck.success)
+    return { ok: false, status: 422, error: statementCheck.error.issues[0].message };
 
   let rows: AmexRow[];
   try {
     rows = parseAmexPdf(text);
   } catch (err) {
-    res
-      .status(400)
-      .json({ error: err instanceof Error ? err.message : "Failed to parse Amex statement" });
-    return;
+    return {
+      ok: false,
+      status: 400,
+      error: err instanceof Error ? err.message : "Failed to parse Amex statement",
+    };
   }
 
   const mismatch = reconcileAmex(rows, text);
-  if (mismatch) {
-    res.status(422).json({ error: mismatch });
-    return;
-  }
+  if (mismatch) return { ok: false, status: 422, error: mismatch };
 
+  return { ok: true, rows, statementDate: rows[0]?.statementDate ?? null };
+}
+
+/// Stage parsed rows, skipping any whose id already exists. Returns what was
+/// inserted vs. recognised as a duplicate.
+export async function stageAmexRows(
+  rows: AmexRow[],
+  owner: string,
+  statementFileId: string | null,
+): Promise<{ imported: number; duplicates: string[] }> {
   const existing = await db.amexTransaction.findMany({ select: { transactionId: true } });
   const existingIds = new Set(existing.map((r) => r.transactionId));
 
@@ -440,8 +447,59 @@ importRouter.post("/import/amex", upload.single("file"), async (req, res) => {
   }
 
   if (toInsert.length > 0)
-    await db.amexTransaction.createMany({ data: toInsert.map((r) => ({ ...r, owner })) });
-  res.json({ imported: toInsert.length, duplicates });
+    await db.amexTransaction.createMany({
+      data: toInsert.map((r) => ({ ...r, owner, statementFileId })),
+    });
+  return { imported: toInsert.length, duplicates };
+}
+
+importRouter.post("/import/amex", upload.single("file"), async (req, res) => {
+  if (!req.file) {
+    res.status(400).json({ error: "No file uploaded" });
+    return;
+  }
+  const owner = VALID_OWNERS.has(req.body.owner) ? req.body.owner : "Alex";
+
+  // Hash first: the identical PDF re-uploaded is caught here, before parsing, and
+  // independently of how row ids happen to be derived.
+  const contentHash = createHash("sha256").update(req.file.buffer).digest("hex");
+  const already = await db.statementFile.findUnique({ where: { contentHash } });
+  if (already) {
+    res.status(409).json({
+      error: `This exact PDF was already uploaded on ${already.uploadedAt.toISOString().slice(0, 10)} as "${already.originalName}".`,
+      statementFileId: already.id,
+    });
+    return;
+  }
+
+  const parsed = await parseAmexBuffer(req.file.buffer);
+  if (!parsed.ok) {
+    res.status(parsed.status).json({ error: parsed.error });
+    return;
+  }
+
+  const statementFile = await db.statementFile.create({
+    data: {
+      bank: "amex",
+      owner,
+      statementDate: parsed.statementDate,
+      originalName: req.file.originalname,
+      contentHash,
+      byteSize: req.file.size,
+      storageKey: statementStore.keyFor({
+        bank: "amex",
+        owner,
+        statementDate: parsed.statementDate,
+        contentHash,
+      }),
+      rowCount: parsed.rows.length,
+      reconciled: true,
+    },
+  });
+  await statementStore.save(statementFile.storageKey, req.file.buffer);
+
+  const staged = await stageAmexRows(parsed.rows, owner, statementFile.id);
+  res.json({ ...staged, statementFileId: statementFile.id });
 });
 
 // ─── Barclays PDF parser ──────────────────────────────────────────────────────

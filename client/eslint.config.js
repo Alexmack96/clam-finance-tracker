@@ -37,6 +37,12 @@ export default [
       "@typescript-eslint/explicit-function-return-type": "off",
       // Allow intentional `any` (used heavily with ag-grid/recharts generics) but flag the rest.
       "@typescript-eslint/no-explicit-any": "off",
+      // Reports components the React Compiler would skip optimising (React Hook
+      // Form's form.watch(), TanStack Virtual's useVirtualizer()). This project
+      // doesn't run the React Compiler — there's no babel-plugin-react-compiler in
+      // vite.config.ts — so it's advisory noise about an optimisation we never do,
+      // for two libraries we've deliberately chosen. Not a correctness rule.
+      "react-hooks/incompatible-library": "off",
     },
   },
   {

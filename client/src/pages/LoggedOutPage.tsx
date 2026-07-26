@@ -9,7 +9,12 @@ export function LoggedOutPage() {
     <div className="min-h-screen flex items-center justify-center bg-background">
       <Card className="w-full max-w-sm text-center">
         <CardHeader className="items-center">
-          <img src="/clam-app-logo.png" alt="" aria-hidden="true" className="size-16 rounded-full mb-2" />
+          <img
+            src="/clam-app-logo.png"
+            alt=""
+            aria-hidden="true"
+            className="size-16 rounded-full mb-2"
+          />
           <CardTitle className="text-2xl">Signed out</CardTitle>
           <CardDescription>
             You have been successfully signed out of Clam Finance Tracker.

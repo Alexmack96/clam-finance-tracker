@@ -880,7 +880,8 @@ export function InvestmentsPage() {
                     <Cell key={entry.key} fill={entry.color} />
                   ))}
                 </Pie>
-                <Tooltip formatter={(v: number) => fmt(v)} />
+                {/* Recharts types the value as ValueType (string | number | array). */}
+                <Tooltip formatter={(v) => fmt(Number(v))} />
               </PieChart>
               {/* Centre label */}
               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">

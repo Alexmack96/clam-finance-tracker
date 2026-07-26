@@ -44,7 +44,9 @@ categoryRulesRouter.post("/", async (req, res) => {
   } catch (err) {
     if (err instanceof Prisma.PrismaClientKnownRequestError) {
       if (err.code === "P2002") {
-        res.status(409).json({ error: `A rule for "${pattern}" (${bank ?? "any bank"}) already exists` });
+        res
+          .status(409)
+          .json({ error: `A rule for "${pattern}" (${bank ?? "any bank"}) already exists` });
         return;
       }
       if (err.code === "P2003") {

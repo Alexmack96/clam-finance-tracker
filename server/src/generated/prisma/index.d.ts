@@ -59,6 +59,14 @@ export type MonzoCredential = $Result.DefaultSelection<Prisma.$MonzoCredentialPa
  */
 export type MonzoRecRun = $Result.DefaultSelection<Prisma.$MonzoRecRunPayload>
 /**
+ * Model StatementFile
+ * The source PDF a batch of staged rows came from. Uploading a statement stores
+ * the bytes on the volume and records this row, so a statement is a first-class
+ * thing you can list, download, re-parse and delete — rather than a loose set of
+ * staged rows identifiable only by a `statementDate` string.
+ */
+export type StatementFile = $Result.DefaultSelection<Prisma.$StatementFilePayload>
+/**
  * Model AmexTransaction
  * 
  */
@@ -402,6 +410,16 @@ export class PrismaClient<
     * ```
     */
   get monzoRecRun(): Prisma.MonzoRecRunDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.statementFile`: Exposes CRUD operations for the **StatementFile** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more StatementFiles
+    * const statementFiles = await prisma.statementFile.findMany()
+    * ```
+    */
+  get statementFile(): Prisma.StatementFileDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.amexTransaction`: Exposes CRUD operations for the **AmexTransaction** model.
@@ -975,6 +993,7 @@ export namespace Prisma {
     PlaidTransaction: 'PlaidTransaction',
     MonzoCredential: 'MonzoCredential',
     MonzoRecRun: 'MonzoRecRun',
+    StatementFile: 'StatementFile',
     AmexTransaction: 'AmexTransaction',
     BarclaysTransaction: 'BarclaysTransaction',
     SantanderTransaction: 'SantanderTransaction',
@@ -1003,7 +1022,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "category" | "categoryRule" | "transaction" | "monzoApiTransaction" | "plaidItem" | "plaidTransaction" | "monzoCredential" | "monzoRecRun" | "amexTransaction" | "barclaysTransaction" | "santanderTransaction" | "hsbcTransaction" | "chaseTransaction" | "sofiTransaction" | "session" | "account" | "note" | "tab" | "investmentAccount" | "investmentSnapshot" | "verification"
+      modelProps: "user" | "category" | "categoryRule" | "transaction" | "monzoApiTransaction" | "plaidItem" | "plaidTransaction" | "monzoCredential" | "monzoRecRun" | "statementFile" | "amexTransaction" | "barclaysTransaction" | "santanderTransaction" | "hsbcTransaction" | "chaseTransaction" | "sofiTransaction" | "session" | "account" | "note" | "tab" | "investmentAccount" | "investmentSnapshot" | "verification"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1670,6 +1689,80 @@ export namespace Prisma {
           count: {
             args: Prisma.MonzoRecRunCountArgs<ExtArgs>
             result: $Utils.Optional<MonzoRecRunCountAggregateOutputType> | number
+          }
+        }
+      }
+      StatementFile: {
+        payload: Prisma.$StatementFilePayload<ExtArgs>
+        fields: Prisma.StatementFileFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.StatementFileFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StatementFilePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.StatementFileFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StatementFilePayload>
+          }
+          findFirst: {
+            args: Prisma.StatementFileFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StatementFilePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.StatementFileFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StatementFilePayload>
+          }
+          findMany: {
+            args: Prisma.StatementFileFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StatementFilePayload>[]
+          }
+          create: {
+            args: Prisma.StatementFileCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StatementFilePayload>
+          }
+          createMany: {
+            args: Prisma.StatementFileCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.StatementFileCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StatementFilePayload>[]
+          }
+          delete: {
+            args: Prisma.StatementFileDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StatementFilePayload>
+          }
+          update: {
+            args: Prisma.StatementFileUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StatementFilePayload>
+          }
+          deleteMany: {
+            args: Prisma.StatementFileDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.StatementFileUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.StatementFileUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StatementFilePayload>[]
+          }
+          upsert: {
+            args: Prisma.StatementFileUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StatementFilePayload>
+          }
+          aggregate: {
+            args: Prisma.StatementFileAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateStatementFile>
+          }
+          groupBy: {
+            args: Prisma.StatementFileGroupByArgs<ExtArgs>
+            result: $Utils.Optional<StatementFileGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.StatementFileCountArgs<ExtArgs>
+            result: $Utils.Optional<StatementFileCountAggregateOutputType> | number
           }
         }
       }
@@ -2752,6 +2845,7 @@ export namespace Prisma {
     plaidTransaction?: PlaidTransactionOmit
     monzoCredential?: MonzoCredentialOmit
     monzoRecRun?: MonzoRecRunOmit
+    statementFile?: StatementFileOmit
     amexTransaction?: AmexTransactionOmit
     barclaysTransaction?: BarclaysTransactionOmit
     santanderTransaction?: SantanderTransactionOmit
@@ -2917,6 +3011,37 @@ export namespace Prisma {
    */
   export type CategoryCountOutputTypeCountCategoryRulesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: CategoryRuleWhereInput
+  }
+
+
+  /**
+   * Count Type StatementFileCountOutputType
+   */
+
+  export type StatementFileCountOutputType = {
+    amexRows: number
+  }
+
+  export type StatementFileCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    amexRows?: boolean | StatementFileCountOutputTypeCountAmexRowsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * StatementFileCountOutputType without action
+   */
+  export type StatementFileCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StatementFileCountOutputType
+     */
+    select?: StatementFileCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * StatementFileCountOutputType without action
+   */
+  export type StatementFileCountOutputTypeCountAmexRowsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AmexTransactionWhereInput
   }
 
 
@@ -12886,6 +13011,1199 @@ export namespace Prisma {
 
 
   /**
+   * Model StatementFile
+   */
+
+  export type AggregateStatementFile = {
+    _count: StatementFileCountAggregateOutputType | null
+    _avg: StatementFileAvgAggregateOutputType | null
+    _sum: StatementFileSumAggregateOutputType | null
+    _min: StatementFileMinAggregateOutputType | null
+    _max: StatementFileMaxAggregateOutputType | null
+  }
+
+  export type StatementFileAvgAggregateOutputType = {
+    byteSize: number | null
+    rowCount: number | null
+  }
+
+  export type StatementFileSumAggregateOutputType = {
+    byteSize: number | null
+    rowCount: number | null
+  }
+
+  export type StatementFileMinAggregateOutputType = {
+    id: string | null
+    bank: string | null
+    owner: string | null
+    statementDate: string | null
+    originalName: string | null
+    contentHash: string | null
+    byteSize: number | null
+    storageKey: string | null
+    uploadedAt: Date | null
+    rowCount: number | null
+    reconciled: boolean | null
+  }
+
+  export type StatementFileMaxAggregateOutputType = {
+    id: string | null
+    bank: string | null
+    owner: string | null
+    statementDate: string | null
+    originalName: string | null
+    contentHash: string | null
+    byteSize: number | null
+    storageKey: string | null
+    uploadedAt: Date | null
+    rowCount: number | null
+    reconciled: boolean | null
+  }
+
+  export type StatementFileCountAggregateOutputType = {
+    id: number
+    bank: number
+    owner: number
+    statementDate: number
+    originalName: number
+    contentHash: number
+    byteSize: number
+    storageKey: number
+    uploadedAt: number
+    rowCount: number
+    reconciled: number
+    _all: number
+  }
+
+
+  export type StatementFileAvgAggregateInputType = {
+    byteSize?: true
+    rowCount?: true
+  }
+
+  export type StatementFileSumAggregateInputType = {
+    byteSize?: true
+    rowCount?: true
+  }
+
+  export type StatementFileMinAggregateInputType = {
+    id?: true
+    bank?: true
+    owner?: true
+    statementDate?: true
+    originalName?: true
+    contentHash?: true
+    byteSize?: true
+    storageKey?: true
+    uploadedAt?: true
+    rowCount?: true
+    reconciled?: true
+  }
+
+  export type StatementFileMaxAggregateInputType = {
+    id?: true
+    bank?: true
+    owner?: true
+    statementDate?: true
+    originalName?: true
+    contentHash?: true
+    byteSize?: true
+    storageKey?: true
+    uploadedAt?: true
+    rowCount?: true
+    reconciled?: true
+  }
+
+  export type StatementFileCountAggregateInputType = {
+    id?: true
+    bank?: true
+    owner?: true
+    statementDate?: true
+    originalName?: true
+    contentHash?: true
+    byteSize?: true
+    storageKey?: true
+    uploadedAt?: true
+    rowCount?: true
+    reconciled?: true
+    _all?: true
+  }
+
+  export type StatementFileAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which StatementFile to aggregate.
+     */
+    where?: StatementFileWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of StatementFiles to fetch.
+     */
+    orderBy?: StatementFileOrderByWithRelationInput | StatementFileOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: StatementFileWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` StatementFiles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` StatementFiles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned StatementFiles
+    **/
+    _count?: true | StatementFileCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: StatementFileAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: StatementFileSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: StatementFileMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: StatementFileMaxAggregateInputType
+  }
+
+  export type GetStatementFileAggregateType<T extends StatementFileAggregateArgs> = {
+        [P in keyof T & keyof AggregateStatementFile]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateStatementFile[P]>
+      : GetScalarType<T[P], AggregateStatementFile[P]>
+  }
+
+
+
+
+  export type StatementFileGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: StatementFileWhereInput
+    orderBy?: StatementFileOrderByWithAggregationInput | StatementFileOrderByWithAggregationInput[]
+    by: StatementFileScalarFieldEnum[] | StatementFileScalarFieldEnum
+    having?: StatementFileScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: StatementFileCountAggregateInputType | true
+    _avg?: StatementFileAvgAggregateInputType
+    _sum?: StatementFileSumAggregateInputType
+    _min?: StatementFileMinAggregateInputType
+    _max?: StatementFileMaxAggregateInputType
+  }
+
+  export type StatementFileGroupByOutputType = {
+    id: string
+    bank: string
+    owner: string
+    statementDate: string | null
+    originalName: string
+    contentHash: string
+    byteSize: number
+    storageKey: string
+    uploadedAt: Date
+    rowCount: number | null
+    reconciled: boolean
+    _count: StatementFileCountAggregateOutputType | null
+    _avg: StatementFileAvgAggregateOutputType | null
+    _sum: StatementFileSumAggregateOutputType | null
+    _min: StatementFileMinAggregateOutputType | null
+    _max: StatementFileMaxAggregateOutputType | null
+  }
+
+  type GetStatementFileGroupByPayload<T extends StatementFileGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<StatementFileGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof StatementFileGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], StatementFileGroupByOutputType[P]>
+            : GetScalarType<T[P], StatementFileGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type StatementFileSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    bank?: boolean
+    owner?: boolean
+    statementDate?: boolean
+    originalName?: boolean
+    contentHash?: boolean
+    byteSize?: boolean
+    storageKey?: boolean
+    uploadedAt?: boolean
+    rowCount?: boolean
+    reconciled?: boolean
+    amexRows?: boolean | StatementFile$amexRowsArgs<ExtArgs>
+    _count?: boolean | StatementFileCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["statementFile"]>
+
+  export type StatementFileSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    bank?: boolean
+    owner?: boolean
+    statementDate?: boolean
+    originalName?: boolean
+    contentHash?: boolean
+    byteSize?: boolean
+    storageKey?: boolean
+    uploadedAt?: boolean
+    rowCount?: boolean
+    reconciled?: boolean
+  }, ExtArgs["result"]["statementFile"]>
+
+  export type StatementFileSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    bank?: boolean
+    owner?: boolean
+    statementDate?: boolean
+    originalName?: boolean
+    contentHash?: boolean
+    byteSize?: boolean
+    storageKey?: boolean
+    uploadedAt?: boolean
+    rowCount?: boolean
+    reconciled?: boolean
+  }, ExtArgs["result"]["statementFile"]>
+
+  export type StatementFileSelectScalar = {
+    id?: boolean
+    bank?: boolean
+    owner?: boolean
+    statementDate?: boolean
+    originalName?: boolean
+    contentHash?: boolean
+    byteSize?: boolean
+    storageKey?: boolean
+    uploadedAt?: boolean
+    rowCount?: boolean
+    reconciled?: boolean
+  }
+
+  export type StatementFileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "bank" | "owner" | "statementDate" | "originalName" | "contentHash" | "byteSize" | "storageKey" | "uploadedAt" | "rowCount" | "reconciled", ExtArgs["result"]["statementFile"]>
+  export type StatementFileInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    amexRows?: boolean | StatementFile$amexRowsArgs<ExtArgs>
+    _count?: boolean | StatementFileCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type StatementFileIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type StatementFileIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+
+  export type $StatementFilePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "StatementFile"
+    objects: {
+      amexRows: Prisma.$AmexTransactionPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      bank: string
+      owner: string
+      statementDate: string | null
+      originalName: string
+      /**
+       * SHA-256 of the file bytes. Unique, so re-uploading the identical PDF is
+       * caught at the file level regardless of how row ids are derived.
+       */
+      contentHash: string
+      byteSize: number
+      storageKey: string
+      uploadedAt: Date
+      rowCount: number | null
+      reconciled: boolean
+    }, ExtArgs["result"]["statementFile"]>
+    composites: {}
+  }
+
+  type StatementFileGetPayload<S extends boolean | null | undefined | StatementFileDefaultArgs> = $Result.GetResult<Prisma.$StatementFilePayload, S>
+
+  type StatementFileCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<StatementFileFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: StatementFileCountAggregateInputType | true
+    }
+
+  export interface StatementFileDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['StatementFile'], meta: { name: 'StatementFile' } }
+    /**
+     * Find zero or one StatementFile that matches the filter.
+     * @param {StatementFileFindUniqueArgs} args - Arguments to find a StatementFile
+     * @example
+     * // Get one StatementFile
+     * const statementFile = await prisma.statementFile.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends StatementFileFindUniqueArgs>(args: SelectSubset<T, StatementFileFindUniqueArgs<ExtArgs>>): Prisma__StatementFileClient<$Result.GetResult<Prisma.$StatementFilePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one StatementFile that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {StatementFileFindUniqueOrThrowArgs} args - Arguments to find a StatementFile
+     * @example
+     * // Get one StatementFile
+     * const statementFile = await prisma.statementFile.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends StatementFileFindUniqueOrThrowArgs>(args: SelectSubset<T, StatementFileFindUniqueOrThrowArgs<ExtArgs>>): Prisma__StatementFileClient<$Result.GetResult<Prisma.$StatementFilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first StatementFile that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StatementFileFindFirstArgs} args - Arguments to find a StatementFile
+     * @example
+     * // Get one StatementFile
+     * const statementFile = await prisma.statementFile.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends StatementFileFindFirstArgs>(args?: SelectSubset<T, StatementFileFindFirstArgs<ExtArgs>>): Prisma__StatementFileClient<$Result.GetResult<Prisma.$StatementFilePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first StatementFile that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StatementFileFindFirstOrThrowArgs} args - Arguments to find a StatementFile
+     * @example
+     * // Get one StatementFile
+     * const statementFile = await prisma.statementFile.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends StatementFileFindFirstOrThrowArgs>(args?: SelectSubset<T, StatementFileFindFirstOrThrowArgs<ExtArgs>>): Prisma__StatementFileClient<$Result.GetResult<Prisma.$StatementFilePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more StatementFiles that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StatementFileFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all StatementFiles
+     * const statementFiles = await prisma.statementFile.findMany()
+     * 
+     * // Get first 10 StatementFiles
+     * const statementFiles = await prisma.statementFile.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const statementFileWithIdOnly = await prisma.statementFile.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends StatementFileFindManyArgs>(args?: SelectSubset<T, StatementFileFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StatementFilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a StatementFile.
+     * @param {StatementFileCreateArgs} args - Arguments to create a StatementFile.
+     * @example
+     * // Create one StatementFile
+     * const StatementFile = await prisma.statementFile.create({
+     *   data: {
+     *     // ... data to create a StatementFile
+     *   }
+     * })
+     * 
+     */
+    create<T extends StatementFileCreateArgs>(args: SelectSubset<T, StatementFileCreateArgs<ExtArgs>>): Prisma__StatementFileClient<$Result.GetResult<Prisma.$StatementFilePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many StatementFiles.
+     * @param {StatementFileCreateManyArgs} args - Arguments to create many StatementFiles.
+     * @example
+     * // Create many StatementFiles
+     * const statementFile = await prisma.statementFile.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends StatementFileCreateManyArgs>(args?: SelectSubset<T, StatementFileCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many StatementFiles and returns the data saved in the database.
+     * @param {StatementFileCreateManyAndReturnArgs} args - Arguments to create many StatementFiles.
+     * @example
+     * // Create many StatementFiles
+     * const statementFile = await prisma.statementFile.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many StatementFiles and only return the `id`
+     * const statementFileWithIdOnly = await prisma.statementFile.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends StatementFileCreateManyAndReturnArgs>(args?: SelectSubset<T, StatementFileCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StatementFilePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a StatementFile.
+     * @param {StatementFileDeleteArgs} args - Arguments to delete one StatementFile.
+     * @example
+     * // Delete one StatementFile
+     * const StatementFile = await prisma.statementFile.delete({
+     *   where: {
+     *     // ... filter to delete one StatementFile
+     *   }
+     * })
+     * 
+     */
+    delete<T extends StatementFileDeleteArgs>(args: SelectSubset<T, StatementFileDeleteArgs<ExtArgs>>): Prisma__StatementFileClient<$Result.GetResult<Prisma.$StatementFilePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one StatementFile.
+     * @param {StatementFileUpdateArgs} args - Arguments to update one StatementFile.
+     * @example
+     * // Update one StatementFile
+     * const statementFile = await prisma.statementFile.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends StatementFileUpdateArgs>(args: SelectSubset<T, StatementFileUpdateArgs<ExtArgs>>): Prisma__StatementFileClient<$Result.GetResult<Prisma.$StatementFilePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more StatementFiles.
+     * @param {StatementFileDeleteManyArgs} args - Arguments to filter StatementFiles to delete.
+     * @example
+     * // Delete a few StatementFiles
+     * const { count } = await prisma.statementFile.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends StatementFileDeleteManyArgs>(args?: SelectSubset<T, StatementFileDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more StatementFiles.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StatementFileUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many StatementFiles
+     * const statementFile = await prisma.statementFile.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends StatementFileUpdateManyArgs>(args: SelectSubset<T, StatementFileUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more StatementFiles and returns the data updated in the database.
+     * @param {StatementFileUpdateManyAndReturnArgs} args - Arguments to update many StatementFiles.
+     * @example
+     * // Update many StatementFiles
+     * const statementFile = await prisma.statementFile.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more StatementFiles and only return the `id`
+     * const statementFileWithIdOnly = await prisma.statementFile.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends StatementFileUpdateManyAndReturnArgs>(args: SelectSubset<T, StatementFileUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StatementFilePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one StatementFile.
+     * @param {StatementFileUpsertArgs} args - Arguments to update or create a StatementFile.
+     * @example
+     * // Update or create a StatementFile
+     * const statementFile = await prisma.statementFile.upsert({
+     *   create: {
+     *     // ... data to create a StatementFile
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the StatementFile we want to update
+     *   }
+     * })
+     */
+    upsert<T extends StatementFileUpsertArgs>(args: SelectSubset<T, StatementFileUpsertArgs<ExtArgs>>): Prisma__StatementFileClient<$Result.GetResult<Prisma.$StatementFilePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of StatementFiles.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StatementFileCountArgs} args - Arguments to filter StatementFiles to count.
+     * @example
+     * // Count the number of StatementFiles
+     * const count = await prisma.statementFile.count({
+     *   where: {
+     *     // ... the filter for the StatementFiles we want to count
+     *   }
+     * })
+    **/
+    count<T extends StatementFileCountArgs>(
+      args?: Subset<T, StatementFileCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], StatementFileCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a StatementFile.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StatementFileAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends StatementFileAggregateArgs>(args: Subset<T, StatementFileAggregateArgs>): Prisma.PrismaPromise<GetStatementFileAggregateType<T>>
+
+    /**
+     * Group by StatementFile.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StatementFileGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends StatementFileGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: StatementFileGroupByArgs['orderBy'] }
+        : { orderBy?: StatementFileGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, StatementFileGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetStatementFileGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the StatementFile model
+   */
+  readonly fields: StatementFileFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for StatementFile.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__StatementFileClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    amexRows<T extends StatementFile$amexRowsArgs<ExtArgs> = {}>(args?: Subset<T, StatementFile$amexRowsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AmexTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the StatementFile model
+   */
+  interface StatementFileFieldRefs {
+    readonly id: FieldRef<"StatementFile", 'String'>
+    readonly bank: FieldRef<"StatementFile", 'String'>
+    readonly owner: FieldRef<"StatementFile", 'String'>
+    readonly statementDate: FieldRef<"StatementFile", 'String'>
+    readonly originalName: FieldRef<"StatementFile", 'String'>
+    readonly contentHash: FieldRef<"StatementFile", 'String'>
+    readonly byteSize: FieldRef<"StatementFile", 'Int'>
+    readonly storageKey: FieldRef<"StatementFile", 'String'>
+    readonly uploadedAt: FieldRef<"StatementFile", 'DateTime'>
+    readonly rowCount: FieldRef<"StatementFile", 'Int'>
+    readonly reconciled: FieldRef<"StatementFile", 'Boolean'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * StatementFile findUnique
+   */
+  export type StatementFileFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StatementFile
+     */
+    select?: StatementFileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StatementFile
+     */
+    omit?: StatementFileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StatementFileInclude<ExtArgs> | null
+    /**
+     * Filter, which StatementFile to fetch.
+     */
+    where: StatementFileWhereUniqueInput
+  }
+
+  /**
+   * StatementFile findUniqueOrThrow
+   */
+  export type StatementFileFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StatementFile
+     */
+    select?: StatementFileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StatementFile
+     */
+    omit?: StatementFileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StatementFileInclude<ExtArgs> | null
+    /**
+     * Filter, which StatementFile to fetch.
+     */
+    where: StatementFileWhereUniqueInput
+  }
+
+  /**
+   * StatementFile findFirst
+   */
+  export type StatementFileFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StatementFile
+     */
+    select?: StatementFileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StatementFile
+     */
+    omit?: StatementFileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StatementFileInclude<ExtArgs> | null
+    /**
+     * Filter, which StatementFile to fetch.
+     */
+    where?: StatementFileWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of StatementFiles to fetch.
+     */
+    orderBy?: StatementFileOrderByWithRelationInput | StatementFileOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for StatementFiles.
+     */
+    cursor?: StatementFileWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` StatementFiles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` StatementFiles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of StatementFiles.
+     */
+    distinct?: StatementFileScalarFieldEnum | StatementFileScalarFieldEnum[]
+  }
+
+  /**
+   * StatementFile findFirstOrThrow
+   */
+  export type StatementFileFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StatementFile
+     */
+    select?: StatementFileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StatementFile
+     */
+    omit?: StatementFileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StatementFileInclude<ExtArgs> | null
+    /**
+     * Filter, which StatementFile to fetch.
+     */
+    where?: StatementFileWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of StatementFiles to fetch.
+     */
+    orderBy?: StatementFileOrderByWithRelationInput | StatementFileOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for StatementFiles.
+     */
+    cursor?: StatementFileWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` StatementFiles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` StatementFiles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of StatementFiles.
+     */
+    distinct?: StatementFileScalarFieldEnum | StatementFileScalarFieldEnum[]
+  }
+
+  /**
+   * StatementFile findMany
+   */
+  export type StatementFileFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StatementFile
+     */
+    select?: StatementFileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StatementFile
+     */
+    omit?: StatementFileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StatementFileInclude<ExtArgs> | null
+    /**
+     * Filter, which StatementFiles to fetch.
+     */
+    where?: StatementFileWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of StatementFiles to fetch.
+     */
+    orderBy?: StatementFileOrderByWithRelationInput | StatementFileOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing StatementFiles.
+     */
+    cursor?: StatementFileWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` StatementFiles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` StatementFiles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of StatementFiles.
+     */
+    distinct?: StatementFileScalarFieldEnum | StatementFileScalarFieldEnum[]
+  }
+
+  /**
+   * StatementFile create
+   */
+  export type StatementFileCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StatementFile
+     */
+    select?: StatementFileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StatementFile
+     */
+    omit?: StatementFileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StatementFileInclude<ExtArgs> | null
+    /**
+     * The data needed to create a StatementFile.
+     */
+    data: XOR<StatementFileCreateInput, StatementFileUncheckedCreateInput>
+  }
+
+  /**
+   * StatementFile createMany
+   */
+  export type StatementFileCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many StatementFiles.
+     */
+    data: StatementFileCreateManyInput | StatementFileCreateManyInput[]
+  }
+
+  /**
+   * StatementFile createManyAndReturn
+   */
+  export type StatementFileCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StatementFile
+     */
+    select?: StatementFileSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the StatementFile
+     */
+    omit?: StatementFileOmit<ExtArgs> | null
+    /**
+     * The data used to create many StatementFiles.
+     */
+    data: StatementFileCreateManyInput | StatementFileCreateManyInput[]
+  }
+
+  /**
+   * StatementFile update
+   */
+  export type StatementFileUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StatementFile
+     */
+    select?: StatementFileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StatementFile
+     */
+    omit?: StatementFileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StatementFileInclude<ExtArgs> | null
+    /**
+     * The data needed to update a StatementFile.
+     */
+    data: XOR<StatementFileUpdateInput, StatementFileUncheckedUpdateInput>
+    /**
+     * Choose, which StatementFile to update.
+     */
+    where: StatementFileWhereUniqueInput
+  }
+
+  /**
+   * StatementFile updateMany
+   */
+  export type StatementFileUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update StatementFiles.
+     */
+    data: XOR<StatementFileUpdateManyMutationInput, StatementFileUncheckedUpdateManyInput>
+    /**
+     * Filter which StatementFiles to update
+     */
+    where?: StatementFileWhereInput
+    /**
+     * Limit how many StatementFiles to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * StatementFile updateManyAndReturn
+   */
+  export type StatementFileUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StatementFile
+     */
+    select?: StatementFileSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the StatementFile
+     */
+    omit?: StatementFileOmit<ExtArgs> | null
+    /**
+     * The data used to update StatementFiles.
+     */
+    data: XOR<StatementFileUpdateManyMutationInput, StatementFileUncheckedUpdateManyInput>
+    /**
+     * Filter which StatementFiles to update
+     */
+    where?: StatementFileWhereInput
+    /**
+     * Limit how many StatementFiles to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * StatementFile upsert
+   */
+  export type StatementFileUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StatementFile
+     */
+    select?: StatementFileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StatementFile
+     */
+    omit?: StatementFileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StatementFileInclude<ExtArgs> | null
+    /**
+     * The filter to search for the StatementFile to update in case it exists.
+     */
+    where: StatementFileWhereUniqueInput
+    /**
+     * In case the StatementFile found by the `where` argument doesn't exist, create a new StatementFile with this data.
+     */
+    create: XOR<StatementFileCreateInput, StatementFileUncheckedCreateInput>
+    /**
+     * In case the StatementFile was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<StatementFileUpdateInput, StatementFileUncheckedUpdateInput>
+  }
+
+  /**
+   * StatementFile delete
+   */
+  export type StatementFileDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StatementFile
+     */
+    select?: StatementFileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StatementFile
+     */
+    omit?: StatementFileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StatementFileInclude<ExtArgs> | null
+    /**
+     * Filter which StatementFile to delete.
+     */
+    where: StatementFileWhereUniqueInput
+  }
+
+  /**
+   * StatementFile deleteMany
+   */
+  export type StatementFileDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which StatementFiles to delete
+     */
+    where?: StatementFileWhereInput
+    /**
+     * Limit how many StatementFiles to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * StatementFile.amexRows
+   */
+  export type StatementFile$amexRowsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AmexTransaction
+     */
+    select?: AmexTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AmexTransaction
+     */
+    omit?: AmexTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AmexTransactionInclude<ExtArgs> | null
+    where?: AmexTransactionWhereInput
+    orderBy?: AmexTransactionOrderByWithRelationInput | AmexTransactionOrderByWithRelationInput[]
+    cursor?: AmexTransactionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AmexTransactionScalarFieldEnum | AmexTransactionScalarFieldEnum[]
+  }
+
+  /**
+   * StatementFile without action
+   */
+  export type StatementFileDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StatementFile
+     */
+    select?: StatementFileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StatementFile
+     */
+    omit?: StatementFileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StatementFileInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model AmexTransaction
    */
 
@@ -12908,6 +14226,7 @@ export namespace Prisma {
     owner: string | null
     importedAt: Date | null
     status: string | null
+    statementFileId: string | null
   }
 
   export type AmexTransactionMaxAggregateOutputType = {
@@ -12923,6 +14242,7 @@ export namespace Prisma {
     owner: string | null
     importedAt: Date | null
     status: string | null
+    statementFileId: string | null
   }
 
   export type AmexTransactionCountAggregateOutputType = {
@@ -12938,6 +14258,7 @@ export namespace Prisma {
     owner: number
     importedAt: number
     status: number
+    statementFileId: number
     _all: number
   }
 
@@ -12955,6 +14276,7 @@ export namespace Prisma {
     owner?: true
     importedAt?: true
     status?: true
+    statementFileId?: true
   }
 
   export type AmexTransactionMaxAggregateInputType = {
@@ -12970,6 +14292,7 @@ export namespace Prisma {
     owner?: true
     importedAt?: true
     status?: true
+    statementFileId?: true
   }
 
   export type AmexTransactionCountAggregateInputType = {
@@ -12985,6 +14308,7 @@ export namespace Prisma {
     owner?: true
     importedAt?: true
     status?: true
+    statementFileId?: true
     _all?: true
   }
 
@@ -13073,6 +14397,7 @@ export namespace Prisma {
     owner: string
     importedAt: Date
     status: string
+    statementFileId: string | null
     _count: AmexTransactionCountAggregateOutputType | null
     _min: AmexTransactionMinAggregateOutputType | null
     _max: AmexTransactionMaxAggregateOutputType | null
@@ -13105,6 +14430,8 @@ export namespace Prisma {
     owner?: boolean
     importedAt?: boolean
     status?: boolean
+    statementFileId?: boolean
+    statementFile?: boolean | AmexTransaction$statementFileArgs<ExtArgs>
   }, ExtArgs["result"]["amexTransaction"]>
 
   export type AmexTransactionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -13120,6 +14447,8 @@ export namespace Prisma {
     owner?: boolean
     importedAt?: boolean
     status?: boolean
+    statementFileId?: boolean
+    statementFile?: boolean | AmexTransaction$statementFileArgs<ExtArgs>
   }, ExtArgs["result"]["amexTransaction"]>
 
   export type AmexTransactionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -13135,6 +14464,8 @@ export namespace Prisma {
     owner?: boolean
     importedAt?: boolean
     status?: boolean
+    statementFileId?: boolean
+    statementFile?: boolean | AmexTransaction$statementFileArgs<ExtArgs>
   }, ExtArgs["result"]["amexTransaction"]>
 
   export type AmexTransactionSelectScalar = {
@@ -13150,13 +14481,25 @@ export namespace Prisma {
     owner?: boolean
     importedAt?: boolean
     status?: boolean
+    statementFileId?: boolean
   }
 
-  export type AmexTransactionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"transactionId" | "transactionDate" | "processDate" | "description" | "amount" | "isCredit" | "foreignCurrency" | "foreignAmount" | "statementDate" | "owner" | "importedAt" | "status", ExtArgs["result"]["amexTransaction"]>
+  export type AmexTransactionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"transactionId" | "transactionDate" | "processDate" | "description" | "amount" | "isCredit" | "foreignCurrency" | "foreignAmount" | "statementDate" | "owner" | "importedAt" | "status" | "statementFileId", ExtArgs["result"]["amexTransaction"]>
+  export type AmexTransactionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    statementFile?: boolean | AmexTransaction$statementFileArgs<ExtArgs>
+  }
+  export type AmexTransactionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    statementFile?: boolean | AmexTransaction$statementFileArgs<ExtArgs>
+  }
+  export type AmexTransactionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    statementFile?: boolean | AmexTransaction$statementFileArgs<ExtArgs>
+  }
 
   export type $AmexTransactionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "AmexTransaction"
-    objects: {}
+    objects: {
+      statementFile: Prisma.$StatementFilePayload<ExtArgs> | null
+    }
     scalars: $Extensions.GetPayloadResult<{
       transactionId: string
       transactionDate: string
@@ -13170,6 +14513,10 @@ export namespace Prisma {
       owner: string
       importedAt: Date
       status: string
+      /**
+       * Nullable: rows staged before statement tracking existed have no source file.
+       */
+      statementFileId: string | null
     }, ExtArgs["result"]["amexTransaction"]>
     composites: {}
   }
@@ -13564,6 +14911,7 @@ export namespace Prisma {
    */
   export interface Prisma__AmexTransactionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    statementFile<T extends AmexTransaction$statementFileArgs<ExtArgs> = {}>(args?: Subset<T, AmexTransaction$statementFileArgs<ExtArgs>>): Prisma__StatementFileClient<$Result.GetResult<Prisma.$StatementFilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -13605,6 +14953,7 @@ export namespace Prisma {
     readonly owner: FieldRef<"AmexTransaction", 'String'>
     readonly importedAt: FieldRef<"AmexTransaction", 'DateTime'>
     readonly status: FieldRef<"AmexTransaction", 'String'>
+    readonly statementFileId: FieldRef<"AmexTransaction", 'String'>
   }
     
 
@@ -13621,6 +14970,10 @@ export namespace Prisma {
      * Omit specific fields from the AmexTransaction
      */
     omit?: AmexTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AmexTransactionInclude<ExtArgs> | null
     /**
      * Filter, which AmexTransaction to fetch.
      */
@@ -13640,6 +14993,10 @@ export namespace Prisma {
      */
     omit?: AmexTransactionOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AmexTransactionInclude<ExtArgs> | null
+    /**
      * Filter, which AmexTransaction to fetch.
      */
     where: AmexTransactionWhereUniqueInput
@@ -13657,6 +15014,10 @@ export namespace Prisma {
      * Omit specific fields from the AmexTransaction
      */
     omit?: AmexTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AmexTransactionInclude<ExtArgs> | null
     /**
      * Filter, which AmexTransaction to fetch.
      */
@@ -13706,6 +15067,10 @@ export namespace Prisma {
      */
     omit?: AmexTransactionOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AmexTransactionInclude<ExtArgs> | null
+    /**
      * Filter, which AmexTransaction to fetch.
      */
     where?: AmexTransactionWhereInput
@@ -13753,6 +15118,10 @@ export namespace Prisma {
      * Omit specific fields from the AmexTransaction
      */
     omit?: AmexTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AmexTransactionInclude<ExtArgs> | null
     /**
      * Filter, which AmexTransactions to fetch.
      */
@@ -13802,6 +15171,10 @@ export namespace Prisma {
      */
     omit?: AmexTransactionOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AmexTransactionInclude<ExtArgs> | null
+    /**
      * The data needed to create a AmexTransaction.
      */
     data: XOR<AmexTransactionCreateInput, AmexTransactionUncheckedCreateInput>
@@ -13833,6 +15206,10 @@ export namespace Prisma {
      * The data used to create many AmexTransactions.
      */
     data: AmexTransactionCreateManyInput | AmexTransactionCreateManyInput[]
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AmexTransactionIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -13847,6 +15224,10 @@ export namespace Prisma {
      * Omit specific fields from the AmexTransaction
      */
     omit?: AmexTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AmexTransactionInclude<ExtArgs> | null
     /**
      * The data needed to update a AmexTransaction.
      */
@@ -13899,6 +15280,10 @@ export namespace Prisma {
      * Limit how many AmexTransactions to update.
      */
     limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AmexTransactionIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -13913,6 +15298,10 @@ export namespace Prisma {
      * Omit specific fields from the AmexTransaction
      */
     omit?: AmexTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AmexTransactionInclude<ExtArgs> | null
     /**
      * The filter to search for the AmexTransaction to update in case it exists.
      */
@@ -13940,6 +15329,10 @@ export namespace Prisma {
      */
     omit?: AmexTransactionOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AmexTransactionInclude<ExtArgs> | null
+    /**
      * Filter which AmexTransaction to delete.
      */
     where: AmexTransactionWhereUniqueInput
@@ -13960,6 +15353,25 @@ export namespace Prisma {
   }
 
   /**
+   * AmexTransaction.statementFile
+   */
+  export type AmexTransaction$statementFileArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StatementFile
+     */
+    select?: StatementFileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StatementFile
+     */
+    omit?: StatementFileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StatementFileInclude<ExtArgs> | null
+    where?: StatementFileWhereInput
+  }
+
+  /**
    * AmexTransaction without action
    */
   export type AmexTransactionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -13971,6 +15383,10 @@ export namespace Prisma {
      * Omit specific fields from the AmexTransaction
      */
     omit?: AmexTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AmexTransactionInclude<ExtArgs> | null
   }
 
 
@@ -27338,6 +28754,23 @@ export namespace Prisma {
   export type MonzoRecRunScalarFieldEnum = (typeof MonzoRecRunScalarFieldEnum)[keyof typeof MonzoRecRunScalarFieldEnum]
 
 
+  export const StatementFileScalarFieldEnum: {
+    id: 'id',
+    bank: 'bank',
+    owner: 'owner',
+    statementDate: 'statementDate',
+    originalName: 'originalName',
+    contentHash: 'contentHash',
+    byteSize: 'byteSize',
+    storageKey: 'storageKey',
+    uploadedAt: 'uploadedAt',
+    rowCount: 'rowCount',
+    reconciled: 'reconciled'
+  };
+
+  export type StatementFileScalarFieldEnum = (typeof StatementFileScalarFieldEnum)[keyof typeof StatementFileScalarFieldEnum]
+
+
   export const AmexTransactionScalarFieldEnum: {
     transactionId: 'transactionId',
     transactionDate: 'transactionDate',
@@ -27350,7 +28783,8 @@ export namespace Prisma {
     statementDate: 'statementDate',
     owner: 'owner',
     importedAt: 'importedAt',
-    status: 'status'
+    status: 'status',
+    statementFileId: 'statementFileId'
   };
 
   export type AmexTransactionScalarFieldEnum = (typeof AmexTransactionScalarFieldEnum)[keyof typeof AmexTransactionScalarFieldEnum]
@@ -28318,6 +29752,93 @@ export namespace Prisma {
     results?: StringWithAggregatesFilter<"MonzoRecRun"> | string
   }
 
+  export type StatementFileWhereInput = {
+    AND?: StatementFileWhereInput | StatementFileWhereInput[]
+    OR?: StatementFileWhereInput[]
+    NOT?: StatementFileWhereInput | StatementFileWhereInput[]
+    id?: StringFilter<"StatementFile"> | string
+    bank?: StringFilter<"StatementFile"> | string
+    owner?: StringFilter<"StatementFile"> | string
+    statementDate?: StringNullableFilter<"StatementFile"> | string | null
+    originalName?: StringFilter<"StatementFile"> | string
+    contentHash?: StringFilter<"StatementFile"> | string
+    byteSize?: IntFilter<"StatementFile"> | number
+    storageKey?: StringFilter<"StatementFile"> | string
+    uploadedAt?: DateTimeFilter<"StatementFile"> | Date | string
+    rowCount?: IntNullableFilter<"StatementFile"> | number | null
+    reconciled?: BoolFilter<"StatementFile"> | boolean
+    amexRows?: AmexTransactionListRelationFilter
+  }
+
+  export type StatementFileOrderByWithRelationInput = {
+    id?: SortOrder
+    bank?: SortOrder
+    owner?: SortOrder
+    statementDate?: SortOrderInput | SortOrder
+    originalName?: SortOrder
+    contentHash?: SortOrder
+    byteSize?: SortOrder
+    storageKey?: SortOrder
+    uploadedAt?: SortOrder
+    rowCount?: SortOrderInput | SortOrder
+    reconciled?: SortOrder
+    amexRows?: AmexTransactionOrderByRelationAggregateInput
+  }
+
+  export type StatementFileWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    contentHash?: string
+    AND?: StatementFileWhereInput | StatementFileWhereInput[]
+    OR?: StatementFileWhereInput[]
+    NOT?: StatementFileWhereInput | StatementFileWhereInput[]
+    bank?: StringFilter<"StatementFile"> | string
+    owner?: StringFilter<"StatementFile"> | string
+    statementDate?: StringNullableFilter<"StatementFile"> | string | null
+    originalName?: StringFilter<"StatementFile"> | string
+    byteSize?: IntFilter<"StatementFile"> | number
+    storageKey?: StringFilter<"StatementFile"> | string
+    uploadedAt?: DateTimeFilter<"StatementFile"> | Date | string
+    rowCount?: IntNullableFilter<"StatementFile"> | number | null
+    reconciled?: BoolFilter<"StatementFile"> | boolean
+    amexRows?: AmexTransactionListRelationFilter
+  }, "id" | "contentHash">
+
+  export type StatementFileOrderByWithAggregationInput = {
+    id?: SortOrder
+    bank?: SortOrder
+    owner?: SortOrder
+    statementDate?: SortOrderInput | SortOrder
+    originalName?: SortOrder
+    contentHash?: SortOrder
+    byteSize?: SortOrder
+    storageKey?: SortOrder
+    uploadedAt?: SortOrder
+    rowCount?: SortOrderInput | SortOrder
+    reconciled?: SortOrder
+    _count?: StatementFileCountOrderByAggregateInput
+    _avg?: StatementFileAvgOrderByAggregateInput
+    _max?: StatementFileMaxOrderByAggregateInput
+    _min?: StatementFileMinOrderByAggregateInput
+    _sum?: StatementFileSumOrderByAggregateInput
+  }
+
+  export type StatementFileScalarWhereWithAggregatesInput = {
+    AND?: StatementFileScalarWhereWithAggregatesInput | StatementFileScalarWhereWithAggregatesInput[]
+    OR?: StatementFileScalarWhereWithAggregatesInput[]
+    NOT?: StatementFileScalarWhereWithAggregatesInput | StatementFileScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"StatementFile"> | string
+    bank?: StringWithAggregatesFilter<"StatementFile"> | string
+    owner?: StringWithAggregatesFilter<"StatementFile"> | string
+    statementDate?: StringNullableWithAggregatesFilter<"StatementFile"> | string | null
+    originalName?: StringWithAggregatesFilter<"StatementFile"> | string
+    contentHash?: StringWithAggregatesFilter<"StatementFile"> | string
+    byteSize?: IntWithAggregatesFilter<"StatementFile"> | number
+    storageKey?: StringWithAggregatesFilter<"StatementFile"> | string
+    uploadedAt?: DateTimeWithAggregatesFilter<"StatementFile"> | Date | string
+    rowCount?: IntNullableWithAggregatesFilter<"StatementFile"> | number | null
+    reconciled?: BoolWithAggregatesFilter<"StatementFile"> | boolean
+  }
+
   export type AmexTransactionWhereInput = {
     AND?: AmexTransactionWhereInput | AmexTransactionWhereInput[]
     OR?: AmexTransactionWhereInput[]
@@ -28334,6 +29855,8 @@ export namespace Prisma {
     owner?: StringFilter<"AmexTransaction"> | string
     importedAt?: DateTimeFilter<"AmexTransaction"> | Date | string
     status?: StringFilter<"AmexTransaction"> | string
+    statementFileId?: StringNullableFilter<"AmexTransaction"> | string | null
+    statementFile?: XOR<StatementFileNullableScalarRelationFilter, StatementFileWhereInput> | null
   }
 
   export type AmexTransactionOrderByWithRelationInput = {
@@ -28349,6 +29872,8 @@ export namespace Prisma {
     owner?: SortOrder
     importedAt?: SortOrder
     status?: SortOrder
+    statementFileId?: SortOrderInput | SortOrder
+    statementFile?: StatementFileOrderByWithRelationInput
   }
 
   export type AmexTransactionWhereUniqueInput = Prisma.AtLeast<{
@@ -28367,6 +29892,8 @@ export namespace Prisma {
     owner?: StringFilter<"AmexTransaction"> | string
     importedAt?: DateTimeFilter<"AmexTransaction"> | Date | string
     status?: StringFilter<"AmexTransaction"> | string
+    statementFileId?: StringNullableFilter<"AmexTransaction"> | string | null
+    statementFile?: XOR<StatementFileNullableScalarRelationFilter, StatementFileWhereInput> | null
   }, "transactionId">
 
   export type AmexTransactionOrderByWithAggregationInput = {
@@ -28382,6 +29909,7 @@ export namespace Prisma {
     owner?: SortOrder
     importedAt?: SortOrder
     status?: SortOrder
+    statementFileId?: SortOrderInput | SortOrder
     _count?: AmexTransactionCountOrderByAggregateInput
     _max?: AmexTransactionMaxOrderByAggregateInput
     _min?: AmexTransactionMinOrderByAggregateInput
@@ -28403,6 +29931,7 @@ export namespace Prisma {
     owner?: StringWithAggregatesFilter<"AmexTransaction"> | string
     importedAt?: DateTimeWithAggregatesFilter<"AmexTransaction"> | Date | string
     status?: StringWithAggregatesFilter<"AmexTransaction"> | string
+    statementFileId?: StringNullableWithAggregatesFilter<"AmexTransaction"> | string | null
   }
 
   export type BarclaysTransactionWhereInput = {
@@ -30099,6 +31628,108 @@ export namespace Prisma {
     results?: StringFieldUpdateOperationsInput | string
   }
 
+  export type StatementFileCreateInput = {
+    id?: string
+    bank: string
+    owner: string
+    statementDate?: string | null
+    originalName: string
+    contentHash: string
+    byteSize: number
+    storageKey: string
+    uploadedAt?: Date | string
+    rowCount?: number | null
+    reconciled?: boolean
+    amexRows?: AmexTransactionCreateNestedManyWithoutStatementFileInput
+  }
+
+  export type StatementFileUncheckedCreateInput = {
+    id?: string
+    bank: string
+    owner: string
+    statementDate?: string | null
+    originalName: string
+    contentHash: string
+    byteSize: number
+    storageKey: string
+    uploadedAt?: Date | string
+    rowCount?: number | null
+    reconciled?: boolean
+    amexRows?: AmexTransactionUncheckedCreateNestedManyWithoutStatementFileInput
+  }
+
+  export type StatementFileUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    bank?: StringFieldUpdateOperationsInput | string
+    owner?: StringFieldUpdateOperationsInput | string
+    statementDate?: NullableStringFieldUpdateOperationsInput | string | null
+    originalName?: StringFieldUpdateOperationsInput | string
+    contentHash?: StringFieldUpdateOperationsInput | string
+    byteSize?: IntFieldUpdateOperationsInput | number
+    storageKey?: StringFieldUpdateOperationsInput | string
+    uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    rowCount?: NullableIntFieldUpdateOperationsInput | number | null
+    reconciled?: BoolFieldUpdateOperationsInput | boolean
+    amexRows?: AmexTransactionUpdateManyWithoutStatementFileNestedInput
+  }
+
+  export type StatementFileUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    bank?: StringFieldUpdateOperationsInput | string
+    owner?: StringFieldUpdateOperationsInput | string
+    statementDate?: NullableStringFieldUpdateOperationsInput | string | null
+    originalName?: StringFieldUpdateOperationsInput | string
+    contentHash?: StringFieldUpdateOperationsInput | string
+    byteSize?: IntFieldUpdateOperationsInput | number
+    storageKey?: StringFieldUpdateOperationsInput | string
+    uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    rowCount?: NullableIntFieldUpdateOperationsInput | number | null
+    reconciled?: BoolFieldUpdateOperationsInput | boolean
+    amexRows?: AmexTransactionUncheckedUpdateManyWithoutStatementFileNestedInput
+  }
+
+  export type StatementFileCreateManyInput = {
+    id?: string
+    bank: string
+    owner: string
+    statementDate?: string | null
+    originalName: string
+    contentHash: string
+    byteSize: number
+    storageKey: string
+    uploadedAt?: Date | string
+    rowCount?: number | null
+    reconciled?: boolean
+  }
+
+  export type StatementFileUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    bank?: StringFieldUpdateOperationsInput | string
+    owner?: StringFieldUpdateOperationsInput | string
+    statementDate?: NullableStringFieldUpdateOperationsInput | string | null
+    originalName?: StringFieldUpdateOperationsInput | string
+    contentHash?: StringFieldUpdateOperationsInput | string
+    byteSize?: IntFieldUpdateOperationsInput | number
+    storageKey?: StringFieldUpdateOperationsInput | string
+    uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    rowCount?: NullableIntFieldUpdateOperationsInput | number | null
+    reconciled?: BoolFieldUpdateOperationsInput | boolean
+  }
+
+  export type StatementFileUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    bank?: StringFieldUpdateOperationsInput | string
+    owner?: StringFieldUpdateOperationsInput | string
+    statementDate?: NullableStringFieldUpdateOperationsInput | string | null
+    originalName?: StringFieldUpdateOperationsInput | string
+    contentHash?: StringFieldUpdateOperationsInput | string
+    byteSize?: IntFieldUpdateOperationsInput | number
+    storageKey?: StringFieldUpdateOperationsInput | string
+    uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    rowCount?: NullableIntFieldUpdateOperationsInput | number | null
+    reconciled?: BoolFieldUpdateOperationsInput | boolean
+  }
+
   export type AmexTransactionCreateInput = {
     transactionId: string
     transactionDate: string
@@ -30112,6 +31743,7 @@ export namespace Prisma {
     owner?: string
     importedAt?: Date | string
     status?: string
+    statementFile?: StatementFileCreateNestedOneWithoutAmexRowsInput
   }
 
   export type AmexTransactionUncheckedCreateInput = {
@@ -30127,6 +31759,7 @@ export namespace Prisma {
     owner?: string
     importedAt?: Date | string
     status?: string
+    statementFileId?: string | null
   }
 
   export type AmexTransactionUpdateInput = {
@@ -30142,6 +31775,7 @@ export namespace Prisma {
     owner?: StringFieldUpdateOperationsInput | string
     importedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     status?: StringFieldUpdateOperationsInput | string
+    statementFile?: StatementFileUpdateOneWithoutAmexRowsNestedInput
   }
 
   export type AmexTransactionUncheckedUpdateInput = {
@@ -30157,6 +31791,7 @@ export namespace Prisma {
     owner?: StringFieldUpdateOperationsInput | string
     importedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     status?: StringFieldUpdateOperationsInput | string
+    statementFileId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type AmexTransactionCreateManyInput = {
@@ -30172,6 +31807,7 @@ export namespace Prisma {
     owner?: string
     importedAt?: Date | string
     status?: string
+    statementFileId?: string | null
   }
 
   export type AmexTransactionUpdateManyMutationInput = {
@@ -30202,6 +31838,7 @@ export namespace Prisma {
     owner?: StringFieldUpdateOperationsInput | string
     importedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     status?: StringFieldUpdateOperationsInput | string
+    statementFileId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type BarclaysTransactionCreateInput = {
@@ -31958,6 +33595,100 @@ export namespace Prisma {
     totalBackfilled?: SortOrder
   }
 
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type AmexTransactionListRelationFilter = {
+    every?: AmexTransactionWhereInput
+    some?: AmexTransactionWhereInput
+    none?: AmexTransactionWhereInput
+  }
+
+  export type AmexTransactionOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type StatementFileCountOrderByAggregateInput = {
+    id?: SortOrder
+    bank?: SortOrder
+    owner?: SortOrder
+    statementDate?: SortOrder
+    originalName?: SortOrder
+    contentHash?: SortOrder
+    byteSize?: SortOrder
+    storageKey?: SortOrder
+    uploadedAt?: SortOrder
+    rowCount?: SortOrder
+    reconciled?: SortOrder
+  }
+
+  export type StatementFileAvgOrderByAggregateInput = {
+    byteSize?: SortOrder
+    rowCount?: SortOrder
+  }
+
+  export type StatementFileMaxOrderByAggregateInput = {
+    id?: SortOrder
+    bank?: SortOrder
+    owner?: SortOrder
+    statementDate?: SortOrder
+    originalName?: SortOrder
+    contentHash?: SortOrder
+    byteSize?: SortOrder
+    storageKey?: SortOrder
+    uploadedAt?: SortOrder
+    rowCount?: SortOrder
+    reconciled?: SortOrder
+  }
+
+  export type StatementFileMinOrderByAggregateInput = {
+    id?: SortOrder
+    bank?: SortOrder
+    owner?: SortOrder
+    statementDate?: SortOrder
+    originalName?: SortOrder
+    contentHash?: SortOrder
+    byteSize?: SortOrder
+    storageKey?: SortOrder
+    uploadedAt?: SortOrder
+    rowCount?: SortOrder
+    reconciled?: SortOrder
+  }
+
+  export type StatementFileSumOrderByAggregateInput = {
+    byteSize?: SortOrder
+    rowCount?: SortOrder
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type StatementFileNullableScalarRelationFilter = {
+    is?: StatementFileWhereInput | null
+    isNot?: StatementFileWhereInput | null
+  }
+
   export type AmexTransactionCountOrderByAggregateInput = {
     transactionId?: SortOrder
     transactionDate?: SortOrder
@@ -31971,6 +33702,7 @@ export namespace Prisma {
     owner?: SortOrder
     importedAt?: SortOrder
     status?: SortOrder
+    statementFileId?: SortOrder
   }
 
   export type AmexTransactionMaxOrderByAggregateInput = {
@@ -31986,6 +33718,7 @@ export namespace Prisma {
     owner?: SortOrder
     importedAt?: SortOrder
     status?: SortOrder
+    statementFileId?: SortOrder
   }
 
   export type AmexTransactionMinOrderByAggregateInput = {
@@ -32001,6 +33734,7 @@ export namespace Prisma {
     owner?: SortOrder
     importedAt?: SortOrder
     status?: SortOrder
+    statementFileId?: SortOrder
   }
 
   export type BarclaysTransactionCountOrderByAggregateInput = {
@@ -32874,6 +34608,72 @@ export namespace Prisma {
     divide?: number
   }
 
+  export type AmexTransactionCreateNestedManyWithoutStatementFileInput = {
+    create?: XOR<AmexTransactionCreateWithoutStatementFileInput, AmexTransactionUncheckedCreateWithoutStatementFileInput> | AmexTransactionCreateWithoutStatementFileInput[] | AmexTransactionUncheckedCreateWithoutStatementFileInput[]
+    connectOrCreate?: AmexTransactionCreateOrConnectWithoutStatementFileInput | AmexTransactionCreateOrConnectWithoutStatementFileInput[]
+    createMany?: AmexTransactionCreateManyStatementFileInputEnvelope
+    connect?: AmexTransactionWhereUniqueInput | AmexTransactionWhereUniqueInput[]
+  }
+
+  export type AmexTransactionUncheckedCreateNestedManyWithoutStatementFileInput = {
+    create?: XOR<AmexTransactionCreateWithoutStatementFileInput, AmexTransactionUncheckedCreateWithoutStatementFileInput> | AmexTransactionCreateWithoutStatementFileInput[] | AmexTransactionUncheckedCreateWithoutStatementFileInput[]
+    connectOrCreate?: AmexTransactionCreateOrConnectWithoutStatementFileInput | AmexTransactionCreateOrConnectWithoutStatementFileInput[]
+    createMany?: AmexTransactionCreateManyStatementFileInputEnvelope
+    connect?: AmexTransactionWhereUniqueInput | AmexTransactionWhereUniqueInput[]
+  }
+
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type AmexTransactionUpdateManyWithoutStatementFileNestedInput = {
+    create?: XOR<AmexTransactionCreateWithoutStatementFileInput, AmexTransactionUncheckedCreateWithoutStatementFileInput> | AmexTransactionCreateWithoutStatementFileInput[] | AmexTransactionUncheckedCreateWithoutStatementFileInput[]
+    connectOrCreate?: AmexTransactionCreateOrConnectWithoutStatementFileInput | AmexTransactionCreateOrConnectWithoutStatementFileInput[]
+    upsert?: AmexTransactionUpsertWithWhereUniqueWithoutStatementFileInput | AmexTransactionUpsertWithWhereUniqueWithoutStatementFileInput[]
+    createMany?: AmexTransactionCreateManyStatementFileInputEnvelope
+    set?: AmexTransactionWhereUniqueInput | AmexTransactionWhereUniqueInput[]
+    disconnect?: AmexTransactionWhereUniqueInput | AmexTransactionWhereUniqueInput[]
+    delete?: AmexTransactionWhereUniqueInput | AmexTransactionWhereUniqueInput[]
+    connect?: AmexTransactionWhereUniqueInput | AmexTransactionWhereUniqueInput[]
+    update?: AmexTransactionUpdateWithWhereUniqueWithoutStatementFileInput | AmexTransactionUpdateWithWhereUniqueWithoutStatementFileInput[]
+    updateMany?: AmexTransactionUpdateManyWithWhereWithoutStatementFileInput | AmexTransactionUpdateManyWithWhereWithoutStatementFileInput[]
+    deleteMany?: AmexTransactionScalarWhereInput | AmexTransactionScalarWhereInput[]
+  }
+
+  export type AmexTransactionUncheckedUpdateManyWithoutStatementFileNestedInput = {
+    create?: XOR<AmexTransactionCreateWithoutStatementFileInput, AmexTransactionUncheckedCreateWithoutStatementFileInput> | AmexTransactionCreateWithoutStatementFileInput[] | AmexTransactionUncheckedCreateWithoutStatementFileInput[]
+    connectOrCreate?: AmexTransactionCreateOrConnectWithoutStatementFileInput | AmexTransactionCreateOrConnectWithoutStatementFileInput[]
+    upsert?: AmexTransactionUpsertWithWhereUniqueWithoutStatementFileInput | AmexTransactionUpsertWithWhereUniqueWithoutStatementFileInput[]
+    createMany?: AmexTransactionCreateManyStatementFileInputEnvelope
+    set?: AmexTransactionWhereUniqueInput | AmexTransactionWhereUniqueInput[]
+    disconnect?: AmexTransactionWhereUniqueInput | AmexTransactionWhereUniqueInput[]
+    delete?: AmexTransactionWhereUniqueInput | AmexTransactionWhereUniqueInput[]
+    connect?: AmexTransactionWhereUniqueInput | AmexTransactionWhereUniqueInput[]
+    update?: AmexTransactionUpdateWithWhereUniqueWithoutStatementFileInput | AmexTransactionUpdateWithWhereUniqueWithoutStatementFileInput[]
+    updateMany?: AmexTransactionUpdateManyWithWhereWithoutStatementFileInput | AmexTransactionUpdateManyWithWhereWithoutStatementFileInput[]
+    deleteMany?: AmexTransactionScalarWhereInput | AmexTransactionScalarWhereInput[]
+  }
+
+  export type StatementFileCreateNestedOneWithoutAmexRowsInput = {
+    create?: XOR<StatementFileCreateWithoutAmexRowsInput, StatementFileUncheckedCreateWithoutAmexRowsInput>
+    connectOrCreate?: StatementFileCreateOrConnectWithoutAmexRowsInput
+    connect?: StatementFileWhereUniqueInput
+  }
+
+  export type StatementFileUpdateOneWithoutAmexRowsNestedInput = {
+    create?: XOR<StatementFileCreateWithoutAmexRowsInput, StatementFileUncheckedCreateWithoutAmexRowsInput>
+    connectOrCreate?: StatementFileCreateOrConnectWithoutAmexRowsInput
+    upsert?: StatementFileUpsertWithoutAmexRowsInput
+    disconnect?: StatementFileWhereInput | boolean
+    delete?: StatementFileWhereInput | boolean
+    connect?: StatementFileWhereUniqueInput
+    update?: XOR<XOR<StatementFileUpdateToOneWithWhereWithoutAmexRowsInput, StatementFileUpdateWithoutAmexRowsInput>, StatementFileUncheckedUpdateWithoutAmexRowsInput>
+  }
+
   export type UserCreateNestedOneWithoutSessionsInput = {
     create?: XOR<UserCreateWithoutSessionsInput, UserUncheckedCreateWithoutSessionsInput>
     connectOrCreate?: UserCreateOrConnectWithoutSessionsInput
@@ -33286,6 +35086,33 @@ export namespace Prisma {
     _max?: NestedFloatFilter<$PrismaModel>
   }
 
+  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
   export type NestedEnumTabDirectionFilter<$PrismaModel = never> = {
     equals?: $Enums.TabDirection | EnumTabDirectionFieldRefInput<$PrismaModel>
     in?: $Enums.TabDirection[]
@@ -33318,17 +35145,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumTabStatusFilter<$PrismaModel>
     _max?: NestedEnumTabStatusFilter<$PrismaModel>
-  }
-
-  export type NestedFloatNullableFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel> | null
-    in?: number[] | null
-    notIn?: number[] | null
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
   }
 
   export type NestedFloatNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -33701,6 +35517,152 @@ export namespace Prisma {
     color?: StringFieldUpdateOperationsInput | string
     bucket?: NullableEnumBucketFieldUpdateOperationsInput | $Enums.Bucket | null
     categoryRules?: CategoryRuleUncheckedUpdateManyWithoutCategoryNestedInput
+  }
+
+  export type AmexTransactionCreateWithoutStatementFileInput = {
+    transactionId: string
+    transactionDate: string
+    processDate: string
+    description: string
+    amount: string
+    isCredit?: boolean
+    foreignCurrency?: string | null
+    foreignAmount?: string | null
+    statementDate: string
+    owner?: string
+    importedAt?: Date | string
+    status?: string
+  }
+
+  export type AmexTransactionUncheckedCreateWithoutStatementFileInput = {
+    transactionId: string
+    transactionDate: string
+    processDate: string
+    description: string
+    amount: string
+    isCredit?: boolean
+    foreignCurrency?: string | null
+    foreignAmount?: string | null
+    statementDate: string
+    owner?: string
+    importedAt?: Date | string
+    status?: string
+  }
+
+  export type AmexTransactionCreateOrConnectWithoutStatementFileInput = {
+    where: AmexTransactionWhereUniqueInput
+    create: XOR<AmexTransactionCreateWithoutStatementFileInput, AmexTransactionUncheckedCreateWithoutStatementFileInput>
+  }
+
+  export type AmexTransactionCreateManyStatementFileInputEnvelope = {
+    data: AmexTransactionCreateManyStatementFileInput | AmexTransactionCreateManyStatementFileInput[]
+  }
+
+  export type AmexTransactionUpsertWithWhereUniqueWithoutStatementFileInput = {
+    where: AmexTransactionWhereUniqueInput
+    update: XOR<AmexTransactionUpdateWithoutStatementFileInput, AmexTransactionUncheckedUpdateWithoutStatementFileInput>
+    create: XOR<AmexTransactionCreateWithoutStatementFileInput, AmexTransactionUncheckedCreateWithoutStatementFileInput>
+  }
+
+  export type AmexTransactionUpdateWithWhereUniqueWithoutStatementFileInput = {
+    where: AmexTransactionWhereUniqueInput
+    data: XOR<AmexTransactionUpdateWithoutStatementFileInput, AmexTransactionUncheckedUpdateWithoutStatementFileInput>
+  }
+
+  export type AmexTransactionUpdateManyWithWhereWithoutStatementFileInput = {
+    where: AmexTransactionScalarWhereInput
+    data: XOR<AmexTransactionUpdateManyMutationInput, AmexTransactionUncheckedUpdateManyWithoutStatementFileInput>
+  }
+
+  export type AmexTransactionScalarWhereInput = {
+    AND?: AmexTransactionScalarWhereInput | AmexTransactionScalarWhereInput[]
+    OR?: AmexTransactionScalarWhereInput[]
+    NOT?: AmexTransactionScalarWhereInput | AmexTransactionScalarWhereInput[]
+    transactionId?: StringFilter<"AmexTransaction"> | string
+    transactionDate?: StringFilter<"AmexTransaction"> | string
+    processDate?: StringFilter<"AmexTransaction"> | string
+    description?: StringFilter<"AmexTransaction"> | string
+    amount?: StringFilter<"AmexTransaction"> | string
+    isCredit?: BoolFilter<"AmexTransaction"> | boolean
+    foreignCurrency?: StringNullableFilter<"AmexTransaction"> | string | null
+    foreignAmount?: StringNullableFilter<"AmexTransaction"> | string | null
+    statementDate?: StringFilter<"AmexTransaction"> | string
+    owner?: StringFilter<"AmexTransaction"> | string
+    importedAt?: DateTimeFilter<"AmexTransaction"> | Date | string
+    status?: StringFilter<"AmexTransaction"> | string
+    statementFileId?: StringNullableFilter<"AmexTransaction"> | string | null
+  }
+
+  export type StatementFileCreateWithoutAmexRowsInput = {
+    id?: string
+    bank: string
+    owner: string
+    statementDate?: string | null
+    originalName: string
+    contentHash: string
+    byteSize: number
+    storageKey: string
+    uploadedAt?: Date | string
+    rowCount?: number | null
+    reconciled?: boolean
+  }
+
+  export type StatementFileUncheckedCreateWithoutAmexRowsInput = {
+    id?: string
+    bank: string
+    owner: string
+    statementDate?: string | null
+    originalName: string
+    contentHash: string
+    byteSize: number
+    storageKey: string
+    uploadedAt?: Date | string
+    rowCount?: number | null
+    reconciled?: boolean
+  }
+
+  export type StatementFileCreateOrConnectWithoutAmexRowsInput = {
+    where: StatementFileWhereUniqueInput
+    create: XOR<StatementFileCreateWithoutAmexRowsInput, StatementFileUncheckedCreateWithoutAmexRowsInput>
+  }
+
+  export type StatementFileUpsertWithoutAmexRowsInput = {
+    update: XOR<StatementFileUpdateWithoutAmexRowsInput, StatementFileUncheckedUpdateWithoutAmexRowsInput>
+    create: XOR<StatementFileCreateWithoutAmexRowsInput, StatementFileUncheckedCreateWithoutAmexRowsInput>
+    where?: StatementFileWhereInput
+  }
+
+  export type StatementFileUpdateToOneWithWhereWithoutAmexRowsInput = {
+    where?: StatementFileWhereInput
+    data: XOR<StatementFileUpdateWithoutAmexRowsInput, StatementFileUncheckedUpdateWithoutAmexRowsInput>
+  }
+
+  export type StatementFileUpdateWithoutAmexRowsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    bank?: StringFieldUpdateOperationsInput | string
+    owner?: StringFieldUpdateOperationsInput | string
+    statementDate?: NullableStringFieldUpdateOperationsInput | string | null
+    originalName?: StringFieldUpdateOperationsInput | string
+    contentHash?: StringFieldUpdateOperationsInput | string
+    byteSize?: IntFieldUpdateOperationsInput | number
+    storageKey?: StringFieldUpdateOperationsInput | string
+    uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    rowCount?: NullableIntFieldUpdateOperationsInput | number | null
+    reconciled?: BoolFieldUpdateOperationsInput | boolean
+  }
+
+  export type StatementFileUncheckedUpdateWithoutAmexRowsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    bank?: StringFieldUpdateOperationsInput | string
+    owner?: StringFieldUpdateOperationsInput | string
+    statementDate?: NullableStringFieldUpdateOperationsInput | string | null
+    originalName?: StringFieldUpdateOperationsInput | string
+    contentHash?: StringFieldUpdateOperationsInput | string
+    byteSize?: IntFieldUpdateOperationsInput | number
+    storageKey?: StringFieldUpdateOperationsInput | string
+    uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    rowCount?: NullableIntFieldUpdateOperationsInput | number | null
+    reconciled?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type UserCreateWithoutSessionsInput = {
@@ -34126,6 +36088,66 @@ export namespace Prisma {
     pattern?: StringFieldUpdateOperationsInput | string
     bank?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AmexTransactionCreateManyStatementFileInput = {
+    transactionId: string
+    transactionDate: string
+    processDate: string
+    description: string
+    amount: string
+    isCredit?: boolean
+    foreignCurrency?: string | null
+    foreignAmount?: string | null
+    statementDate: string
+    owner?: string
+    importedAt?: Date | string
+    status?: string
+  }
+
+  export type AmexTransactionUpdateWithoutStatementFileInput = {
+    transactionId?: StringFieldUpdateOperationsInput | string
+    transactionDate?: StringFieldUpdateOperationsInput | string
+    processDate?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    amount?: StringFieldUpdateOperationsInput | string
+    isCredit?: BoolFieldUpdateOperationsInput | boolean
+    foreignCurrency?: NullableStringFieldUpdateOperationsInput | string | null
+    foreignAmount?: NullableStringFieldUpdateOperationsInput | string | null
+    statementDate?: StringFieldUpdateOperationsInput | string
+    owner?: StringFieldUpdateOperationsInput | string
+    importedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type AmexTransactionUncheckedUpdateWithoutStatementFileInput = {
+    transactionId?: StringFieldUpdateOperationsInput | string
+    transactionDate?: StringFieldUpdateOperationsInput | string
+    processDate?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    amount?: StringFieldUpdateOperationsInput | string
+    isCredit?: BoolFieldUpdateOperationsInput | boolean
+    foreignCurrency?: NullableStringFieldUpdateOperationsInput | string | null
+    foreignAmount?: NullableStringFieldUpdateOperationsInput | string | null
+    statementDate?: StringFieldUpdateOperationsInput | string
+    owner?: StringFieldUpdateOperationsInput | string
+    importedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type AmexTransactionUncheckedUpdateManyWithoutStatementFileInput = {
+    transactionId?: StringFieldUpdateOperationsInput | string
+    transactionDate?: StringFieldUpdateOperationsInput | string
+    processDate?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    amount?: StringFieldUpdateOperationsInput | string
+    isCredit?: BoolFieldUpdateOperationsInput | boolean
+    foreignCurrency?: NullableStringFieldUpdateOperationsInput | string | null
+    foreignAmount?: NullableStringFieldUpdateOperationsInput | string | null
+    statementDate?: StringFieldUpdateOperationsInput | string
+    owner?: StringFieldUpdateOperationsInput | string
+    importedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
   }
 
   export type InvestmentSnapshotCreateManyAccountInput = {

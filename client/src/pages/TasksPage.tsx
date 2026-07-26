@@ -2,7 +2,11 @@ import { useState } from "react";
 import { CheckCircle2, Circle } from "lucide-react";
 import { Card, CardContent } from "../components/ui/card.js";
 
-const TASKS = [
+// `note` and `highImpact` are optional — most tasks have neither. Without the
+// explicit type they'd be inferred away, and the note styling below can't compile.
+type Task = { id: string; label: string; note?: string; highImpact?: boolean };
+
+const TASKS: Task[] = [
   { id: "return-packages", label: "Return unwanted packages" },
   { id: "pay-debts", label: "Pay off debts" },
   { id: "categorize", label: "Categorize for the month" },

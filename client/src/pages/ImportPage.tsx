@@ -59,7 +59,9 @@ function BankUploadCard({
   error: Error | null;
   onFileChange: (f: File | null) => void;
   file: File | null;
-  fileRef: React.RefObject<HTMLInputElement | null>;
+  // `RefObject<T>` is covariant in React 18's types, so this must be the element
+  // type itself — `RefObject<HTMLInputElement | null>` won't assign to a `ref`.
+  fileRef: React.RefObject<HTMLInputElement>;
   accept?: string;
   owner?: string;
   owners?: string[];
@@ -316,12 +318,15 @@ export function ImportPage() {
   });
 
   const monzoParam = searchParams.get("monzo");
+  // Safe to depend on the two callbacks even though `setSearchParams` changes
+  // identity with the query string: the first run clears `?monzo`, so any re-run
+  // it triggers finds `monzoParam` null and does nothing.
   useEffect(() => {
     if (monzoParam) {
       setSearchParams({}, { replace: true });
       if (monzoParam === "connected") refetchMonzoStatus();
     }
-  }, [monzoParam]);
+  }, [monzoParam, setSearchParams, refetchMonzoStatus]);
 
   const amexMutation = useMutation<ImportResult, Error, { file: File; owner: string }>({
     mutationFn: ({ file, owner }) => {

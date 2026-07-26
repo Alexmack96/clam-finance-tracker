@@ -169,6 +169,28 @@ Key models:
 | `Transaction` | Normalised transactions; `externalId` is namespaced bank ID (`monzo:tx_...`) |
 | `MonzoTransaction` | Raw Monzo CSV staging — untouched, one row per CSV row |
 
+### Statement Files
+
+Uploaded PDFs are kept, not discarded. `StatementFile` records the source document
+for a batch of staged rows; `AmexTransaction.statementFileId` links back to it.
+
+- **Bytes** live on the Railway volume beside the SQLite file — `/data/statements`
+  in prod, derived from `DATABASE_URL` by `defaultStatementsDir()`. Override with
+  `STATEMENTS_DIR`. Never commit them; they're gitignored.
+- **`contentHash`** (SHA-256, `@unique`) catches a re-uploaded identical PDF at the
+  file level, before parsing — independent of per-row id schemes. Returns 409.
+- **`server/src/routes/statements.ts`** — list, detail, download, re-parse, delete.
+  Re-parse re-runs the current parser over the stored bytes, which is how a parser
+  fix gets applied without hunting down the original file.
+- **Deletion is explicit**, not left to the FK cascade: SQLite only honours
+  `ON DELETE CASCADE` when foreign-key enforcement is on, and the derived
+  `Transaction` rows are linked only by `externalId` (`amex:<transactionId>`), with
+  no foreign key at all.
+
+Adding a bank to this: give its staging model a `statementFileId`, add the
+`externalId` prefix to `EXTERNAL_ID_PREFIX`, and record a `StatementFile` in its
+upload route.
+
 ### Bank Import Flow
 
 Two-step pipeline: **stage → process**.

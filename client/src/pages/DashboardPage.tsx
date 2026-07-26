@@ -1712,13 +1712,13 @@ export function DashboardPage() {
                       gridApiRef.current = e.api;
                     }}
                     onCellKeyDown={(params) => {
-                      if (
-                        params.event?.key !== "Enter" ||
-                        params.column.getColId() !== "note" ||
-                        !params.data
-                      )
-                        return;
-                      params.event.preventDefault();
+                      // ag-grid types `event` as a bare Event and unions the params
+                      // with the full-width-row variant, which has no `column`.
+                      const { event } = params;
+                      if (!(event instanceof KeyboardEvent) || event.key !== "Enter") return;
+                      if (!("column" in params) || params.column.getColId() !== "note") return;
+                      if (!params.data) return;
+                      event.preventDefault();
                       noteEditTriggers.current.get(params.data.id)?.();
                     }}
                     onSelectionChanged={(e) => {

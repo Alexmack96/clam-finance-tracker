@@ -15,6 +15,7 @@ import { initSystemCategories } from "./routes/admin.js";
 import { rescueSofiChaseFx } from "./migrations/rescueSofiChaseFx.js";
 import { usersRouter } from "./routes/users.js";
 import { importRouter } from "./routes/import.js";
+import { statementsRouter } from "./routes/statements.js";
 import { categoriesRouter } from "./routes/categories.js";
 import { categoryRulesRouter } from "./routes/categoryRules.js";
 import { transactionsRouter } from "./routes/transactions.js";
@@ -65,6 +66,7 @@ app.get("/api/me", requireAuth, (req, res) => {
 });
 
 app.use("/api/admin/users", requireAuth, usersRouter);
+app.use("/api/admin/statements", requireAuth, statementsRouter);
 app.use("/api/admin", requireAuth, importRouter);
 app.use("/api/categories", requireAuth, categoriesRouter);
 app.use("/api/category-rules", requireAuth, categoryRulesRouter);

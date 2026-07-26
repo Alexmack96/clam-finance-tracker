@@ -225,6 +225,20 @@ exports.Prisma.MonzoRecRunScalarFieldEnum = {
   results: 'results'
 };
 
+exports.Prisma.StatementFileScalarFieldEnum = {
+  id: 'id',
+  bank: 'bank',
+  owner: 'owner',
+  statementDate: 'statementDate',
+  originalName: 'originalName',
+  contentHash: 'contentHash',
+  byteSize: 'byteSize',
+  storageKey: 'storageKey',
+  uploadedAt: 'uploadedAt',
+  rowCount: 'rowCount',
+  reconciled: 'reconciled'
+};
+
 exports.Prisma.AmexTransactionScalarFieldEnum = {
   transactionId: 'transactionId',
   transactionDate: 'transactionDate',
@@ -237,7 +251,8 @@ exports.Prisma.AmexTransactionScalarFieldEnum = {
   statementDate: 'statementDate',
   owner: 'owner',
   importedAt: 'importedAt',
-  status: 'status'
+  status: 'status',
+  statementFileId: 'statementFileId'
 };
 
 exports.Prisma.BarclaysTransactionScalarFieldEnum = {
@@ -437,6 +452,7 @@ exports.Prisma.ModelName = {
   PlaidTransaction: 'PlaidTransaction',
   MonzoCredential: 'MonzoCredential',
   MonzoRecRun: 'MonzoRecRun',
+  StatementFile: 'StatementFile',
   AmexTransaction: 'AmexTransaction',
   BarclaysTransaction: 'BarclaysTransaction',
   SantanderTransaction: 'SantanderTransaction',

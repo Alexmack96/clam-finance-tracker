@@ -30,15 +30,89 @@ import {
 
 const NAME = "2026-07-24-amex.pdf";
 
+// Every real Amex statement we have. Each must reconcile against its own printed
+// Account Summary — that's the whole safety net, so it runs over all of them.
+const STATEMENTS = [
+  "2026-01-24-amex.pdf",
+  "2026-02-24-amex.pdf",
+  "2026-03-24-amex.pdf",
+  "2026-07-24-amex.pdf",
+];
+
 function pence(s: string): number {
   return Math.round(parseFloat(s.replace(/,/g, "")) * 100);
 }
 
-async function loadStatement(): Promise<{ text: string; rows: AmexRow[] }> {
-  const buf = readFileSync(resolve(import.meta.dir, "../../../e2e/resources/statements", NAME));
+const cache = new Map<string, { text: string; rows: AmexRow[] }>();
+
+async function load(name: string): Promise<{ text: string; rows: AmexRow[] }> {
+  const hit = cache.get(name);
+  if (hit) return hit;
+  const buf = readFileSync(resolve(import.meta.dir, "../../../e2e/resources/statements", name));
   const text = (await pdfParse(buf, { pagerender: amexPageRender })).text;
-  return { text, rows: parseAmexPdf(text) };
+  const parsed = { text, rows: parseAmexPdf(text) };
+  cache.set(name, parsed);
+  return parsed;
 }
+
+async function loadStatement(): Promise<{ text: string; rows: AmexRow[] }> {
+  return load(NAME);
+}
+
+describe("every statement reconciles to its own Account Summary", () => {
+  for (const name of STATEMENTS) {
+    test(name, async () => {
+      const { text, rows } = await load(name);
+      const s = readAmexAccountSummary(text);
+      expect(s).not.toBeNull();
+      // The summary box's own arithmetic — proves we read the right four figures.
+      expect(pence(s!.previousClosingBalance) - pence(s!.newCredits) + pence(s!.newDebits)).toBe(
+        pence(s!.closingBalance),
+      );
+      const debits = rows.filter((r) => !r.isCredit).reduce((a, r) => a + pence(r.amount), 0);
+      const credits = rows.filter((r) => r.isCredit).reduce((a, r) => a + pence(r.amount), 0);
+      expect(debits).toBe(pence(s!.newDebits));
+      expect(credits).toBe(pence(s!.newCredits));
+      expect(reconcileAmex(rows, text)).toBeNull();
+    });
+  }
+
+  test("no statement produces a colliding or malformed row", async () => {
+    for (const name of STATEMENTS) {
+      const { rows } = await load(name);
+      const ids = assignAmexIds(rows, "Alex").map((r) => r.transactionId);
+      expect(new Set(ids).size).toBe(rows.length);
+      for (const r of rows) {
+        // A real calendar date — the old parser could emit "2026-01-57" by eating
+        // a digit off the front of the merchant name.
+        expect(r.transactionDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+        expect(r.processDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+        expect(Number.isNaN(Date.parse(r.processDate))).toBe(false);
+        expect(r.description.length).toBeGreaterThan(0);
+      }
+    }
+  });
+});
+
+describe("merchants whose name starts with a digit", () => {
+  // January has three. The old parser's regex "(Mon)(\d{1,2})(.+)" was greedy, so
+  // the leading digit of the merchant was swallowed into the process day:
+  //   "Jan" "5" + "73 Upper Street" → 5 Jan became 57 Jan, description "3 Upper…"
+  // Column positions make this unambiguous — the date and the description are
+  // different cells, so no regex has to guess where one ends.
+  test.each([
+    ["1 TORTILLA ISLINGTON", "2025-12-31", "2026-01-01", "32.40"],
+    ["4226 -", "2026-01-01", "2026-01-01", "88.00"],
+    ["73 Upper Street", "2026-01-04", "2026-01-05", "18.00"],
+  ])("%s keeps its leading digit and a valid process date", async (needle, tx, proc, amount) => {
+    const { rows } = await load("2026-01-24-amex.pdf");
+    const row = rows.find((r) => r.description.startsWith(needle));
+    expect(row).toBeDefined();
+    expect(row!.transactionDate).toBe(tx);
+    expect(row!.processDate).toBe(proc);
+    expect(row!.amount).toBe(amount);
+  });
+});
 
 describe("page 1 Account Summary", () => {
   test("reads all four figures off the summary box", async () => {

@@ -1,5 +1,13 @@
 export type BankSource =
-  "Monzo" | "Flex" | "Amex" | "Barclays" | "Santander" | "HSBC" | "SoFi" | "Chase" | "Manual";
+  | "Monzo"
+  | "Flex"
+  | "Amex"
+  | "Barclays"
+  | "Santander"
+  | "HSBC"
+  | "SoFi"
+  | "Chase"
+  | "Manual";
 
 /** Every source `bankSource` can return, in dropdown/display order. Single source of truth. */
 export const BANK_SOURCES: BankSource[] = [

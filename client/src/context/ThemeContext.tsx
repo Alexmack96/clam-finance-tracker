@@ -1,11 +1,8 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { ThemeContext, type Theme } from "./theme.js";
 
-type Theme = "light" | "dark";
-
-const ThemeContext = createContext<{ theme: Theme; toggle: () => void }>({
-  theme: "light",
-  toggle: () => {},
-});
+// Component-only module — the context object and the useTheme hook live in
+// ./theme.ts so Fast Refresh keeps working for this file.
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>(() => {
@@ -22,8 +19,4 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }
 
   return <ThemeContext.Provider value={{ theme, toggle }}>{children}</ThemeContext.Provider>;
-}
-
-export function useTheme() {
-  return useContext(ThemeContext);
 }

@@ -18,12 +18,22 @@ type StagedStatus = "pending" | "processed" | "skipped" | "errored";
 type Bank = "sofi" | "chase";
 
 async function findOrphans(bank: Bank): Promise<number[]> {
-  const rows = bank === "sofi"
-    ? await db.sofiTransaction.findMany({ where: { status: "processed" }, select: { id: true, transactionId: true } })
-    : await db.chaseTransaction.findMany({ where: { status: "processed" }, select: { id: true, transactionId: true } });
+  const rows =
+    bank === "sofi"
+      ? await db.sofiTransaction.findMany({
+          where: { status: "processed" },
+          select: { id: true, transactionId: true },
+        })
+      : await db.chaseTransaction.findMany({
+          where: { status: "processed" },
+          select: { id: true, transactionId: true },
+        });
   const orphans: number[] = [];
   for (const r of rows) {
-    const tx = await db.transaction.findUnique({ where: { externalId: `${bank}:${r.transactionId}` }, select: { id: true } });
+    const tx = await db.transaction.findUnique({
+      where: { externalId: `${bank}:${r.transactionId}` },
+      select: { id: true },
+    });
     if (!tx) orphans.push(r.id);
   }
   return orphans;
@@ -43,11 +53,17 @@ export async function rescueSofiChaseFx(): Promise<void> {
   const sofiOrphans = await findOrphans("sofi");
   const chaseOrphans = await findOrphans("chase");
   if (sofiOrphans.length > 0) {
-    await db.sofiTransaction.updateMany({ where: { id: { in: sofiOrphans } }, data: { status: "pending" } });
+    await db.sofiTransaction.updateMany({
+      where: { id: { in: sofiOrphans } },
+      data: { status: "pending" },
+    });
     console.log(`[rescueSofiChaseFx] revived ${sofiOrphans.length} SoFi orphans → pending`);
   }
   if (chaseOrphans.length > 0) {
-    await db.chaseTransaction.updateMany({ where: { id: { in: chaseOrphans } }, data: { status: "pending" } });
+    await db.chaseTransaction.updateMany({
+      where: { id: { in: chaseOrphans } },
+      data: { status: "pending" },
+    });
     console.log(`[rescueSofiChaseFx] revived ${chaseOrphans.length} Chase orphans → pending`);
   }
 
@@ -62,14 +78,23 @@ export async function rescueSofiChaseFx(): Promise<void> {
       next = "skipped";
     } else {
       const ext = `sofi:${row.transactionId}`;
-      const exists = await db.transaction.findUnique({ where: { externalId: ext }, select: { id: true } });
+      const exists = await db.transaction.findUnique({
+        where: { externalId: ext },
+        select: { id: true },
+      });
       if (!exists) {
         const txDate = new Date(row.date);
         const { amount: gbp } = await convertWithFallback(usd, "USD", "GBP", txDate, ext);
         await db.transaction.create({
           data: {
-            description: row.description, amount: gbp, originalAmount: usd, originalCurrency: "USD",
-            type: row.isCredit ? "Income" : "Expense", date: txDate, categoryId, externalId: ext,
+            description: row.description,
+            amount: gbp,
+            originalAmount: usd,
+            originalCurrency: "USD",
+            type: row.isCredit ? "Income" : "Expense",
+            date: txDate,
+            categoryId,
+            externalId: ext,
             owner: row.owner as "Alex" | "Casey" | "Joint",
           },
         });
@@ -78,7 +103,8 @@ export async function rescueSofiChaseFx(): Promise<void> {
     }
     await db.sofiTransaction.update({ where: { id: row.id }, data: { status: next } });
   }
-  if (pendingSofi.length > 0) console.log(`[rescueSofiChaseFx] processed ${pendingSofi.length} pending SoFi rows`);
+  if (pendingSofi.length > 0)
+    console.log(`[rescueSofiChaseFx] processed ${pendingSofi.length} pending SoFi rows`);
 
   const pendingChase = await db.chaseTransaction.findMany({ where: { status: "pending" } });
   for (const row of pendingChase) {
@@ -88,14 +114,23 @@ export async function rescueSofiChaseFx(): Promise<void> {
       next = "skipped";
     } else {
       const ext = `chase:${row.transactionId}`;
-      const exists = await db.transaction.findUnique({ where: { externalId: ext }, select: { id: true } });
+      const exists = await db.transaction.findUnique({
+        where: { externalId: ext },
+        select: { id: true },
+      });
       if (!exists) {
         const txDate = new Date(row.date);
         const { amount: gbp } = await convertWithFallback(usd, "USD", "GBP", txDate, ext);
         await db.transaction.create({
           data: {
-            description: row.description, amount: gbp, originalAmount: usd, originalCurrency: "USD",
-            type: row.isCredit ? "Income" : "Expense", date: txDate, categoryId, externalId: ext,
+            description: row.description,
+            amount: gbp,
+            originalAmount: usd,
+            originalCurrency: "USD",
+            type: row.isCredit ? "Income" : "Expense",
+            date: txDate,
+            categoryId,
+            externalId: ext,
             owner: row.owner as "Alex" | "Casey" | "Joint",
           },
         });
@@ -104,7 +139,8 @@ export async function rescueSofiChaseFx(): Promise<void> {
     }
     await db.chaseTransaction.update({ where: { id: row.id }, data: { status: next } });
   }
-  if (pendingChase.length > 0) console.log(`[rescueSofiChaseFx] processed ${pendingChase.length} pending Chase rows`);
+  if (pendingChase.length > 0)
+    console.log(`[rescueSofiChaseFx] processed ${pendingChase.length} pending Chase rows`);
 
   // 3. Backfill existing FX-less SoFi/Chase Transactions
   const stale = await db.transaction.findMany({
@@ -116,11 +152,20 @@ export async function rescueSofiChaseFx(): Promise<void> {
   });
   for (const r of stale) {
     const usd = Number(r.amount);
-    const { amount: gbp } = await convertWithFallback(usd, "USD", "GBP", r.date, r.externalId ?? r.id);
+    const { amount: gbp } = await convertWithFallback(
+      usd,
+      "USD",
+      "GBP",
+      r.date,
+      r.externalId ?? r.id,
+    );
     await db.transaction.update({
       where: { id: r.id },
       data: { amount: gbp, originalAmount: usd, originalCurrency: "USD" },
     });
   }
-  if (stale.length > 0) console.log(`[rescueSofiChaseFx] backfilled FX on ${stale.length} existing SoFi/Chase Transactions`);
+  if (stale.length > 0)
+    console.log(
+      `[rescueSofiChaseFx] backfilled FX on ${stale.length} existing SoFi/Chase Transactions`,
+    );
 }

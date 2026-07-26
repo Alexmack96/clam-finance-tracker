@@ -156,3 +156,8 @@ prod.db
 prod.db-wal
 prod.db-shm
 *.db.b64
+
+# Uploaded bank statement PDFs (real financial data — never commit).
+# Prod keeps these on the Railway volume at /data/statements.
+server/statements/
+statements/

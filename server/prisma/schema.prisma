@@ -178,6 +178,31 @@ model MonzoRecRun {
   @@map("monzo_rec_run")
 }
 
+/// The source PDF a batch of staged rows came from. Uploading a statement stores
+/// the bytes on the volume and records this row, so a statement is a first-class
+/// thing you can list, download, re-parse and delete — rather than a loose set of
+/// staged rows identifiable only by a `statementDate` string.
+model StatementFile {
+  id            String   @id @default(cuid())
+  bank          String
+  owner         String
+  statementDate String?
+  originalName  String
+  /// SHA-256 of the file bytes. Unique, so re-uploading the identical PDF is
+  /// caught at the file level regardless of how row ids are derived.
+  contentHash   String   @unique
+  byteSize      Int
+  storageKey    String
+  uploadedAt    DateTime @default(now())
+  rowCount      Int?
+  reconciled    Boolean  @default(false)
+
+  amexRows AmexTransaction[]
+
+  @@index([bank, owner])
+  @@map("statement_file")
+}
+
 model AmexTransaction {
   transactionId   String   @id
   transactionDate String
@@ -192,6 +217,11 @@ model AmexTransaction {
   importedAt      DateTime @default(now())
   status          String   @default("pending")
 
+  /// Nullable: rows staged before statement tracking existed have no source file.
+  statementFileId String?
+  statementFile   StatementFile? @relation(fields: [statementFileId], references: [id], onDelete: Cascade)
+
+  @@index([statementFileId])
   @@map("amex_transaction")
 }
 

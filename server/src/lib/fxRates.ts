@@ -43,7 +43,8 @@ export async function getRate(from: string, to: string, date: Date): Promise<num
   if (!res.ok) throw new Error(`Frankfurter ${res.status} for ${url}`);
   const data = (await res.json()) as FrankfurterResponse;
   const rate = data.rates?.[to];
-  if (typeof rate !== "number") throw new Error(`Missing ${to} rate in Frankfurter response for ${isoDate(date)}`);
+  if (typeof rate !== "number")
+    throw new Error(`Missing ${to} rate in Frankfurter response for ${isoDate(date)}`);
   cache.set(key, rate);
   return rate;
 }
@@ -58,12 +59,18 @@ export async function getLatestRate(from: string, to: string): Promise<number> {
   if (!res.ok) throw new Error(`Frankfurter latest ${res.status} for ${url}`);
   const data = (await res.json()) as FrankfurterResponse;
   const rate = data.rates?.[to];
-  if (typeof rate !== "number") throw new Error(`Missing ${to} rate in Frankfurter latest response`);
+  if (typeof rate !== "number")
+    throw new Error(`Missing ${to} rate in Frankfurter latest response`);
   cache.set(key, rate);
   return rate;
 }
 
-export async function convert(amount: number, from: string, to: string, date: Date): Promise<number> {
+export async function convert(
+  amount: number,
+  from: string,
+  to: string,
+  date: Date,
+): Promise<number> {
   if (from === to) return amount;
   const rate = await getRate(from, to, date);
   return round2(amount * rate);

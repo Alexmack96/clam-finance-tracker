@@ -19,6 +19,9 @@ const envSchema = z.object({
   PLAID_CLIENT_ID: z.string().optional(),
   PLAID_SECRET: z.string().optional(),
   PLAID_ENV: z.enum(["sandbox", "production"]).default("sandbox"),
+  /// Where uploaded statement PDFs are written. Defaults to a `statements/`
+  /// directory beside the SQLite file (so `/data/statements` in prod).
+  STATEMENTS_DIR: z.string().optional(),
   ADMIN_EMAIL: z.string().email(),
   ADMIN_PASSWORD: z.string().min(8),
 });

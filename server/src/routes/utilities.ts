@@ -48,11 +48,13 @@ utilitiesRouter.get("/", async (req, res) => {
         payments,
         totalThisMonth,
       };
-    })
+    }),
   );
 
   // Return in display order
-  const ordered = UTILITY_NAMES.map((name) => utilities.find((u) => u.name === name)).filter(Boolean);
+  const ordered = UTILITY_NAMES.map((name) => utilities.find((u) => u.name === name)).filter(
+    Boolean,
+  );
 
   const month = now.toLocaleString("en-GB", { month: "long", year: "numeric" });
 
