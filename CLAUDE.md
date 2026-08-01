@@ -76,6 +76,17 @@ npx playwright show-report   # view last test report
 
 Use the **playwright-e2e-writer** agent for all e2e test authoring. Do not write Playwright tests inline.
 
+`server/.env.test` holds the e2e environment. It is **gitignored**, so a fresh clone
+has to recreate it. `amex-statement-guard.spec.ts` additionally requires:
+
+```
+STATEMENTS_DIR=./statements/e2e-test
+```
+
+The spec throws without it rather than defaulting — the derived default resolves to
+`server/statements`, which the spec's cleanup deletes recursively, and that is where a
+local dev server keeps its uploaded PDFs.
+
 ## Forms (Client)
 
 Use **React Hook Form** + **Zod** for all forms. Define schemas in `@helpdesk/core` if they're shared with the server; define them locally only if client-only. Wire with `useForm({ resolver: zodResolver(schema) })` and `{...register("field")}`.
@@ -119,11 +130,11 @@ React 18 + React Router v6 + Tailwind v4 + shadcn/ui. Entry: `main.tsx` → `App
 - `lib/utils.ts` — `cn()` helper (clsx + tailwind-merge).
 - `components/ProtectedRoute.tsx` — Route guard; redirects to `/login` if no session.
 - `components/Layout.tsx` — Shell with `<Navbar>` + `<Outlet>`; handles sign-out.
-- `components/Navbar.tsx` — Green navbar; all pages (incl. Users, Import, Categories) are shown to every logged-in user.
+- `components/Navbar.tsx` — Green navbar; all pages (incl. Import, Categories) are shown to every logged-in user.
 - `components/ui/` — shadcn/ui components (new-york style).
 - `pages/LoginPage.tsx` — Email/password login.
 - `pages/DashboardPage.tsx` — Summary cards (income/expenses/balance), spending pie chart, transaction table with type/category filters.
-- `pages/UsersPage.tsx` — Admin: list all users with role and verification status.
+- `pages/AdminPage.tsx` — Admin tooling. (There is no Users page; `feat: remove admin` deleted `UsersPage`, `UsersTable` and `CreateUserDialog` along with the `/users` route.)
 - `pages/ImportPage.tsx` — Admin: upload bank CSV files to staging, process staged rows into transactions.
 
 #### HTTP & Server State
@@ -172,24 +183,33 @@ Key models:
 ### Statement Files
 
 Uploaded PDFs are kept, not discarded. `StatementFile` records the source document
-for a batch of staged rows; `AmexTransaction.statementFileId` links back to it.
+for a batch of staged rows. **Both** `AmexTransaction.statementFileId` and
+`Transaction.statementFileId` link back to it, so a normalised transaction traces to
+its source PDF in one join.
 
 - **Bytes** live on the Railway volume beside the SQLite file — `/data/statements`
   in prod, derived from `DATABASE_URL` by `defaultStatementsDir()`. Override with
   `STATEMENTS_DIR`. Never commit them; they're gitignored.
 - **`contentHash`** (SHA-256, `@unique`) catches a re-uploaded identical PDF at the
   file level, before parsing — independent of per-row id schemes. Returns 409.
+- **A statement whose rows are all already staged is also a 409**, checked by
+  `partitionAmexRows` *before* any `StatementFile` row or PDF is written, so a
+  no-op upload can't leave an orphaned file on the volume.
 - **`server/src/routes/statements.ts`** — list, detail, download, re-parse, delete.
   Re-parse re-runs the current parser over the stored bytes, which is how a parser
   fix gets applied without hunting down the original file.
 - **Deletion is explicit**, not left to the FK cascade: SQLite only honours
-  `ON DELETE CASCADE` when foreign-key enforcement is on, and the derived
-  `Transaction` rows are linked only by `externalId` (`amex:<transactionId>`), with
-  no foreign key at all.
+  `ON DELETE CASCADE` when foreign-key enforcement is on, and `Transaction` is
+  `ON DELETE SET NULL` by design — orphaning derived rows is the safe default,
+  destroying them is a decision the delete route makes on purpose.
 
-Adding a bank to this: give its staging model a `statementFileId`, add the
-`externalId` prefix to `EXTERNAL_ID_PREFIX`, and record a `StatementFile` in its
-upload route.
+`Transaction.statementFileId` is set at creation from the staging row. The old
+`externalId` string join (`amex:<transactionId>`) survives in exactly one place:
+`stageAmexRows`, repairing rows imported before the column existed.
+
+Adding a bank to this: give its staging model a `statementFileId`, set
+`statementFileId` on the `Transaction` its process block creates, and record a
+`StatementFile` in its upload route.
 
 ### Bank Import Flow
 

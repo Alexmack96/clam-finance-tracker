@@ -167,8 +167,11 @@ test.describe("Route guards", () => {
     await expect(page).toHaveURL("/login");
   });
 
-  test("unauthenticated visit to /users redirects to /login", async ({ unauthedPage: page }) => {
-    await page.goto("/users");
+  // A protected route that isn't the dashboard, so the guard is shown to cover more
+  // than the default landing page. Was /users until `feat: remove admin` deleted that
+  // route — the test kept passing a non-existent path and failed every run after.
+  test("unauthenticated visit to /import redirects to /login", async ({ unauthedPage: page }) => {
+    await page.goto("/import");
     await expect(page).toHaveURL("/login");
   });
 });

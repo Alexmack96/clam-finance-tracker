@@ -20,6 +20,13 @@ const testEnv = loadEnvFile(resolve(process.cwd(), "server/.env.test"));
 
 export default defineConfig({
   testDir: "./e2e",
+  // Serialized deliberately. Every spec shares one server process and one SQLite
+  // file (server/test.db), and most of them write to it — so parallel workers hit
+  // SQLITE_BUSY, which Prisma surfaces as P1008 on whichever request lost the race.
+  // That produced failures in whatever spec happened to be running, which read as
+  // random flakiness. Isolation would need a database and a server per worker; the
+  // suite only takes ~25s longer serialized, so this is the cheaper answer.
+  workers: 1,
   outputDir: "./e2e/test-results",
   globalSetup: "./e2e/global-setup.ts",
   globalTeardown: "./e2e/global-teardown.ts",

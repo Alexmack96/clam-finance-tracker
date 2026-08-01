@@ -156,7 +156,8 @@ exports.Prisma.TransactionScalarFieldEnum = {
   reviewed: 'reviewed',
   bucket: 'bucket',
   originalAmount: 'originalAmount',
-  originalCurrency: 'originalCurrency'
+  originalCurrency: 'originalCurrency',
+  statementFileId: 'statementFileId'
 };
 
 exports.Prisma.MonzoApiTransactionScalarFieldEnum = {

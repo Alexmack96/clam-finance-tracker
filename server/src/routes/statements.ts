@@ -11,20 +11,11 @@ export const statementsRouter = Router();
 // they produced only by an `externalId` prefix. A statement is now one row you can
 // list, download, re-parse and delete.
 
-/// Staged rows are linked by foreign key; the Transaction rows they produced are
-/// linked only by `externalId` (`amex:<transactionId>`), so they have to be
-/// matched explicitly.
-const EXTERNAL_ID_PREFIX: Record<string, string> = { amex: "amex:" };
-
-async function externalIdsFor(statementFileId: string, bank: string): Promise<string[]> {
-  const prefix = EXTERNAL_ID_PREFIX[bank];
-  if (!prefix) return [];
-  const rows = await db.amexTransaction.findMany({
-    where: { statementFileId },
-    select: { transactionId: true },
-  });
-  return rows.map((r) => `${prefix}${r.transactionId}`);
-}
+// Both the staged rows and the Transaction rows they produced carry a
+// `statementFileId`, so everything below matches on that one foreign key. It used
+// to mean rebuilding `externalId` strings (`amex:<transactionId>`) per bank and
+// matching on those; the only place that string join survives is repairing rows
+// imported before the column existed (see `stageAmexRows`).
 
 // ─── GET /api/admin/statements ───────────────────────────────────────────────
 
@@ -48,8 +39,7 @@ statementsRouter.get("/:id", async (req, res) => {
     return;
   }
 
-  const externalIds = await externalIdsFor(file.id, file.bank);
-  const transactions = await db.transaction.count({ where: { externalId: { in: externalIds } } });
+  const transactions = await db.transaction.count({ where: { statementFileId: file.id } });
 
   const { amexRows, ...rest } = file;
   res.json({ ...rest, stagedRows: amexRows.length, transactions, rows: amexRows });
@@ -114,9 +104,8 @@ statementsRouter.post("/:id/reparse", async (req, res) => {
     return;
   }
 
-  const externalIds = await externalIdsFor(file.id, file.bank);
   const removedTransactions = await db.transaction.deleteMany({
-    where: { externalId: { in: externalIds } },
+    where: { statementFileId: file.id },
   });
   const removedStaged = await db.amexTransaction.deleteMany({
     where: { statementFileId: file.id },
@@ -143,14 +132,14 @@ statementsRouter.delete("/:id", async (req, res) => {
     return;
   }
 
-  const externalIds = await externalIdsFor(file.id, file.bank);
-
   // Deleted explicitly rather than relying on the FK cascade: SQLite only honours
-  // ON DELETE CASCADE when foreign-key enforcement is on, and the Transaction rows
-  // have no foreign key at all. All three go in one transaction so a failure can't
-  // strip the transactions but leave the statement looking intact.
+  // ON DELETE CASCADE when foreign-key enforcement is on, and Transaction is
+  // SET NULL by design — orphaning derived rows is the safe default, destroying
+  // them is a decision this route makes on purpose. All three go in one
+  // transaction so a failure can't strip the transactions but leave the statement
+  // looking intact.
   const [removedTransactions, removedStaged] = await db.$transaction([
-    db.transaction.deleteMany({ where: { externalId: { in: externalIds } } }),
+    db.transaction.deleteMany({ where: { statementFileId: file.id } }),
     db.amexTransaction.deleteMany({ where: { statementFileId: file.id } }),
     db.statementFile.delete({ where: { id: file.id } }),
   ]);

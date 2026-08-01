@@ -3020,10 +3020,12 @@ export namespace Prisma {
 
   export type StatementFileCountOutputType = {
     amexRows: number
+    transactions: number
   }
 
   export type StatementFileCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     amexRows?: boolean | StatementFileCountOutputTypeCountAmexRowsArgs
+    transactions?: boolean | StatementFileCountOutputTypeCountTransactionsArgs
   }
 
   // Custom InputTypes
@@ -3042,6 +3044,13 @@ export namespace Prisma {
    */
   export type StatementFileCountOutputTypeCountAmexRowsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: AmexTransactionWhereInput
+  }
+
+  /**
+   * StatementFileCountOutputType without action
+   */
+  export type StatementFileCountOutputTypeCountTransactionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TransactionWhereInput
   }
 
 
@@ -6393,6 +6402,7 @@ export namespace Prisma {
     bucket: $Enums.Bucket | null
     originalAmount: Decimal | null
     originalCurrency: string | null
+    statementFileId: string | null
   }
 
   export type TransactionMaxAggregateOutputType = {
@@ -6410,6 +6420,7 @@ export namespace Prisma {
     bucket: $Enums.Bucket | null
     originalAmount: Decimal | null
     originalCurrency: string | null
+    statementFileId: string | null
   }
 
   export type TransactionCountAggregateOutputType = {
@@ -6427,6 +6438,7 @@ export namespace Prisma {
     bucket: number
     originalAmount: number
     originalCurrency: number
+    statementFileId: number
     _all: number
   }
 
@@ -6456,6 +6468,7 @@ export namespace Prisma {
     bucket?: true
     originalAmount?: true
     originalCurrency?: true
+    statementFileId?: true
   }
 
   export type TransactionMaxAggregateInputType = {
@@ -6473,6 +6486,7 @@ export namespace Prisma {
     bucket?: true
     originalAmount?: true
     originalCurrency?: true
+    statementFileId?: true
   }
 
   export type TransactionCountAggregateInputType = {
@@ -6490,6 +6504,7 @@ export namespace Prisma {
     bucket?: true
     originalAmount?: true
     originalCurrency?: true
+    statementFileId?: true
     _all?: true
   }
 
@@ -6594,6 +6609,7 @@ export namespace Prisma {
     bucket: $Enums.Bucket | null
     originalAmount: Decimal | null
     originalCurrency: string | null
+    statementFileId: string | null
     _count: TransactionCountAggregateOutputType | null
     _avg: TransactionAvgAggregateOutputType | null
     _sum: TransactionSumAggregateOutputType | null
@@ -6630,7 +6646,9 @@ export namespace Prisma {
     bucket?: boolean
     originalAmount?: boolean
     originalCurrency?: boolean
+    statementFileId?: boolean
     category?: boolean | CategoryDefaultArgs<ExtArgs>
+    statementFile?: boolean | Transaction$statementFileArgs<ExtArgs>
   }, ExtArgs["result"]["transaction"]>
 
   export type TransactionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -6648,7 +6666,9 @@ export namespace Prisma {
     bucket?: boolean
     originalAmount?: boolean
     originalCurrency?: boolean
+    statementFileId?: boolean
     category?: boolean | CategoryDefaultArgs<ExtArgs>
+    statementFile?: boolean | Transaction$statementFileArgs<ExtArgs>
   }, ExtArgs["result"]["transaction"]>
 
   export type TransactionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -6666,7 +6686,9 @@ export namespace Prisma {
     bucket?: boolean
     originalAmount?: boolean
     originalCurrency?: boolean
+    statementFileId?: boolean
     category?: boolean | CategoryDefaultArgs<ExtArgs>
+    statementFile?: boolean | Transaction$statementFileArgs<ExtArgs>
   }, ExtArgs["result"]["transaction"]>
 
   export type TransactionSelectScalar = {
@@ -6684,23 +6706,28 @@ export namespace Prisma {
     bucket?: boolean
     originalAmount?: boolean
     originalCurrency?: boolean
+    statementFileId?: boolean
   }
 
-  export type TransactionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "description" | "amount" | "type" | "date" | "createdAt" | "categoryId" | "externalId" | "note" | "owner" | "reviewed" | "bucket" | "originalAmount" | "originalCurrency", ExtArgs["result"]["transaction"]>
+  export type TransactionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "description" | "amount" | "type" | "date" | "createdAt" | "categoryId" | "externalId" | "note" | "owner" | "reviewed" | "bucket" | "originalAmount" | "originalCurrency" | "statementFileId", ExtArgs["result"]["transaction"]>
   export type TransactionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     category?: boolean | CategoryDefaultArgs<ExtArgs>
+    statementFile?: boolean | Transaction$statementFileArgs<ExtArgs>
   }
   export type TransactionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     category?: boolean | CategoryDefaultArgs<ExtArgs>
+    statementFile?: boolean | Transaction$statementFileArgs<ExtArgs>
   }
   export type TransactionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     category?: boolean | CategoryDefaultArgs<ExtArgs>
+    statementFile?: boolean | Transaction$statementFileArgs<ExtArgs>
   }
 
   export type $TransactionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Transaction"
     objects: {
       category: Prisma.$CategoryPayload<ExtArgs>
+      statementFile: Prisma.$StatementFilePayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -6717,6 +6744,12 @@ export namespace Prisma {
       bucket: $Enums.Bucket | null
       originalAmount: Prisma.Decimal | null
       originalCurrency: string | null
+      /**
+       * The statement PDF this transaction was derived from, where one is known.
+       * Null for banks that have no StatementFile yet, and for rows imported before
+       * statement files existed.
+       */
+      statementFileId: string | null
     }, ExtArgs["result"]["transaction"]>
     composites: {}
   }
@@ -7112,6 +7145,7 @@ export namespace Prisma {
   export interface Prisma__TransactionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     category<T extends CategoryDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CategoryDefaultArgs<ExtArgs>>): Prisma__CategoryClient<$Result.GetResult<Prisma.$CategoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    statementFile<T extends Transaction$statementFileArgs<ExtArgs> = {}>(args?: Subset<T, Transaction$statementFileArgs<ExtArgs>>): Prisma__StatementFileClient<$Result.GetResult<Prisma.$StatementFilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -7155,6 +7189,7 @@ export namespace Prisma {
     readonly bucket: FieldRef<"Transaction", 'Bucket'>
     readonly originalAmount: FieldRef<"Transaction", 'Decimal'>
     readonly originalCurrency: FieldRef<"Transaction", 'String'>
+    readonly statementFileId: FieldRef<"Transaction", 'String'>
   }
     
 
@@ -7551,6 +7586,25 @@ export namespace Prisma {
      * Limit how many Transactions to delete.
      */
     limit?: number
+  }
+
+  /**
+   * Transaction.statementFile
+   */
+  export type Transaction$statementFileArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StatementFile
+     */
+    select?: StatementFileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StatementFile
+     */
+    omit?: StatementFileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StatementFileInclude<ExtArgs> | null
+    where?: StatementFileWhereInput
   }
 
   /**
@@ -13261,6 +13315,7 @@ export namespace Prisma {
     rowCount?: boolean
     reconciled?: boolean
     amexRows?: boolean | StatementFile$amexRowsArgs<ExtArgs>
+    transactions?: boolean | StatementFile$transactionsArgs<ExtArgs>
     _count?: boolean | StatementFileCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["statementFile"]>
 
@@ -13309,6 +13364,7 @@ export namespace Prisma {
   export type StatementFileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "bank" | "owner" | "statementDate" | "originalName" | "contentHash" | "byteSize" | "storageKey" | "uploadedAt" | "rowCount" | "reconciled", ExtArgs["result"]["statementFile"]>
   export type StatementFileInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     amexRows?: boolean | StatementFile$amexRowsArgs<ExtArgs>
+    transactions?: boolean | StatementFile$transactionsArgs<ExtArgs>
     _count?: boolean | StatementFileCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type StatementFileIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -13318,6 +13374,7 @@ export namespace Prisma {
     name: "StatementFile"
     objects: {
       amexRows: Prisma.$AmexTransactionPayload<ExtArgs>[]
+      transactions: Prisma.$TransactionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -13730,6 +13787,7 @@ export namespace Prisma {
   export interface Prisma__StatementFileClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     amexRows<T extends StatementFile$amexRowsArgs<ExtArgs> = {}>(args?: Subset<T, StatementFile$amexRowsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AmexTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    transactions<T extends StatementFile$transactionsArgs<ExtArgs> = {}>(args?: Subset<T, StatementFile$transactionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -14182,6 +14240,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: AmexTransactionScalarFieldEnum | AmexTransactionScalarFieldEnum[]
+  }
+
+  /**
+   * StatementFile.transactions
+   */
+  export type StatementFile$transactionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Transaction
+     */
+    select?: TransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Transaction
+     */
+    omit?: TransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TransactionInclude<ExtArgs> | null
+    where?: TransactionWhereInput
+    orderBy?: TransactionOrderByWithRelationInput | TransactionOrderByWithRelationInput[]
+    cursor?: TransactionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TransactionScalarFieldEnum | TransactionScalarFieldEnum[]
   }
 
   /**
@@ -28667,7 +28749,8 @@ export namespace Prisma {
     reviewed: 'reviewed',
     bucket: 'bucket',
     originalAmount: 'originalAmount',
-    originalCurrency: 'originalCurrency'
+    originalCurrency: 'originalCurrency',
+    statementFileId: 'statementFileId'
   };
 
   export type TransactionScalarFieldEnum = (typeof TransactionScalarFieldEnum)[keyof typeof TransactionScalarFieldEnum]
@@ -29272,7 +29355,9 @@ export namespace Prisma {
     bucket?: EnumBucketNullableFilter<"Transaction"> | $Enums.Bucket | null
     originalAmount?: DecimalNullableFilter<"Transaction"> | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: StringNullableFilter<"Transaction"> | string | null
+    statementFileId?: StringNullableFilter<"Transaction"> | string | null
     category?: XOR<CategoryScalarRelationFilter, CategoryWhereInput>
+    statementFile?: XOR<StatementFileNullableScalarRelationFilter, StatementFileWhereInput> | null
   }
 
   export type TransactionOrderByWithRelationInput = {
@@ -29290,7 +29375,9 @@ export namespace Prisma {
     bucket?: SortOrderInput | SortOrder
     originalAmount?: SortOrderInput | SortOrder
     originalCurrency?: SortOrderInput | SortOrder
+    statementFileId?: SortOrderInput | SortOrder
     category?: CategoryOrderByWithRelationInput
+    statementFile?: StatementFileOrderByWithRelationInput
   }
 
   export type TransactionWhereUniqueInput = Prisma.AtLeast<{
@@ -29311,7 +29398,9 @@ export namespace Prisma {
     bucket?: EnumBucketNullableFilter<"Transaction"> | $Enums.Bucket | null
     originalAmount?: DecimalNullableFilter<"Transaction"> | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: StringNullableFilter<"Transaction"> | string | null
+    statementFileId?: StringNullableFilter<"Transaction"> | string | null
     category?: XOR<CategoryScalarRelationFilter, CategoryWhereInput>
+    statementFile?: XOR<StatementFileNullableScalarRelationFilter, StatementFileWhereInput> | null
   }, "id" | "externalId">
 
   export type TransactionOrderByWithAggregationInput = {
@@ -29329,6 +29418,7 @@ export namespace Prisma {
     bucket?: SortOrderInput | SortOrder
     originalAmount?: SortOrderInput | SortOrder
     originalCurrency?: SortOrderInput | SortOrder
+    statementFileId?: SortOrderInput | SortOrder
     _count?: TransactionCountOrderByAggregateInput
     _avg?: TransactionAvgOrderByAggregateInput
     _max?: TransactionMaxOrderByAggregateInput
@@ -29354,6 +29444,7 @@ export namespace Prisma {
     bucket?: EnumBucketNullableWithAggregatesFilter<"Transaction"> | $Enums.Bucket | null
     originalAmount?: DecimalNullableWithAggregatesFilter<"Transaction"> | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: StringNullableWithAggregatesFilter<"Transaction"> | string | null
+    statementFileId?: StringNullableWithAggregatesFilter<"Transaction"> | string | null
   }
 
   export type MonzoApiTransactionWhereInput = {
@@ -29768,6 +29859,7 @@ export namespace Prisma {
     rowCount?: IntNullableFilter<"StatementFile"> | number | null
     reconciled?: BoolFilter<"StatementFile"> | boolean
     amexRows?: AmexTransactionListRelationFilter
+    transactions?: TransactionListRelationFilter
   }
 
   export type StatementFileOrderByWithRelationInput = {
@@ -29783,6 +29875,7 @@ export namespace Prisma {
     rowCount?: SortOrderInput | SortOrder
     reconciled?: SortOrder
     amexRows?: AmexTransactionOrderByRelationAggregateInput
+    transactions?: TransactionOrderByRelationAggregateInput
   }
 
   export type StatementFileWhereUniqueInput = Prisma.AtLeast<{
@@ -29801,6 +29894,7 @@ export namespace Prisma {
     rowCount?: IntNullableFilter<"StatementFile"> | number | null
     reconciled?: BoolFilter<"StatementFile"> | boolean
     amexRows?: AmexTransactionListRelationFilter
+    transactions?: TransactionListRelationFilter
   }, "id" | "contentHash">
 
   export type StatementFileOrderByWithAggregationInput = {
@@ -31063,6 +31157,7 @@ export namespace Prisma {
     originalAmount?: Decimal | DecimalJsLike | number | string | null
     originalCurrency?: string | null
     category: CategoryCreateNestedOneWithoutTransactionsInput
+    statementFile?: StatementFileCreateNestedOneWithoutTransactionsInput
   }
 
   export type TransactionUncheckedCreateInput = {
@@ -31080,6 +31175,7 @@ export namespace Prisma {
     bucket?: $Enums.Bucket | null
     originalAmount?: Decimal | DecimalJsLike | number | string | null
     originalCurrency?: string | null
+    statementFileId?: string | null
   }
 
   export type TransactionUpdateInput = {
@@ -31097,6 +31193,7 @@ export namespace Prisma {
     originalAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
     category?: CategoryUpdateOneRequiredWithoutTransactionsNestedInput
+    statementFile?: StatementFileUpdateOneWithoutTransactionsNestedInput
   }
 
   export type TransactionUncheckedUpdateInput = {
@@ -31114,6 +31211,7 @@ export namespace Prisma {
     bucket?: NullableEnumBucketFieldUpdateOperationsInput | $Enums.Bucket | null
     originalAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
+    statementFileId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type TransactionCreateManyInput = {
@@ -31131,6 +31229,7 @@ export namespace Prisma {
     bucket?: $Enums.Bucket | null
     originalAmount?: Decimal | DecimalJsLike | number | string | null
     originalCurrency?: string | null
+    statementFileId?: string | null
   }
 
   export type TransactionUpdateManyMutationInput = {
@@ -31164,6 +31263,7 @@ export namespace Prisma {
     bucket?: NullableEnumBucketFieldUpdateOperationsInput | $Enums.Bucket | null
     originalAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
+    statementFileId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type MonzoApiTransactionCreateInput = {
@@ -31641,6 +31741,7 @@ export namespace Prisma {
     rowCount?: number | null
     reconciled?: boolean
     amexRows?: AmexTransactionCreateNestedManyWithoutStatementFileInput
+    transactions?: TransactionCreateNestedManyWithoutStatementFileInput
   }
 
   export type StatementFileUncheckedCreateInput = {
@@ -31656,6 +31757,7 @@ export namespace Prisma {
     rowCount?: number | null
     reconciled?: boolean
     amexRows?: AmexTransactionUncheckedCreateNestedManyWithoutStatementFileInput
+    transactions?: TransactionUncheckedCreateNestedManyWithoutStatementFileInput
   }
 
   export type StatementFileUpdateInput = {
@@ -31671,6 +31773,7 @@ export namespace Prisma {
     rowCount?: NullableIntFieldUpdateOperationsInput | number | null
     reconciled?: BoolFieldUpdateOperationsInput | boolean
     amexRows?: AmexTransactionUpdateManyWithoutStatementFileNestedInput
+    transactions?: TransactionUpdateManyWithoutStatementFileNestedInput
   }
 
   export type StatementFileUncheckedUpdateInput = {
@@ -31686,6 +31789,7 @@ export namespace Prisma {
     rowCount?: NullableIntFieldUpdateOperationsInput | number | null
     reconciled?: BoolFieldUpdateOperationsInput | boolean
     amexRows?: AmexTransactionUncheckedUpdateManyWithoutStatementFileNestedInput
+    transactions?: TransactionUncheckedUpdateManyWithoutStatementFileNestedInput
   }
 
   export type StatementFileCreateManyInput = {
@@ -33169,6 +33273,11 @@ export namespace Prisma {
     not?: NestedDecimalNullableFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
   }
 
+  export type StatementFileNullableScalarRelationFilter = {
+    is?: StatementFileWhereInput | null
+    isNot?: StatementFileWhereInput | null
+  }
+
   export type TransactionCountOrderByAggregateInput = {
     id?: SortOrder
     description?: SortOrder
@@ -33184,6 +33293,7 @@ export namespace Prisma {
     bucket?: SortOrder
     originalAmount?: SortOrder
     originalCurrency?: SortOrder
+    statementFileId?: SortOrder
   }
 
   export type TransactionAvgOrderByAggregateInput = {
@@ -33206,6 +33316,7 @@ export namespace Prisma {
     bucket?: SortOrder
     originalAmount?: SortOrder
     originalCurrency?: SortOrder
+    statementFileId?: SortOrder
   }
 
   export type TransactionMinOrderByAggregateInput = {
@@ -33223,6 +33334,7 @@ export namespace Prisma {
     bucket?: SortOrder
     originalAmount?: SortOrder
     originalCurrency?: SortOrder
+    statementFileId?: SortOrder
   }
 
   export type TransactionSumOrderByAggregateInput = {
@@ -33682,11 +33794,6 @@ export namespace Prisma {
     _sum?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedIntNullableFilter<$PrismaModel>
     _max?: NestedIntNullableFilter<$PrismaModel>
-  }
-
-  export type StatementFileNullableScalarRelationFilter = {
-    is?: StatementFileWhereInput | null
-    isNot?: StatementFileWhereInput | null
   }
 
   export type AmexTransactionCountOrderByAggregateInput = {
@@ -34552,6 +34659,12 @@ export namespace Prisma {
     connect?: CategoryWhereUniqueInput
   }
 
+  export type StatementFileCreateNestedOneWithoutTransactionsInput = {
+    create?: XOR<StatementFileCreateWithoutTransactionsInput, StatementFileUncheckedCreateWithoutTransactionsInput>
+    connectOrCreate?: StatementFileCreateOrConnectWithoutTransactionsInput
+    connect?: StatementFileWhereUniqueInput
+  }
+
   export type DecimalFieldUpdateOperationsInput = {
     set?: Decimal | DecimalJsLike | number | string
     increment?: Decimal | DecimalJsLike | number | string
@@ -34588,6 +34701,16 @@ export namespace Prisma {
     update?: XOR<XOR<CategoryUpdateToOneWithWhereWithoutTransactionsInput, CategoryUpdateWithoutTransactionsInput>, CategoryUncheckedUpdateWithoutTransactionsInput>
   }
 
+  export type StatementFileUpdateOneWithoutTransactionsNestedInput = {
+    create?: XOR<StatementFileCreateWithoutTransactionsInput, StatementFileUncheckedCreateWithoutTransactionsInput>
+    connectOrCreate?: StatementFileCreateOrConnectWithoutTransactionsInput
+    upsert?: StatementFileUpsertWithoutTransactionsInput
+    disconnect?: StatementFileWhereInput | boolean
+    delete?: StatementFileWhereInput | boolean
+    connect?: StatementFileWhereUniqueInput
+    update?: XOR<XOR<StatementFileUpdateToOneWithWhereWithoutTransactionsInput, StatementFileUpdateWithoutTransactionsInput>, StatementFileUncheckedUpdateWithoutTransactionsInput>
+  }
+
   export type NullableDateTimeFieldUpdateOperationsInput = {
     set?: Date | string | null
   }
@@ -34615,11 +34738,25 @@ export namespace Prisma {
     connect?: AmexTransactionWhereUniqueInput | AmexTransactionWhereUniqueInput[]
   }
 
+  export type TransactionCreateNestedManyWithoutStatementFileInput = {
+    create?: XOR<TransactionCreateWithoutStatementFileInput, TransactionUncheckedCreateWithoutStatementFileInput> | TransactionCreateWithoutStatementFileInput[] | TransactionUncheckedCreateWithoutStatementFileInput[]
+    connectOrCreate?: TransactionCreateOrConnectWithoutStatementFileInput | TransactionCreateOrConnectWithoutStatementFileInput[]
+    createMany?: TransactionCreateManyStatementFileInputEnvelope
+    connect?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
+  }
+
   export type AmexTransactionUncheckedCreateNestedManyWithoutStatementFileInput = {
     create?: XOR<AmexTransactionCreateWithoutStatementFileInput, AmexTransactionUncheckedCreateWithoutStatementFileInput> | AmexTransactionCreateWithoutStatementFileInput[] | AmexTransactionUncheckedCreateWithoutStatementFileInput[]
     connectOrCreate?: AmexTransactionCreateOrConnectWithoutStatementFileInput | AmexTransactionCreateOrConnectWithoutStatementFileInput[]
     createMany?: AmexTransactionCreateManyStatementFileInputEnvelope
     connect?: AmexTransactionWhereUniqueInput | AmexTransactionWhereUniqueInput[]
+  }
+
+  export type TransactionUncheckedCreateNestedManyWithoutStatementFileInput = {
+    create?: XOR<TransactionCreateWithoutStatementFileInput, TransactionUncheckedCreateWithoutStatementFileInput> | TransactionCreateWithoutStatementFileInput[] | TransactionUncheckedCreateWithoutStatementFileInput[]
+    connectOrCreate?: TransactionCreateOrConnectWithoutStatementFileInput | TransactionCreateOrConnectWithoutStatementFileInput[]
+    createMany?: TransactionCreateManyStatementFileInputEnvelope
+    connect?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
   }
 
   export type NullableIntFieldUpdateOperationsInput = {
@@ -34644,6 +34781,20 @@ export namespace Prisma {
     deleteMany?: AmexTransactionScalarWhereInput | AmexTransactionScalarWhereInput[]
   }
 
+  export type TransactionUpdateManyWithoutStatementFileNestedInput = {
+    create?: XOR<TransactionCreateWithoutStatementFileInput, TransactionUncheckedCreateWithoutStatementFileInput> | TransactionCreateWithoutStatementFileInput[] | TransactionUncheckedCreateWithoutStatementFileInput[]
+    connectOrCreate?: TransactionCreateOrConnectWithoutStatementFileInput | TransactionCreateOrConnectWithoutStatementFileInput[]
+    upsert?: TransactionUpsertWithWhereUniqueWithoutStatementFileInput | TransactionUpsertWithWhereUniqueWithoutStatementFileInput[]
+    createMany?: TransactionCreateManyStatementFileInputEnvelope
+    set?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
+    disconnect?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
+    delete?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
+    connect?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
+    update?: TransactionUpdateWithWhereUniqueWithoutStatementFileInput | TransactionUpdateWithWhereUniqueWithoutStatementFileInput[]
+    updateMany?: TransactionUpdateManyWithWhereWithoutStatementFileInput | TransactionUpdateManyWithWhereWithoutStatementFileInput[]
+    deleteMany?: TransactionScalarWhereInput | TransactionScalarWhereInput[]
+  }
+
   export type AmexTransactionUncheckedUpdateManyWithoutStatementFileNestedInput = {
     create?: XOR<AmexTransactionCreateWithoutStatementFileInput, AmexTransactionUncheckedCreateWithoutStatementFileInput> | AmexTransactionCreateWithoutStatementFileInput[] | AmexTransactionUncheckedCreateWithoutStatementFileInput[]
     connectOrCreate?: AmexTransactionCreateOrConnectWithoutStatementFileInput | AmexTransactionCreateOrConnectWithoutStatementFileInput[]
@@ -34656,6 +34807,20 @@ export namespace Prisma {
     update?: AmexTransactionUpdateWithWhereUniqueWithoutStatementFileInput | AmexTransactionUpdateWithWhereUniqueWithoutStatementFileInput[]
     updateMany?: AmexTransactionUpdateManyWithWhereWithoutStatementFileInput | AmexTransactionUpdateManyWithWhereWithoutStatementFileInput[]
     deleteMany?: AmexTransactionScalarWhereInput | AmexTransactionScalarWhereInput[]
+  }
+
+  export type TransactionUncheckedUpdateManyWithoutStatementFileNestedInput = {
+    create?: XOR<TransactionCreateWithoutStatementFileInput, TransactionUncheckedCreateWithoutStatementFileInput> | TransactionCreateWithoutStatementFileInput[] | TransactionUncheckedCreateWithoutStatementFileInput[]
+    connectOrCreate?: TransactionCreateOrConnectWithoutStatementFileInput | TransactionCreateOrConnectWithoutStatementFileInput[]
+    upsert?: TransactionUpsertWithWhereUniqueWithoutStatementFileInput | TransactionUpsertWithWhereUniqueWithoutStatementFileInput[]
+    createMany?: TransactionCreateManyStatementFileInputEnvelope
+    set?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
+    disconnect?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
+    delete?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
+    connect?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
+    update?: TransactionUpdateWithWhereUniqueWithoutStatementFileInput | TransactionUpdateWithWhereUniqueWithoutStatementFileInput[]
+    updateMany?: TransactionUpdateManyWithWhereWithoutStatementFileInput | TransactionUpdateManyWithWhereWithoutStatementFileInput[]
+    deleteMany?: TransactionScalarWhereInput | TransactionScalarWhereInput[]
   }
 
   export type StatementFileCreateNestedOneWithoutAmexRowsInput = {
@@ -35310,6 +35475,7 @@ export namespace Prisma {
     bucket?: $Enums.Bucket | null
     originalAmount?: Decimal | DecimalJsLike | number | string | null
     originalCurrency?: string | null
+    statementFile?: StatementFileCreateNestedOneWithoutTransactionsInput
   }
 
   export type TransactionUncheckedCreateWithoutCategoryInput = {
@@ -35326,6 +35492,7 @@ export namespace Prisma {
     bucket?: $Enums.Bucket | null
     originalAmount?: Decimal | DecimalJsLike | number | string | null
     originalCurrency?: string | null
+    statementFileId?: string | null
   }
 
   export type TransactionCreateOrConnectWithoutCategoryInput = {
@@ -35394,6 +35561,7 @@ export namespace Prisma {
     bucket?: EnumBucketNullableFilter<"Transaction"> | $Enums.Bucket | null
     originalAmount?: DecimalNullableFilter<"Transaction"> | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: StringNullableFilter<"Transaction"> | string | null
+    statementFileId?: StringNullableFilter<"Transaction"> | string | null
   }
 
   export type CategoryRuleUpsertWithWhereUniqueWithoutCategoryInput = {
@@ -35492,6 +35660,41 @@ export namespace Prisma {
     create: XOR<CategoryCreateWithoutTransactionsInput, CategoryUncheckedCreateWithoutTransactionsInput>
   }
 
+  export type StatementFileCreateWithoutTransactionsInput = {
+    id?: string
+    bank: string
+    owner: string
+    statementDate?: string | null
+    originalName: string
+    contentHash: string
+    byteSize: number
+    storageKey: string
+    uploadedAt?: Date | string
+    rowCount?: number | null
+    reconciled?: boolean
+    amexRows?: AmexTransactionCreateNestedManyWithoutStatementFileInput
+  }
+
+  export type StatementFileUncheckedCreateWithoutTransactionsInput = {
+    id?: string
+    bank: string
+    owner: string
+    statementDate?: string | null
+    originalName: string
+    contentHash: string
+    byteSize: number
+    storageKey: string
+    uploadedAt?: Date | string
+    rowCount?: number | null
+    reconciled?: boolean
+    amexRows?: AmexTransactionUncheckedCreateNestedManyWithoutStatementFileInput
+  }
+
+  export type StatementFileCreateOrConnectWithoutTransactionsInput = {
+    where: StatementFileWhereUniqueInput
+    create: XOR<StatementFileCreateWithoutTransactionsInput, StatementFileUncheckedCreateWithoutTransactionsInput>
+  }
+
   export type CategoryUpsertWithoutTransactionsInput = {
     update: XOR<CategoryUpdateWithoutTransactionsInput, CategoryUncheckedUpdateWithoutTransactionsInput>
     create: XOR<CategoryCreateWithoutTransactionsInput, CategoryUncheckedCreateWithoutTransactionsInput>
@@ -35517,6 +35720,47 @@ export namespace Prisma {
     color?: StringFieldUpdateOperationsInput | string
     bucket?: NullableEnumBucketFieldUpdateOperationsInput | $Enums.Bucket | null
     categoryRules?: CategoryRuleUncheckedUpdateManyWithoutCategoryNestedInput
+  }
+
+  export type StatementFileUpsertWithoutTransactionsInput = {
+    update: XOR<StatementFileUpdateWithoutTransactionsInput, StatementFileUncheckedUpdateWithoutTransactionsInput>
+    create: XOR<StatementFileCreateWithoutTransactionsInput, StatementFileUncheckedCreateWithoutTransactionsInput>
+    where?: StatementFileWhereInput
+  }
+
+  export type StatementFileUpdateToOneWithWhereWithoutTransactionsInput = {
+    where?: StatementFileWhereInput
+    data: XOR<StatementFileUpdateWithoutTransactionsInput, StatementFileUncheckedUpdateWithoutTransactionsInput>
+  }
+
+  export type StatementFileUpdateWithoutTransactionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    bank?: StringFieldUpdateOperationsInput | string
+    owner?: StringFieldUpdateOperationsInput | string
+    statementDate?: NullableStringFieldUpdateOperationsInput | string | null
+    originalName?: StringFieldUpdateOperationsInput | string
+    contentHash?: StringFieldUpdateOperationsInput | string
+    byteSize?: IntFieldUpdateOperationsInput | number
+    storageKey?: StringFieldUpdateOperationsInput | string
+    uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    rowCount?: NullableIntFieldUpdateOperationsInput | number | null
+    reconciled?: BoolFieldUpdateOperationsInput | boolean
+    amexRows?: AmexTransactionUpdateManyWithoutStatementFileNestedInput
+  }
+
+  export type StatementFileUncheckedUpdateWithoutTransactionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    bank?: StringFieldUpdateOperationsInput | string
+    owner?: StringFieldUpdateOperationsInput | string
+    statementDate?: NullableStringFieldUpdateOperationsInput | string | null
+    originalName?: StringFieldUpdateOperationsInput | string
+    contentHash?: StringFieldUpdateOperationsInput | string
+    byteSize?: IntFieldUpdateOperationsInput | number
+    storageKey?: StringFieldUpdateOperationsInput | string
+    uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    rowCount?: NullableIntFieldUpdateOperationsInput | number | null
+    reconciled?: BoolFieldUpdateOperationsInput | boolean
+    amexRows?: AmexTransactionUncheckedUpdateManyWithoutStatementFileNestedInput
   }
 
   export type AmexTransactionCreateWithoutStatementFileInput = {
@@ -35558,6 +35802,49 @@ export namespace Prisma {
     data: AmexTransactionCreateManyStatementFileInput | AmexTransactionCreateManyStatementFileInput[]
   }
 
+  export type TransactionCreateWithoutStatementFileInput = {
+    id?: string
+    description: string
+    amount: Decimal | DecimalJsLike | number | string
+    type: $Enums.TransactionType
+    date?: Date | string
+    createdAt?: Date | string
+    externalId?: string | null
+    note?: string | null
+    owner?: $Enums.Owner
+    reviewed?: boolean
+    bucket?: $Enums.Bucket | null
+    originalAmount?: Decimal | DecimalJsLike | number | string | null
+    originalCurrency?: string | null
+    category: CategoryCreateNestedOneWithoutTransactionsInput
+  }
+
+  export type TransactionUncheckedCreateWithoutStatementFileInput = {
+    id?: string
+    description: string
+    amount: Decimal | DecimalJsLike | number | string
+    type: $Enums.TransactionType
+    date?: Date | string
+    createdAt?: Date | string
+    categoryId: string
+    externalId?: string | null
+    note?: string | null
+    owner?: $Enums.Owner
+    reviewed?: boolean
+    bucket?: $Enums.Bucket | null
+    originalAmount?: Decimal | DecimalJsLike | number | string | null
+    originalCurrency?: string | null
+  }
+
+  export type TransactionCreateOrConnectWithoutStatementFileInput = {
+    where: TransactionWhereUniqueInput
+    create: XOR<TransactionCreateWithoutStatementFileInput, TransactionUncheckedCreateWithoutStatementFileInput>
+  }
+
+  export type TransactionCreateManyStatementFileInputEnvelope = {
+    data: TransactionCreateManyStatementFileInput | TransactionCreateManyStatementFileInput[]
+  }
+
   export type AmexTransactionUpsertWithWhereUniqueWithoutStatementFileInput = {
     where: AmexTransactionWhereUniqueInput
     update: XOR<AmexTransactionUpdateWithoutStatementFileInput, AmexTransactionUncheckedUpdateWithoutStatementFileInput>
@@ -35593,6 +35880,22 @@ export namespace Prisma {
     statementFileId?: StringNullableFilter<"AmexTransaction"> | string | null
   }
 
+  export type TransactionUpsertWithWhereUniqueWithoutStatementFileInput = {
+    where: TransactionWhereUniqueInput
+    update: XOR<TransactionUpdateWithoutStatementFileInput, TransactionUncheckedUpdateWithoutStatementFileInput>
+    create: XOR<TransactionCreateWithoutStatementFileInput, TransactionUncheckedCreateWithoutStatementFileInput>
+  }
+
+  export type TransactionUpdateWithWhereUniqueWithoutStatementFileInput = {
+    where: TransactionWhereUniqueInput
+    data: XOR<TransactionUpdateWithoutStatementFileInput, TransactionUncheckedUpdateWithoutStatementFileInput>
+  }
+
+  export type TransactionUpdateManyWithWhereWithoutStatementFileInput = {
+    where: TransactionScalarWhereInput
+    data: XOR<TransactionUpdateManyMutationInput, TransactionUncheckedUpdateManyWithoutStatementFileInput>
+  }
+
   export type StatementFileCreateWithoutAmexRowsInput = {
     id?: string
     bank: string
@@ -35605,6 +35908,7 @@ export namespace Prisma {
     uploadedAt?: Date | string
     rowCount?: number | null
     reconciled?: boolean
+    transactions?: TransactionCreateNestedManyWithoutStatementFileInput
   }
 
   export type StatementFileUncheckedCreateWithoutAmexRowsInput = {
@@ -35619,6 +35923,7 @@ export namespace Prisma {
     uploadedAt?: Date | string
     rowCount?: number | null
     reconciled?: boolean
+    transactions?: TransactionUncheckedCreateNestedManyWithoutStatementFileInput
   }
 
   export type StatementFileCreateOrConnectWithoutAmexRowsInput = {
@@ -35649,6 +35954,7 @@ export namespace Prisma {
     uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rowCount?: NullableIntFieldUpdateOperationsInput | number | null
     reconciled?: BoolFieldUpdateOperationsInput | boolean
+    transactions?: TransactionUpdateManyWithoutStatementFileNestedInput
   }
 
   export type StatementFileUncheckedUpdateWithoutAmexRowsInput = {
@@ -35663,6 +35969,7 @@ export namespace Prisma {
     uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rowCount?: NullableIntFieldUpdateOperationsInput | number | null
     reconciled?: BoolFieldUpdateOperationsInput | boolean
+    transactions?: TransactionUncheckedUpdateManyWithoutStatementFileNestedInput
   }
 
   export type UserCreateWithoutSessionsInput = {
@@ -36012,6 +36319,7 @@ export namespace Prisma {
     bucket?: $Enums.Bucket | null
     originalAmount?: Decimal | DecimalJsLike | number | string | null
     originalCurrency?: string | null
+    statementFileId?: string | null
   }
 
   export type CategoryRuleCreateManyCategoryInput = {
@@ -36035,6 +36343,7 @@ export namespace Prisma {
     bucket?: NullableEnumBucketFieldUpdateOperationsInput | $Enums.Bucket | null
     originalAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
+    statementFile?: StatementFileUpdateOneWithoutTransactionsNestedInput
   }
 
   export type TransactionUncheckedUpdateWithoutCategoryInput = {
@@ -36051,6 +36360,7 @@ export namespace Prisma {
     bucket?: NullableEnumBucketFieldUpdateOperationsInput | $Enums.Bucket | null
     originalAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
+    statementFileId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type TransactionUncheckedUpdateManyWithoutCategoryInput = {
@@ -36067,6 +36377,7 @@ export namespace Prisma {
     bucket?: NullableEnumBucketFieldUpdateOperationsInput | $Enums.Bucket | null
     originalAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
+    statementFileId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type CategoryRuleUpdateWithoutCategoryInput = {
@@ -36103,6 +36414,23 @@ export namespace Prisma {
     owner?: string
     importedAt?: Date | string
     status?: string
+  }
+
+  export type TransactionCreateManyStatementFileInput = {
+    id?: string
+    description: string
+    amount: Decimal | DecimalJsLike | number | string
+    type: $Enums.TransactionType
+    date?: Date | string
+    createdAt?: Date | string
+    categoryId: string
+    externalId?: string | null
+    note?: string | null
+    owner?: $Enums.Owner
+    reviewed?: boolean
+    bucket?: $Enums.Bucket | null
+    originalAmount?: Decimal | DecimalJsLike | number | string | null
+    originalCurrency?: string | null
   }
 
   export type AmexTransactionUpdateWithoutStatementFileInput = {
@@ -36148,6 +36476,57 @@ export namespace Prisma {
     owner?: StringFieldUpdateOperationsInput | string
     importedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     status?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type TransactionUpdateWithoutStatementFileInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    type?: EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
+    reviewed?: BoolFieldUpdateOperationsInput | boolean
+    bucket?: NullableEnumBucketFieldUpdateOperationsInput | $Enums.Bucket | null
+    originalAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    originalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: CategoryUpdateOneRequiredWithoutTransactionsNestedInput
+  }
+
+  export type TransactionUncheckedUpdateWithoutStatementFileInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    type?: EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    categoryId?: StringFieldUpdateOperationsInput | string
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
+    reviewed?: BoolFieldUpdateOperationsInput | boolean
+    bucket?: NullableEnumBucketFieldUpdateOperationsInput | $Enums.Bucket | null
+    originalAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    originalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type TransactionUncheckedUpdateManyWithoutStatementFileInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    type?: EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    categoryId?: StringFieldUpdateOperationsInput | string
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
+    reviewed?: BoolFieldUpdateOperationsInput | boolean
+    bucket?: NullableEnumBucketFieldUpdateOperationsInput | $Enums.Bucket | null
+    originalAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    originalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type InvestmentSnapshotCreateManyAccountInput = {

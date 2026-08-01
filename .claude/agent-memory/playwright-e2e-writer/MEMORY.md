@@ -3,3 +3,4 @@
 - [bun:sqlite stdout in runBunScript — Windows quirk](feedback_bunsqlite_stdout.md) — use cnt alias not n, use process.stdout.write not console.log, add stdio:pipe + try/catch
 - [Transaction/Category bulk seeding for /transactions e2e specs](project_transaction_category_seeding.md) — table names, columns with defaults, AG Grid selectors, useIsDesktop gating pattern
 - [Full-suite parallel SQLite flakiness](feedback_full_suite_sqlite_flakiness.md) — shared test.db contention under parallel workers, not necessarily a spec bug
+- [Amex statement upload guard e2e pattern](project_amex_statement_guard_pattern.md) — STATEMENTS_DIR test isolation, FK-detach trick to simulate orphaned staged rows without a 2nd PDF

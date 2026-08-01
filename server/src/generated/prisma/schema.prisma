@@ -90,6 +90,13 @@ model Transaction {
   bucket           Bucket? // 50/30/20 classification; null = uncategorised. Source of truth for savings maths
   originalAmount   Decimal?
   originalCurrency String?
+  /// The statement PDF this transaction was derived from, where one is known.
+  /// Null for banks that have no StatementFile yet, and for rows imported before
+  /// statement files existed.
+  statementFileId  String?
+  statementFile    StatementFile?  @relation(fields: [statementFileId], references: [id], onDelete: SetNull)
+
+  @@index([statementFileId])
 }
 
 // One staging model per bank — each preserves that bank's raw CSV schema exactly.
@@ -196,7 +203,8 @@ model StatementFile {
   rowCount      Int?
   reconciled    Boolean  @default(false)
 
-  amexRows AmexTransaction[]
+  amexRows     AmexTransaction[]
+  transactions Transaction[]
 
   @@index([bank, owner])
   @@map("statement_file")

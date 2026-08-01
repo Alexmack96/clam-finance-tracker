@@ -466,11 +466,23 @@ export async function stageAmexRows(
   // so the PDF we just stored would account for fewer rows than it actually covers.
   // Claim the unowned ones rather than dropping the link. Rows already belonging to
   // another statement are left alone — first file to claim a row keeps it.
-  if (statementFileId && duplicates.length > 0)
+  if (statementFileId && duplicates.length > 0) {
     await db.amexTransaction.updateMany({
       where: { transactionId: { in: duplicates }, statementFileId: null },
       data: { statementFileId },
     });
+    // Their Transaction rows were created before this file existed, so they carry
+    // no link either, and the process step won't revisit an already-processed row.
+    // Matching on externalId is the one place the old string join is still needed —
+    // repairing rows that predate Transaction.statementFileId.
+    await db.transaction.updateMany({
+      where: {
+        externalId: { in: duplicates.map((id) => `amex:${id}`) },
+        statementFileId: null,
+      },
+      data: { statementFileId },
+    });
+  }
 
   return { imported: toInsert.length, duplicates };
 }
@@ -1760,6 +1772,7 @@ importRouter.post("/process", async (_req, res) => {
             bucket: row.isCredit ? null : category.bucket,
             externalId: amexExtId,
             owner: row.owner as "Alex" | "Casey" | "Joint",
+            statementFileId: row.statementFileId,
           },
         });
       next = "processed";
