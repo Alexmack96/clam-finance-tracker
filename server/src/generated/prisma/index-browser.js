@@ -130,16 +130,28 @@ exports.Prisma.UserScalarFieldEnum = {
 exports.Prisma.CategoryScalarFieldEnum = {
   id: 'id',
   name: 'name',
-  color: 'color',
-  bucket: 'bucket'
+  color: 'color'
 };
 
-exports.Prisma.CategoryRuleScalarFieldEnum = {
+exports.Prisma.RuleScalarFieldEnum = {
   id: 'id',
-  pattern: 'pattern',
+  kind: 'kind',
+  position: 'position',
+  joinOperator: 'joinOperator',
   bank: 'bank',
   categoryId: 'categoryId',
+  bucket: 'bucket',
   createdAt: 'createdAt'
+};
+
+exports.Prisma.RuleConditionScalarFieldEnum = {
+  id: 'id',
+  ruleId: 'ruleId',
+  field: 'field',
+  operator: 'operator',
+  value: 'value',
+  negate: 'negate',
+  position: 'position'
 };
 
 exports.Prisma.TransactionScalarFieldEnum = {
@@ -155,6 +167,8 @@ exports.Prisma.TransactionScalarFieldEnum = {
   owner: 'owner',
   reviewed: 'reviewed',
   bucket: 'bucket',
+  categoryPinned: 'categoryPinned',
+  bucketPinned: 'bucketPinned',
   originalAmount: 'originalAmount',
   originalCurrency: 'originalCurrency',
   statementFileId: 'statementFileId'
@@ -421,11 +435,34 @@ exports.Owner = exports.$Enums.Owner = {
   Joint: 'Joint'
 };
 
+exports.RuleKind = exports.$Enums.RuleKind = {
+  Category: 'Category',
+  Bucket: 'Bucket'
+};
+
+exports.RuleJoin = exports.$Enums.RuleJoin = {
+  AND: 'AND',
+  OR: 'OR'
+};
+
 exports.Bucket = exports.$Enums.Bucket = {
   Needs: 'Needs',
   Wants: 'Wants',
   Savings: 'Savings',
   Ignore: 'Ignore'
+};
+
+exports.RuleField = exports.$Enums.RuleField = {
+  Description: 'Description',
+  Category: 'Category',
+  Type: 'Type'
+};
+
+exports.RuleOperator = exports.$Enums.RuleOperator = {
+  Contains: 'Contains',
+  StartsWith: 'StartsWith',
+  EndsWith: 'EndsWith',
+  Exact: 'Exact'
 };
 
 exports.TransactionType = exports.$Enums.TransactionType = {
@@ -446,7 +483,8 @@ exports.TabStatus = exports.$Enums.TabStatus = {
 exports.Prisma.ModelName = {
   User: 'User',
   Category: 'Category',
-  CategoryRule: 'CategoryRule',
+  Rule: 'Rule',
+  RuleCondition: 'RuleCondition',
   Transaction: 'Transaction',
   MonzoApiTransaction: 'MonzoApiTransaction',
   PlaidItem: 'PlaidItem',

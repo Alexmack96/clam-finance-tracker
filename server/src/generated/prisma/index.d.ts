@@ -24,10 +24,15 @@ export type User = $Result.DefaultSelection<Prisma.$UserPayload>
  */
 export type Category = $Result.DefaultSelection<Prisma.$CategoryPayload>
 /**
- * Model CategoryRule
+ * Model Rule
  * 
  */
-export type CategoryRule = $Result.DefaultSelection<Prisma.$CategoryRulePayload>
+export type Rule = $Result.DefaultSelection<Prisma.$RulePayload>
+/**
+ * Model RuleCondition
+ * 
+ */
+export type RuleCondition = $Result.DefaultSelection<Prisma.$RuleConditionPayload>
 /**
  * Model Transaction
  * 
@@ -163,6 +168,41 @@ export const Owner: {
 export type Owner = (typeof Owner)[keyof typeof Owner]
 
 
+export const RuleKind: {
+  Category: 'Category',
+  Bucket: 'Bucket'
+};
+
+export type RuleKind = (typeof RuleKind)[keyof typeof RuleKind]
+
+
+export const RuleJoin: {
+  AND: 'AND',
+  OR: 'OR'
+};
+
+export type RuleJoin = (typeof RuleJoin)[keyof typeof RuleJoin]
+
+
+export const RuleField: {
+  Description: 'Description',
+  Category: 'Category',
+  Type: 'Type'
+};
+
+export type RuleField = (typeof RuleField)[keyof typeof RuleField]
+
+
+export const RuleOperator: {
+  Contains: 'Contains',
+  StartsWith: 'StartsWith',
+  EndsWith: 'EndsWith',
+  Exact: 'Exact'
+};
+
+export type RuleOperator = (typeof RuleOperator)[keyof typeof RuleOperator]
+
+
 export const TabDirection: {
   IOwe: 'IOwe',
   TheyOwe: 'TheyOwe'
@@ -191,6 +231,22 @@ export const Bucket: typeof $Enums.Bucket
 export type Owner = $Enums.Owner
 
 export const Owner: typeof $Enums.Owner
+
+export type RuleKind = $Enums.RuleKind
+
+export const RuleKind: typeof $Enums.RuleKind
+
+export type RuleJoin = $Enums.RuleJoin
+
+export const RuleJoin: typeof $Enums.RuleJoin
+
+export type RuleField = $Enums.RuleField
+
+export const RuleField: typeof $Enums.RuleField
+
+export type RuleOperator = $Enums.RuleOperator
+
+export const RuleOperator: typeof $Enums.RuleOperator
 
 export type TabDirection = $Enums.TabDirection
 
@@ -342,14 +398,24 @@ export class PrismaClient<
   get category(): Prisma.CategoryDelegate<ExtArgs, ClientOptions>;
 
   /**
-   * `prisma.categoryRule`: Exposes CRUD operations for the **CategoryRule** model.
+   * `prisma.rule`: Exposes CRUD operations for the **Rule** model.
     * Example usage:
     * ```ts
-    * // Fetch zero or more CategoryRules
-    * const categoryRules = await prisma.categoryRule.findMany()
+    * // Fetch zero or more Rules
+    * const rules = await prisma.rule.findMany()
     * ```
     */
-  get categoryRule(): Prisma.CategoryRuleDelegate<ExtArgs, ClientOptions>;
+  get rule(): Prisma.RuleDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.ruleCondition`: Exposes CRUD operations for the **RuleCondition** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more RuleConditions
+    * const ruleConditions = await prisma.ruleCondition.findMany()
+    * ```
+    */
+  get ruleCondition(): Prisma.RuleConditionDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.transaction`: Exposes CRUD operations for the **Transaction** model.
@@ -986,7 +1052,8 @@ export namespace Prisma {
   export const ModelName: {
     User: 'User',
     Category: 'Category',
-    CategoryRule: 'CategoryRule',
+    Rule: 'Rule',
+    RuleCondition: 'RuleCondition',
     Transaction: 'Transaction',
     MonzoApiTransaction: 'MonzoApiTransaction',
     PlaidItem: 'PlaidItem',
@@ -1022,7 +1089,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "category" | "categoryRule" | "transaction" | "monzoApiTransaction" | "plaidItem" | "plaidTransaction" | "monzoCredential" | "monzoRecRun" | "statementFile" | "amexTransaction" | "barclaysTransaction" | "santanderTransaction" | "hsbcTransaction" | "chaseTransaction" | "sofiTransaction" | "session" | "account" | "note" | "tab" | "investmentAccount" | "investmentSnapshot" | "verification"
+      modelProps: "user" | "category" | "rule" | "ruleCondition" | "transaction" | "monzoApiTransaction" | "plaidItem" | "plaidTransaction" | "monzoCredential" | "monzoRecRun" | "statementFile" | "amexTransaction" | "barclaysTransaction" | "santanderTransaction" | "hsbcTransaction" | "chaseTransaction" | "sofiTransaction" | "session" | "account" | "note" | "tab" | "investmentAccount" | "investmentSnapshot" | "verification"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1174,77 +1241,151 @@ export namespace Prisma {
           }
         }
       }
-      CategoryRule: {
-        payload: Prisma.$CategoryRulePayload<ExtArgs>
-        fields: Prisma.CategoryRuleFieldRefs
+      Rule: {
+        payload: Prisma.$RulePayload<ExtArgs>
+        fields: Prisma.RuleFieldRefs
         operations: {
           findUnique: {
-            args: Prisma.CategoryRuleFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$CategoryRulePayload> | null
+            args: Prisma.RuleFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RulePayload> | null
           }
           findUniqueOrThrow: {
-            args: Prisma.CategoryRuleFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$CategoryRulePayload>
+            args: Prisma.RuleFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RulePayload>
           }
           findFirst: {
-            args: Prisma.CategoryRuleFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$CategoryRulePayload> | null
+            args: Prisma.RuleFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RulePayload> | null
           }
           findFirstOrThrow: {
-            args: Prisma.CategoryRuleFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$CategoryRulePayload>
+            args: Prisma.RuleFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RulePayload>
           }
           findMany: {
-            args: Prisma.CategoryRuleFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$CategoryRulePayload>[]
+            args: Prisma.RuleFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RulePayload>[]
           }
           create: {
-            args: Prisma.CategoryRuleCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$CategoryRulePayload>
+            args: Prisma.RuleCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RulePayload>
           }
           createMany: {
-            args: Prisma.CategoryRuleCreateManyArgs<ExtArgs>
+            args: Prisma.RuleCreateManyArgs<ExtArgs>
             result: BatchPayload
           }
           createManyAndReturn: {
-            args: Prisma.CategoryRuleCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$CategoryRulePayload>[]
+            args: Prisma.RuleCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RulePayload>[]
           }
           delete: {
-            args: Prisma.CategoryRuleDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$CategoryRulePayload>
+            args: Prisma.RuleDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RulePayload>
           }
           update: {
-            args: Prisma.CategoryRuleUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$CategoryRulePayload>
+            args: Prisma.RuleUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RulePayload>
           }
           deleteMany: {
-            args: Prisma.CategoryRuleDeleteManyArgs<ExtArgs>
+            args: Prisma.RuleDeleteManyArgs<ExtArgs>
             result: BatchPayload
           }
           updateMany: {
-            args: Prisma.CategoryRuleUpdateManyArgs<ExtArgs>
+            args: Prisma.RuleUpdateManyArgs<ExtArgs>
             result: BatchPayload
           }
           updateManyAndReturn: {
-            args: Prisma.CategoryRuleUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$CategoryRulePayload>[]
+            args: Prisma.RuleUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RulePayload>[]
           }
           upsert: {
-            args: Prisma.CategoryRuleUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$CategoryRulePayload>
+            args: Prisma.RuleUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RulePayload>
           }
           aggregate: {
-            args: Prisma.CategoryRuleAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateCategoryRule>
+            args: Prisma.RuleAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateRule>
           }
           groupBy: {
-            args: Prisma.CategoryRuleGroupByArgs<ExtArgs>
-            result: $Utils.Optional<CategoryRuleGroupByOutputType>[]
+            args: Prisma.RuleGroupByArgs<ExtArgs>
+            result: $Utils.Optional<RuleGroupByOutputType>[]
           }
           count: {
-            args: Prisma.CategoryRuleCountArgs<ExtArgs>
-            result: $Utils.Optional<CategoryRuleCountAggregateOutputType> | number
+            args: Prisma.RuleCountArgs<ExtArgs>
+            result: $Utils.Optional<RuleCountAggregateOutputType> | number
+          }
+        }
+      }
+      RuleCondition: {
+        payload: Prisma.$RuleConditionPayload<ExtArgs>
+        fields: Prisma.RuleConditionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.RuleConditionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RuleConditionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.RuleConditionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RuleConditionPayload>
+          }
+          findFirst: {
+            args: Prisma.RuleConditionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RuleConditionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.RuleConditionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RuleConditionPayload>
+          }
+          findMany: {
+            args: Prisma.RuleConditionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RuleConditionPayload>[]
+          }
+          create: {
+            args: Prisma.RuleConditionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RuleConditionPayload>
+          }
+          createMany: {
+            args: Prisma.RuleConditionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.RuleConditionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RuleConditionPayload>[]
+          }
+          delete: {
+            args: Prisma.RuleConditionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RuleConditionPayload>
+          }
+          update: {
+            args: Prisma.RuleConditionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RuleConditionPayload>
+          }
+          deleteMany: {
+            args: Prisma.RuleConditionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.RuleConditionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.RuleConditionUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RuleConditionPayload>[]
+          }
+          upsert: {
+            args: Prisma.RuleConditionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RuleConditionPayload>
+          }
+          aggregate: {
+            args: Prisma.RuleConditionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateRuleCondition>
+          }
+          groupBy: {
+            args: Prisma.RuleConditionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<RuleConditionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.RuleConditionCountArgs<ExtArgs>
+            result: $Utils.Optional<RuleConditionCountAggregateOutputType> | number
           }
         }
       }
@@ -2838,7 +2979,8 @@ export namespace Prisma {
   export type GlobalOmitConfig = {
     user?: UserOmit
     category?: CategoryOmit
-    categoryRule?: CategoryRuleOmit
+    rule?: RuleOmit
+    ruleCondition?: RuleConditionOmit
     transaction?: TransactionOmit
     monzoApiTransaction?: MonzoApiTransactionOmit
     plaidItem?: PlaidItemOmit
@@ -2980,12 +3122,12 @@ export namespace Prisma {
 
   export type CategoryCountOutputType = {
     transactions: number
-    categoryRules: number
+    rules: number
   }
 
   export type CategoryCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     transactions?: boolean | CategoryCountOutputTypeCountTransactionsArgs
-    categoryRules?: boolean | CategoryCountOutputTypeCountCategoryRulesArgs
+    rules?: boolean | CategoryCountOutputTypeCountRulesArgs
   }
 
   // Custom InputTypes
@@ -3009,8 +3151,39 @@ export namespace Prisma {
   /**
    * CategoryCountOutputType without action
    */
-  export type CategoryCountOutputTypeCountCategoryRulesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: CategoryRuleWhereInput
+  export type CategoryCountOutputTypeCountRulesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: RuleWhereInput
+  }
+
+
+  /**
+   * Count Type RuleCountOutputType
+   */
+
+  export type RuleCountOutputType = {
+    conditions: number
+  }
+
+  export type RuleCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    conditions?: boolean | RuleCountOutputTypeCountConditionsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * RuleCountOutputType without action
+   */
+  export type RuleCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RuleCountOutputType
+     */
+    select?: RuleCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * RuleCountOutputType without action
+   */
+  export type RuleCountOutputTypeCountConditionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: RuleConditionWhereInput
   }
 
 
@@ -4230,21 +4403,18 @@ export namespace Prisma {
     id: string | null
     name: string | null
     color: string | null
-    bucket: $Enums.Bucket | null
   }
 
   export type CategoryMaxAggregateOutputType = {
     id: string | null
     name: string | null
     color: string | null
-    bucket: $Enums.Bucket | null
   }
 
   export type CategoryCountAggregateOutputType = {
     id: number
     name: number
     color: number
-    bucket: number
     _all: number
   }
 
@@ -4253,21 +4423,18 @@ export namespace Prisma {
     id?: true
     name?: true
     color?: true
-    bucket?: true
   }
 
   export type CategoryMaxAggregateInputType = {
     id?: true
     name?: true
     color?: true
-    bucket?: true
   }
 
   export type CategoryCountAggregateInputType = {
     id?: true
     name?: true
     color?: true
-    bucket?: true
     _all?: true
   }
 
@@ -4347,7 +4514,6 @@ export namespace Prisma {
     id: string
     name: string
     color: string
-    bucket: $Enums.Bucket | null
     _count: CategoryCountAggregateOutputType | null
     _min: CategoryMinAggregateOutputType | null
     _max: CategoryMaxAggregateOutputType | null
@@ -4371,9 +4537,8 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     color?: boolean
-    bucket?: boolean
     transactions?: boolean | Category$transactionsArgs<ExtArgs>
-    categoryRules?: boolean | Category$categoryRulesArgs<ExtArgs>
+    rules?: boolean | Category$rulesArgs<ExtArgs>
     _count?: boolean | CategoryCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["category"]>
 
@@ -4381,27 +4546,24 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     color?: boolean
-    bucket?: boolean
   }, ExtArgs["result"]["category"]>
 
   export type CategorySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
     color?: boolean
-    bucket?: boolean
   }, ExtArgs["result"]["category"]>
 
   export type CategorySelectScalar = {
     id?: boolean
     name?: boolean
     color?: boolean
-    bucket?: boolean
   }
 
-  export type CategoryOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "color" | "bucket", ExtArgs["result"]["category"]>
+  export type CategoryOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "color", ExtArgs["result"]["category"]>
   export type CategoryInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     transactions?: boolean | Category$transactionsArgs<ExtArgs>
-    categoryRules?: boolean | Category$categoryRulesArgs<ExtArgs>
+    rules?: boolean | Category$rulesArgs<ExtArgs>
     _count?: boolean | CategoryCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type CategoryIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -4411,13 +4573,12 @@ export namespace Prisma {
     name: "Category"
     objects: {
       transactions: Prisma.$TransactionPayload<ExtArgs>[]
-      categoryRules: Prisma.$CategoryRulePayload<ExtArgs>[]
+      rules: Prisma.$RulePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       name: string
       color: string
-      bucket: $Enums.Bucket | null
     }, ExtArgs["result"]["category"]>
     composites: {}
   }
@@ -4813,7 +4974,7 @@ export namespace Prisma {
   export interface Prisma__CategoryClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     transactions<T extends Category$transactionsArgs<ExtArgs> = {}>(args?: Subset<T, Category$transactionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    categoryRules<T extends Category$categoryRulesArgs<ExtArgs> = {}>(args?: Subset<T, Category$categoryRulesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CategoryRulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    rules<T extends Category$rulesArgs<ExtArgs> = {}>(args?: Subset<T, Category$rulesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4846,7 +5007,6 @@ export namespace Prisma {
     readonly id: FieldRef<"Category", 'String'>
     readonly name: FieldRef<"Category", 'String'>
     readonly color: FieldRef<"Category", 'String'>
-    readonly bucket: FieldRef<"Category", 'Bucket'>
   }
     
 
@@ -5262,27 +5422,27 @@ export namespace Prisma {
   }
 
   /**
-   * Category.categoryRules
+   * Category.rules
    */
-  export type Category$categoryRulesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Category$rulesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the CategoryRule
+     * Select specific fields to fetch from the Rule
      */
-    select?: CategoryRuleSelect<ExtArgs> | null
+    select?: RuleSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the CategoryRule
+     * Omit specific fields from the Rule
      */
-    omit?: CategoryRuleOmit<ExtArgs> | null
+    omit?: RuleOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: CategoryRuleInclude<ExtArgs> | null
-    where?: CategoryRuleWhereInput
-    orderBy?: CategoryRuleOrderByWithRelationInput | CategoryRuleOrderByWithRelationInput[]
-    cursor?: CategoryRuleWhereUniqueInput
+    include?: RuleInclude<ExtArgs> | null
+    where?: RuleWhereInput
+    orderBy?: RuleOrderByWithRelationInput | RuleOrderByWithRelationInput[]
+    cursor?: RuleWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: CategoryRuleScalarFieldEnum | CategoryRuleScalarFieldEnum[]
+    distinct?: RuleScalarFieldEnum | RuleScalarFieldEnum[]
   }
 
   /**
@@ -5305,350 +5465,425 @@ export namespace Prisma {
 
 
   /**
-   * Model CategoryRule
+   * Model Rule
    */
 
-  export type AggregateCategoryRule = {
-    _count: CategoryRuleCountAggregateOutputType | null
-    _min: CategoryRuleMinAggregateOutputType | null
-    _max: CategoryRuleMaxAggregateOutputType | null
+  export type AggregateRule = {
+    _count: RuleCountAggregateOutputType | null
+    _avg: RuleAvgAggregateOutputType | null
+    _sum: RuleSumAggregateOutputType | null
+    _min: RuleMinAggregateOutputType | null
+    _max: RuleMaxAggregateOutputType | null
   }
 
-  export type CategoryRuleMinAggregateOutputType = {
+  export type RuleAvgAggregateOutputType = {
+    position: number | null
+  }
+
+  export type RuleSumAggregateOutputType = {
+    position: number | null
+  }
+
+  export type RuleMinAggregateOutputType = {
     id: string | null
-    pattern: string | null
+    kind: $Enums.RuleKind | null
+    position: number | null
+    joinOperator: $Enums.RuleJoin | null
     bank: string | null
     categoryId: string | null
+    bucket: $Enums.Bucket | null
     createdAt: Date | null
   }
 
-  export type CategoryRuleMaxAggregateOutputType = {
+  export type RuleMaxAggregateOutputType = {
     id: string | null
-    pattern: string | null
+    kind: $Enums.RuleKind | null
+    position: number | null
+    joinOperator: $Enums.RuleJoin | null
     bank: string | null
     categoryId: string | null
+    bucket: $Enums.Bucket | null
     createdAt: Date | null
   }
 
-  export type CategoryRuleCountAggregateOutputType = {
+  export type RuleCountAggregateOutputType = {
     id: number
-    pattern: number
+    kind: number
+    position: number
+    joinOperator: number
     bank: number
     categoryId: number
+    bucket: number
     createdAt: number
     _all: number
   }
 
 
-  export type CategoryRuleMinAggregateInputType = {
+  export type RuleAvgAggregateInputType = {
+    position?: true
+  }
+
+  export type RuleSumAggregateInputType = {
+    position?: true
+  }
+
+  export type RuleMinAggregateInputType = {
     id?: true
-    pattern?: true
+    kind?: true
+    position?: true
+    joinOperator?: true
     bank?: true
     categoryId?: true
+    bucket?: true
     createdAt?: true
   }
 
-  export type CategoryRuleMaxAggregateInputType = {
+  export type RuleMaxAggregateInputType = {
     id?: true
-    pattern?: true
+    kind?: true
+    position?: true
+    joinOperator?: true
     bank?: true
     categoryId?: true
+    bucket?: true
     createdAt?: true
   }
 
-  export type CategoryRuleCountAggregateInputType = {
+  export type RuleCountAggregateInputType = {
     id?: true
-    pattern?: true
+    kind?: true
+    position?: true
+    joinOperator?: true
     bank?: true
     categoryId?: true
+    bucket?: true
     createdAt?: true
     _all?: true
   }
 
-  export type CategoryRuleAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type RuleAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Filter which CategoryRule to aggregate.
+     * Filter which Rule to aggregate.
      */
-    where?: CategoryRuleWhereInput
+    where?: RuleWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of CategoryRules to fetch.
+     * Determine the order of Rules to fetch.
      */
-    orderBy?: CategoryRuleOrderByWithRelationInput | CategoryRuleOrderByWithRelationInput[]
+    orderBy?: RuleOrderByWithRelationInput | RuleOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the start position
      */
-    cursor?: CategoryRuleWhereUniqueInput
+    cursor?: RuleWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` CategoryRules from the position of the cursor.
+     * Take `±n` Rules from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` CategoryRules.
+     * Skip the first `n` Rules.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
-     * Count returned CategoryRules
+     * Count returned Rules
     **/
-    _count?: true | CategoryRuleCountAggregateInputType
+    _count?: true | RuleCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: RuleAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: RuleSumAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the minimum value
     **/
-    _min?: CategoryRuleMinAggregateInputType
+    _min?: RuleMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the maximum value
     **/
-    _max?: CategoryRuleMaxAggregateInputType
+    _max?: RuleMaxAggregateInputType
   }
 
-  export type GetCategoryRuleAggregateType<T extends CategoryRuleAggregateArgs> = {
-        [P in keyof T & keyof AggregateCategoryRule]: P extends '_count' | 'count'
+  export type GetRuleAggregateType<T extends RuleAggregateArgs> = {
+        [P in keyof T & keyof AggregateRule]: P extends '_count' | 'count'
       ? T[P] extends true
         ? number
-        : GetScalarType<T[P], AggregateCategoryRule[P]>
-      : GetScalarType<T[P], AggregateCategoryRule[P]>
+        : GetScalarType<T[P], AggregateRule[P]>
+      : GetScalarType<T[P], AggregateRule[P]>
   }
 
 
 
 
-  export type CategoryRuleGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: CategoryRuleWhereInput
-    orderBy?: CategoryRuleOrderByWithAggregationInput | CategoryRuleOrderByWithAggregationInput[]
-    by: CategoryRuleScalarFieldEnum[] | CategoryRuleScalarFieldEnum
-    having?: CategoryRuleScalarWhereWithAggregatesInput
+  export type RuleGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: RuleWhereInput
+    orderBy?: RuleOrderByWithAggregationInput | RuleOrderByWithAggregationInput[]
+    by: RuleScalarFieldEnum[] | RuleScalarFieldEnum
+    having?: RuleScalarWhereWithAggregatesInput
     take?: number
     skip?: number
-    _count?: CategoryRuleCountAggregateInputType | true
-    _min?: CategoryRuleMinAggregateInputType
-    _max?: CategoryRuleMaxAggregateInputType
+    _count?: RuleCountAggregateInputType | true
+    _avg?: RuleAvgAggregateInputType
+    _sum?: RuleSumAggregateInputType
+    _min?: RuleMinAggregateInputType
+    _max?: RuleMaxAggregateInputType
   }
 
-  export type CategoryRuleGroupByOutputType = {
+  export type RuleGroupByOutputType = {
     id: string
-    pattern: string
+    kind: $Enums.RuleKind
+    position: number
+    joinOperator: $Enums.RuleJoin
     bank: string | null
-    categoryId: string
+    categoryId: string | null
+    bucket: $Enums.Bucket | null
     createdAt: Date
-    _count: CategoryRuleCountAggregateOutputType | null
-    _min: CategoryRuleMinAggregateOutputType | null
-    _max: CategoryRuleMaxAggregateOutputType | null
+    _count: RuleCountAggregateOutputType | null
+    _avg: RuleAvgAggregateOutputType | null
+    _sum: RuleSumAggregateOutputType | null
+    _min: RuleMinAggregateOutputType | null
+    _max: RuleMaxAggregateOutputType | null
   }
 
-  type GetCategoryRuleGroupByPayload<T extends CategoryRuleGroupByArgs> = Prisma.PrismaPromise<
+  type GetRuleGroupByPayload<T extends RuleGroupByArgs> = Prisma.PrismaPromise<
     Array<
-      PickEnumerable<CategoryRuleGroupByOutputType, T['by']> &
+      PickEnumerable<RuleGroupByOutputType, T['by']> &
         {
-          [P in ((keyof T) & (keyof CategoryRuleGroupByOutputType))]: P extends '_count'
+          [P in ((keyof T) & (keyof RuleGroupByOutputType))]: P extends '_count'
             ? T[P] extends boolean
               ? number
-              : GetScalarType<T[P], CategoryRuleGroupByOutputType[P]>
-            : GetScalarType<T[P], CategoryRuleGroupByOutputType[P]>
+              : GetScalarType<T[P], RuleGroupByOutputType[P]>
+            : GetScalarType<T[P], RuleGroupByOutputType[P]>
         }
       >
     >
 
 
-  export type CategoryRuleSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type RuleSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    pattern?: boolean
+    kind?: boolean
+    position?: boolean
+    joinOperator?: boolean
     bank?: boolean
     categoryId?: boolean
+    bucket?: boolean
     createdAt?: boolean
-    category?: boolean | CategoryDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["categoryRule"]>
+    category?: boolean | Rule$categoryArgs<ExtArgs>
+    conditions?: boolean | Rule$conditionsArgs<ExtArgs>
+    _count?: boolean | RuleCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["rule"]>
 
-  export type CategoryRuleSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type RuleSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    pattern?: boolean
+    kind?: boolean
+    position?: boolean
+    joinOperator?: boolean
     bank?: boolean
     categoryId?: boolean
+    bucket?: boolean
     createdAt?: boolean
-    category?: boolean | CategoryDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["categoryRule"]>
+    category?: boolean | Rule$categoryArgs<ExtArgs>
+  }, ExtArgs["result"]["rule"]>
 
-  export type CategoryRuleSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type RuleSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    pattern?: boolean
+    kind?: boolean
+    position?: boolean
+    joinOperator?: boolean
     bank?: boolean
     categoryId?: boolean
+    bucket?: boolean
     createdAt?: boolean
-    category?: boolean | CategoryDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["categoryRule"]>
+    category?: boolean | Rule$categoryArgs<ExtArgs>
+  }, ExtArgs["result"]["rule"]>
 
-  export type CategoryRuleSelectScalar = {
+  export type RuleSelectScalar = {
     id?: boolean
-    pattern?: boolean
+    kind?: boolean
+    position?: boolean
+    joinOperator?: boolean
     bank?: boolean
     categoryId?: boolean
+    bucket?: boolean
     createdAt?: boolean
   }
 
-  export type CategoryRuleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "pattern" | "bank" | "categoryId" | "createdAt", ExtArgs["result"]["categoryRule"]>
-  export type CategoryRuleInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    category?: boolean | CategoryDefaultArgs<ExtArgs>
+  export type RuleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "kind" | "position" | "joinOperator" | "bank" | "categoryId" | "bucket" | "createdAt", ExtArgs["result"]["rule"]>
+  export type RuleInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    category?: boolean | Rule$categoryArgs<ExtArgs>
+    conditions?: boolean | Rule$conditionsArgs<ExtArgs>
+    _count?: boolean | RuleCountOutputTypeDefaultArgs<ExtArgs>
   }
-  export type CategoryRuleIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    category?: boolean | CategoryDefaultArgs<ExtArgs>
+  export type RuleIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    category?: boolean | Rule$categoryArgs<ExtArgs>
   }
-  export type CategoryRuleIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    category?: boolean | CategoryDefaultArgs<ExtArgs>
+  export type RuleIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    category?: boolean | Rule$categoryArgs<ExtArgs>
   }
 
-  export type $CategoryRulePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "CategoryRule"
+  export type $RulePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Rule"
     objects: {
-      category: Prisma.$CategoryPayload<ExtArgs>
+      category: Prisma.$CategoryPayload<ExtArgs> | null
+      conditions: Prisma.$RuleConditionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      pattern: string
+      kind: $Enums.RuleKind
+      position: number
+      joinOperator: $Enums.RuleJoin
       bank: string | null
-      categoryId: string
+      categoryId: string | null
+      bucket: $Enums.Bucket | null
       createdAt: Date
-    }, ExtArgs["result"]["categoryRule"]>
+    }, ExtArgs["result"]["rule"]>
     composites: {}
   }
 
-  type CategoryRuleGetPayload<S extends boolean | null | undefined | CategoryRuleDefaultArgs> = $Result.GetResult<Prisma.$CategoryRulePayload, S>
+  type RuleGetPayload<S extends boolean | null | undefined | RuleDefaultArgs> = $Result.GetResult<Prisma.$RulePayload, S>
 
-  type CategoryRuleCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    Omit<CategoryRuleFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
-      select?: CategoryRuleCountAggregateInputType | true
+  type RuleCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<RuleFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: RuleCountAggregateInputType | true
     }
 
-  export interface CategoryRuleDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['CategoryRule'], meta: { name: 'CategoryRule' } }
+  export interface RuleDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Rule'], meta: { name: 'Rule' } }
     /**
-     * Find zero or one CategoryRule that matches the filter.
-     * @param {CategoryRuleFindUniqueArgs} args - Arguments to find a CategoryRule
+     * Find zero or one Rule that matches the filter.
+     * @param {RuleFindUniqueArgs} args - Arguments to find a Rule
      * @example
-     * // Get one CategoryRule
-     * const categoryRule = await prisma.categoryRule.findUnique({
+     * // Get one Rule
+     * const rule = await prisma.rule.findUnique({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findUnique<T extends CategoryRuleFindUniqueArgs>(args: SelectSubset<T, CategoryRuleFindUniqueArgs<ExtArgs>>): Prisma__CategoryRuleClient<$Result.GetResult<Prisma.$CategoryRulePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    findUnique<T extends RuleFindUniqueArgs>(args: SelectSubset<T, RuleFindUniqueArgs<ExtArgs>>): Prisma__RuleClient<$Result.GetResult<Prisma.$RulePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find one CategoryRule that matches the filter or throw an error with `error.code='P2025'`
+     * Find one Rule that matches the filter or throw an error with `error.code='P2025'`
      * if no matches were found.
-     * @param {CategoryRuleFindUniqueOrThrowArgs} args - Arguments to find a CategoryRule
+     * @param {RuleFindUniqueOrThrowArgs} args - Arguments to find a Rule
      * @example
-     * // Get one CategoryRule
-     * const categoryRule = await prisma.categoryRule.findUniqueOrThrow({
+     * // Get one Rule
+     * const rule = await prisma.rule.findUniqueOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findUniqueOrThrow<T extends CategoryRuleFindUniqueOrThrowArgs>(args: SelectSubset<T, CategoryRuleFindUniqueOrThrowArgs<ExtArgs>>): Prisma__CategoryRuleClient<$Result.GetResult<Prisma.$CategoryRulePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    findUniqueOrThrow<T extends RuleFindUniqueOrThrowArgs>(args: SelectSubset<T, RuleFindUniqueOrThrowArgs<ExtArgs>>): Prisma__RuleClient<$Result.GetResult<Prisma.$RulePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find the first CategoryRule that matches the filter.
+     * Find the first Rule that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {CategoryRuleFindFirstArgs} args - Arguments to find a CategoryRule
+     * @param {RuleFindFirstArgs} args - Arguments to find a Rule
      * @example
-     * // Get one CategoryRule
-     * const categoryRule = await prisma.categoryRule.findFirst({
+     * // Get one Rule
+     * const rule = await prisma.rule.findFirst({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findFirst<T extends CategoryRuleFindFirstArgs>(args?: SelectSubset<T, CategoryRuleFindFirstArgs<ExtArgs>>): Prisma__CategoryRuleClient<$Result.GetResult<Prisma.$CategoryRulePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    findFirst<T extends RuleFindFirstArgs>(args?: SelectSubset<T, RuleFindFirstArgs<ExtArgs>>): Prisma__RuleClient<$Result.GetResult<Prisma.$RulePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find the first CategoryRule that matches the filter or
+     * Find the first Rule that matches the filter or
      * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {CategoryRuleFindFirstOrThrowArgs} args - Arguments to find a CategoryRule
+     * @param {RuleFindFirstOrThrowArgs} args - Arguments to find a Rule
      * @example
-     * // Get one CategoryRule
-     * const categoryRule = await prisma.categoryRule.findFirstOrThrow({
+     * // Get one Rule
+     * const rule = await prisma.rule.findFirstOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findFirstOrThrow<T extends CategoryRuleFindFirstOrThrowArgs>(args?: SelectSubset<T, CategoryRuleFindFirstOrThrowArgs<ExtArgs>>): Prisma__CategoryRuleClient<$Result.GetResult<Prisma.$CategoryRulePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    findFirstOrThrow<T extends RuleFindFirstOrThrowArgs>(args?: SelectSubset<T, RuleFindFirstOrThrowArgs<ExtArgs>>): Prisma__RuleClient<$Result.GetResult<Prisma.$RulePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find zero or more CategoryRules that matches the filter.
+     * Find zero or more Rules that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {CategoryRuleFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @param {RuleFindManyArgs} args - Arguments to filter and select certain fields only.
      * @example
-     * // Get all CategoryRules
-     * const categoryRules = await prisma.categoryRule.findMany()
+     * // Get all Rules
+     * const rules = await prisma.rule.findMany()
      * 
-     * // Get first 10 CategoryRules
-     * const categoryRules = await prisma.categoryRule.findMany({ take: 10 })
+     * // Get first 10 Rules
+     * const rules = await prisma.rule.findMany({ take: 10 })
      * 
      * // Only select the `id`
-     * const categoryRuleWithIdOnly = await prisma.categoryRule.findMany({ select: { id: true } })
+     * const ruleWithIdOnly = await prisma.rule.findMany({ select: { id: true } })
      * 
      */
-    findMany<T extends CategoryRuleFindManyArgs>(args?: SelectSubset<T, CategoryRuleFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CategoryRulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+    findMany<T extends RuleFindManyArgs>(args?: SelectSubset<T, RuleFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
     /**
-     * Create a CategoryRule.
-     * @param {CategoryRuleCreateArgs} args - Arguments to create a CategoryRule.
+     * Create a Rule.
+     * @param {RuleCreateArgs} args - Arguments to create a Rule.
      * @example
-     * // Create one CategoryRule
-     * const CategoryRule = await prisma.categoryRule.create({
+     * // Create one Rule
+     * const Rule = await prisma.rule.create({
      *   data: {
-     *     // ... data to create a CategoryRule
+     *     // ... data to create a Rule
      *   }
      * })
      * 
      */
-    create<T extends CategoryRuleCreateArgs>(args: SelectSubset<T, CategoryRuleCreateArgs<ExtArgs>>): Prisma__CategoryRuleClient<$Result.GetResult<Prisma.$CategoryRulePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    create<T extends RuleCreateArgs>(args: SelectSubset<T, RuleCreateArgs<ExtArgs>>): Prisma__RuleClient<$Result.GetResult<Prisma.$RulePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Create many CategoryRules.
-     * @param {CategoryRuleCreateManyArgs} args - Arguments to create many CategoryRules.
+     * Create many Rules.
+     * @param {RuleCreateManyArgs} args - Arguments to create many Rules.
      * @example
-     * // Create many CategoryRules
-     * const categoryRule = await prisma.categoryRule.createMany({
+     * // Create many Rules
+     * const rule = await prisma.rule.createMany({
      *   data: [
      *     // ... provide data here
      *   ]
      * })
      *     
      */
-    createMany<T extends CategoryRuleCreateManyArgs>(args?: SelectSubset<T, CategoryRuleCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    createMany<T extends RuleCreateManyArgs>(args?: SelectSubset<T, RuleCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Create many CategoryRules and returns the data saved in the database.
-     * @param {CategoryRuleCreateManyAndReturnArgs} args - Arguments to create many CategoryRules.
+     * Create many Rules and returns the data saved in the database.
+     * @param {RuleCreateManyAndReturnArgs} args - Arguments to create many Rules.
      * @example
-     * // Create many CategoryRules
-     * const categoryRule = await prisma.categoryRule.createManyAndReturn({
+     * // Create many Rules
+     * const rule = await prisma.rule.createManyAndReturn({
      *   data: [
      *     // ... provide data here
      *   ]
      * })
      * 
-     * // Create many CategoryRules and only return the `id`
-     * const categoryRuleWithIdOnly = await prisma.categoryRule.createManyAndReturn({
+     * // Create many Rules and only return the `id`
+     * const ruleWithIdOnly = await prisma.rule.createManyAndReturn({
      *   select: { id: true },
      *   data: [
      *     // ... provide data here
@@ -5658,28 +5893,28 @@ export namespace Prisma {
      * Read more here: https://pris.ly/d/null-undefined
      * 
      */
-    createManyAndReturn<T extends CategoryRuleCreateManyAndReturnArgs>(args?: SelectSubset<T, CategoryRuleCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CategoryRulePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+    createManyAndReturn<T extends RuleCreateManyAndReturnArgs>(args?: SelectSubset<T, RuleCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RulePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
     /**
-     * Delete a CategoryRule.
-     * @param {CategoryRuleDeleteArgs} args - Arguments to delete one CategoryRule.
+     * Delete a Rule.
+     * @param {RuleDeleteArgs} args - Arguments to delete one Rule.
      * @example
-     * // Delete one CategoryRule
-     * const CategoryRule = await prisma.categoryRule.delete({
+     * // Delete one Rule
+     * const Rule = await prisma.rule.delete({
      *   where: {
-     *     // ... filter to delete one CategoryRule
+     *     // ... filter to delete one Rule
      *   }
      * })
      * 
      */
-    delete<T extends CategoryRuleDeleteArgs>(args: SelectSubset<T, CategoryRuleDeleteArgs<ExtArgs>>): Prisma__CategoryRuleClient<$Result.GetResult<Prisma.$CategoryRulePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    delete<T extends RuleDeleteArgs>(args: SelectSubset<T, RuleDeleteArgs<ExtArgs>>): Prisma__RuleClient<$Result.GetResult<Prisma.$RulePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Update one CategoryRule.
-     * @param {CategoryRuleUpdateArgs} args - Arguments to update one CategoryRule.
+     * Update one Rule.
+     * @param {RuleUpdateArgs} args - Arguments to update one Rule.
      * @example
-     * // Update one CategoryRule
-     * const categoryRule = await prisma.categoryRule.update({
+     * // Update one Rule
+     * const rule = await prisma.rule.update({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -5689,30 +5924,30 @@ export namespace Prisma {
      * })
      * 
      */
-    update<T extends CategoryRuleUpdateArgs>(args: SelectSubset<T, CategoryRuleUpdateArgs<ExtArgs>>): Prisma__CategoryRuleClient<$Result.GetResult<Prisma.$CategoryRulePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    update<T extends RuleUpdateArgs>(args: SelectSubset<T, RuleUpdateArgs<ExtArgs>>): Prisma__RuleClient<$Result.GetResult<Prisma.$RulePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Delete zero or more CategoryRules.
-     * @param {CategoryRuleDeleteManyArgs} args - Arguments to filter CategoryRules to delete.
+     * Delete zero or more Rules.
+     * @param {RuleDeleteManyArgs} args - Arguments to filter Rules to delete.
      * @example
-     * // Delete a few CategoryRules
-     * const { count } = await prisma.categoryRule.deleteMany({
+     * // Delete a few Rules
+     * const { count } = await prisma.rule.deleteMany({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      * 
      */
-    deleteMany<T extends CategoryRuleDeleteManyArgs>(args?: SelectSubset<T, CategoryRuleDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    deleteMany<T extends RuleDeleteManyArgs>(args?: SelectSubset<T, RuleDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Update zero or more CategoryRules.
+     * Update zero or more Rules.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {CategoryRuleUpdateManyArgs} args - Arguments to update one or more rows.
+     * @param {RuleUpdateManyArgs} args - Arguments to update one or more rows.
      * @example
-     * // Update many CategoryRules
-     * const categoryRule = await prisma.categoryRule.updateMany({
+     * // Update many Rules
+     * const rule = await prisma.rule.updateMany({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -5722,14 +5957,14 @@ export namespace Prisma {
      * })
      * 
      */
-    updateMany<T extends CategoryRuleUpdateManyArgs>(args: SelectSubset<T, CategoryRuleUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    updateMany<T extends RuleUpdateManyArgs>(args: SelectSubset<T, RuleUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Update zero or more CategoryRules and returns the data updated in the database.
-     * @param {CategoryRuleUpdateManyAndReturnArgs} args - Arguments to update many CategoryRules.
+     * Update zero or more Rules and returns the data updated in the database.
+     * @param {RuleUpdateManyAndReturnArgs} args - Arguments to update many Rules.
      * @example
-     * // Update many CategoryRules
-     * const categoryRule = await prisma.categoryRule.updateManyAndReturn({
+     * // Update many Rules
+     * const rule = await prisma.rule.updateManyAndReturn({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -5738,8 +5973,8 @@ export namespace Prisma {
      *   ]
      * })
      * 
-     * // Update zero or more CategoryRules and only return the `id`
-     * const categoryRuleWithIdOnly = await prisma.categoryRule.updateManyAndReturn({
+     * // Update zero or more Rules and only return the `id`
+     * const ruleWithIdOnly = await prisma.rule.updateManyAndReturn({
      *   select: { id: true },
      *   where: {
      *     // ... provide filter here
@@ -5752,56 +5987,56 @@ export namespace Prisma {
      * Read more here: https://pris.ly/d/null-undefined
      * 
      */
-    updateManyAndReturn<T extends CategoryRuleUpdateManyAndReturnArgs>(args: SelectSubset<T, CategoryRuleUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CategoryRulePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+    updateManyAndReturn<T extends RuleUpdateManyAndReturnArgs>(args: SelectSubset<T, RuleUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RulePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
-     * Create or update one CategoryRule.
-     * @param {CategoryRuleUpsertArgs} args - Arguments to update or create a CategoryRule.
+     * Create or update one Rule.
+     * @param {RuleUpsertArgs} args - Arguments to update or create a Rule.
      * @example
-     * // Update or create a CategoryRule
-     * const categoryRule = await prisma.categoryRule.upsert({
+     * // Update or create a Rule
+     * const rule = await prisma.rule.upsert({
      *   create: {
-     *     // ... data to create a CategoryRule
+     *     // ... data to create a Rule
      *   },
      *   update: {
      *     // ... in case it already exists, update
      *   },
      *   where: {
-     *     // ... the filter for the CategoryRule we want to update
+     *     // ... the filter for the Rule we want to update
      *   }
      * })
      */
-    upsert<T extends CategoryRuleUpsertArgs>(args: SelectSubset<T, CategoryRuleUpsertArgs<ExtArgs>>): Prisma__CategoryRuleClient<$Result.GetResult<Prisma.$CategoryRulePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    upsert<T extends RuleUpsertArgs>(args: SelectSubset<T, RuleUpsertArgs<ExtArgs>>): Prisma__RuleClient<$Result.GetResult<Prisma.$RulePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
 
     /**
-     * Count the number of CategoryRules.
+     * Count the number of Rules.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {CategoryRuleCountArgs} args - Arguments to filter CategoryRules to count.
+     * @param {RuleCountArgs} args - Arguments to filter Rules to count.
      * @example
-     * // Count the number of CategoryRules
-     * const count = await prisma.categoryRule.count({
+     * // Count the number of Rules
+     * const count = await prisma.rule.count({
      *   where: {
-     *     // ... the filter for the CategoryRules we want to count
+     *     // ... the filter for the Rules we want to count
      *   }
      * })
     **/
-    count<T extends CategoryRuleCountArgs>(
-      args?: Subset<T, CategoryRuleCountArgs>,
+    count<T extends RuleCountArgs>(
+      args?: Subset<T, RuleCountArgs>,
     ): Prisma.PrismaPromise<
       T extends $Utils.Record<'select', any>
         ? T['select'] extends true
           ? number
-          : GetScalarType<T['select'], CategoryRuleCountAggregateOutputType>
+          : GetScalarType<T['select'], RuleCountAggregateOutputType>
         : number
     >
 
     /**
-     * Allows you to perform aggregations operations on a CategoryRule.
+     * Allows you to perform aggregations operations on a Rule.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {CategoryRuleAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @param {RuleAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
      * @example
      * // Ordered by age ascending
      * // Where email contains prisma.io
@@ -5821,13 +6056,13 @@ export namespace Prisma {
      *   take: 10,
      * })
     **/
-    aggregate<T extends CategoryRuleAggregateArgs>(args: Subset<T, CategoryRuleAggregateArgs>): Prisma.PrismaPromise<GetCategoryRuleAggregateType<T>>
+    aggregate<T extends RuleAggregateArgs>(args: Subset<T, RuleAggregateArgs>): Prisma.PrismaPromise<GetRuleAggregateType<T>>
 
     /**
-     * Group by CategoryRule.
+     * Group by Rule.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {CategoryRuleGroupByArgs} args - Group by arguments.
+     * @param {RuleGroupByArgs} args - Group by arguments.
      * @example
      * // Group by city, order by createdAt, get count
      * const result = await prisma.user.groupBy({
@@ -5842,14 +6077,14 @@ export namespace Prisma {
      * 
     **/
     groupBy<
-      T extends CategoryRuleGroupByArgs,
+      T extends RuleGroupByArgs,
       HasSelectOrTake extends Or<
         Extends<'skip', Keys<T>>,
         Extends<'take', Keys<T>>
       >,
       OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: CategoryRuleGroupByArgs['orderBy'] }
-        : { orderBy?: CategoryRuleGroupByArgs['orderBy'] },
+        ? { orderBy: RuleGroupByArgs['orderBy'] }
+        : { orderBy?: RuleGroupByArgs['orderBy'] },
       OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
       ByFields extends MaybeTupleToUnion<T['by']>,
       ByValid extends Has<ByFields, OrderFields>,
@@ -5898,22 +6133,23 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, CategoryRuleGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetCategoryRuleGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+    >(args: SubsetIntersection<T, RuleGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetRuleGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
   /**
-   * Fields of the CategoryRule model
+   * Fields of the Rule model
    */
-  readonly fields: CategoryRuleFieldRefs;
+  readonly fields: RuleFieldRefs;
   }
 
   /**
-   * The delegate class that acts as a "Promise-like" for CategoryRule.
+   * The delegate class that acts as a "Promise-like" for Rule.
    * Why is this prefixed with `Prisma__`?
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export interface Prisma__CategoryRuleClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+  export interface Prisma__RuleClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    category<T extends CategoryDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CategoryDefaultArgs<ExtArgs>>): Prisma__CategoryClient<$Result.GetResult<Prisma.$CategoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    category<T extends Rule$categoryArgs<ExtArgs> = {}>(args?: Subset<T, Rule$categoryArgs<ExtArgs>>): Prisma__CategoryClient<$Result.GetResult<Prisma.$CategoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    conditions<T extends Rule$conditionsArgs<ExtArgs> = {}>(args?: Subset<T, Rule$conditionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RuleConditionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -5940,428 +6176,1595 @@ export namespace Prisma {
 
 
   /**
-   * Fields of the CategoryRule model
+   * Fields of the Rule model
    */
-  interface CategoryRuleFieldRefs {
-    readonly id: FieldRef<"CategoryRule", 'String'>
-    readonly pattern: FieldRef<"CategoryRule", 'String'>
-    readonly bank: FieldRef<"CategoryRule", 'String'>
-    readonly categoryId: FieldRef<"CategoryRule", 'String'>
-    readonly createdAt: FieldRef<"CategoryRule", 'DateTime'>
+  interface RuleFieldRefs {
+    readonly id: FieldRef<"Rule", 'String'>
+    readonly kind: FieldRef<"Rule", 'RuleKind'>
+    readonly position: FieldRef<"Rule", 'Int'>
+    readonly joinOperator: FieldRef<"Rule", 'RuleJoin'>
+    readonly bank: FieldRef<"Rule", 'String'>
+    readonly categoryId: FieldRef<"Rule", 'String'>
+    readonly bucket: FieldRef<"Rule", 'Bucket'>
+    readonly createdAt: FieldRef<"Rule", 'DateTime'>
   }
     
 
   // Custom InputTypes
   /**
-   * CategoryRule findUnique
+   * Rule findUnique
    */
-  export type CategoryRuleFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type RuleFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the CategoryRule
+     * Select specific fields to fetch from the Rule
      */
-    select?: CategoryRuleSelect<ExtArgs> | null
+    select?: RuleSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the CategoryRule
+     * Omit specific fields from the Rule
      */
-    omit?: CategoryRuleOmit<ExtArgs> | null
+    omit?: RuleOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: CategoryRuleInclude<ExtArgs> | null
+    include?: RuleInclude<ExtArgs> | null
     /**
-     * Filter, which CategoryRule to fetch.
+     * Filter, which Rule to fetch.
      */
-    where: CategoryRuleWhereUniqueInput
+    where: RuleWhereUniqueInput
   }
 
   /**
-   * CategoryRule findUniqueOrThrow
+   * Rule findUniqueOrThrow
    */
-  export type CategoryRuleFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type RuleFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the CategoryRule
+     * Select specific fields to fetch from the Rule
      */
-    select?: CategoryRuleSelect<ExtArgs> | null
+    select?: RuleSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the CategoryRule
+     * Omit specific fields from the Rule
      */
-    omit?: CategoryRuleOmit<ExtArgs> | null
+    omit?: RuleOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: CategoryRuleInclude<ExtArgs> | null
+    include?: RuleInclude<ExtArgs> | null
     /**
-     * Filter, which CategoryRule to fetch.
+     * Filter, which Rule to fetch.
      */
-    where: CategoryRuleWhereUniqueInput
+    where: RuleWhereUniqueInput
   }
 
   /**
-   * CategoryRule findFirst
+   * Rule findFirst
    */
-  export type CategoryRuleFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type RuleFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the CategoryRule
+     * Select specific fields to fetch from the Rule
      */
-    select?: CategoryRuleSelect<ExtArgs> | null
+    select?: RuleSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the CategoryRule
+     * Omit specific fields from the Rule
      */
-    omit?: CategoryRuleOmit<ExtArgs> | null
+    omit?: RuleOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: CategoryRuleInclude<ExtArgs> | null
+    include?: RuleInclude<ExtArgs> | null
     /**
-     * Filter, which CategoryRule to fetch.
+     * Filter, which Rule to fetch.
      */
-    where?: CategoryRuleWhereInput
+    where?: RuleWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of CategoryRules to fetch.
+     * Determine the order of Rules to fetch.
      */
-    orderBy?: CategoryRuleOrderByWithRelationInput | CategoryRuleOrderByWithRelationInput[]
+    orderBy?: RuleOrderByWithRelationInput | RuleOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for CategoryRules.
+     * Sets the position for searching for Rules.
      */
-    cursor?: CategoryRuleWhereUniqueInput
+    cursor?: RuleWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` CategoryRules from the position of the cursor.
+     * Take `±n` Rules from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` CategoryRules.
+     * Skip the first `n` Rules.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of CategoryRules.
+     * Filter by unique combinations of Rules.
      */
-    distinct?: CategoryRuleScalarFieldEnum | CategoryRuleScalarFieldEnum[]
+    distinct?: RuleScalarFieldEnum | RuleScalarFieldEnum[]
   }
 
   /**
-   * CategoryRule findFirstOrThrow
+   * Rule findFirstOrThrow
    */
-  export type CategoryRuleFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type RuleFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the CategoryRule
+     * Select specific fields to fetch from the Rule
      */
-    select?: CategoryRuleSelect<ExtArgs> | null
+    select?: RuleSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the CategoryRule
+     * Omit specific fields from the Rule
      */
-    omit?: CategoryRuleOmit<ExtArgs> | null
+    omit?: RuleOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: CategoryRuleInclude<ExtArgs> | null
+    include?: RuleInclude<ExtArgs> | null
     /**
-     * Filter, which CategoryRule to fetch.
+     * Filter, which Rule to fetch.
      */
-    where?: CategoryRuleWhereInput
+    where?: RuleWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of CategoryRules to fetch.
+     * Determine the order of Rules to fetch.
      */
-    orderBy?: CategoryRuleOrderByWithRelationInput | CategoryRuleOrderByWithRelationInput[]
+    orderBy?: RuleOrderByWithRelationInput | RuleOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for CategoryRules.
+     * Sets the position for searching for Rules.
      */
-    cursor?: CategoryRuleWhereUniqueInput
+    cursor?: RuleWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` CategoryRules from the position of the cursor.
+     * Take `±n` Rules from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` CategoryRules.
+     * Skip the first `n` Rules.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of CategoryRules.
+     * Filter by unique combinations of Rules.
      */
-    distinct?: CategoryRuleScalarFieldEnum | CategoryRuleScalarFieldEnum[]
+    distinct?: RuleScalarFieldEnum | RuleScalarFieldEnum[]
   }
 
   /**
-   * CategoryRule findMany
+   * Rule findMany
    */
-  export type CategoryRuleFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type RuleFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the CategoryRule
+     * Select specific fields to fetch from the Rule
      */
-    select?: CategoryRuleSelect<ExtArgs> | null
+    select?: RuleSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the CategoryRule
+     * Omit specific fields from the Rule
      */
-    omit?: CategoryRuleOmit<ExtArgs> | null
+    omit?: RuleOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: CategoryRuleInclude<ExtArgs> | null
+    include?: RuleInclude<ExtArgs> | null
     /**
-     * Filter, which CategoryRules to fetch.
+     * Filter, which Rules to fetch.
      */
-    where?: CategoryRuleWhereInput
+    where?: RuleWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of CategoryRules to fetch.
+     * Determine the order of Rules to fetch.
      */
-    orderBy?: CategoryRuleOrderByWithRelationInput | CategoryRuleOrderByWithRelationInput[]
+    orderBy?: RuleOrderByWithRelationInput | RuleOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for listing CategoryRules.
+     * Sets the position for listing Rules.
      */
-    cursor?: CategoryRuleWhereUniqueInput
+    cursor?: RuleWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` CategoryRules from the position of the cursor.
+     * Take `±n` Rules from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` CategoryRules.
+     * Skip the first `n` Rules.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of CategoryRules.
+     * Filter by unique combinations of Rules.
      */
-    distinct?: CategoryRuleScalarFieldEnum | CategoryRuleScalarFieldEnum[]
+    distinct?: RuleScalarFieldEnum | RuleScalarFieldEnum[]
   }
 
   /**
-   * CategoryRule create
+   * Rule create
    */
-  export type CategoryRuleCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type RuleCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the CategoryRule
+     * Select specific fields to fetch from the Rule
      */
-    select?: CategoryRuleSelect<ExtArgs> | null
+    select?: RuleSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the CategoryRule
+     * Omit specific fields from the Rule
      */
-    omit?: CategoryRuleOmit<ExtArgs> | null
+    omit?: RuleOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: CategoryRuleInclude<ExtArgs> | null
+    include?: RuleInclude<ExtArgs> | null
     /**
-     * The data needed to create a CategoryRule.
+     * The data needed to create a Rule.
      */
-    data: XOR<CategoryRuleCreateInput, CategoryRuleUncheckedCreateInput>
+    data: XOR<RuleCreateInput, RuleUncheckedCreateInput>
   }
 
   /**
-   * CategoryRule createMany
+   * Rule createMany
    */
-  export type CategoryRuleCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type RuleCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * The data used to create many CategoryRules.
+     * The data used to create many Rules.
      */
-    data: CategoryRuleCreateManyInput | CategoryRuleCreateManyInput[]
+    data: RuleCreateManyInput | RuleCreateManyInput[]
   }
 
   /**
-   * CategoryRule createManyAndReturn
+   * Rule createManyAndReturn
    */
-  export type CategoryRuleCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type RuleCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the CategoryRule
+     * Select specific fields to fetch from the Rule
      */
-    select?: CategoryRuleSelectCreateManyAndReturn<ExtArgs> | null
+    select?: RuleSelectCreateManyAndReturn<ExtArgs> | null
     /**
-     * Omit specific fields from the CategoryRule
+     * Omit specific fields from the Rule
      */
-    omit?: CategoryRuleOmit<ExtArgs> | null
+    omit?: RuleOmit<ExtArgs> | null
     /**
-     * The data used to create many CategoryRules.
+     * The data used to create many Rules.
      */
-    data: CategoryRuleCreateManyInput | CategoryRuleCreateManyInput[]
+    data: RuleCreateManyInput | RuleCreateManyInput[]
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: CategoryRuleIncludeCreateManyAndReturn<ExtArgs> | null
+    include?: RuleIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
-   * CategoryRule update
+   * Rule update
    */
-  export type CategoryRuleUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type RuleUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the CategoryRule
+     * Select specific fields to fetch from the Rule
      */
-    select?: CategoryRuleSelect<ExtArgs> | null
+    select?: RuleSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the CategoryRule
+     * Omit specific fields from the Rule
      */
-    omit?: CategoryRuleOmit<ExtArgs> | null
+    omit?: RuleOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: CategoryRuleInclude<ExtArgs> | null
+    include?: RuleInclude<ExtArgs> | null
     /**
-     * The data needed to update a CategoryRule.
+     * The data needed to update a Rule.
      */
-    data: XOR<CategoryRuleUpdateInput, CategoryRuleUncheckedUpdateInput>
+    data: XOR<RuleUpdateInput, RuleUncheckedUpdateInput>
     /**
-     * Choose, which CategoryRule to update.
+     * Choose, which Rule to update.
      */
-    where: CategoryRuleWhereUniqueInput
+    where: RuleWhereUniqueInput
   }
 
   /**
-   * CategoryRule updateMany
+   * Rule updateMany
    */
-  export type CategoryRuleUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type RuleUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * The data used to update CategoryRules.
+     * The data used to update Rules.
      */
-    data: XOR<CategoryRuleUpdateManyMutationInput, CategoryRuleUncheckedUpdateManyInput>
+    data: XOR<RuleUpdateManyMutationInput, RuleUncheckedUpdateManyInput>
     /**
-     * Filter which CategoryRules to update
+     * Filter which Rules to update
      */
-    where?: CategoryRuleWhereInput
+    where?: RuleWhereInput
     /**
-     * Limit how many CategoryRules to update.
+     * Limit how many Rules to update.
      */
     limit?: number
   }
 
   /**
-   * CategoryRule updateManyAndReturn
+   * Rule updateManyAndReturn
    */
-  export type CategoryRuleUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type RuleUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the CategoryRule
+     * Select specific fields to fetch from the Rule
      */
-    select?: CategoryRuleSelectUpdateManyAndReturn<ExtArgs> | null
+    select?: RuleSelectUpdateManyAndReturn<ExtArgs> | null
     /**
-     * Omit specific fields from the CategoryRule
+     * Omit specific fields from the Rule
      */
-    omit?: CategoryRuleOmit<ExtArgs> | null
+    omit?: RuleOmit<ExtArgs> | null
     /**
-     * The data used to update CategoryRules.
+     * The data used to update Rules.
      */
-    data: XOR<CategoryRuleUpdateManyMutationInput, CategoryRuleUncheckedUpdateManyInput>
+    data: XOR<RuleUpdateManyMutationInput, RuleUncheckedUpdateManyInput>
     /**
-     * Filter which CategoryRules to update
+     * Filter which Rules to update
      */
-    where?: CategoryRuleWhereInput
+    where?: RuleWhereInput
     /**
-     * Limit how many CategoryRules to update.
+     * Limit how many Rules to update.
      */
     limit?: number
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: CategoryRuleIncludeUpdateManyAndReturn<ExtArgs> | null
+    include?: RuleIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
-   * CategoryRule upsert
+   * Rule upsert
    */
-  export type CategoryRuleUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type RuleUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the CategoryRule
+     * Select specific fields to fetch from the Rule
      */
-    select?: CategoryRuleSelect<ExtArgs> | null
+    select?: RuleSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the CategoryRule
+     * Omit specific fields from the Rule
      */
-    omit?: CategoryRuleOmit<ExtArgs> | null
+    omit?: RuleOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: CategoryRuleInclude<ExtArgs> | null
+    include?: RuleInclude<ExtArgs> | null
     /**
-     * The filter to search for the CategoryRule to update in case it exists.
+     * The filter to search for the Rule to update in case it exists.
      */
-    where: CategoryRuleWhereUniqueInput
+    where: RuleWhereUniqueInput
     /**
-     * In case the CategoryRule found by the `where` argument doesn't exist, create a new CategoryRule with this data.
+     * In case the Rule found by the `where` argument doesn't exist, create a new Rule with this data.
      */
-    create: XOR<CategoryRuleCreateInput, CategoryRuleUncheckedCreateInput>
+    create: XOR<RuleCreateInput, RuleUncheckedCreateInput>
     /**
-     * In case the CategoryRule was found with the provided `where` argument, update it with this data.
+     * In case the Rule was found with the provided `where` argument, update it with this data.
      */
-    update: XOR<CategoryRuleUpdateInput, CategoryRuleUncheckedUpdateInput>
+    update: XOR<RuleUpdateInput, RuleUncheckedUpdateInput>
   }
 
   /**
-   * CategoryRule delete
+   * Rule delete
    */
-  export type CategoryRuleDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type RuleDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the CategoryRule
+     * Select specific fields to fetch from the Rule
      */
-    select?: CategoryRuleSelect<ExtArgs> | null
+    select?: RuleSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the CategoryRule
+     * Omit specific fields from the Rule
      */
-    omit?: CategoryRuleOmit<ExtArgs> | null
+    omit?: RuleOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: CategoryRuleInclude<ExtArgs> | null
+    include?: RuleInclude<ExtArgs> | null
     /**
-     * Filter which CategoryRule to delete.
+     * Filter which Rule to delete.
      */
-    where: CategoryRuleWhereUniqueInput
+    where: RuleWhereUniqueInput
   }
 
   /**
-   * CategoryRule deleteMany
+   * Rule deleteMany
    */
-  export type CategoryRuleDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type RuleDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Filter which CategoryRules to delete
+     * Filter which Rules to delete
      */
-    where?: CategoryRuleWhereInput
+    where?: RuleWhereInput
     /**
-     * Limit how many CategoryRules to delete.
+     * Limit how many Rules to delete.
      */
     limit?: number
   }
 
   /**
-   * CategoryRule without action
+   * Rule.category
    */
-  export type CategoryRuleDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Rule$categoryArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the CategoryRule
+     * Select specific fields to fetch from the Category
      */
-    select?: CategoryRuleSelect<ExtArgs> | null
+    select?: CategorySelect<ExtArgs> | null
     /**
-     * Omit specific fields from the CategoryRule
+     * Omit specific fields from the Category
      */
-    omit?: CategoryRuleOmit<ExtArgs> | null
+    omit?: CategoryOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: CategoryRuleInclude<ExtArgs> | null
+    include?: CategoryInclude<ExtArgs> | null
+    where?: CategoryWhereInput
+  }
+
+  /**
+   * Rule.conditions
+   */
+  export type Rule$conditionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RuleCondition
+     */
+    select?: RuleConditionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RuleCondition
+     */
+    omit?: RuleConditionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RuleConditionInclude<ExtArgs> | null
+    where?: RuleConditionWhereInput
+    orderBy?: RuleConditionOrderByWithRelationInput | RuleConditionOrderByWithRelationInput[]
+    cursor?: RuleConditionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: RuleConditionScalarFieldEnum | RuleConditionScalarFieldEnum[]
+  }
+
+  /**
+   * Rule without action
+   */
+  export type RuleDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Rule
+     */
+    select?: RuleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Rule
+     */
+    omit?: RuleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RuleInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model RuleCondition
+   */
+
+  export type AggregateRuleCondition = {
+    _count: RuleConditionCountAggregateOutputType | null
+    _avg: RuleConditionAvgAggregateOutputType | null
+    _sum: RuleConditionSumAggregateOutputType | null
+    _min: RuleConditionMinAggregateOutputType | null
+    _max: RuleConditionMaxAggregateOutputType | null
+  }
+
+  export type RuleConditionAvgAggregateOutputType = {
+    position: number | null
+  }
+
+  export type RuleConditionSumAggregateOutputType = {
+    position: number | null
+  }
+
+  export type RuleConditionMinAggregateOutputType = {
+    id: string | null
+    ruleId: string | null
+    field: $Enums.RuleField | null
+    operator: $Enums.RuleOperator | null
+    value: string | null
+    negate: boolean | null
+    position: number | null
+  }
+
+  export type RuleConditionMaxAggregateOutputType = {
+    id: string | null
+    ruleId: string | null
+    field: $Enums.RuleField | null
+    operator: $Enums.RuleOperator | null
+    value: string | null
+    negate: boolean | null
+    position: number | null
+  }
+
+  export type RuleConditionCountAggregateOutputType = {
+    id: number
+    ruleId: number
+    field: number
+    operator: number
+    value: number
+    negate: number
+    position: number
+    _all: number
+  }
+
+
+  export type RuleConditionAvgAggregateInputType = {
+    position?: true
+  }
+
+  export type RuleConditionSumAggregateInputType = {
+    position?: true
+  }
+
+  export type RuleConditionMinAggregateInputType = {
+    id?: true
+    ruleId?: true
+    field?: true
+    operator?: true
+    value?: true
+    negate?: true
+    position?: true
+  }
+
+  export type RuleConditionMaxAggregateInputType = {
+    id?: true
+    ruleId?: true
+    field?: true
+    operator?: true
+    value?: true
+    negate?: true
+    position?: true
+  }
+
+  export type RuleConditionCountAggregateInputType = {
+    id?: true
+    ruleId?: true
+    field?: true
+    operator?: true
+    value?: true
+    negate?: true
+    position?: true
+    _all?: true
+  }
+
+  export type RuleConditionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which RuleCondition to aggregate.
+     */
+    where?: RuleConditionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RuleConditions to fetch.
+     */
+    orderBy?: RuleConditionOrderByWithRelationInput | RuleConditionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: RuleConditionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RuleConditions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RuleConditions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned RuleConditions
+    **/
+    _count?: true | RuleConditionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: RuleConditionAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: RuleConditionSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: RuleConditionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: RuleConditionMaxAggregateInputType
+  }
+
+  export type GetRuleConditionAggregateType<T extends RuleConditionAggregateArgs> = {
+        [P in keyof T & keyof AggregateRuleCondition]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateRuleCondition[P]>
+      : GetScalarType<T[P], AggregateRuleCondition[P]>
+  }
+
+
+
+
+  export type RuleConditionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: RuleConditionWhereInput
+    orderBy?: RuleConditionOrderByWithAggregationInput | RuleConditionOrderByWithAggregationInput[]
+    by: RuleConditionScalarFieldEnum[] | RuleConditionScalarFieldEnum
+    having?: RuleConditionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: RuleConditionCountAggregateInputType | true
+    _avg?: RuleConditionAvgAggregateInputType
+    _sum?: RuleConditionSumAggregateInputType
+    _min?: RuleConditionMinAggregateInputType
+    _max?: RuleConditionMaxAggregateInputType
+  }
+
+  export type RuleConditionGroupByOutputType = {
+    id: string
+    ruleId: string
+    field: $Enums.RuleField
+    operator: $Enums.RuleOperator
+    value: string
+    negate: boolean
+    position: number
+    _count: RuleConditionCountAggregateOutputType | null
+    _avg: RuleConditionAvgAggregateOutputType | null
+    _sum: RuleConditionSumAggregateOutputType | null
+    _min: RuleConditionMinAggregateOutputType | null
+    _max: RuleConditionMaxAggregateOutputType | null
+  }
+
+  type GetRuleConditionGroupByPayload<T extends RuleConditionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<RuleConditionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof RuleConditionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], RuleConditionGroupByOutputType[P]>
+            : GetScalarType<T[P], RuleConditionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type RuleConditionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    ruleId?: boolean
+    field?: boolean
+    operator?: boolean
+    value?: boolean
+    negate?: boolean
+    position?: boolean
+    rule?: boolean | RuleDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["ruleCondition"]>
+
+  export type RuleConditionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    ruleId?: boolean
+    field?: boolean
+    operator?: boolean
+    value?: boolean
+    negate?: boolean
+    position?: boolean
+    rule?: boolean | RuleDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["ruleCondition"]>
+
+  export type RuleConditionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    ruleId?: boolean
+    field?: boolean
+    operator?: boolean
+    value?: boolean
+    negate?: boolean
+    position?: boolean
+    rule?: boolean | RuleDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["ruleCondition"]>
+
+  export type RuleConditionSelectScalar = {
+    id?: boolean
+    ruleId?: boolean
+    field?: boolean
+    operator?: boolean
+    value?: boolean
+    negate?: boolean
+    position?: boolean
+  }
+
+  export type RuleConditionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "ruleId" | "field" | "operator" | "value" | "negate" | "position", ExtArgs["result"]["ruleCondition"]>
+  export type RuleConditionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    rule?: boolean | RuleDefaultArgs<ExtArgs>
+  }
+  export type RuleConditionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    rule?: boolean | RuleDefaultArgs<ExtArgs>
+  }
+  export type RuleConditionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    rule?: boolean | RuleDefaultArgs<ExtArgs>
+  }
+
+  export type $RuleConditionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "RuleCondition"
+    objects: {
+      rule: Prisma.$RulePayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      ruleId: string
+      field: $Enums.RuleField
+      operator: $Enums.RuleOperator
+      value: string
+      negate: boolean
+      position: number
+    }, ExtArgs["result"]["ruleCondition"]>
+    composites: {}
+  }
+
+  type RuleConditionGetPayload<S extends boolean | null | undefined | RuleConditionDefaultArgs> = $Result.GetResult<Prisma.$RuleConditionPayload, S>
+
+  type RuleConditionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<RuleConditionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: RuleConditionCountAggregateInputType | true
+    }
+
+  export interface RuleConditionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['RuleCondition'], meta: { name: 'RuleCondition' } }
+    /**
+     * Find zero or one RuleCondition that matches the filter.
+     * @param {RuleConditionFindUniqueArgs} args - Arguments to find a RuleCondition
+     * @example
+     * // Get one RuleCondition
+     * const ruleCondition = await prisma.ruleCondition.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends RuleConditionFindUniqueArgs>(args: SelectSubset<T, RuleConditionFindUniqueArgs<ExtArgs>>): Prisma__RuleConditionClient<$Result.GetResult<Prisma.$RuleConditionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one RuleCondition that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {RuleConditionFindUniqueOrThrowArgs} args - Arguments to find a RuleCondition
+     * @example
+     * // Get one RuleCondition
+     * const ruleCondition = await prisma.ruleCondition.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends RuleConditionFindUniqueOrThrowArgs>(args: SelectSubset<T, RuleConditionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__RuleConditionClient<$Result.GetResult<Prisma.$RuleConditionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first RuleCondition that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RuleConditionFindFirstArgs} args - Arguments to find a RuleCondition
+     * @example
+     * // Get one RuleCondition
+     * const ruleCondition = await prisma.ruleCondition.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends RuleConditionFindFirstArgs>(args?: SelectSubset<T, RuleConditionFindFirstArgs<ExtArgs>>): Prisma__RuleConditionClient<$Result.GetResult<Prisma.$RuleConditionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first RuleCondition that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RuleConditionFindFirstOrThrowArgs} args - Arguments to find a RuleCondition
+     * @example
+     * // Get one RuleCondition
+     * const ruleCondition = await prisma.ruleCondition.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends RuleConditionFindFirstOrThrowArgs>(args?: SelectSubset<T, RuleConditionFindFirstOrThrowArgs<ExtArgs>>): Prisma__RuleConditionClient<$Result.GetResult<Prisma.$RuleConditionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more RuleConditions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RuleConditionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all RuleConditions
+     * const ruleConditions = await prisma.ruleCondition.findMany()
+     * 
+     * // Get first 10 RuleConditions
+     * const ruleConditions = await prisma.ruleCondition.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const ruleConditionWithIdOnly = await prisma.ruleCondition.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends RuleConditionFindManyArgs>(args?: SelectSubset<T, RuleConditionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RuleConditionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a RuleCondition.
+     * @param {RuleConditionCreateArgs} args - Arguments to create a RuleCondition.
+     * @example
+     * // Create one RuleCondition
+     * const RuleCondition = await prisma.ruleCondition.create({
+     *   data: {
+     *     // ... data to create a RuleCondition
+     *   }
+     * })
+     * 
+     */
+    create<T extends RuleConditionCreateArgs>(args: SelectSubset<T, RuleConditionCreateArgs<ExtArgs>>): Prisma__RuleConditionClient<$Result.GetResult<Prisma.$RuleConditionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many RuleConditions.
+     * @param {RuleConditionCreateManyArgs} args - Arguments to create many RuleConditions.
+     * @example
+     * // Create many RuleConditions
+     * const ruleCondition = await prisma.ruleCondition.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends RuleConditionCreateManyArgs>(args?: SelectSubset<T, RuleConditionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many RuleConditions and returns the data saved in the database.
+     * @param {RuleConditionCreateManyAndReturnArgs} args - Arguments to create many RuleConditions.
+     * @example
+     * // Create many RuleConditions
+     * const ruleCondition = await prisma.ruleCondition.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many RuleConditions and only return the `id`
+     * const ruleConditionWithIdOnly = await prisma.ruleCondition.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends RuleConditionCreateManyAndReturnArgs>(args?: SelectSubset<T, RuleConditionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RuleConditionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a RuleCondition.
+     * @param {RuleConditionDeleteArgs} args - Arguments to delete one RuleCondition.
+     * @example
+     * // Delete one RuleCondition
+     * const RuleCondition = await prisma.ruleCondition.delete({
+     *   where: {
+     *     // ... filter to delete one RuleCondition
+     *   }
+     * })
+     * 
+     */
+    delete<T extends RuleConditionDeleteArgs>(args: SelectSubset<T, RuleConditionDeleteArgs<ExtArgs>>): Prisma__RuleConditionClient<$Result.GetResult<Prisma.$RuleConditionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one RuleCondition.
+     * @param {RuleConditionUpdateArgs} args - Arguments to update one RuleCondition.
+     * @example
+     * // Update one RuleCondition
+     * const ruleCondition = await prisma.ruleCondition.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends RuleConditionUpdateArgs>(args: SelectSubset<T, RuleConditionUpdateArgs<ExtArgs>>): Prisma__RuleConditionClient<$Result.GetResult<Prisma.$RuleConditionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more RuleConditions.
+     * @param {RuleConditionDeleteManyArgs} args - Arguments to filter RuleConditions to delete.
+     * @example
+     * // Delete a few RuleConditions
+     * const { count } = await prisma.ruleCondition.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends RuleConditionDeleteManyArgs>(args?: SelectSubset<T, RuleConditionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more RuleConditions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RuleConditionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many RuleConditions
+     * const ruleCondition = await prisma.ruleCondition.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends RuleConditionUpdateManyArgs>(args: SelectSubset<T, RuleConditionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more RuleConditions and returns the data updated in the database.
+     * @param {RuleConditionUpdateManyAndReturnArgs} args - Arguments to update many RuleConditions.
+     * @example
+     * // Update many RuleConditions
+     * const ruleCondition = await prisma.ruleCondition.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more RuleConditions and only return the `id`
+     * const ruleConditionWithIdOnly = await prisma.ruleCondition.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends RuleConditionUpdateManyAndReturnArgs>(args: SelectSubset<T, RuleConditionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RuleConditionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one RuleCondition.
+     * @param {RuleConditionUpsertArgs} args - Arguments to update or create a RuleCondition.
+     * @example
+     * // Update or create a RuleCondition
+     * const ruleCondition = await prisma.ruleCondition.upsert({
+     *   create: {
+     *     // ... data to create a RuleCondition
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the RuleCondition we want to update
+     *   }
+     * })
+     */
+    upsert<T extends RuleConditionUpsertArgs>(args: SelectSubset<T, RuleConditionUpsertArgs<ExtArgs>>): Prisma__RuleConditionClient<$Result.GetResult<Prisma.$RuleConditionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of RuleConditions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RuleConditionCountArgs} args - Arguments to filter RuleConditions to count.
+     * @example
+     * // Count the number of RuleConditions
+     * const count = await prisma.ruleCondition.count({
+     *   where: {
+     *     // ... the filter for the RuleConditions we want to count
+     *   }
+     * })
+    **/
+    count<T extends RuleConditionCountArgs>(
+      args?: Subset<T, RuleConditionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], RuleConditionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a RuleCondition.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RuleConditionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends RuleConditionAggregateArgs>(args: Subset<T, RuleConditionAggregateArgs>): Prisma.PrismaPromise<GetRuleConditionAggregateType<T>>
+
+    /**
+     * Group by RuleCondition.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RuleConditionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends RuleConditionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: RuleConditionGroupByArgs['orderBy'] }
+        : { orderBy?: RuleConditionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, RuleConditionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetRuleConditionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the RuleCondition model
+   */
+  readonly fields: RuleConditionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for RuleCondition.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__RuleConditionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    rule<T extends RuleDefaultArgs<ExtArgs> = {}>(args?: Subset<T, RuleDefaultArgs<ExtArgs>>): Prisma__RuleClient<$Result.GetResult<Prisma.$RulePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the RuleCondition model
+   */
+  interface RuleConditionFieldRefs {
+    readonly id: FieldRef<"RuleCondition", 'String'>
+    readonly ruleId: FieldRef<"RuleCondition", 'String'>
+    readonly field: FieldRef<"RuleCondition", 'RuleField'>
+    readonly operator: FieldRef<"RuleCondition", 'RuleOperator'>
+    readonly value: FieldRef<"RuleCondition", 'String'>
+    readonly negate: FieldRef<"RuleCondition", 'Boolean'>
+    readonly position: FieldRef<"RuleCondition", 'Int'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * RuleCondition findUnique
+   */
+  export type RuleConditionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RuleCondition
+     */
+    select?: RuleConditionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RuleCondition
+     */
+    omit?: RuleConditionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RuleConditionInclude<ExtArgs> | null
+    /**
+     * Filter, which RuleCondition to fetch.
+     */
+    where: RuleConditionWhereUniqueInput
+  }
+
+  /**
+   * RuleCondition findUniqueOrThrow
+   */
+  export type RuleConditionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RuleCondition
+     */
+    select?: RuleConditionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RuleCondition
+     */
+    omit?: RuleConditionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RuleConditionInclude<ExtArgs> | null
+    /**
+     * Filter, which RuleCondition to fetch.
+     */
+    where: RuleConditionWhereUniqueInput
+  }
+
+  /**
+   * RuleCondition findFirst
+   */
+  export type RuleConditionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RuleCondition
+     */
+    select?: RuleConditionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RuleCondition
+     */
+    omit?: RuleConditionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RuleConditionInclude<ExtArgs> | null
+    /**
+     * Filter, which RuleCondition to fetch.
+     */
+    where?: RuleConditionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RuleConditions to fetch.
+     */
+    orderBy?: RuleConditionOrderByWithRelationInput | RuleConditionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for RuleConditions.
+     */
+    cursor?: RuleConditionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RuleConditions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RuleConditions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of RuleConditions.
+     */
+    distinct?: RuleConditionScalarFieldEnum | RuleConditionScalarFieldEnum[]
+  }
+
+  /**
+   * RuleCondition findFirstOrThrow
+   */
+  export type RuleConditionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RuleCondition
+     */
+    select?: RuleConditionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RuleCondition
+     */
+    omit?: RuleConditionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RuleConditionInclude<ExtArgs> | null
+    /**
+     * Filter, which RuleCondition to fetch.
+     */
+    where?: RuleConditionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RuleConditions to fetch.
+     */
+    orderBy?: RuleConditionOrderByWithRelationInput | RuleConditionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for RuleConditions.
+     */
+    cursor?: RuleConditionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RuleConditions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RuleConditions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of RuleConditions.
+     */
+    distinct?: RuleConditionScalarFieldEnum | RuleConditionScalarFieldEnum[]
+  }
+
+  /**
+   * RuleCondition findMany
+   */
+  export type RuleConditionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RuleCondition
+     */
+    select?: RuleConditionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RuleCondition
+     */
+    omit?: RuleConditionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RuleConditionInclude<ExtArgs> | null
+    /**
+     * Filter, which RuleConditions to fetch.
+     */
+    where?: RuleConditionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RuleConditions to fetch.
+     */
+    orderBy?: RuleConditionOrderByWithRelationInput | RuleConditionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing RuleConditions.
+     */
+    cursor?: RuleConditionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RuleConditions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RuleConditions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of RuleConditions.
+     */
+    distinct?: RuleConditionScalarFieldEnum | RuleConditionScalarFieldEnum[]
+  }
+
+  /**
+   * RuleCondition create
+   */
+  export type RuleConditionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RuleCondition
+     */
+    select?: RuleConditionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RuleCondition
+     */
+    omit?: RuleConditionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RuleConditionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a RuleCondition.
+     */
+    data: XOR<RuleConditionCreateInput, RuleConditionUncheckedCreateInput>
+  }
+
+  /**
+   * RuleCondition createMany
+   */
+  export type RuleConditionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many RuleConditions.
+     */
+    data: RuleConditionCreateManyInput | RuleConditionCreateManyInput[]
+  }
+
+  /**
+   * RuleCondition createManyAndReturn
+   */
+  export type RuleConditionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RuleCondition
+     */
+    select?: RuleConditionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the RuleCondition
+     */
+    omit?: RuleConditionOmit<ExtArgs> | null
+    /**
+     * The data used to create many RuleConditions.
+     */
+    data: RuleConditionCreateManyInput | RuleConditionCreateManyInput[]
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RuleConditionIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * RuleCondition update
+   */
+  export type RuleConditionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RuleCondition
+     */
+    select?: RuleConditionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RuleCondition
+     */
+    omit?: RuleConditionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RuleConditionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a RuleCondition.
+     */
+    data: XOR<RuleConditionUpdateInput, RuleConditionUncheckedUpdateInput>
+    /**
+     * Choose, which RuleCondition to update.
+     */
+    where: RuleConditionWhereUniqueInput
+  }
+
+  /**
+   * RuleCondition updateMany
+   */
+  export type RuleConditionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update RuleConditions.
+     */
+    data: XOR<RuleConditionUpdateManyMutationInput, RuleConditionUncheckedUpdateManyInput>
+    /**
+     * Filter which RuleConditions to update
+     */
+    where?: RuleConditionWhereInput
+    /**
+     * Limit how many RuleConditions to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * RuleCondition updateManyAndReturn
+   */
+  export type RuleConditionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RuleCondition
+     */
+    select?: RuleConditionSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the RuleCondition
+     */
+    omit?: RuleConditionOmit<ExtArgs> | null
+    /**
+     * The data used to update RuleConditions.
+     */
+    data: XOR<RuleConditionUpdateManyMutationInput, RuleConditionUncheckedUpdateManyInput>
+    /**
+     * Filter which RuleConditions to update
+     */
+    where?: RuleConditionWhereInput
+    /**
+     * Limit how many RuleConditions to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RuleConditionIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * RuleCondition upsert
+   */
+  export type RuleConditionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RuleCondition
+     */
+    select?: RuleConditionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RuleCondition
+     */
+    omit?: RuleConditionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RuleConditionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the RuleCondition to update in case it exists.
+     */
+    where: RuleConditionWhereUniqueInput
+    /**
+     * In case the RuleCondition found by the `where` argument doesn't exist, create a new RuleCondition with this data.
+     */
+    create: XOR<RuleConditionCreateInput, RuleConditionUncheckedCreateInput>
+    /**
+     * In case the RuleCondition was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<RuleConditionUpdateInput, RuleConditionUncheckedUpdateInput>
+  }
+
+  /**
+   * RuleCondition delete
+   */
+  export type RuleConditionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RuleCondition
+     */
+    select?: RuleConditionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RuleCondition
+     */
+    omit?: RuleConditionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RuleConditionInclude<ExtArgs> | null
+    /**
+     * Filter which RuleCondition to delete.
+     */
+    where: RuleConditionWhereUniqueInput
+  }
+
+  /**
+   * RuleCondition deleteMany
+   */
+  export type RuleConditionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which RuleConditions to delete
+     */
+    where?: RuleConditionWhereInput
+    /**
+     * Limit how many RuleConditions to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * RuleCondition without action
+   */
+  export type RuleConditionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RuleCondition
+     */
+    select?: RuleConditionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RuleCondition
+     */
+    omit?: RuleConditionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RuleConditionInclude<ExtArgs> | null
   }
 
 
@@ -6400,6 +7803,8 @@ export namespace Prisma {
     owner: $Enums.Owner | null
     reviewed: boolean | null
     bucket: $Enums.Bucket | null
+    categoryPinned: boolean | null
+    bucketPinned: boolean | null
     originalAmount: Decimal | null
     originalCurrency: string | null
     statementFileId: string | null
@@ -6418,6 +7823,8 @@ export namespace Prisma {
     owner: $Enums.Owner | null
     reviewed: boolean | null
     bucket: $Enums.Bucket | null
+    categoryPinned: boolean | null
+    bucketPinned: boolean | null
     originalAmount: Decimal | null
     originalCurrency: string | null
     statementFileId: string | null
@@ -6436,6 +7843,8 @@ export namespace Prisma {
     owner: number
     reviewed: number
     bucket: number
+    categoryPinned: number
+    bucketPinned: number
     originalAmount: number
     originalCurrency: number
     statementFileId: number
@@ -6466,6 +7875,8 @@ export namespace Prisma {
     owner?: true
     reviewed?: true
     bucket?: true
+    categoryPinned?: true
+    bucketPinned?: true
     originalAmount?: true
     originalCurrency?: true
     statementFileId?: true
@@ -6484,6 +7895,8 @@ export namespace Prisma {
     owner?: true
     reviewed?: true
     bucket?: true
+    categoryPinned?: true
+    bucketPinned?: true
     originalAmount?: true
     originalCurrency?: true
     statementFileId?: true
@@ -6502,6 +7915,8 @@ export namespace Prisma {
     owner?: true
     reviewed?: true
     bucket?: true
+    categoryPinned?: true
+    bucketPinned?: true
     originalAmount?: true
     originalCurrency?: true
     statementFileId?: true
@@ -6607,6 +8022,8 @@ export namespace Prisma {
     owner: $Enums.Owner
     reviewed: boolean
     bucket: $Enums.Bucket | null
+    categoryPinned: boolean
+    bucketPinned: boolean
     originalAmount: Decimal | null
     originalCurrency: string | null
     statementFileId: string | null
@@ -6644,6 +8061,8 @@ export namespace Prisma {
     owner?: boolean
     reviewed?: boolean
     bucket?: boolean
+    categoryPinned?: boolean
+    bucketPinned?: boolean
     originalAmount?: boolean
     originalCurrency?: boolean
     statementFileId?: boolean
@@ -6664,6 +8083,8 @@ export namespace Prisma {
     owner?: boolean
     reviewed?: boolean
     bucket?: boolean
+    categoryPinned?: boolean
+    bucketPinned?: boolean
     originalAmount?: boolean
     originalCurrency?: boolean
     statementFileId?: boolean
@@ -6684,6 +8105,8 @@ export namespace Prisma {
     owner?: boolean
     reviewed?: boolean
     bucket?: boolean
+    categoryPinned?: boolean
+    bucketPinned?: boolean
     originalAmount?: boolean
     originalCurrency?: boolean
     statementFileId?: boolean
@@ -6704,12 +8127,14 @@ export namespace Prisma {
     owner?: boolean
     reviewed?: boolean
     bucket?: boolean
+    categoryPinned?: boolean
+    bucketPinned?: boolean
     originalAmount?: boolean
     originalCurrency?: boolean
     statementFileId?: boolean
   }
 
-  export type TransactionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "description" | "amount" | "type" | "date" | "createdAt" | "categoryId" | "externalId" | "note" | "owner" | "reviewed" | "bucket" | "originalAmount" | "originalCurrency" | "statementFileId", ExtArgs["result"]["transaction"]>
+  export type TransactionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "description" | "amount" | "type" | "date" | "createdAt" | "categoryId" | "externalId" | "note" | "owner" | "reviewed" | "bucket" | "categoryPinned" | "bucketPinned" | "originalAmount" | "originalCurrency" | "statementFileId", ExtArgs["result"]["transaction"]>
   export type TransactionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     category?: boolean | CategoryDefaultArgs<ExtArgs>
     statementFile?: boolean | Transaction$statementFileArgs<ExtArgs>
@@ -6742,6 +8167,12 @@ export namespace Prisma {
       owner: $Enums.Owner
       reviewed: boolean
       bucket: $Enums.Bucket | null
+      /**
+       * Set automatically when the field is edited by hand. Rules skip pinned
+       * fields, so "Run all rules" can never stamp over a deliberate choice.
+       */
+      categoryPinned: boolean
+      bucketPinned: boolean
       originalAmount: Prisma.Decimal | null
       originalCurrency: string | null
       /**
@@ -7187,6 +8618,8 @@ export namespace Prisma {
     readonly owner: FieldRef<"Transaction", 'Owner'>
     readonly reviewed: FieldRef<"Transaction", 'Boolean'>
     readonly bucket: FieldRef<"Transaction", 'Bucket'>
+    readonly categoryPinned: FieldRef<"Transaction", 'Boolean'>
+    readonly bucketPinned: FieldRef<"Transaction", 'Boolean'>
     readonly originalAmount: FieldRef<"Transaction", 'Decimal'>
     readonly originalCurrency: FieldRef<"Transaction", 'String'>
     readonly statementFileId: FieldRef<"Transaction", 'String'>
@@ -28717,22 +30150,37 @@ export namespace Prisma {
   export const CategoryScalarFieldEnum: {
     id: 'id',
     name: 'name',
-    color: 'color',
-    bucket: 'bucket'
+    color: 'color'
   };
 
   export type CategoryScalarFieldEnum = (typeof CategoryScalarFieldEnum)[keyof typeof CategoryScalarFieldEnum]
 
 
-  export const CategoryRuleScalarFieldEnum: {
+  export const RuleScalarFieldEnum: {
     id: 'id',
-    pattern: 'pattern',
+    kind: 'kind',
+    position: 'position',
+    joinOperator: 'joinOperator',
     bank: 'bank',
     categoryId: 'categoryId',
+    bucket: 'bucket',
     createdAt: 'createdAt'
   };
 
-  export type CategoryRuleScalarFieldEnum = (typeof CategoryRuleScalarFieldEnum)[keyof typeof CategoryRuleScalarFieldEnum]
+  export type RuleScalarFieldEnum = (typeof RuleScalarFieldEnum)[keyof typeof RuleScalarFieldEnum]
+
+
+  export const RuleConditionScalarFieldEnum: {
+    id: 'id',
+    ruleId: 'ruleId',
+    field: 'field',
+    operator: 'operator',
+    value: 'value',
+    negate: 'negate',
+    position: 'position'
+  };
+
+  export type RuleConditionScalarFieldEnum = (typeof RuleConditionScalarFieldEnum)[keyof typeof RuleConditionScalarFieldEnum]
 
 
   export const TransactionScalarFieldEnum: {
@@ -28748,6 +30196,8 @@ export namespace Prisma {
     owner: 'owner',
     reviewed: 'reviewed',
     bucket: 'bucket',
+    categoryPinned: 'categoryPinned',
+    bucketPinned: 'bucketPinned',
     originalAmount: 'originalAmount',
     originalCurrency: 'originalCurrency',
     statementFileId: 'statementFileId'
@@ -29102,9 +30552,51 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'RuleKind'
+   */
+  export type EnumRuleKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RuleKind'>
+    
+
+
+  /**
+   * Reference to a field of type 'Int'
+   */
+  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+    
+
+
+  /**
+   * Reference to a field of type 'RuleJoin'
+   */
+  export type EnumRuleJoinFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RuleJoin'>
+    
+
+
+  /**
    * Reference to a field of type 'Bucket'
    */
   export type EnumBucketFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Bucket'>
+    
+
+
+  /**
+   * Reference to a field of type 'RuleField'
+   */
+  export type EnumRuleFieldFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RuleField'>
+    
+
+
+  /**
+   * Reference to a field of type 'RuleOperator'
+   */
+  export type EnumRuleOperatorFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RuleOperator'>
+    
+
+
+  /**
+   * Reference to a field of type 'Boolean'
+   */
+  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 
@@ -29119,20 +30611,6 @@ export namespace Prisma {
    * Reference to a field of type 'TransactionType'
    */
   export type EnumTransactionTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TransactionType'>
-    
-
-
-  /**
-   * Reference to a field of type 'Boolean'
-   */
-  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
-    
-
-
-  /**
-   * Reference to a field of type 'Int'
-   */
-  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
     
 
 
@@ -29235,18 +30713,16 @@ export namespace Prisma {
     id?: StringFilter<"Category"> | string
     name?: StringFilter<"Category"> | string
     color?: StringFilter<"Category"> | string
-    bucket?: EnumBucketNullableFilter<"Category"> | $Enums.Bucket | null
     transactions?: TransactionListRelationFilter
-    categoryRules?: CategoryRuleListRelationFilter
+    rules?: RuleListRelationFilter
   }
 
   export type CategoryOrderByWithRelationInput = {
     id?: SortOrder
     name?: SortOrder
     color?: SortOrder
-    bucket?: SortOrderInput | SortOrder
     transactions?: TransactionOrderByRelationAggregateInput
-    categoryRules?: CategoryRuleOrderByRelationAggregateInput
+    rules?: RuleOrderByRelationAggregateInput
   }
 
   export type CategoryWhereUniqueInput = Prisma.AtLeast<{
@@ -29256,16 +30732,14 @@ export namespace Prisma {
     OR?: CategoryWhereInput[]
     NOT?: CategoryWhereInput | CategoryWhereInput[]
     color?: StringFilter<"Category"> | string
-    bucket?: EnumBucketNullableFilter<"Category"> | $Enums.Bucket | null
     transactions?: TransactionListRelationFilter
-    categoryRules?: CategoryRuleListRelationFilter
+    rules?: RuleListRelationFilter
   }, "id" | "name">
 
   export type CategoryOrderByWithAggregationInput = {
     id?: SortOrder
     name?: SortOrder
     color?: SortOrder
-    bucket?: SortOrderInput | SortOrder
     _count?: CategoryCountOrderByAggregateInput
     _max?: CategoryMaxOrderByAggregateInput
     _min?: CategoryMinOrderByAggregateInput
@@ -29278,63 +30752,148 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Category"> | string
     name?: StringWithAggregatesFilter<"Category"> | string
     color?: StringWithAggregatesFilter<"Category"> | string
-    bucket?: EnumBucketNullableWithAggregatesFilter<"Category"> | $Enums.Bucket | null
   }
 
-  export type CategoryRuleWhereInput = {
-    AND?: CategoryRuleWhereInput | CategoryRuleWhereInput[]
-    OR?: CategoryRuleWhereInput[]
-    NOT?: CategoryRuleWhereInput | CategoryRuleWhereInput[]
-    id?: StringFilter<"CategoryRule"> | string
-    pattern?: StringFilter<"CategoryRule"> | string
-    bank?: StringNullableFilter<"CategoryRule"> | string | null
-    categoryId?: StringFilter<"CategoryRule"> | string
-    createdAt?: DateTimeFilter<"CategoryRule"> | Date | string
-    category?: XOR<CategoryScalarRelationFilter, CategoryWhereInput>
+  export type RuleWhereInput = {
+    AND?: RuleWhereInput | RuleWhereInput[]
+    OR?: RuleWhereInput[]
+    NOT?: RuleWhereInput | RuleWhereInput[]
+    id?: StringFilter<"Rule"> | string
+    kind?: EnumRuleKindFilter<"Rule"> | $Enums.RuleKind
+    position?: IntFilter<"Rule"> | number
+    joinOperator?: EnumRuleJoinFilter<"Rule"> | $Enums.RuleJoin
+    bank?: StringNullableFilter<"Rule"> | string | null
+    categoryId?: StringNullableFilter<"Rule"> | string | null
+    bucket?: EnumBucketNullableFilter<"Rule"> | $Enums.Bucket | null
+    createdAt?: DateTimeFilter<"Rule"> | Date | string
+    category?: XOR<CategoryNullableScalarRelationFilter, CategoryWhereInput> | null
+    conditions?: RuleConditionListRelationFilter
   }
 
-  export type CategoryRuleOrderByWithRelationInput = {
+  export type RuleOrderByWithRelationInput = {
     id?: SortOrder
-    pattern?: SortOrder
+    kind?: SortOrder
+    position?: SortOrder
+    joinOperator?: SortOrder
     bank?: SortOrderInput | SortOrder
-    categoryId?: SortOrder
+    categoryId?: SortOrderInput | SortOrder
+    bucket?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     category?: CategoryOrderByWithRelationInput
+    conditions?: RuleConditionOrderByRelationAggregateInput
   }
 
-  export type CategoryRuleWhereUniqueInput = Prisma.AtLeast<{
+  export type RuleWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    pattern_bank?: CategoryRulePatternBankCompoundUniqueInput
-    AND?: CategoryRuleWhereInput | CategoryRuleWhereInput[]
-    OR?: CategoryRuleWhereInput[]
-    NOT?: CategoryRuleWhereInput | CategoryRuleWhereInput[]
-    pattern?: StringFilter<"CategoryRule"> | string
-    bank?: StringNullableFilter<"CategoryRule"> | string | null
-    categoryId?: StringFilter<"CategoryRule"> | string
-    createdAt?: DateTimeFilter<"CategoryRule"> | Date | string
-    category?: XOR<CategoryScalarRelationFilter, CategoryWhereInput>
-  }, "id" | "pattern_bank">
+    AND?: RuleWhereInput | RuleWhereInput[]
+    OR?: RuleWhereInput[]
+    NOT?: RuleWhereInput | RuleWhereInput[]
+    kind?: EnumRuleKindFilter<"Rule"> | $Enums.RuleKind
+    position?: IntFilter<"Rule"> | number
+    joinOperator?: EnumRuleJoinFilter<"Rule"> | $Enums.RuleJoin
+    bank?: StringNullableFilter<"Rule"> | string | null
+    categoryId?: StringNullableFilter<"Rule"> | string | null
+    bucket?: EnumBucketNullableFilter<"Rule"> | $Enums.Bucket | null
+    createdAt?: DateTimeFilter<"Rule"> | Date | string
+    category?: XOR<CategoryNullableScalarRelationFilter, CategoryWhereInput> | null
+    conditions?: RuleConditionListRelationFilter
+  }, "id">
 
-  export type CategoryRuleOrderByWithAggregationInput = {
+  export type RuleOrderByWithAggregationInput = {
     id?: SortOrder
-    pattern?: SortOrder
+    kind?: SortOrder
+    position?: SortOrder
+    joinOperator?: SortOrder
     bank?: SortOrderInput | SortOrder
-    categoryId?: SortOrder
+    categoryId?: SortOrderInput | SortOrder
+    bucket?: SortOrderInput | SortOrder
     createdAt?: SortOrder
-    _count?: CategoryRuleCountOrderByAggregateInput
-    _max?: CategoryRuleMaxOrderByAggregateInput
-    _min?: CategoryRuleMinOrderByAggregateInput
+    _count?: RuleCountOrderByAggregateInput
+    _avg?: RuleAvgOrderByAggregateInput
+    _max?: RuleMaxOrderByAggregateInput
+    _min?: RuleMinOrderByAggregateInput
+    _sum?: RuleSumOrderByAggregateInput
   }
 
-  export type CategoryRuleScalarWhereWithAggregatesInput = {
-    AND?: CategoryRuleScalarWhereWithAggregatesInput | CategoryRuleScalarWhereWithAggregatesInput[]
-    OR?: CategoryRuleScalarWhereWithAggregatesInput[]
-    NOT?: CategoryRuleScalarWhereWithAggregatesInput | CategoryRuleScalarWhereWithAggregatesInput[]
-    id?: StringWithAggregatesFilter<"CategoryRule"> | string
-    pattern?: StringWithAggregatesFilter<"CategoryRule"> | string
-    bank?: StringNullableWithAggregatesFilter<"CategoryRule"> | string | null
-    categoryId?: StringWithAggregatesFilter<"CategoryRule"> | string
-    createdAt?: DateTimeWithAggregatesFilter<"CategoryRule"> | Date | string
+  export type RuleScalarWhereWithAggregatesInput = {
+    AND?: RuleScalarWhereWithAggregatesInput | RuleScalarWhereWithAggregatesInput[]
+    OR?: RuleScalarWhereWithAggregatesInput[]
+    NOT?: RuleScalarWhereWithAggregatesInput | RuleScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Rule"> | string
+    kind?: EnumRuleKindWithAggregatesFilter<"Rule"> | $Enums.RuleKind
+    position?: IntWithAggregatesFilter<"Rule"> | number
+    joinOperator?: EnumRuleJoinWithAggregatesFilter<"Rule"> | $Enums.RuleJoin
+    bank?: StringNullableWithAggregatesFilter<"Rule"> | string | null
+    categoryId?: StringNullableWithAggregatesFilter<"Rule"> | string | null
+    bucket?: EnumBucketNullableWithAggregatesFilter<"Rule"> | $Enums.Bucket | null
+    createdAt?: DateTimeWithAggregatesFilter<"Rule"> | Date | string
+  }
+
+  export type RuleConditionWhereInput = {
+    AND?: RuleConditionWhereInput | RuleConditionWhereInput[]
+    OR?: RuleConditionWhereInput[]
+    NOT?: RuleConditionWhereInput | RuleConditionWhereInput[]
+    id?: StringFilter<"RuleCondition"> | string
+    ruleId?: StringFilter<"RuleCondition"> | string
+    field?: EnumRuleFieldFilter<"RuleCondition"> | $Enums.RuleField
+    operator?: EnumRuleOperatorFilter<"RuleCondition"> | $Enums.RuleOperator
+    value?: StringFilter<"RuleCondition"> | string
+    negate?: BoolFilter<"RuleCondition"> | boolean
+    position?: IntFilter<"RuleCondition"> | number
+    rule?: XOR<RuleScalarRelationFilter, RuleWhereInput>
+  }
+
+  export type RuleConditionOrderByWithRelationInput = {
+    id?: SortOrder
+    ruleId?: SortOrder
+    field?: SortOrder
+    operator?: SortOrder
+    value?: SortOrder
+    negate?: SortOrder
+    position?: SortOrder
+    rule?: RuleOrderByWithRelationInput
+  }
+
+  export type RuleConditionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: RuleConditionWhereInput | RuleConditionWhereInput[]
+    OR?: RuleConditionWhereInput[]
+    NOT?: RuleConditionWhereInput | RuleConditionWhereInput[]
+    ruleId?: StringFilter<"RuleCondition"> | string
+    field?: EnumRuleFieldFilter<"RuleCondition"> | $Enums.RuleField
+    operator?: EnumRuleOperatorFilter<"RuleCondition"> | $Enums.RuleOperator
+    value?: StringFilter<"RuleCondition"> | string
+    negate?: BoolFilter<"RuleCondition"> | boolean
+    position?: IntFilter<"RuleCondition"> | number
+    rule?: XOR<RuleScalarRelationFilter, RuleWhereInput>
+  }, "id">
+
+  export type RuleConditionOrderByWithAggregationInput = {
+    id?: SortOrder
+    ruleId?: SortOrder
+    field?: SortOrder
+    operator?: SortOrder
+    value?: SortOrder
+    negate?: SortOrder
+    position?: SortOrder
+    _count?: RuleConditionCountOrderByAggregateInput
+    _avg?: RuleConditionAvgOrderByAggregateInput
+    _max?: RuleConditionMaxOrderByAggregateInput
+    _min?: RuleConditionMinOrderByAggregateInput
+    _sum?: RuleConditionSumOrderByAggregateInput
+  }
+
+  export type RuleConditionScalarWhereWithAggregatesInput = {
+    AND?: RuleConditionScalarWhereWithAggregatesInput | RuleConditionScalarWhereWithAggregatesInput[]
+    OR?: RuleConditionScalarWhereWithAggregatesInput[]
+    NOT?: RuleConditionScalarWhereWithAggregatesInput | RuleConditionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"RuleCondition"> | string
+    ruleId?: StringWithAggregatesFilter<"RuleCondition"> | string
+    field?: EnumRuleFieldWithAggregatesFilter<"RuleCondition"> | $Enums.RuleField
+    operator?: EnumRuleOperatorWithAggregatesFilter<"RuleCondition"> | $Enums.RuleOperator
+    value?: StringWithAggregatesFilter<"RuleCondition"> | string
+    negate?: BoolWithAggregatesFilter<"RuleCondition"> | boolean
+    position?: IntWithAggregatesFilter<"RuleCondition"> | number
   }
 
   export type TransactionWhereInput = {
@@ -29353,6 +30912,8 @@ export namespace Prisma {
     owner?: EnumOwnerFilter<"Transaction"> | $Enums.Owner
     reviewed?: BoolFilter<"Transaction"> | boolean
     bucket?: EnumBucketNullableFilter<"Transaction"> | $Enums.Bucket | null
+    categoryPinned?: BoolFilter<"Transaction"> | boolean
+    bucketPinned?: BoolFilter<"Transaction"> | boolean
     originalAmount?: DecimalNullableFilter<"Transaction"> | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: StringNullableFilter<"Transaction"> | string | null
     statementFileId?: StringNullableFilter<"Transaction"> | string | null
@@ -29373,6 +30934,8 @@ export namespace Prisma {
     owner?: SortOrder
     reviewed?: SortOrder
     bucket?: SortOrderInput | SortOrder
+    categoryPinned?: SortOrder
+    bucketPinned?: SortOrder
     originalAmount?: SortOrderInput | SortOrder
     originalCurrency?: SortOrderInput | SortOrder
     statementFileId?: SortOrderInput | SortOrder
@@ -29396,6 +30959,8 @@ export namespace Prisma {
     owner?: EnumOwnerFilter<"Transaction"> | $Enums.Owner
     reviewed?: BoolFilter<"Transaction"> | boolean
     bucket?: EnumBucketNullableFilter<"Transaction"> | $Enums.Bucket | null
+    categoryPinned?: BoolFilter<"Transaction"> | boolean
+    bucketPinned?: BoolFilter<"Transaction"> | boolean
     originalAmount?: DecimalNullableFilter<"Transaction"> | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: StringNullableFilter<"Transaction"> | string | null
     statementFileId?: StringNullableFilter<"Transaction"> | string | null
@@ -29416,6 +30981,8 @@ export namespace Prisma {
     owner?: SortOrder
     reviewed?: SortOrder
     bucket?: SortOrderInput | SortOrder
+    categoryPinned?: SortOrder
+    bucketPinned?: SortOrder
     originalAmount?: SortOrderInput | SortOrder
     originalCurrency?: SortOrderInput | SortOrder
     statementFileId?: SortOrderInput | SortOrder
@@ -29442,6 +31009,8 @@ export namespace Prisma {
     owner?: EnumOwnerWithAggregatesFilter<"Transaction"> | $Enums.Owner
     reviewed?: BoolWithAggregatesFilter<"Transaction"> | boolean
     bucket?: EnumBucketNullableWithAggregatesFilter<"Transaction"> | $Enums.Bucket | null
+    categoryPinned?: BoolWithAggregatesFilter<"Transaction"> | boolean
+    bucketPinned?: BoolWithAggregatesFilter<"Transaction"> | boolean
     originalAmount?: DecimalNullableWithAggregatesFilter<"Transaction"> | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: StringNullableWithAggregatesFilter<"Transaction"> | string | null
     statementFileId?: StringNullableWithAggregatesFilter<"Transaction"> | string | null
@@ -31034,112 +32603,199 @@ export namespace Prisma {
     id?: string
     name: string
     color: string
-    bucket?: $Enums.Bucket | null
     transactions?: TransactionCreateNestedManyWithoutCategoryInput
-    categoryRules?: CategoryRuleCreateNestedManyWithoutCategoryInput
+    rules?: RuleCreateNestedManyWithoutCategoryInput
   }
 
   export type CategoryUncheckedCreateInput = {
     id?: string
     name: string
     color: string
-    bucket?: $Enums.Bucket | null
     transactions?: TransactionUncheckedCreateNestedManyWithoutCategoryInput
-    categoryRules?: CategoryRuleUncheckedCreateNestedManyWithoutCategoryInput
+    rules?: RuleUncheckedCreateNestedManyWithoutCategoryInput
   }
 
   export type CategoryUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
-    bucket?: NullableEnumBucketFieldUpdateOperationsInput | $Enums.Bucket | null
     transactions?: TransactionUpdateManyWithoutCategoryNestedInput
-    categoryRules?: CategoryRuleUpdateManyWithoutCategoryNestedInput
+    rules?: RuleUpdateManyWithoutCategoryNestedInput
   }
 
   export type CategoryUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
-    bucket?: NullableEnumBucketFieldUpdateOperationsInput | $Enums.Bucket | null
     transactions?: TransactionUncheckedUpdateManyWithoutCategoryNestedInput
-    categoryRules?: CategoryRuleUncheckedUpdateManyWithoutCategoryNestedInput
+    rules?: RuleUncheckedUpdateManyWithoutCategoryNestedInput
   }
 
   export type CategoryCreateManyInput = {
     id?: string
     name: string
     color: string
-    bucket?: $Enums.Bucket | null
   }
 
   export type CategoryUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
-    bucket?: NullableEnumBucketFieldUpdateOperationsInput | $Enums.Bucket | null
   }
 
   export type CategoryUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type RuleCreateInput = {
+    id?: string
+    kind: $Enums.RuleKind
+    position: number
+    joinOperator?: $Enums.RuleJoin
+    bank?: string | null
+    bucket?: $Enums.Bucket | null
+    createdAt?: Date | string
+    category?: CategoryCreateNestedOneWithoutRulesInput
+    conditions?: RuleConditionCreateNestedManyWithoutRuleInput
+  }
+
+  export type RuleUncheckedCreateInput = {
+    id?: string
+    kind: $Enums.RuleKind
+    position: number
+    joinOperator?: $Enums.RuleJoin
+    bank?: string | null
+    categoryId?: string | null
+    bucket?: $Enums.Bucket | null
+    createdAt?: Date | string
+    conditions?: RuleConditionUncheckedCreateNestedManyWithoutRuleInput
+  }
+
+  export type RuleUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    kind?: EnumRuleKindFieldUpdateOperationsInput | $Enums.RuleKind
+    position?: IntFieldUpdateOperationsInput | number
+    joinOperator?: EnumRuleJoinFieldUpdateOperationsInput | $Enums.RuleJoin
+    bank?: NullableStringFieldUpdateOperationsInput | string | null
     bucket?: NullableEnumBucketFieldUpdateOperationsInput | $Enums.Bucket | null
-  }
-
-  export type CategoryRuleCreateInput = {
-    id?: string
-    pattern: string
-    bank?: string | null
-    createdAt?: Date | string
-    category: CategoryCreateNestedOneWithoutCategoryRulesInput
-  }
-
-  export type CategoryRuleUncheckedCreateInput = {
-    id?: string
-    pattern: string
-    bank?: string | null
-    categoryId: string
-    createdAt?: Date | string
-  }
-
-  export type CategoryRuleUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    pattern?: StringFieldUpdateOperationsInput | string
-    bank?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    category?: CategoryUpdateOneRequiredWithoutCategoryRulesNestedInput
+    category?: CategoryUpdateOneWithoutRulesNestedInput
+    conditions?: RuleConditionUpdateManyWithoutRuleNestedInput
   }
 
-  export type CategoryRuleUncheckedUpdateInput = {
+  export type RuleUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    pattern?: StringFieldUpdateOperationsInput | string
+    kind?: EnumRuleKindFieldUpdateOperationsInput | $Enums.RuleKind
+    position?: IntFieldUpdateOperationsInput | number
+    joinOperator?: EnumRuleJoinFieldUpdateOperationsInput | $Enums.RuleJoin
     bank?: NullableStringFieldUpdateOperationsInput | string | null
-    categoryId?: StringFieldUpdateOperationsInput | string
+    categoryId?: NullableStringFieldUpdateOperationsInput | string | null
+    bucket?: NullableEnumBucketFieldUpdateOperationsInput | $Enums.Bucket | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    conditions?: RuleConditionUncheckedUpdateManyWithoutRuleNestedInput
   }
 
-  export type CategoryRuleCreateManyInput = {
+  export type RuleCreateManyInput = {
     id?: string
-    pattern: string
+    kind: $Enums.RuleKind
+    position: number
+    joinOperator?: $Enums.RuleJoin
     bank?: string | null
-    categoryId: string
+    categoryId?: string | null
+    bucket?: $Enums.Bucket | null
     createdAt?: Date | string
   }
 
-  export type CategoryRuleUpdateManyMutationInput = {
+  export type RuleUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    pattern?: StringFieldUpdateOperationsInput | string
+    kind?: EnumRuleKindFieldUpdateOperationsInput | $Enums.RuleKind
+    position?: IntFieldUpdateOperationsInput | number
+    joinOperator?: EnumRuleJoinFieldUpdateOperationsInput | $Enums.RuleJoin
     bank?: NullableStringFieldUpdateOperationsInput | string | null
+    bucket?: NullableEnumBucketFieldUpdateOperationsInput | $Enums.Bucket | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type CategoryRuleUncheckedUpdateManyInput = {
+  export type RuleUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    pattern?: StringFieldUpdateOperationsInput | string
+    kind?: EnumRuleKindFieldUpdateOperationsInput | $Enums.RuleKind
+    position?: IntFieldUpdateOperationsInput | number
+    joinOperator?: EnumRuleJoinFieldUpdateOperationsInput | $Enums.RuleJoin
     bank?: NullableStringFieldUpdateOperationsInput | string | null
-    categoryId?: StringFieldUpdateOperationsInput | string
+    categoryId?: NullableStringFieldUpdateOperationsInput | string | null
+    bucket?: NullableEnumBucketFieldUpdateOperationsInput | $Enums.Bucket | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RuleConditionCreateInput = {
+    id?: string
+    field?: $Enums.RuleField
+    operator?: $Enums.RuleOperator
+    value: string
+    negate?: boolean
+    position: number
+    rule: RuleCreateNestedOneWithoutConditionsInput
+  }
+
+  export type RuleConditionUncheckedCreateInput = {
+    id?: string
+    ruleId: string
+    field?: $Enums.RuleField
+    operator?: $Enums.RuleOperator
+    value: string
+    negate?: boolean
+    position: number
+  }
+
+  export type RuleConditionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    field?: EnumRuleFieldFieldUpdateOperationsInput | $Enums.RuleField
+    operator?: EnumRuleOperatorFieldUpdateOperationsInput | $Enums.RuleOperator
+    value?: StringFieldUpdateOperationsInput | string
+    negate?: BoolFieldUpdateOperationsInput | boolean
+    position?: IntFieldUpdateOperationsInput | number
+    rule?: RuleUpdateOneRequiredWithoutConditionsNestedInput
+  }
+
+  export type RuleConditionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    ruleId?: StringFieldUpdateOperationsInput | string
+    field?: EnumRuleFieldFieldUpdateOperationsInput | $Enums.RuleField
+    operator?: EnumRuleOperatorFieldUpdateOperationsInput | $Enums.RuleOperator
+    value?: StringFieldUpdateOperationsInput | string
+    negate?: BoolFieldUpdateOperationsInput | boolean
+    position?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type RuleConditionCreateManyInput = {
+    id?: string
+    ruleId: string
+    field?: $Enums.RuleField
+    operator?: $Enums.RuleOperator
+    value: string
+    negate?: boolean
+    position: number
+  }
+
+  export type RuleConditionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    field?: EnumRuleFieldFieldUpdateOperationsInput | $Enums.RuleField
+    operator?: EnumRuleOperatorFieldUpdateOperationsInput | $Enums.RuleOperator
+    value?: StringFieldUpdateOperationsInput | string
+    negate?: BoolFieldUpdateOperationsInput | boolean
+    position?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type RuleConditionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    ruleId?: StringFieldUpdateOperationsInput | string
+    field?: EnumRuleFieldFieldUpdateOperationsInput | $Enums.RuleField
+    operator?: EnumRuleOperatorFieldUpdateOperationsInput | $Enums.RuleOperator
+    value?: StringFieldUpdateOperationsInput | string
+    negate?: BoolFieldUpdateOperationsInput | boolean
+    position?: IntFieldUpdateOperationsInput | number
   }
 
   export type TransactionCreateInput = {
@@ -31154,6 +32810,8 @@ export namespace Prisma {
     owner?: $Enums.Owner
     reviewed?: boolean
     bucket?: $Enums.Bucket | null
+    categoryPinned?: boolean
+    bucketPinned?: boolean
     originalAmount?: Decimal | DecimalJsLike | number | string | null
     originalCurrency?: string | null
     category: CategoryCreateNestedOneWithoutTransactionsInput
@@ -31173,6 +32831,8 @@ export namespace Prisma {
     owner?: $Enums.Owner
     reviewed?: boolean
     bucket?: $Enums.Bucket | null
+    categoryPinned?: boolean
+    bucketPinned?: boolean
     originalAmount?: Decimal | DecimalJsLike | number | string | null
     originalCurrency?: string | null
     statementFileId?: string | null
@@ -31190,6 +32850,8 @@ export namespace Prisma {
     owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
     reviewed?: BoolFieldUpdateOperationsInput | boolean
     bucket?: NullableEnumBucketFieldUpdateOperationsInput | $Enums.Bucket | null
+    categoryPinned?: BoolFieldUpdateOperationsInput | boolean
+    bucketPinned?: BoolFieldUpdateOperationsInput | boolean
     originalAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
     category?: CategoryUpdateOneRequiredWithoutTransactionsNestedInput
@@ -31209,6 +32871,8 @@ export namespace Prisma {
     owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
     reviewed?: BoolFieldUpdateOperationsInput | boolean
     bucket?: NullableEnumBucketFieldUpdateOperationsInput | $Enums.Bucket | null
+    categoryPinned?: BoolFieldUpdateOperationsInput | boolean
+    bucketPinned?: BoolFieldUpdateOperationsInput | boolean
     originalAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
     statementFileId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -31227,6 +32891,8 @@ export namespace Prisma {
     owner?: $Enums.Owner
     reviewed?: boolean
     bucket?: $Enums.Bucket | null
+    categoryPinned?: boolean
+    bucketPinned?: boolean
     originalAmount?: Decimal | DecimalJsLike | number | string | null
     originalCurrency?: string | null
     statementFileId?: string | null
@@ -31244,6 +32910,8 @@ export namespace Prisma {
     owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
     reviewed?: BoolFieldUpdateOperationsInput | boolean
     bucket?: NullableEnumBucketFieldUpdateOperationsInput | $Enums.Bucket | null
+    categoryPinned?: BoolFieldUpdateOperationsInput | boolean
+    bucketPinned?: BoolFieldUpdateOperationsInput | boolean
     originalAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
   }
@@ -31261,6 +32929,8 @@ export namespace Prisma {
     owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
     reviewed?: BoolFieldUpdateOperationsInput | boolean
     bucket?: NullableEnumBucketFieldUpdateOperationsInput | $Enums.Bucket | null
+    categoryPinned?: BoolFieldUpdateOperationsInput | boolean
+    bucketPinned?: BoolFieldUpdateOperationsInput | boolean
     originalAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
     statementFileId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -33140,30 +34810,23 @@ export namespace Prisma {
     _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
-  export type EnumBucketNullableFilter<$PrismaModel = never> = {
-    equals?: $Enums.Bucket | EnumBucketFieldRefInput<$PrismaModel> | null
-    in?: $Enums.Bucket[] | null
-    notIn?: $Enums.Bucket[] | null
-    not?: NestedEnumBucketNullableFilter<$PrismaModel> | $Enums.Bucket | null
-  }
-
   export type TransactionListRelationFilter = {
     every?: TransactionWhereInput
     some?: TransactionWhereInput
     none?: TransactionWhereInput
   }
 
-  export type CategoryRuleListRelationFilter = {
-    every?: CategoryRuleWhereInput
-    some?: CategoryRuleWhereInput
-    none?: CategoryRuleWhereInput
+  export type RuleListRelationFilter = {
+    every?: RuleWhereInput
+    some?: RuleWhereInput
+    none?: RuleWhereInput
   }
 
   export type TransactionOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
-  export type CategoryRuleOrderByRelationAggregateInput = {
+  export type RuleOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -33171,21 +34834,142 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     color?: SortOrder
-    bucket?: SortOrder
   }
 
   export type CategoryMaxOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
     color?: SortOrder
-    bucket?: SortOrder
   }
 
   export type CategoryMinOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
     color?: SortOrder
+  }
+
+  export type EnumRuleKindFilter<$PrismaModel = never> = {
+    equals?: $Enums.RuleKind | EnumRuleKindFieldRefInput<$PrismaModel>
+    in?: $Enums.RuleKind[]
+    notIn?: $Enums.RuleKind[]
+    not?: NestedEnumRuleKindFilter<$PrismaModel> | $Enums.RuleKind
+  }
+
+  export type IntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
+  }
+
+  export type EnumRuleJoinFilter<$PrismaModel = never> = {
+    equals?: $Enums.RuleJoin | EnumRuleJoinFieldRefInput<$PrismaModel>
+    in?: $Enums.RuleJoin[]
+    notIn?: $Enums.RuleJoin[]
+    not?: NestedEnumRuleJoinFilter<$PrismaModel> | $Enums.RuleJoin
+  }
+
+  export type EnumBucketNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.Bucket | EnumBucketFieldRefInput<$PrismaModel> | null
+    in?: $Enums.Bucket[] | null
+    notIn?: $Enums.Bucket[] | null
+    not?: NestedEnumBucketNullableFilter<$PrismaModel> | $Enums.Bucket | null
+  }
+
+  export type CategoryNullableScalarRelationFilter = {
+    is?: CategoryWhereInput | null
+    isNot?: CategoryWhereInput | null
+  }
+
+  export type RuleConditionListRelationFilter = {
+    every?: RuleConditionWhereInput
+    some?: RuleConditionWhereInput
+    none?: RuleConditionWhereInput
+  }
+
+  export type RuleConditionOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type RuleCountOrderByAggregateInput = {
+    id?: SortOrder
+    kind?: SortOrder
+    position?: SortOrder
+    joinOperator?: SortOrder
+    bank?: SortOrder
+    categoryId?: SortOrder
     bucket?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type RuleAvgOrderByAggregateInput = {
+    position?: SortOrder
+  }
+
+  export type RuleMaxOrderByAggregateInput = {
+    id?: SortOrder
+    kind?: SortOrder
+    position?: SortOrder
+    joinOperator?: SortOrder
+    bank?: SortOrder
+    categoryId?: SortOrder
+    bucket?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type RuleMinOrderByAggregateInput = {
+    id?: SortOrder
+    kind?: SortOrder
+    position?: SortOrder
+    joinOperator?: SortOrder
+    bank?: SortOrder
+    categoryId?: SortOrder
+    bucket?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type RuleSumOrderByAggregateInput = {
+    position?: SortOrder
+  }
+
+  export type EnumRuleKindWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.RuleKind | EnumRuleKindFieldRefInput<$PrismaModel>
+    in?: $Enums.RuleKind[]
+    notIn?: $Enums.RuleKind[]
+    not?: NestedEnumRuleKindWithAggregatesFilter<$PrismaModel> | $Enums.RuleKind
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumRuleKindFilter<$PrismaModel>
+    _max?: NestedEnumRuleKindFilter<$PrismaModel>
+  }
+
+  export type IntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type EnumRuleJoinWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.RuleJoin | EnumRuleJoinFieldRefInput<$PrismaModel>
+    in?: $Enums.RuleJoin[]
+    notIn?: $Enums.RuleJoin[]
+    not?: NestedEnumRuleJoinWithAggregatesFilter<$PrismaModel> | $Enums.RuleJoin
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumRuleJoinFilter<$PrismaModel>
+    _max?: NestedEnumRuleJoinFilter<$PrismaModel>
   }
 
   export type EnumBucketNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -33198,38 +34982,94 @@ export namespace Prisma {
     _max?: NestedEnumBucketNullableFilter<$PrismaModel>
   }
 
-  export type CategoryScalarRelationFilter = {
-    is?: CategoryWhereInput
-    isNot?: CategoryWhereInput
+  export type EnumRuleFieldFilter<$PrismaModel = never> = {
+    equals?: $Enums.RuleField | EnumRuleFieldFieldRefInput<$PrismaModel>
+    in?: $Enums.RuleField[]
+    notIn?: $Enums.RuleField[]
+    not?: NestedEnumRuleFieldFilter<$PrismaModel> | $Enums.RuleField
   }
 
-  export type CategoryRulePatternBankCompoundUniqueInput = {
-    pattern: string
-    bank: string
+  export type EnumRuleOperatorFilter<$PrismaModel = never> = {
+    equals?: $Enums.RuleOperator | EnumRuleOperatorFieldRefInput<$PrismaModel>
+    in?: $Enums.RuleOperator[]
+    notIn?: $Enums.RuleOperator[]
+    not?: NestedEnumRuleOperatorFilter<$PrismaModel> | $Enums.RuleOperator
   }
 
-  export type CategoryRuleCountOrderByAggregateInput = {
+  export type BoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
+  export type RuleScalarRelationFilter = {
+    is?: RuleWhereInput
+    isNot?: RuleWhereInput
+  }
+
+  export type RuleConditionCountOrderByAggregateInput = {
     id?: SortOrder
-    pattern?: SortOrder
-    bank?: SortOrder
-    categoryId?: SortOrder
-    createdAt?: SortOrder
+    ruleId?: SortOrder
+    field?: SortOrder
+    operator?: SortOrder
+    value?: SortOrder
+    negate?: SortOrder
+    position?: SortOrder
   }
 
-  export type CategoryRuleMaxOrderByAggregateInput = {
-    id?: SortOrder
-    pattern?: SortOrder
-    bank?: SortOrder
-    categoryId?: SortOrder
-    createdAt?: SortOrder
+  export type RuleConditionAvgOrderByAggregateInput = {
+    position?: SortOrder
   }
 
-  export type CategoryRuleMinOrderByAggregateInput = {
+  export type RuleConditionMaxOrderByAggregateInput = {
     id?: SortOrder
-    pattern?: SortOrder
-    bank?: SortOrder
-    categoryId?: SortOrder
-    createdAt?: SortOrder
+    ruleId?: SortOrder
+    field?: SortOrder
+    operator?: SortOrder
+    value?: SortOrder
+    negate?: SortOrder
+    position?: SortOrder
+  }
+
+  export type RuleConditionMinOrderByAggregateInput = {
+    id?: SortOrder
+    ruleId?: SortOrder
+    field?: SortOrder
+    operator?: SortOrder
+    value?: SortOrder
+    negate?: SortOrder
+    position?: SortOrder
+  }
+
+  export type RuleConditionSumOrderByAggregateInput = {
+    position?: SortOrder
+  }
+
+  export type EnumRuleFieldWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.RuleField | EnumRuleFieldFieldRefInput<$PrismaModel>
+    in?: $Enums.RuleField[]
+    notIn?: $Enums.RuleField[]
+    not?: NestedEnumRuleFieldWithAggregatesFilter<$PrismaModel> | $Enums.RuleField
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumRuleFieldFilter<$PrismaModel>
+    _max?: NestedEnumRuleFieldFilter<$PrismaModel>
+  }
+
+  export type EnumRuleOperatorWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.RuleOperator | EnumRuleOperatorFieldRefInput<$PrismaModel>
+    in?: $Enums.RuleOperator[]
+    notIn?: $Enums.RuleOperator[]
+    not?: NestedEnumRuleOperatorWithAggregatesFilter<$PrismaModel> | $Enums.RuleOperator
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumRuleOperatorFilter<$PrismaModel>
+    _max?: NestedEnumRuleOperatorFilter<$PrismaModel>
+  }
+
+  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type DecimalFilter<$PrismaModel = never> = {
@@ -33257,11 +35097,6 @@ export namespace Prisma {
     not?: NestedEnumOwnerFilter<$PrismaModel> | $Enums.Owner
   }
 
-  export type BoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
-  }
-
   export type DecimalNullableFilter<$PrismaModel = never> = {
     equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel> | null
     in?: Decimal[] | DecimalJsLike[] | number[] | string[] | null
@@ -33271,6 +35106,11 @@ export namespace Prisma {
     gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
     gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
     not?: NestedDecimalNullableFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
+  }
+
+  export type CategoryScalarRelationFilter = {
+    is?: CategoryWhereInput
+    isNot?: CategoryWhereInput
   }
 
   export type StatementFileNullableScalarRelationFilter = {
@@ -33291,6 +35131,8 @@ export namespace Prisma {
     owner?: SortOrder
     reviewed?: SortOrder
     bucket?: SortOrder
+    categoryPinned?: SortOrder
+    bucketPinned?: SortOrder
     originalAmount?: SortOrder
     originalCurrency?: SortOrder
     statementFileId?: SortOrder
@@ -33314,6 +35156,8 @@ export namespace Prisma {
     owner?: SortOrder
     reviewed?: SortOrder
     bucket?: SortOrder
+    categoryPinned?: SortOrder
+    bucketPinned?: SortOrder
     originalAmount?: SortOrder
     originalCurrency?: SortOrder
     statementFileId?: SortOrder
@@ -33332,6 +35176,8 @@ export namespace Prisma {
     owner?: SortOrder
     reviewed?: SortOrder
     bucket?: SortOrder
+    categoryPinned?: SortOrder
+    bucketPinned?: SortOrder
     originalAmount?: SortOrder
     originalCurrency?: SortOrder
     statementFileId?: SortOrder
@@ -33378,14 +35224,6 @@ export namespace Prisma {
     _max?: NestedEnumOwnerFilter<$PrismaModel>
   }
 
-  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
-  }
-
   export type DecimalNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel> | null
     in?: Decimal[] | DecimalJsLike[] | number[] | string[] | null
@@ -33411,17 +35249,6 @@ export namespace Prisma {
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
-  }
-
-  export type IntFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntFilter<$PrismaModel> | number
   }
 
   export type MonzoApiTransactionCountOrderByAggregateInput = {
@@ -33512,22 +35339,6 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
-  }
-
-  export type IntWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedIntFilter<$PrismaModel>
-    _min?: NestedIntFilter<$PrismaModel>
-    _max?: NestedIntFilter<$PrismaModel>
   }
 
   export type PlaidItemCountOrderByAggregateInput = {
@@ -34558,11 +36369,11 @@ export namespace Prisma {
     connect?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
   }
 
-  export type CategoryRuleCreateNestedManyWithoutCategoryInput = {
-    create?: XOR<CategoryRuleCreateWithoutCategoryInput, CategoryRuleUncheckedCreateWithoutCategoryInput> | CategoryRuleCreateWithoutCategoryInput[] | CategoryRuleUncheckedCreateWithoutCategoryInput[]
-    connectOrCreate?: CategoryRuleCreateOrConnectWithoutCategoryInput | CategoryRuleCreateOrConnectWithoutCategoryInput[]
-    createMany?: CategoryRuleCreateManyCategoryInputEnvelope
-    connect?: CategoryRuleWhereUniqueInput | CategoryRuleWhereUniqueInput[]
+  export type RuleCreateNestedManyWithoutCategoryInput = {
+    create?: XOR<RuleCreateWithoutCategoryInput, RuleUncheckedCreateWithoutCategoryInput> | RuleCreateWithoutCategoryInput[] | RuleUncheckedCreateWithoutCategoryInput[]
+    connectOrCreate?: RuleCreateOrConnectWithoutCategoryInput | RuleCreateOrConnectWithoutCategoryInput[]
+    createMany?: RuleCreateManyCategoryInputEnvelope
+    connect?: RuleWhereUniqueInput | RuleWhereUniqueInput[]
   }
 
   export type TransactionUncheckedCreateNestedManyWithoutCategoryInput = {
@@ -34572,15 +36383,11 @@ export namespace Prisma {
     connect?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
   }
 
-  export type CategoryRuleUncheckedCreateNestedManyWithoutCategoryInput = {
-    create?: XOR<CategoryRuleCreateWithoutCategoryInput, CategoryRuleUncheckedCreateWithoutCategoryInput> | CategoryRuleCreateWithoutCategoryInput[] | CategoryRuleUncheckedCreateWithoutCategoryInput[]
-    connectOrCreate?: CategoryRuleCreateOrConnectWithoutCategoryInput | CategoryRuleCreateOrConnectWithoutCategoryInput[]
-    createMany?: CategoryRuleCreateManyCategoryInputEnvelope
-    connect?: CategoryRuleWhereUniqueInput | CategoryRuleWhereUniqueInput[]
-  }
-
-  export type NullableEnumBucketFieldUpdateOperationsInput = {
-    set?: $Enums.Bucket | null
+  export type RuleUncheckedCreateNestedManyWithoutCategoryInput = {
+    create?: XOR<RuleCreateWithoutCategoryInput, RuleUncheckedCreateWithoutCategoryInput> | RuleCreateWithoutCategoryInput[] | RuleUncheckedCreateWithoutCategoryInput[]
+    connectOrCreate?: RuleCreateOrConnectWithoutCategoryInput | RuleCreateOrConnectWithoutCategoryInput[]
+    createMany?: RuleCreateManyCategoryInputEnvelope
+    connect?: RuleWhereUniqueInput | RuleWhereUniqueInput[]
   }
 
   export type TransactionUpdateManyWithoutCategoryNestedInput = {
@@ -34597,18 +36404,18 @@ export namespace Prisma {
     deleteMany?: TransactionScalarWhereInput | TransactionScalarWhereInput[]
   }
 
-  export type CategoryRuleUpdateManyWithoutCategoryNestedInput = {
-    create?: XOR<CategoryRuleCreateWithoutCategoryInput, CategoryRuleUncheckedCreateWithoutCategoryInput> | CategoryRuleCreateWithoutCategoryInput[] | CategoryRuleUncheckedCreateWithoutCategoryInput[]
-    connectOrCreate?: CategoryRuleCreateOrConnectWithoutCategoryInput | CategoryRuleCreateOrConnectWithoutCategoryInput[]
-    upsert?: CategoryRuleUpsertWithWhereUniqueWithoutCategoryInput | CategoryRuleUpsertWithWhereUniqueWithoutCategoryInput[]
-    createMany?: CategoryRuleCreateManyCategoryInputEnvelope
-    set?: CategoryRuleWhereUniqueInput | CategoryRuleWhereUniqueInput[]
-    disconnect?: CategoryRuleWhereUniqueInput | CategoryRuleWhereUniqueInput[]
-    delete?: CategoryRuleWhereUniqueInput | CategoryRuleWhereUniqueInput[]
-    connect?: CategoryRuleWhereUniqueInput | CategoryRuleWhereUniqueInput[]
-    update?: CategoryRuleUpdateWithWhereUniqueWithoutCategoryInput | CategoryRuleUpdateWithWhereUniqueWithoutCategoryInput[]
-    updateMany?: CategoryRuleUpdateManyWithWhereWithoutCategoryInput | CategoryRuleUpdateManyWithWhereWithoutCategoryInput[]
-    deleteMany?: CategoryRuleScalarWhereInput | CategoryRuleScalarWhereInput[]
+  export type RuleUpdateManyWithoutCategoryNestedInput = {
+    create?: XOR<RuleCreateWithoutCategoryInput, RuleUncheckedCreateWithoutCategoryInput> | RuleCreateWithoutCategoryInput[] | RuleUncheckedCreateWithoutCategoryInput[]
+    connectOrCreate?: RuleCreateOrConnectWithoutCategoryInput | RuleCreateOrConnectWithoutCategoryInput[]
+    upsert?: RuleUpsertWithWhereUniqueWithoutCategoryInput | RuleUpsertWithWhereUniqueWithoutCategoryInput[]
+    createMany?: RuleCreateManyCategoryInputEnvelope
+    set?: RuleWhereUniqueInput | RuleWhereUniqueInput[]
+    disconnect?: RuleWhereUniqueInput | RuleWhereUniqueInput[]
+    delete?: RuleWhereUniqueInput | RuleWhereUniqueInput[]
+    connect?: RuleWhereUniqueInput | RuleWhereUniqueInput[]
+    update?: RuleUpdateWithWhereUniqueWithoutCategoryInput | RuleUpdateWithWhereUniqueWithoutCategoryInput[]
+    updateMany?: RuleUpdateManyWithWhereWithoutCategoryInput | RuleUpdateManyWithWhereWithoutCategoryInput[]
+    deleteMany?: RuleScalarWhereInput | RuleScalarWhereInput[]
   }
 
   export type TransactionUncheckedUpdateManyWithoutCategoryNestedInput = {
@@ -34625,32 +36432,122 @@ export namespace Prisma {
     deleteMany?: TransactionScalarWhereInput | TransactionScalarWhereInput[]
   }
 
-  export type CategoryRuleUncheckedUpdateManyWithoutCategoryNestedInput = {
-    create?: XOR<CategoryRuleCreateWithoutCategoryInput, CategoryRuleUncheckedCreateWithoutCategoryInput> | CategoryRuleCreateWithoutCategoryInput[] | CategoryRuleUncheckedCreateWithoutCategoryInput[]
-    connectOrCreate?: CategoryRuleCreateOrConnectWithoutCategoryInput | CategoryRuleCreateOrConnectWithoutCategoryInput[]
-    upsert?: CategoryRuleUpsertWithWhereUniqueWithoutCategoryInput | CategoryRuleUpsertWithWhereUniqueWithoutCategoryInput[]
-    createMany?: CategoryRuleCreateManyCategoryInputEnvelope
-    set?: CategoryRuleWhereUniqueInput | CategoryRuleWhereUniqueInput[]
-    disconnect?: CategoryRuleWhereUniqueInput | CategoryRuleWhereUniqueInput[]
-    delete?: CategoryRuleWhereUniqueInput | CategoryRuleWhereUniqueInput[]
-    connect?: CategoryRuleWhereUniqueInput | CategoryRuleWhereUniqueInput[]
-    update?: CategoryRuleUpdateWithWhereUniqueWithoutCategoryInput | CategoryRuleUpdateWithWhereUniqueWithoutCategoryInput[]
-    updateMany?: CategoryRuleUpdateManyWithWhereWithoutCategoryInput | CategoryRuleUpdateManyWithWhereWithoutCategoryInput[]
-    deleteMany?: CategoryRuleScalarWhereInput | CategoryRuleScalarWhereInput[]
+  export type RuleUncheckedUpdateManyWithoutCategoryNestedInput = {
+    create?: XOR<RuleCreateWithoutCategoryInput, RuleUncheckedCreateWithoutCategoryInput> | RuleCreateWithoutCategoryInput[] | RuleUncheckedCreateWithoutCategoryInput[]
+    connectOrCreate?: RuleCreateOrConnectWithoutCategoryInput | RuleCreateOrConnectWithoutCategoryInput[]
+    upsert?: RuleUpsertWithWhereUniqueWithoutCategoryInput | RuleUpsertWithWhereUniqueWithoutCategoryInput[]
+    createMany?: RuleCreateManyCategoryInputEnvelope
+    set?: RuleWhereUniqueInput | RuleWhereUniqueInput[]
+    disconnect?: RuleWhereUniqueInput | RuleWhereUniqueInput[]
+    delete?: RuleWhereUniqueInput | RuleWhereUniqueInput[]
+    connect?: RuleWhereUniqueInput | RuleWhereUniqueInput[]
+    update?: RuleUpdateWithWhereUniqueWithoutCategoryInput | RuleUpdateWithWhereUniqueWithoutCategoryInput[]
+    updateMany?: RuleUpdateManyWithWhereWithoutCategoryInput | RuleUpdateManyWithWhereWithoutCategoryInput[]
+    deleteMany?: RuleScalarWhereInput | RuleScalarWhereInput[]
   }
 
-  export type CategoryCreateNestedOneWithoutCategoryRulesInput = {
-    create?: XOR<CategoryCreateWithoutCategoryRulesInput, CategoryUncheckedCreateWithoutCategoryRulesInput>
-    connectOrCreate?: CategoryCreateOrConnectWithoutCategoryRulesInput
+  export type CategoryCreateNestedOneWithoutRulesInput = {
+    create?: XOR<CategoryCreateWithoutRulesInput, CategoryUncheckedCreateWithoutRulesInput>
+    connectOrCreate?: CategoryCreateOrConnectWithoutRulesInput
     connect?: CategoryWhereUniqueInput
   }
 
-  export type CategoryUpdateOneRequiredWithoutCategoryRulesNestedInput = {
-    create?: XOR<CategoryCreateWithoutCategoryRulesInput, CategoryUncheckedCreateWithoutCategoryRulesInput>
-    connectOrCreate?: CategoryCreateOrConnectWithoutCategoryRulesInput
-    upsert?: CategoryUpsertWithoutCategoryRulesInput
+  export type RuleConditionCreateNestedManyWithoutRuleInput = {
+    create?: XOR<RuleConditionCreateWithoutRuleInput, RuleConditionUncheckedCreateWithoutRuleInput> | RuleConditionCreateWithoutRuleInput[] | RuleConditionUncheckedCreateWithoutRuleInput[]
+    connectOrCreate?: RuleConditionCreateOrConnectWithoutRuleInput | RuleConditionCreateOrConnectWithoutRuleInput[]
+    createMany?: RuleConditionCreateManyRuleInputEnvelope
+    connect?: RuleConditionWhereUniqueInput | RuleConditionWhereUniqueInput[]
+  }
+
+  export type RuleConditionUncheckedCreateNestedManyWithoutRuleInput = {
+    create?: XOR<RuleConditionCreateWithoutRuleInput, RuleConditionUncheckedCreateWithoutRuleInput> | RuleConditionCreateWithoutRuleInput[] | RuleConditionUncheckedCreateWithoutRuleInput[]
+    connectOrCreate?: RuleConditionCreateOrConnectWithoutRuleInput | RuleConditionCreateOrConnectWithoutRuleInput[]
+    createMany?: RuleConditionCreateManyRuleInputEnvelope
+    connect?: RuleConditionWhereUniqueInput | RuleConditionWhereUniqueInput[]
+  }
+
+  export type EnumRuleKindFieldUpdateOperationsInput = {
+    set?: $Enums.RuleKind
+  }
+
+  export type IntFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type EnumRuleJoinFieldUpdateOperationsInput = {
+    set?: $Enums.RuleJoin
+  }
+
+  export type NullableEnumBucketFieldUpdateOperationsInput = {
+    set?: $Enums.Bucket | null
+  }
+
+  export type CategoryUpdateOneWithoutRulesNestedInput = {
+    create?: XOR<CategoryCreateWithoutRulesInput, CategoryUncheckedCreateWithoutRulesInput>
+    connectOrCreate?: CategoryCreateOrConnectWithoutRulesInput
+    upsert?: CategoryUpsertWithoutRulesInput
+    disconnect?: CategoryWhereInput | boolean
+    delete?: CategoryWhereInput | boolean
     connect?: CategoryWhereUniqueInput
-    update?: XOR<XOR<CategoryUpdateToOneWithWhereWithoutCategoryRulesInput, CategoryUpdateWithoutCategoryRulesInput>, CategoryUncheckedUpdateWithoutCategoryRulesInput>
+    update?: XOR<XOR<CategoryUpdateToOneWithWhereWithoutRulesInput, CategoryUpdateWithoutRulesInput>, CategoryUncheckedUpdateWithoutRulesInput>
+  }
+
+  export type RuleConditionUpdateManyWithoutRuleNestedInput = {
+    create?: XOR<RuleConditionCreateWithoutRuleInput, RuleConditionUncheckedCreateWithoutRuleInput> | RuleConditionCreateWithoutRuleInput[] | RuleConditionUncheckedCreateWithoutRuleInput[]
+    connectOrCreate?: RuleConditionCreateOrConnectWithoutRuleInput | RuleConditionCreateOrConnectWithoutRuleInput[]
+    upsert?: RuleConditionUpsertWithWhereUniqueWithoutRuleInput | RuleConditionUpsertWithWhereUniqueWithoutRuleInput[]
+    createMany?: RuleConditionCreateManyRuleInputEnvelope
+    set?: RuleConditionWhereUniqueInput | RuleConditionWhereUniqueInput[]
+    disconnect?: RuleConditionWhereUniqueInput | RuleConditionWhereUniqueInput[]
+    delete?: RuleConditionWhereUniqueInput | RuleConditionWhereUniqueInput[]
+    connect?: RuleConditionWhereUniqueInput | RuleConditionWhereUniqueInput[]
+    update?: RuleConditionUpdateWithWhereUniqueWithoutRuleInput | RuleConditionUpdateWithWhereUniqueWithoutRuleInput[]
+    updateMany?: RuleConditionUpdateManyWithWhereWithoutRuleInput | RuleConditionUpdateManyWithWhereWithoutRuleInput[]
+    deleteMany?: RuleConditionScalarWhereInput | RuleConditionScalarWhereInput[]
+  }
+
+  export type RuleConditionUncheckedUpdateManyWithoutRuleNestedInput = {
+    create?: XOR<RuleConditionCreateWithoutRuleInput, RuleConditionUncheckedCreateWithoutRuleInput> | RuleConditionCreateWithoutRuleInput[] | RuleConditionUncheckedCreateWithoutRuleInput[]
+    connectOrCreate?: RuleConditionCreateOrConnectWithoutRuleInput | RuleConditionCreateOrConnectWithoutRuleInput[]
+    upsert?: RuleConditionUpsertWithWhereUniqueWithoutRuleInput | RuleConditionUpsertWithWhereUniqueWithoutRuleInput[]
+    createMany?: RuleConditionCreateManyRuleInputEnvelope
+    set?: RuleConditionWhereUniqueInput | RuleConditionWhereUniqueInput[]
+    disconnect?: RuleConditionWhereUniqueInput | RuleConditionWhereUniqueInput[]
+    delete?: RuleConditionWhereUniqueInput | RuleConditionWhereUniqueInput[]
+    connect?: RuleConditionWhereUniqueInput | RuleConditionWhereUniqueInput[]
+    update?: RuleConditionUpdateWithWhereUniqueWithoutRuleInput | RuleConditionUpdateWithWhereUniqueWithoutRuleInput[]
+    updateMany?: RuleConditionUpdateManyWithWhereWithoutRuleInput | RuleConditionUpdateManyWithWhereWithoutRuleInput[]
+    deleteMany?: RuleConditionScalarWhereInput | RuleConditionScalarWhereInput[]
+  }
+
+  export type RuleCreateNestedOneWithoutConditionsInput = {
+    create?: XOR<RuleCreateWithoutConditionsInput, RuleUncheckedCreateWithoutConditionsInput>
+    connectOrCreate?: RuleCreateOrConnectWithoutConditionsInput
+    connect?: RuleWhereUniqueInput
+  }
+
+  export type EnumRuleFieldFieldUpdateOperationsInput = {
+    set?: $Enums.RuleField
+  }
+
+  export type EnumRuleOperatorFieldUpdateOperationsInput = {
+    set?: $Enums.RuleOperator
+  }
+
+  export type BoolFieldUpdateOperationsInput = {
+    set?: boolean
+  }
+
+  export type RuleUpdateOneRequiredWithoutConditionsNestedInput = {
+    create?: XOR<RuleCreateWithoutConditionsInput, RuleUncheckedCreateWithoutConditionsInput>
+    connectOrCreate?: RuleCreateOrConnectWithoutConditionsInput
+    upsert?: RuleUpsertWithoutConditionsInput
+    connect?: RuleWhereUniqueInput
+    update?: XOR<XOR<RuleUpdateToOneWithWhereWithoutConditionsInput, RuleUpdateWithoutConditionsInput>, RuleUncheckedUpdateWithoutConditionsInput>
   }
 
   export type CategoryCreateNestedOneWithoutTransactionsInput = {
@@ -34681,10 +36578,6 @@ export namespace Prisma {
     set?: $Enums.Owner
   }
 
-  export type BoolFieldUpdateOperationsInput = {
-    set?: boolean
-  }
-
   export type NullableDecimalFieldUpdateOperationsInput = {
     set?: Decimal | DecimalJsLike | number | string | null
     increment?: Decimal | DecimalJsLike | number | string
@@ -34713,14 +36606,6 @@ export namespace Prisma {
 
   export type NullableDateTimeFieldUpdateOperationsInput = {
     set?: Date | string | null
-  }
-
-  export type IntFieldUpdateOperationsInput = {
-    set?: number
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
   }
 
   export type FloatFieldUpdateOperationsInput = {
@@ -35065,11 +36950,72 @@ export namespace Prisma {
     _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
+  export type NestedEnumRuleKindFilter<$PrismaModel = never> = {
+    equals?: $Enums.RuleKind | EnumRuleKindFieldRefInput<$PrismaModel>
+    in?: $Enums.RuleKind[]
+    notIn?: $Enums.RuleKind[]
+    not?: NestedEnumRuleKindFilter<$PrismaModel> | $Enums.RuleKind
+  }
+
+  export type NestedEnumRuleJoinFilter<$PrismaModel = never> = {
+    equals?: $Enums.RuleJoin | EnumRuleJoinFieldRefInput<$PrismaModel>
+    in?: $Enums.RuleJoin[]
+    notIn?: $Enums.RuleJoin[]
+    not?: NestedEnumRuleJoinFilter<$PrismaModel> | $Enums.RuleJoin
+  }
+
   export type NestedEnumBucketNullableFilter<$PrismaModel = never> = {
     equals?: $Enums.Bucket | EnumBucketFieldRefInput<$PrismaModel> | null
     in?: $Enums.Bucket[] | null
     notIn?: $Enums.Bucket[] | null
     not?: NestedEnumBucketNullableFilter<$PrismaModel> | $Enums.Bucket | null
+  }
+
+  export type NestedEnumRuleKindWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.RuleKind | EnumRuleKindFieldRefInput<$PrismaModel>
+    in?: $Enums.RuleKind[]
+    notIn?: $Enums.RuleKind[]
+    not?: NestedEnumRuleKindWithAggregatesFilter<$PrismaModel> | $Enums.RuleKind
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumRuleKindFilter<$PrismaModel>
+    _max?: NestedEnumRuleKindFilter<$PrismaModel>
+  }
+
+  export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type NestedFloatFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatFilter<$PrismaModel> | number
+  }
+
+  export type NestedEnumRuleJoinWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.RuleJoin | EnumRuleJoinFieldRefInput<$PrismaModel>
+    in?: $Enums.RuleJoin[]
+    notIn?: $Enums.RuleJoin[]
+    not?: NestedEnumRuleJoinWithAggregatesFilter<$PrismaModel> | $Enums.RuleJoin
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumRuleJoinFilter<$PrismaModel>
+    _max?: NestedEnumRuleJoinFilter<$PrismaModel>
   }
 
   export type NestedEnumBucketNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -35080,6 +37026,53 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedEnumBucketNullableFilter<$PrismaModel>
     _max?: NestedEnumBucketNullableFilter<$PrismaModel>
+  }
+
+  export type NestedEnumRuleFieldFilter<$PrismaModel = never> = {
+    equals?: $Enums.RuleField | EnumRuleFieldFieldRefInput<$PrismaModel>
+    in?: $Enums.RuleField[]
+    notIn?: $Enums.RuleField[]
+    not?: NestedEnumRuleFieldFilter<$PrismaModel> | $Enums.RuleField
+  }
+
+  export type NestedEnumRuleOperatorFilter<$PrismaModel = never> = {
+    equals?: $Enums.RuleOperator | EnumRuleOperatorFieldRefInput<$PrismaModel>
+    in?: $Enums.RuleOperator[]
+    notIn?: $Enums.RuleOperator[]
+    not?: NestedEnumRuleOperatorFilter<$PrismaModel> | $Enums.RuleOperator
+  }
+
+  export type NestedBoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
+  export type NestedEnumRuleFieldWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.RuleField | EnumRuleFieldFieldRefInput<$PrismaModel>
+    in?: $Enums.RuleField[]
+    notIn?: $Enums.RuleField[]
+    not?: NestedEnumRuleFieldWithAggregatesFilter<$PrismaModel> | $Enums.RuleField
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumRuleFieldFilter<$PrismaModel>
+    _max?: NestedEnumRuleFieldFilter<$PrismaModel>
+  }
+
+  export type NestedEnumRuleOperatorWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.RuleOperator | EnumRuleOperatorFieldRefInput<$PrismaModel>
+    in?: $Enums.RuleOperator[]
+    notIn?: $Enums.RuleOperator[]
+    not?: NestedEnumRuleOperatorWithAggregatesFilter<$PrismaModel> | $Enums.RuleOperator
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumRuleOperatorFilter<$PrismaModel>
+    _max?: NestedEnumRuleOperatorFilter<$PrismaModel>
+  }
+
+  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type NestedDecimalFilter<$PrismaModel = never> = {
@@ -35105,11 +37098,6 @@ export namespace Prisma {
     in?: $Enums.Owner[]
     notIn?: $Enums.Owner[]
     not?: NestedEnumOwnerFilter<$PrismaModel> | $Enums.Owner
-  }
-
-  export type NestedBoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
   export type NestedDecimalNullableFilter<$PrismaModel = never> = {
@@ -35159,14 +37147,6 @@ export namespace Prisma {
     _max?: NestedEnumOwnerFilter<$PrismaModel>
   }
 
-  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
-  }
-
   export type NestedDecimalNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel> | null
     in?: Decimal[] | DecimalJsLike[] | number[] | string[] | null
@@ -35206,33 +37186,6 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
-  }
-
-  export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedIntFilter<$PrismaModel>
-    _min?: NestedIntFilter<$PrismaModel>
-    _max?: NestedIntFilter<$PrismaModel>
-  }
-
-  export type NestedFloatFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatFilter<$PrismaModel> | number
   }
 
   export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
@@ -35473,6 +37426,8 @@ export namespace Prisma {
     owner?: $Enums.Owner
     reviewed?: boolean
     bucket?: $Enums.Bucket | null
+    categoryPinned?: boolean
+    bucketPinned?: boolean
     originalAmount?: Decimal | DecimalJsLike | number | string | null
     originalCurrency?: string | null
     statementFile?: StatementFileCreateNestedOneWithoutTransactionsInput
@@ -35490,6 +37445,8 @@ export namespace Prisma {
     owner?: $Enums.Owner
     reviewed?: boolean
     bucket?: $Enums.Bucket | null
+    categoryPinned?: boolean
+    bucketPinned?: boolean
     originalAmount?: Decimal | DecimalJsLike | number | string | null
     originalCurrency?: string | null
     statementFileId?: string | null
@@ -35504,27 +37461,35 @@ export namespace Prisma {
     data: TransactionCreateManyCategoryInput | TransactionCreateManyCategoryInput[]
   }
 
-  export type CategoryRuleCreateWithoutCategoryInput = {
+  export type RuleCreateWithoutCategoryInput = {
     id?: string
-    pattern: string
+    kind: $Enums.RuleKind
+    position: number
+    joinOperator?: $Enums.RuleJoin
     bank?: string | null
+    bucket?: $Enums.Bucket | null
     createdAt?: Date | string
+    conditions?: RuleConditionCreateNestedManyWithoutRuleInput
   }
 
-  export type CategoryRuleUncheckedCreateWithoutCategoryInput = {
+  export type RuleUncheckedCreateWithoutCategoryInput = {
     id?: string
-    pattern: string
+    kind: $Enums.RuleKind
+    position: number
+    joinOperator?: $Enums.RuleJoin
     bank?: string | null
+    bucket?: $Enums.Bucket | null
     createdAt?: Date | string
+    conditions?: RuleConditionUncheckedCreateNestedManyWithoutRuleInput
   }
 
-  export type CategoryRuleCreateOrConnectWithoutCategoryInput = {
-    where: CategoryRuleWhereUniqueInput
-    create: XOR<CategoryRuleCreateWithoutCategoryInput, CategoryRuleUncheckedCreateWithoutCategoryInput>
+  export type RuleCreateOrConnectWithoutCategoryInput = {
+    where: RuleWhereUniqueInput
+    create: XOR<RuleCreateWithoutCategoryInput, RuleUncheckedCreateWithoutCategoryInput>
   }
 
-  export type CategoryRuleCreateManyCategoryInputEnvelope = {
-    data: CategoryRuleCreateManyCategoryInput | CategoryRuleCreateManyCategoryInput[]
+  export type RuleCreateManyCategoryInputEnvelope = {
+    data: RuleCreateManyCategoryInput | RuleCreateManyCategoryInput[]
   }
 
   export type TransactionUpsertWithWhereUniqueWithoutCategoryInput = {
@@ -35559,100 +37524,215 @@ export namespace Prisma {
     owner?: EnumOwnerFilter<"Transaction"> | $Enums.Owner
     reviewed?: BoolFilter<"Transaction"> | boolean
     bucket?: EnumBucketNullableFilter<"Transaction"> | $Enums.Bucket | null
+    categoryPinned?: BoolFilter<"Transaction"> | boolean
+    bucketPinned?: BoolFilter<"Transaction"> | boolean
     originalAmount?: DecimalNullableFilter<"Transaction"> | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: StringNullableFilter<"Transaction"> | string | null
     statementFileId?: StringNullableFilter<"Transaction"> | string | null
   }
 
-  export type CategoryRuleUpsertWithWhereUniqueWithoutCategoryInput = {
-    where: CategoryRuleWhereUniqueInput
-    update: XOR<CategoryRuleUpdateWithoutCategoryInput, CategoryRuleUncheckedUpdateWithoutCategoryInput>
-    create: XOR<CategoryRuleCreateWithoutCategoryInput, CategoryRuleUncheckedCreateWithoutCategoryInput>
+  export type RuleUpsertWithWhereUniqueWithoutCategoryInput = {
+    where: RuleWhereUniqueInput
+    update: XOR<RuleUpdateWithoutCategoryInput, RuleUncheckedUpdateWithoutCategoryInput>
+    create: XOR<RuleCreateWithoutCategoryInput, RuleUncheckedCreateWithoutCategoryInput>
   }
 
-  export type CategoryRuleUpdateWithWhereUniqueWithoutCategoryInput = {
-    where: CategoryRuleWhereUniqueInput
-    data: XOR<CategoryRuleUpdateWithoutCategoryInput, CategoryRuleUncheckedUpdateWithoutCategoryInput>
+  export type RuleUpdateWithWhereUniqueWithoutCategoryInput = {
+    where: RuleWhereUniqueInput
+    data: XOR<RuleUpdateWithoutCategoryInput, RuleUncheckedUpdateWithoutCategoryInput>
   }
 
-  export type CategoryRuleUpdateManyWithWhereWithoutCategoryInput = {
-    where: CategoryRuleScalarWhereInput
-    data: XOR<CategoryRuleUpdateManyMutationInput, CategoryRuleUncheckedUpdateManyWithoutCategoryInput>
+  export type RuleUpdateManyWithWhereWithoutCategoryInput = {
+    where: RuleScalarWhereInput
+    data: XOR<RuleUpdateManyMutationInput, RuleUncheckedUpdateManyWithoutCategoryInput>
   }
 
-  export type CategoryRuleScalarWhereInput = {
-    AND?: CategoryRuleScalarWhereInput | CategoryRuleScalarWhereInput[]
-    OR?: CategoryRuleScalarWhereInput[]
-    NOT?: CategoryRuleScalarWhereInput | CategoryRuleScalarWhereInput[]
-    id?: StringFilter<"CategoryRule"> | string
-    pattern?: StringFilter<"CategoryRule"> | string
-    bank?: StringNullableFilter<"CategoryRule"> | string | null
-    categoryId?: StringFilter<"CategoryRule"> | string
-    createdAt?: DateTimeFilter<"CategoryRule"> | Date | string
+  export type RuleScalarWhereInput = {
+    AND?: RuleScalarWhereInput | RuleScalarWhereInput[]
+    OR?: RuleScalarWhereInput[]
+    NOT?: RuleScalarWhereInput | RuleScalarWhereInput[]
+    id?: StringFilter<"Rule"> | string
+    kind?: EnumRuleKindFilter<"Rule"> | $Enums.RuleKind
+    position?: IntFilter<"Rule"> | number
+    joinOperator?: EnumRuleJoinFilter<"Rule"> | $Enums.RuleJoin
+    bank?: StringNullableFilter<"Rule"> | string | null
+    categoryId?: StringNullableFilter<"Rule"> | string | null
+    bucket?: EnumBucketNullableFilter<"Rule"> | $Enums.Bucket | null
+    createdAt?: DateTimeFilter<"Rule"> | Date | string
   }
 
-  export type CategoryCreateWithoutCategoryRulesInput = {
+  export type CategoryCreateWithoutRulesInput = {
     id?: string
     name: string
     color: string
-    bucket?: $Enums.Bucket | null
     transactions?: TransactionCreateNestedManyWithoutCategoryInput
   }
 
-  export type CategoryUncheckedCreateWithoutCategoryRulesInput = {
+  export type CategoryUncheckedCreateWithoutRulesInput = {
     id?: string
     name: string
     color: string
-    bucket?: $Enums.Bucket | null
     transactions?: TransactionUncheckedCreateNestedManyWithoutCategoryInput
   }
 
-  export type CategoryCreateOrConnectWithoutCategoryRulesInput = {
+  export type CategoryCreateOrConnectWithoutRulesInput = {
     where: CategoryWhereUniqueInput
-    create: XOR<CategoryCreateWithoutCategoryRulesInput, CategoryUncheckedCreateWithoutCategoryRulesInput>
+    create: XOR<CategoryCreateWithoutRulesInput, CategoryUncheckedCreateWithoutRulesInput>
   }
 
-  export type CategoryUpsertWithoutCategoryRulesInput = {
-    update: XOR<CategoryUpdateWithoutCategoryRulesInput, CategoryUncheckedUpdateWithoutCategoryRulesInput>
-    create: XOR<CategoryCreateWithoutCategoryRulesInput, CategoryUncheckedCreateWithoutCategoryRulesInput>
+  export type RuleConditionCreateWithoutRuleInput = {
+    id?: string
+    field?: $Enums.RuleField
+    operator?: $Enums.RuleOperator
+    value: string
+    negate?: boolean
+    position: number
+  }
+
+  export type RuleConditionUncheckedCreateWithoutRuleInput = {
+    id?: string
+    field?: $Enums.RuleField
+    operator?: $Enums.RuleOperator
+    value: string
+    negate?: boolean
+    position: number
+  }
+
+  export type RuleConditionCreateOrConnectWithoutRuleInput = {
+    where: RuleConditionWhereUniqueInput
+    create: XOR<RuleConditionCreateWithoutRuleInput, RuleConditionUncheckedCreateWithoutRuleInput>
+  }
+
+  export type RuleConditionCreateManyRuleInputEnvelope = {
+    data: RuleConditionCreateManyRuleInput | RuleConditionCreateManyRuleInput[]
+  }
+
+  export type CategoryUpsertWithoutRulesInput = {
+    update: XOR<CategoryUpdateWithoutRulesInput, CategoryUncheckedUpdateWithoutRulesInput>
+    create: XOR<CategoryCreateWithoutRulesInput, CategoryUncheckedCreateWithoutRulesInput>
     where?: CategoryWhereInput
   }
 
-  export type CategoryUpdateToOneWithWhereWithoutCategoryRulesInput = {
+  export type CategoryUpdateToOneWithWhereWithoutRulesInput = {
     where?: CategoryWhereInput
-    data: XOR<CategoryUpdateWithoutCategoryRulesInput, CategoryUncheckedUpdateWithoutCategoryRulesInput>
+    data: XOR<CategoryUpdateWithoutRulesInput, CategoryUncheckedUpdateWithoutRulesInput>
   }
 
-  export type CategoryUpdateWithoutCategoryRulesInput = {
+  export type CategoryUpdateWithoutRulesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
-    bucket?: NullableEnumBucketFieldUpdateOperationsInput | $Enums.Bucket | null
     transactions?: TransactionUpdateManyWithoutCategoryNestedInput
   }
 
-  export type CategoryUncheckedUpdateWithoutCategoryRulesInput = {
+  export type CategoryUncheckedUpdateWithoutRulesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
-    bucket?: NullableEnumBucketFieldUpdateOperationsInput | $Enums.Bucket | null
     transactions?: TransactionUncheckedUpdateManyWithoutCategoryNestedInput
+  }
+
+  export type RuleConditionUpsertWithWhereUniqueWithoutRuleInput = {
+    where: RuleConditionWhereUniqueInput
+    update: XOR<RuleConditionUpdateWithoutRuleInput, RuleConditionUncheckedUpdateWithoutRuleInput>
+    create: XOR<RuleConditionCreateWithoutRuleInput, RuleConditionUncheckedCreateWithoutRuleInput>
+  }
+
+  export type RuleConditionUpdateWithWhereUniqueWithoutRuleInput = {
+    where: RuleConditionWhereUniqueInput
+    data: XOR<RuleConditionUpdateWithoutRuleInput, RuleConditionUncheckedUpdateWithoutRuleInput>
+  }
+
+  export type RuleConditionUpdateManyWithWhereWithoutRuleInput = {
+    where: RuleConditionScalarWhereInput
+    data: XOR<RuleConditionUpdateManyMutationInput, RuleConditionUncheckedUpdateManyWithoutRuleInput>
+  }
+
+  export type RuleConditionScalarWhereInput = {
+    AND?: RuleConditionScalarWhereInput | RuleConditionScalarWhereInput[]
+    OR?: RuleConditionScalarWhereInput[]
+    NOT?: RuleConditionScalarWhereInput | RuleConditionScalarWhereInput[]
+    id?: StringFilter<"RuleCondition"> | string
+    ruleId?: StringFilter<"RuleCondition"> | string
+    field?: EnumRuleFieldFilter<"RuleCondition"> | $Enums.RuleField
+    operator?: EnumRuleOperatorFilter<"RuleCondition"> | $Enums.RuleOperator
+    value?: StringFilter<"RuleCondition"> | string
+    negate?: BoolFilter<"RuleCondition"> | boolean
+    position?: IntFilter<"RuleCondition"> | number
+  }
+
+  export type RuleCreateWithoutConditionsInput = {
+    id?: string
+    kind: $Enums.RuleKind
+    position: number
+    joinOperator?: $Enums.RuleJoin
+    bank?: string | null
+    bucket?: $Enums.Bucket | null
+    createdAt?: Date | string
+    category?: CategoryCreateNestedOneWithoutRulesInput
+  }
+
+  export type RuleUncheckedCreateWithoutConditionsInput = {
+    id?: string
+    kind: $Enums.RuleKind
+    position: number
+    joinOperator?: $Enums.RuleJoin
+    bank?: string | null
+    categoryId?: string | null
+    bucket?: $Enums.Bucket | null
+    createdAt?: Date | string
+  }
+
+  export type RuleCreateOrConnectWithoutConditionsInput = {
+    where: RuleWhereUniqueInput
+    create: XOR<RuleCreateWithoutConditionsInput, RuleUncheckedCreateWithoutConditionsInput>
+  }
+
+  export type RuleUpsertWithoutConditionsInput = {
+    update: XOR<RuleUpdateWithoutConditionsInput, RuleUncheckedUpdateWithoutConditionsInput>
+    create: XOR<RuleCreateWithoutConditionsInput, RuleUncheckedCreateWithoutConditionsInput>
+    where?: RuleWhereInput
+  }
+
+  export type RuleUpdateToOneWithWhereWithoutConditionsInput = {
+    where?: RuleWhereInput
+    data: XOR<RuleUpdateWithoutConditionsInput, RuleUncheckedUpdateWithoutConditionsInput>
+  }
+
+  export type RuleUpdateWithoutConditionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    kind?: EnumRuleKindFieldUpdateOperationsInput | $Enums.RuleKind
+    position?: IntFieldUpdateOperationsInput | number
+    joinOperator?: EnumRuleJoinFieldUpdateOperationsInput | $Enums.RuleJoin
+    bank?: NullableStringFieldUpdateOperationsInput | string | null
+    bucket?: NullableEnumBucketFieldUpdateOperationsInput | $Enums.Bucket | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    category?: CategoryUpdateOneWithoutRulesNestedInput
+  }
+
+  export type RuleUncheckedUpdateWithoutConditionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    kind?: EnumRuleKindFieldUpdateOperationsInput | $Enums.RuleKind
+    position?: IntFieldUpdateOperationsInput | number
+    joinOperator?: EnumRuleJoinFieldUpdateOperationsInput | $Enums.RuleJoin
+    bank?: NullableStringFieldUpdateOperationsInput | string | null
+    categoryId?: NullableStringFieldUpdateOperationsInput | string | null
+    bucket?: NullableEnumBucketFieldUpdateOperationsInput | $Enums.Bucket | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type CategoryCreateWithoutTransactionsInput = {
     id?: string
     name: string
     color: string
-    bucket?: $Enums.Bucket | null
-    categoryRules?: CategoryRuleCreateNestedManyWithoutCategoryInput
+    rules?: RuleCreateNestedManyWithoutCategoryInput
   }
 
   export type CategoryUncheckedCreateWithoutTransactionsInput = {
     id?: string
     name: string
     color: string
-    bucket?: $Enums.Bucket | null
-    categoryRules?: CategoryRuleUncheckedCreateNestedManyWithoutCategoryInput
+    rules?: RuleUncheckedCreateNestedManyWithoutCategoryInput
   }
 
   export type CategoryCreateOrConnectWithoutTransactionsInput = {
@@ -35710,16 +37790,14 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
-    bucket?: NullableEnumBucketFieldUpdateOperationsInput | $Enums.Bucket | null
-    categoryRules?: CategoryRuleUpdateManyWithoutCategoryNestedInput
+    rules?: RuleUpdateManyWithoutCategoryNestedInput
   }
 
   export type CategoryUncheckedUpdateWithoutTransactionsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
-    bucket?: NullableEnumBucketFieldUpdateOperationsInput | $Enums.Bucket | null
-    categoryRules?: CategoryRuleUncheckedUpdateManyWithoutCategoryNestedInput
+    rules?: RuleUncheckedUpdateManyWithoutCategoryNestedInput
   }
 
   export type StatementFileUpsertWithoutTransactionsInput = {
@@ -35814,6 +37892,8 @@ export namespace Prisma {
     owner?: $Enums.Owner
     reviewed?: boolean
     bucket?: $Enums.Bucket | null
+    categoryPinned?: boolean
+    bucketPinned?: boolean
     originalAmount?: Decimal | DecimalJsLike | number | string | null
     originalCurrency?: string | null
     category: CategoryCreateNestedOneWithoutTransactionsInput
@@ -35832,6 +37912,8 @@ export namespace Prisma {
     owner?: $Enums.Owner
     reviewed?: boolean
     bucket?: $Enums.Bucket | null
+    categoryPinned?: boolean
+    bucketPinned?: boolean
     originalAmount?: Decimal | DecimalJsLike | number | string | null
     originalCurrency?: string | null
   }
@@ -36317,15 +38399,20 @@ export namespace Prisma {
     owner?: $Enums.Owner
     reviewed?: boolean
     bucket?: $Enums.Bucket | null
+    categoryPinned?: boolean
+    bucketPinned?: boolean
     originalAmount?: Decimal | DecimalJsLike | number | string | null
     originalCurrency?: string | null
     statementFileId?: string | null
   }
 
-  export type CategoryRuleCreateManyCategoryInput = {
+  export type RuleCreateManyCategoryInput = {
     id?: string
-    pattern: string
+    kind: $Enums.RuleKind
+    position: number
+    joinOperator?: $Enums.RuleJoin
     bank?: string | null
+    bucket?: $Enums.Bucket | null
     createdAt?: Date | string
   }
 
@@ -36341,6 +38428,8 @@ export namespace Prisma {
     owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
     reviewed?: BoolFieldUpdateOperationsInput | boolean
     bucket?: NullableEnumBucketFieldUpdateOperationsInput | $Enums.Bucket | null
+    categoryPinned?: BoolFieldUpdateOperationsInput | boolean
+    bucketPinned?: BoolFieldUpdateOperationsInput | boolean
     originalAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
     statementFile?: StatementFileUpdateOneWithoutTransactionsNestedInput
@@ -36358,6 +38447,8 @@ export namespace Prisma {
     owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
     reviewed?: BoolFieldUpdateOperationsInput | boolean
     bucket?: NullableEnumBucketFieldUpdateOperationsInput | $Enums.Bucket | null
+    categoryPinned?: BoolFieldUpdateOperationsInput | boolean
+    bucketPinned?: BoolFieldUpdateOperationsInput | boolean
     originalAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
     statementFileId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -36375,30 +38466,79 @@ export namespace Prisma {
     owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
     reviewed?: BoolFieldUpdateOperationsInput | boolean
     bucket?: NullableEnumBucketFieldUpdateOperationsInput | $Enums.Bucket | null
+    categoryPinned?: BoolFieldUpdateOperationsInput | boolean
+    bucketPinned?: BoolFieldUpdateOperationsInput | boolean
     originalAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
     statementFileId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
-  export type CategoryRuleUpdateWithoutCategoryInput = {
+  export type RuleUpdateWithoutCategoryInput = {
     id?: StringFieldUpdateOperationsInput | string
-    pattern?: StringFieldUpdateOperationsInput | string
+    kind?: EnumRuleKindFieldUpdateOperationsInput | $Enums.RuleKind
+    position?: IntFieldUpdateOperationsInput | number
+    joinOperator?: EnumRuleJoinFieldUpdateOperationsInput | $Enums.RuleJoin
     bank?: NullableStringFieldUpdateOperationsInput | string | null
+    bucket?: NullableEnumBucketFieldUpdateOperationsInput | $Enums.Bucket | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    conditions?: RuleConditionUpdateManyWithoutRuleNestedInput
+  }
+
+  export type RuleUncheckedUpdateWithoutCategoryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    kind?: EnumRuleKindFieldUpdateOperationsInput | $Enums.RuleKind
+    position?: IntFieldUpdateOperationsInput | number
+    joinOperator?: EnumRuleJoinFieldUpdateOperationsInput | $Enums.RuleJoin
+    bank?: NullableStringFieldUpdateOperationsInput | string | null
+    bucket?: NullableEnumBucketFieldUpdateOperationsInput | $Enums.Bucket | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    conditions?: RuleConditionUncheckedUpdateManyWithoutRuleNestedInput
+  }
+
+  export type RuleUncheckedUpdateManyWithoutCategoryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    kind?: EnumRuleKindFieldUpdateOperationsInput | $Enums.RuleKind
+    position?: IntFieldUpdateOperationsInput | number
+    joinOperator?: EnumRuleJoinFieldUpdateOperationsInput | $Enums.RuleJoin
+    bank?: NullableStringFieldUpdateOperationsInput | string | null
+    bucket?: NullableEnumBucketFieldUpdateOperationsInput | $Enums.Bucket | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type CategoryRuleUncheckedUpdateWithoutCategoryInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    pattern?: StringFieldUpdateOperationsInput | string
-    bank?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  export type RuleConditionCreateManyRuleInput = {
+    id?: string
+    field?: $Enums.RuleField
+    operator?: $Enums.RuleOperator
+    value: string
+    negate?: boolean
+    position: number
   }
 
-  export type CategoryRuleUncheckedUpdateManyWithoutCategoryInput = {
+  export type RuleConditionUpdateWithoutRuleInput = {
     id?: StringFieldUpdateOperationsInput | string
-    pattern?: StringFieldUpdateOperationsInput | string
-    bank?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    field?: EnumRuleFieldFieldUpdateOperationsInput | $Enums.RuleField
+    operator?: EnumRuleOperatorFieldUpdateOperationsInput | $Enums.RuleOperator
+    value?: StringFieldUpdateOperationsInput | string
+    negate?: BoolFieldUpdateOperationsInput | boolean
+    position?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type RuleConditionUncheckedUpdateWithoutRuleInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    field?: EnumRuleFieldFieldUpdateOperationsInput | $Enums.RuleField
+    operator?: EnumRuleOperatorFieldUpdateOperationsInput | $Enums.RuleOperator
+    value?: StringFieldUpdateOperationsInput | string
+    negate?: BoolFieldUpdateOperationsInput | boolean
+    position?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type RuleConditionUncheckedUpdateManyWithoutRuleInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    field?: EnumRuleFieldFieldUpdateOperationsInput | $Enums.RuleField
+    operator?: EnumRuleOperatorFieldUpdateOperationsInput | $Enums.RuleOperator
+    value?: StringFieldUpdateOperationsInput | string
+    negate?: BoolFieldUpdateOperationsInput | boolean
+    position?: IntFieldUpdateOperationsInput | number
   }
 
   export type AmexTransactionCreateManyStatementFileInput = {
@@ -36429,6 +38569,8 @@ export namespace Prisma {
     owner?: $Enums.Owner
     reviewed?: boolean
     bucket?: $Enums.Bucket | null
+    categoryPinned?: boolean
+    bucketPinned?: boolean
     originalAmount?: Decimal | DecimalJsLike | number | string | null
     originalCurrency?: string | null
   }
@@ -36490,6 +38632,8 @@ export namespace Prisma {
     owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
     reviewed?: BoolFieldUpdateOperationsInput | boolean
     bucket?: NullableEnumBucketFieldUpdateOperationsInput | $Enums.Bucket | null
+    categoryPinned?: BoolFieldUpdateOperationsInput | boolean
+    bucketPinned?: BoolFieldUpdateOperationsInput | boolean
     originalAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
     category?: CategoryUpdateOneRequiredWithoutTransactionsNestedInput
@@ -36508,6 +38652,8 @@ export namespace Prisma {
     owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
     reviewed?: BoolFieldUpdateOperationsInput | boolean
     bucket?: NullableEnumBucketFieldUpdateOperationsInput | $Enums.Bucket | null
+    categoryPinned?: BoolFieldUpdateOperationsInput | boolean
+    bucketPinned?: BoolFieldUpdateOperationsInput | boolean
     originalAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
   }
@@ -36525,6 +38671,8 @@ export namespace Prisma {
     owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
     reviewed?: BoolFieldUpdateOperationsInput | boolean
     bucket?: NullableEnumBucketFieldUpdateOperationsInput | $Enums.Bucket | null
+    categoryPinned?: BoolFieldUpdateOperationsInput | boolean
+    bucketPinned?: BoolFieldUpdateOperationsInput | boolean
     originalAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
   }

@@ -45,7 +45,10 @@ Supported: Monzo ✓ — Amex, Barclays, Santander, Caseys banks coming soon.
 
 ## Todo 28-Jun-2026
 
-[X] Store the PDFs in persistent volume and create a statement entity
+[] for category rules, make them act more like ag-grid string filters, so i have more control i.e. allow me a dropdown to choose contains/ starts with/endswith and exact match! and still have the run rules, and allow a dryrun option on run rules before we confirm it so i can see whats gonna be affected before we smash it in !!
+[] stats page - monthyl count of transacitons
+[] keep the rows but automatically load with a ag-grid filter of 'not zeros' for this month so we can see less rows to have to enter! it should be removable
+[] Auto-bucketing for neeeds and wants should also be customisable similar to how category auto-rules are.Decide if you think best to put in the categories page, or have another new page. Might be best to have one called rules that emcompasses both cat and bucketing maybe.. you should be able to make rules that can account for combinations of transaction descriptions, and categories, to decide a thing e.g. transport defaults to needs, transport + uber goes to wants, etc. then salary defaults to be ignored since its not part of your spending !
 [] ANDROID PWA EXPERIENCE COULD IMPORVE, SHOPW TOP 10 BY TXNS FOR THAT USER, NOT BY ALPHABETICAL AND DONT LAUNCH KEYBOARD SO LIKELY WE ARE TAPPIUNG ONCE, ADD SCOLLY BAR INSTEAD
 [] quick question - how better could i be interracting with my data right now? rather than get you to write janky ralways scripts, better i eventually maybe a rest api i can just called endpoints to mess around and dlete bulk by id or by statement id or something?
 [] IOS PWA experience is garbage - I shared from safari rather than instlal fgrom chrome.. is that why? on android itypically install from chrome

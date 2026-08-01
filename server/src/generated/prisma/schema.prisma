@@ -28,6 +28,36 @@ enum Owner {
   Joint
 }
 
+// Rules run as a two-pass pipeline over each transaction: every Category rule
+// is evaluated first, then every Bucket rule — so a Bucket rule can condition
+// on the Category a Category rule just assigned.
+enum RuleKind {
+  Category
+  Bucket
+}
+
+// Joins a rule's *positive* conditions. Negated conditions are always ANDed as
+// exclusions, so a rule reads "match if (any/all positives) and none of the
+// negatives" — which is what a rule with exceptions actually means, and avoids
+// a nesting UI.
+enum RuleJoin {
+  AND
+  OR
+}
+
+enum RuleField {
+  Description
+  Category
+  Type
+}
+
+enum RuleOperator {
+  Contains
+  StartsWith
+  EndsWith
+  Exact
+}
+
 enum TabDirection {
   IOwe
   TheyOwe
@@ -53,25 +83,45 @@ model User {
 }
 
 model Category {
-  id            String         @id @default(cuid())
-  name          String         @unique
-  color         String
-  bucket        Bucket? // default Bucket mapping; stamped onto expenses at import. null = unmapped
-  transactions  Transaction[]
-  categoryRules CategoryRule[]
+  id           String        @id @default(cuid())
+  name         String        @unique
+  color        String
+  transactions Transaction[]
+  rules        Rule[]
 }
 
-// Auto-categorize rule: a description pattern (optionally scoped to a bank)
-// that maps to a category. Applied during /process and backfilled on create.
-model CategoryRule {
-  id         String   @id @default(cuid())
-  pattern    String
-  bank       String?
-  categoryId String
-  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  createdAt  DateTime @default(now())
+// An ordered auto-assignment rule. Within a kind, `position` is the *only*
+// thing that decides precedence — first match wins, no specificity heuristic.
+// The user reorders the list; what you see is what runs.
+//
+// Deliberately has no uniqueness constraint: a constraint is a thing that stops
+// you creating a rule, and duplicates are cheap to spot in the dry-run.
+model Rule {
+  id           String          @id @default(cuid())
+  kind         RuleKind
+  position     Int
+  joinOperator RuleJoin        @default(AND)
+  bank         String? // null = any bank
+  categoryId   String? // output for kind = Category
+  category     Category?       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  bucket       Bucket? // output for kind = Bucket
+  conditions   RuleCondition[]
+  createdAt    DateTime        @default(now())
 
-  @@unique([pattern, bank])
+  @@index([kind, position])
+}
+
+model RuleCondition {
+  id       String       @id @default(cuid())
+  ruleId   String
+  rule     Rule         @relation(fields: [ruleId], references: [id], onDelete: Cascade)
+  field    RuleField    @default(Description)
+  operator RuleOperator @default(Contains)
+  value    String
+  negate   Boolean      @default(false)
+  position Int
+
+  @@index([ruleId])
 }
 
 model Transaction {
@@ -88,6 +138,10 @@ model Transaction {
   owner            Owner           @default(Joint)
   reviewed         Boolean         @default(false)
   bucket           Bucket? // 50/30/20 classification; null = uncategorised. Source of truth for savings maths
+  /// Set automatically when the field is edited by hand. Rules skip pinned
+  /// fields, so "Run all rules" can never stamp over a deliberate choice.
+  categoryPinned   Boolean         @default(false)
+  bucketPinned     Boolean         @default(false)
   originalAmount   Decimal?
   originalCurrency String?
   /// The statement PDF this transaction was derived from, where one is known.

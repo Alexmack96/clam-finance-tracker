@@ -6,7 +6,8 @@ import { db } from "../db/client.js";
 import { convertWithFallback } from "../lib/fxRates.js";
 import { statementSchemas } from "../lib/statementValidation.js";
 import { statementStore } from "../lib/statementStorage.js";
-import { resolveRuleCategory } from "../lib/categoryRules.js";
+import { resolveBucket, resolveCategoryId } from "@clam/core";
+import { loadCategoryNames, loadRules } from "../lib/rules.js";
 
 export const importRouter = Router();
 
@@ -1708,8 +1709,23 @@ importRouter.post("/process", async (_req, res) => {
   let skipped = 0;
   let errored = 0;
 
-  const categoryRules = await db.categoryRule.findMany({ include: { category: true } });
+  const rules = await loadRules();
+  const categoryNameById = await loadCategoryNames();
   const uncategorised = await db.category.findUniqueOrThrow({ where: { name: "Uncategorised" } });
+
+  // The same two-pass pipeline the Rules page dry-runs: Category rules resolve
+  // first, then the resulting category name is fed to the Bucket pass — which is
+  // what lets "category = Transport AND description contains uber → Wants" work.
+  //
+  // Buckets are assigned to income as well as expenses. A Bucket total is a
+  // signed net, so a refund landing in Wants subtracts from it; that is what
+  // CONTEXT.md always described, and what the old hardcoded income gate blocked.
+  function classify(bank: string, description: string, type: "Income" | "Expense") {
+    const base = { description, type, categoryName: null, bank };
+    const categoryId = resolveCategoryId(base, rules) ?? uncategorised.id;
+    const categoryName = categoryNameById.get(categoryId) ?? null;
+    return { categoryId, bucket: resolveBucket({ ...base, categoryName }, rules) };
+  }
 
   // ── Monzo ──────────────────────────────────────────────────────────────────
   // The retail (debit) account's ID is the "primary" one stored on the credential.
@@ -1724,7 +1740,7 @@ importRouter.post("/process", async (_req, res) => {
     const type = row.amountPence >= 0 ? "Income" : "Expense";
     const amount = Math.abs(row.amountPence) / 100;
     const name = row.merchantName ?? row.description;
-    const category = resolveRuleCategory(categoryRules, bank, name) ?? uncategorised;
+    const { categoryId, bucket } = classify(bank, name, type);
     const owner = resolveOwner(row.monzoCategory, name, "Alex");
     const externalId = `${bank}:${row.monzoId}`;
     const exists = await db.transaction.findUnique({ where: { externalId }, select: { id: true } });
@@ -1735,8 +1751,8 @@ importRouter.post("/process", async (_req, res) => {
           amount,
           type,
           date: row.created,
-          categoryId: category.id,
-          bucket: type === "Expense" ? category.bucket : null,
+          categoryId,
+          bucket,
           externalId,
           owner,
         },
@@ -1755,7 +1771,11 @@ importRouter.post("/process", async (_req, res) => {
       next = "errored";
       errored++;
     } else {
-      const category = resolveRuleCategory(categoryRules, "amex", row.description) ?? uncategorised;
+      const { categoryId, bucket } = classify(
+        "amex",
+        row.description,
+        row.isCredit ? "Income" : "Expense",
+      );
       const amexExtId = `amex:${row.transactionId}`;
       const amexExists = await db.transaction.findUnique({
         where: { externalId: amexExtId },
@@ -1768,8 +1788,8 @@ importRouter.post("/process", async (_req, res) => {
             amount: amountNum,
             type: row.isCredit ? "Income" : "Expense",
             date: new Date(row.transactionDate),
-            categoryId: category.id,
-            bucket: row.isCredit ? null : category.bucket,
+            categoryId,
+            bucket,
             externalId: amexExtId,
             owner: row.owner as "Alex" | "Casey" | "Joint",
             statementFileId: row.statementFileId,
@@ -1798,8 +1818,7 @@ importRouter.post("/process", async (_req, res) => {
         next = "errored";
         errored++;
       } else {
-        const category =
-          resolveRuleCategory(categoryRules, "barclays", row.description) ?? uncategorised;
+        const { categoryId, bucket } = classify("barclays", row.description, "Expense");
         const barclaysExtId = `barclays:${row.transactionId ?? row.id}`;
         const barclaysExists = await db.transaction.findUnique({
           where: { externalId: barclaysExtId },
@@ -1812,8 +1831,8 @@ importRouter.post("/process", async (_req, res) => {
               amount: amountNum,
               type: "Expense",
               date: new Date(row.date),
-              categoryId: category.id,
-              bucket: category.bucket,
+              categoryId,
+              bucket,
               externalId: barclaysExtId,
               owner: row.owner as "Alex" | "Casey" | "Joint",
             },
@@ -1840,8 +1859,11 @@ importRouter.post("/process", async (_req, res) => {
       next = "skipped";
       skipped++;
     } else {
-      const category =
-        resolveRuleCategory(categoryRules, "santander", row.description) ?? uncategorised;
+      const { categoryId, bucket } = classify(
+        "santander",
+        row.description,
+        isIncome ? "Income" : "Expense",
+      );
       const santanderExtId = `santander:${row.transactionId ?? row.id}`;
       const santanderExists = await db.transaction.findUnique({
         where: { externalId: santanderExtId },
@@ -1854,8 +1876,8 @@ importRouter.post("/process", async (_req, res) => {
             amount: amountNum,
             type: isIncome ? "Income" : "Expense",
             date: new Date(row.date),
-            categoryId: category.id,
-            bucket: isIncome ? null : category.bucket,
+            categoryId,
+            bucket,
             externalId: santanderExtId,
             owner: row.owner as "Alex" | "Casey" | "Joint",
           },
@@ -1885,7 +1907,11 @@ importRouter.post("/process", async (_req, res) => {
       next = "skipped";
       skipped++;
     } else {
-      const category = resolveRuleCategory(categoryRules, "hsbc", row.description) ?? uncategorised;
+      const { categoryId, bucket } = classify(
+        "hsbc",
+        row.description,
+        isIncome ? "Income" : "Expense",
+      );
       const hsbcExtId = `hsbc:${row.transactionId}`;
       const hsbcExists = await db.transaction.findUnique({
         where: { externalId: hsbcExtId },
@@ -1898,8 +1924,8 @@ importRouter.post("/process", async (_req, res) => {
             amount: amountNum,
             type: isIncome ? "Income" : "Expense",
             date: parsedDate,
-            categoryId: category.id,
-            bucket: isIncome ? null : category.bucket,
+            categoryId,
+            bucket,
             externalId: hsbcExtId,
             owner: row.owner as "Alex" | "Casey" | "Joint",
           },
@@ -1926,7 +1952,11 @@ importRouter.post("/process", async (_req, res) => {
       next = "skipped";
       skipped++;
     } else {
-      const category = resolveRuleCategory(categoryRules, "sofi", row.description) ?? uncategorised;
+      const { categoryId, bucket } = classify(
+        "sofi",
+        row.description,
+        row.isCredit ? "Income" : "Expense",
+      );
       const sofiExtId = `sofi:${row.transactionId}`;
       const sofiExists = await db.transaction.findUnique({
         where: { externalId: sofiExtId },
@@ -1952,8 +1982,8 @@ importRouter.post("/process", async (_req, res) => {
             originalCurrency: "USD",
             type: row.isCredit ? "Income" : "Expense",
             date: txDate,
-            categoryId: category.id,
-            bucket: row.isCredit ? null : category.bucket,
+            categoryId,
+            bucket,
             externalId: sofiExtId,
             owner: row.owner as "Alex" | "Casey" | "Joint",
           },
@@ -1978,8 +2008,11 @@ importRouter.post("/process", async (_req, res) => {
       next = "skipped";
       skipped++;
     } else {
-      const category =
-        resolveRuleCategory(categoryRules, "chase", row.description) ?? uncategorised;
+      const { categoryId, bucket } = classify(
+        "chase",
+        row.description,
+        row.isCredit ? "Income" : "Expense",
+      );
       const chaseExtId = `chase:${row.transactionId}`;
       const chaseExists = await db.transaction.findUnique({
         where: { externalId: chaseExtId },
@@ -2005,8 +2038,8 @@ importRouter.post("/process", async (_req, res) => {
             originalCurrency: "USD",
             type: row.isCredit ? "Income" : "Expense",
             date: txDate,
-            categoryId: category.id,
-            bucket: row.isCredit ? null : category.bucket,
+            categoryId,
+            bucket,
             externalId: chaseExtId,
             owner: row.owner as "Alex" | "Casey" | "Joint",
           },
@@ -2028,8 +2061,13 @@ importRouter.post("/process", async (_req, res) => {
       next = "skipped";
       skipped++;
     } else {
-      const category =
-        resolveRuleCategory(categoryRules, "santander", row.description) ?? uncategorised;
+      // Plaid namespaces its own externalId, but rules still scope by "santander"
+      // — it is the same account, just a different feed.
+      const { categoryId, bucket } = classify(
+        "santander",
+        row.description,
+        row.amount > 0 ? "Expense" : "Income",
+      );
       const extId = `santander-plaid:${row.transactionId}`;
       const exists = await db.transaction.findUnique({
         where: { externalId: extId },
@@ -2042,8 +2080,8 @@ importRouter.post("/process", async (_req, res) => {
             amount: Math.abs(row.amount),
             type: row.amount > 0 ? "Expense" : "Income",
             date: new Date(row.date),
-            categoryId: category.id,
-            bucket: row.amount > 0 ? category.bucket : null,
+            categoryId,
+            bucket,
             externalId: extId,
             owner: row.owner as "Alex" | "Casey" | "Joint",
           },

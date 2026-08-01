@@ -19,6 +19,7 @@ const ImportPage = lazy(() =>
 const CategoriesPage = lazy(() =>
   import("./pages/CategoriesPage.js").then((m) => ({ default: m.CategoriesPage })),
 );
+const RulesPage = lazy(() => import("./pages/RulesPage.js"));
 const SavingsPage = lazy(() =>
   import("./pages/SavingsPage.js").then((m) => ({ default: m.SavingsPage })),
 );
@@ -49,6 +50,7 @@ export function App() {
           <Route path="/tasks" element={<TasksPage />} />
           <Route path="/import" element={<ImportPage />} />
           <Route path="/categories" element={<CategoriesPage />} />
+          <Route path="/rules" element={<RulesPage />} />
           <Route path="/admin" element={<AdminPage />} />
         </Route>
       </Route>

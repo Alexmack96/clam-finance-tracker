@@ -3,17 +3,16 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosError } from "axios";
-import { Pencil, Trash2, Plus, ChevronRight } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Pencil, Trash2, Plus, ChevronRight, ArrowUpRight } from "lucide-react";
 import {
   createCategorySchema,
-  createCategoryRuleSchema,
-  buckets,
-  KNOWN_BANKS,
+  RULE_FIELD_LABELS,
+  RULE_OPERATOR_LABELS,
   type CreateCategoryInput,
-  type CreateCategoryRuleInput,
   type Category,
-  type CategoryRule,
   type KnownBank,
+  type Rule,
 } from "@clam/core";
 import api from "../lib/api.js";
 import { SOURCE_STYLES, type BankSource } from "../lib/bankSource.js";
@@ -21,7 +20,6 @@ import { Card, CardContent } from "../components/ui/card.js";
 import { Button } from "../components/ui/button.js";
 import { Input } from "../components/ui/input.js";
 import { Label } from "../components/ui/label.js";
-import { Badge } from "../components/ui/badge.js";
 import {
   Dialog,
   DialogContent,
@@ -50,7 +48,6 @@ import {
 } from "../components/ui/table.js";
 
 type CategoryRow = Category & { transactionCount: number };
-type RuleRow = CategoryRule;
 
 const DEFAULT_COLOR = "#14b8a6";
 
@@ -88,14 +85,17 @@ export function CategoriesPage() {
     queryFn: () => api.get("/api/categories").then((r) => r.data),
   });
 
-  const { data: rules } = useQuery<RuleRow[]>({
-    queryKey: ["categoryRules"],
-    queryFn: () => api.get("/api/category-rules").then((r) => r.data),
+  const { data: rules } = useQuery<Rule[]>({
+    queryKey: ["rules"],
+    queryFn: () => api.get("/api/rules").then((r) => r.data),
   });
 
   const rulesByCategory = useMemo(() => {
-    const map: Record<string, RuleRow[]> = {};
-    for (const r of rules ?? []) (map[r.categoryId] ??= []).push(r);
+    const map: Record<string, Rule[]> = {};
+    for (const r of rules ?? []) {
+      if (r.kind === "Category" && r.categoryId) (map[r.categoryId] ??= []).push(r);
+    }
+    for (const list of Object.values(map)) list.sort((a, b) => a.position - b.position);
     return map;
   }, [rules]);
 
@@ -110,7 +110,7 @@ export function CategoriesPage() {
 
   const form = useForm<CreateCategoryInput>({
     resolver: zodResolver(createCategorySchema),
-    defaultValues: { name: "", color: DEFAULT_COLOR, bucket: undefined },
+    defaultValues: { name: "", color: DEFAULT_COLOR },
   });
   const color = form.watch("color");
 
@@ -126,6 +126,8 @@ export function CategoriesPage() {
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
       queryClient.invalidateQueries({ queryKey: ["summary"] });
       queryClient.invalidateQueries({ queryKey: ["analytics"] });
+      // A rename rewrites the exact-match conditions of any Bucket rule on it.
+      queryClient.invalidateQueries({ queryKey: ["rules"] });
       setEditorOpen(false);
     },
   });
@@ -134,7 +136,7 @@ export function CategoriesPage() {
     mutationFn: (id: string) => api.delete(`/api/categories/${id}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] });
-      queryClient.invalidateQueries({ queryKey: ["categoryRules"] });
+      queryClient.invalidateQueries({ queryKey: ["rules"] });
       setDeleteTarget(null);
     },
     onError: (err) => setDeleteError(apiError(err)),
@@ -143,11 +145,7 @@ export function CategoriesPage() {
   function openEditor(cat?: CategoryRow) {
     setEditing(cat ?? null);
     saveMutation.reset();
-    form.reset(
-      cat
-        ? { name: cat.name, color: cat.color, bucket: cat.bucket ?? undefined }
-        : { name: "", color: DEFAULT_COLOR, bucket: undefined },
-    );
+    form.reset(cat ? { name: cat.name, color: cat.color } : { name: "", color: DEFAULT_COLOR });
     setEditorOpen(true);
   }
 
@@ -157,8 +155,12 @@ export function CategoriesPage() {
         <div>
           <h1 className="text-3xl font-bold text-foreground">Categories</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Add, rename, recolour, and remove transaction categories. Expand a category to manage
-            its auto-categorize rules.
+            Add, rename, recolour, and remove transaction categories. Expand one to see which rules
+            route into it — rules are edited and ordered on the{" "}
+            <Link to="/rules" className="underline underline-offset-2">
+              Rules
+            </Link>{" "}
+            page.
           </p>
         </div>
         <Button size="sm" onClick={() => openEditor()}>
@@ -176,7 +178,6 @@ export function CategoriesPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Category</TableHead>
-                  <TableHead>Bucket</TableHead>
                   <TableHead className="text-right">Transactions</TableHead>
                   <TableHead />
                 </TableRow>
@@ -211,13 +212,6 @@ export function CategoriesPage() {
                             )}
                           </button>
                         </TableCell>
-                        <TableCell>
-                          {c.bucket ? (
-                            <Badge variant="secondary">{c.bucket}</Badge>
-                          ) : (
-                            <span className="text-xs text-muted-foreground">—</span>
-                          )}
-                        </TableCell>
                         <TableCell className="text-right font-mono text-muted-foreground">
                           {c.transactionCount.toLocaleString()}
                         </TableCell>
@@ -249,8 +243,8 @@ export function CategoriesPage() {
                       </TableRow>
                       {isExpanded && (
                         <TableRow className="hover:bg-transparent">
-                          <TableCell colSpan={4} className="p-0">
-                            <CategoryRulesPanel category={c} rules={categoryRules} />
+                          <TableCell colSpan={3} className="p-0">
+                            <CategoryRulesSummary rules={categoryRules} />
                           </TableCell>
                         </TableRow>
                       )}
@@ -305,29 +299,12 @@ export function CategoriesPage() {
                 )}
               </div>
 
-              <div className="space-y-1">
-                <Label htmlFor="bucket">Bucket</Label>
-                <select
-                  id="bucket"
-                  {...form.register("bucket", {
-                    setValueAs: (v) => (v === "" ? undefined : v),
-                  })}
-                  className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                >
-                  {/* Unset is birth-only — offered while the category has no Bucket, gone once chosen. */}
-                  {!editing?.bucket && <option value="">Unset</option>}
-                  {buckets.map((b) => (
-                    <option key={b} value={b}>
-                      {b}
-                    </option>
-                  ))}
-                </select>
-                <p className="text-xs text-muted-foreground">
-                  Needs = bills/rent · Wants = discretionary spend · Savings = money put aside ·
-                  Ignore = skip. Stamped onto this category's expenses on import; leave Unset if
-                  unclear.
-                </p>
-              </div>
+              <p className="text-xs text-muted-foreground">
+                A category no longer carries a default Bucket — bucketing is decided by Bucket rules
+                on the Rules page, so there is one place to look when asking why a transaction
+                landed where it did. Renaming a category updates any rule that matches it by exact
+                name.
+              </p>
 
               {saveMutation.isError && (
                 <p className="text-sm text-destructive">{apiError(saveMutation.error)}</p>
@@ -360,8 +337,8 @@ export function CategoriesPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete "{deleteTarget?.name}"?</AlertDialogTitle>
             <AlertDialogDescription>
-              This permanently removes the category and any auto-categorize rules that target it. It
-              can't be deleted while transactions still use it.
+              This permanently removes the category and any rules that target it. It can't be
+              deleted while transactions still use it.
             </AlertDialogDescription>
           </AlertDialogHeader>
           {deleteError && <p className="text-sm text-destructive">{deleteError}</p>}
@@ -384,195 +361,67 @@ export function CategoriesPage() {
   );
 }
 
-// ─── Auto-categorize rules panel ───────────────────────────────────────────────
-// Nested under its category row (expand/collapse) rather than a separate
-// side-by-side pane, so the same layout works unchanged on mobile.
+// ─── Rules that route here (read-only) ───────────────────────────────────────
+// Deliberately not editable. Precedence is global and ordered, so a per-category
+// editor would show rules in an order that isn't the one that runs — and two
+// editors for the same object would drift.
 
-function CategoryRulesPanel({ category, rules }: { category: CategoryRow; rules: RuleRow[] }) {
-  const queryClient = useQueryClient();
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [message, setMessage] = useState<string | null>(null);
-  // A rule that was just created/edited — offer to run it over existing
-  // transactions (Outlook-style "run rule now"), never applied silently.
-  const [pendingApplyRule, setPendingApplyRule] = useState<RuleRow | null>(null);
-
-  const form = useForm<CreateCategoryRuleInput>({
-    resolver: zodResolver(createCategoryRuleSchema),
-    defaultValues: { pattern: "", bank: null, categoryId: category.id },
-  });
-
-  const saveMutation = useMutation({
-    mutationFn: (body: CreateCategoryRuleInput) =>
-      editingId
-        ? api.patch(`/api/category-rules/${editingId}`, body).then((r) => r.data as RuleRow)
-        : api.post("/api/category-rules", body).then((r) => r.data as RuleRow),
-    onSuccess: (rule) => {
-      queryClient.invalidateQueries({ queryKey: ["categoryRules"] });
-      setMessage(null);
-      setEditingId(null);
-      form.reset({ pattern: "", bank: null, categoryId: category.id });
-      setPendingApplyRule(rule);
-    },
-  });
-
-  const applyMutation = useMutation({
-    mutationFn: (id: string) =>
-      api.post(`/api/category-rules/${id}/apply`).then((r) => r.data as { recategorized: number }),
-    onSuccess: ({ recategorized }) => {
-      queryClient.invalidateQueries({ queryKey: ["categories"] });
-      queryClient.invalidateQueries({ queryKey: ["transactions"] });
-      // Recategorising shifts every per-category aggregate.
-      queryClient.invalidateQueries({ queryKey: ["summary"] });
-      queryClient.invalidateQueries({ queryKey: ["analytics"] });
-      setMessage(
-        `Recategorized ${recategorized} existing transaction${recategorized === 1 ? "" : "s"}.`,
-      );
-      setPendingApplyRule(null);
-    },
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: (id: string) => api.delete(`/api/category-rules/${id}`),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["categoryRules"] }),
-  });
-
-  function startEdit(rule: RuleRow) {
-    setEditingId(rule.id);
-    setMessage(null);
-    form.reset({ pattern: rule.pattern, bank: rule.bank, categoryId: category.id });
-  }
-
-  function cancelEdit() {
-    setEditingId(null);
-    form.reset({ pattern: "", bank: null, categoryId: category.id });
-  }
-
+function CategoryRulesSummary({ rules }: { rules: Rule[] }) {
   return (
-    <div className="space-y-3 py-3 px-4 sm:px-10 bg-muted/30">
+    <div className="space-y-2 py-3 px-4 sm:px-10 bg-muted/30">
       {rules.length === 0 ? (
         <p className="text-xs text-muted-foreground">
-          No auto-categorize rules yet — add one below to route matching descriptions here
-          automatically.
+          No rules route into this category.{" "}
+          <Link to="/rules" className="underline underline-offset-2">
+            Add one on the Rules page
+          </Link>
+          .
         </p>
       ) : (
-        <ul className="space-y-1.5">
-          {rules.map((r) => (
-            <li key={r.id} className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2 min-w-0">
-                <span className="font-mono text-xs bg-background border border-input rounded px-1.5 py-0.5 truncate">
-                  {r.pattern}
+        <>
+          <ul className="space-y-1.5">
+            {rules.map((r) => (
+              <li key={r.id} className="flex items-center gap-2 min-w-0">
+                <span className="w-6 shrink-0 text-center text-[10px] font-mono text-muted-foreground">
+                  {r.position + 1}
                 </span>
-                {r.bank ? (
+                <span className="flex flex-wrap items-center gap-1 min-w-0">
+                  {r.conditions.map((c, i) => (
+                    <span key={c.id} className="flex items-center gap-1">
+                      {i > 0 && (
+                        <span className="text-[10px] font-semibold text-muted-foreground">
+                          {c.negate ? "EXCEPT" : r.joinOperator}
+                        </span>
+                      )}
+                      <span
+                        className={`font-mono text-[11px] rounded px-1.5 py-0.5 truncate max-w-[16rem] ${
+                          c.negate ? "bg-destructive/10 text-destructive" : "bg-background border"
+                        }`}
+                      >
+                        {RULE_FIELD_LABELS[c.field]} {RULE_OPERATOR_LABELS[c.operator]} “{c.value}”
+                      </span>
+                    </span>
+                  ))}
+                </span>
+                {r.bank && (
                   <span
                     className={`shrink-0 px-1.5 py-0.5 rounded-full text-[10px] font-medium border ${SOURCE_STYLES[BANK_LABELS[r.bank]]}`}
                   >
                     {BANK_LABELS[r.bank]}
                   </span>
-                ) : (
-                  <span className="shrink-0 px-1.5 py-0.5 rounded-full text-[10px] font-medium border text-muted-foreground border-muted-foreground/40">
-                    Any bank
-                  </span>
                 )}
-              </div>
-              <div className="flex items-center gap-1 shrink-0">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-6 w-6"
-                  title="Edit rule"
-                  onClick={() => startEdit(r)}
-                >
-                  <Pencil className="h-3 w-3" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-6 w-6 text-destructive hover:text-destructive"
-                  title="Delete rule"
-                  onClick={() => deleteMutation.mutate(r.id)}
-                >
-                  <Trash2 className="h-3 w-3" />
-                </Button>
-              </div>
-            </li>
-          ))}
-        </ul>
+              </li>
+            ))}
+          </ul>
+          <Link
+            to="/rules"
+            className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground underline underline-offset-2"
+          >
+            Edit and reorder on the Rules page
+            <ArrowUpRight className="h-3 w-3" />
+          </Link>
+        </>
       )}
-
-      <form
-        onSubmit={form.handleSubmit((d) => saveMutation.mutate({ ...d, categoryId: category.id }))}
-        className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2"
-      >
-        <Input
-          placeholder='Pattern, e.g. "Payment Thank You-Mobile" (or AMAZON* for wildcard)'
-          {...form.register("pattern")}
-          className="h-8 text-xs flex-1"
-        />
-        <select
-          value={form.watch("bank") ?? ""}
-          onChange={(e) =>
-            form.setValue("bank", e.target.value === "" ? null : (e.target.value as KnownBank))
-          }
-          className="h-8 rounded-md border border-input bg-background px-2 text-xs shrink-0"
-        >
-          <option value="">Any bank</option>
-          {KNOWN_BANKS.map((b) => (
-            <option key={b} value={b}>
-              {BANK_LABELS[b]}
-            </option>
-          ))}
-        </select>
-        <div className="flex items-center gap-2 shrink-0">
-          <Button type="submit" size="sm" className="h-8" disabled={saveMutation.isPending}>
-            {editingId ? "Save" : "Add rule"}
-          </Button>
-          {editingId && (
-            <Button type="button" variant="outline" size="sm" className="h-8" onClick={cancelEdit}>
-              Cancel
-            </Button>
-          )}
-        </div>
-      </form>
-      {form.formState.errors.pattern && (
-        <p className="text-xs text-destructive">{form.formState.errors.pattern.message}</p>
-      )}
-      {saveMutation.isError && (
-        <p className="text-xs text-destructive">{apiError(saveMutation.error)}</p>
-      )}
-      {message && <p className="text-xs text-emerald-600 dark:text-emerald-400">{message}</p>}
-
-      <AlertDialog
-        open={!!pendingApplyRule}
-        onOpenChange={(open) => {
-          if (!open) setPendingApplyRule(null);
-        }}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Run this rule over existing transactions?</AlertDialogTitle>
-            <AlertDialogDescription>
-              "{pendingApplyRule?.pattern}"
-              {pendingApplyRule?.bank
-                ? ` on ${BANK_LABELS[pendingApplyRule.bank]}`
-                : " on any bank"}{" "}
-              will recategorize any matching transaction into "{category.name}". The rule applies to
-              future imports either way — this only affects transactions you already have.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setPendingApplyRule(null)}>Not now</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={(e) => {
-                e.preventDefault();
-                if (pendingApplyRule) applyMutation.mutate(pendingApplyRule.id);
-              }}
-              disabled={applyMutation.isPending}
-            >
-              {applyMutation.isPending ? "Applying..." : "Yes, apply now"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 }

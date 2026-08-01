@@ -13,6 +13,7 @@ const links = [
   { to: "/tasks", label: "Tasks" },
   { to: "/import", label: "Import" },
   { to: "/categories", label: "Categories" },
+  { to: "/rules", label: "Rules" },
   { to: "/admin", label: "Admin" },
 ] as const;
 

@@ -114,6 +114,8 @@ Express + TypeScript API. Entry point: `src/index.ts`.
 - `middleware/auth.ts` — `requireAuth` (any logged-in session). There is no admin role gate; every authenticated user can reach every route.
 - `routes/admin.ts` — user list, Monzo CSV import, staging status, process staged.
 - `routes/categories.ts` — category CRUD.
+- `routes/rules.ts` — rule CRUD, reorder, dry-run preview, apply. See
+  [ADR 0002](docs/adr/0002-ordered-rules-replace-implicit-precedence.md).
 - `routes/transactions.ts` — transaction CRUD.
 - `routes/dashboard.ts` — summary aggregates for dashboard.
 
@@ -177,6 +179,7 @@ Key models:
 |---|---|
 | `User` | Admin and agent accounts |
 | `Category` | Transaction categories with colour |
+| `Rule` / `RuleCondition` | Ordered auto-assignment rules. `kind` = `Category` \| `Bucket`; `position` is the whole of precedence (first match wins). Matching lives in `@clam/core` so the dry-run, `/process` and the client can never disagree. |
 | `Transaction` | Normalised transactions; `externalId` is namespaced bank ID (`monzo:tx_...`) |
 | `MonzoTransaction` | Raw Monzo CSV staging — untouched, one row per CSV row |
 
