@@ -130,12 +130,39 @@ categoriesRouter.post("/:fromId/merge/:toId", async (req, res) => {
     return;
   }
 
-  const { count } = await db.transaction.updateMany({
-    where: { categoryId: fromId },
-    data: { categoryId: toId },
+  // Same reason delete refuses it: the import pipeline assigns to Uncategorised,
+  // so it has to keep existing. Merging *into* it is fine.
+  if (from.name === "Uncategorised") {
+    res.status(409).json({ error: "The Uncategorised category cannot be merged away" });
+    return;
+  }
+
+  // `Rule.categoryId` is ON DELETE CASCADE, so deleting the source without
+  // repointing first would silently destroy every rule that routes into it —
+  // the user asked to merge two categories, not to throw away their rules.
+  const result = await db.$transaction(async (tx) => {
+    const { count: merged } = await tx.transaction.updateMany({
+      where: { categoryId: fromId },
+      data: { categoryId: toId },
+    });
+
+    const { count: rulesRepointed } = await tx.rule.updateMany({
+      where: { categoryId: fromId },
+      data: { categoryId: toId },
+    });
+
+    // Bucket rules test the category by name, so they follow the merge the same
+    // way they follow a rename. Partial matches are left alone for the same
+    // reason as there — the server can't know what family they were aimed at.
+    const { count: conditionsRewritten } = await tx.ruleCondition.updateMany({
+      where: { field: "Category", operator: "Exact", value: from.name },
+      data: { value: to.name },
+    });
+
+    await tx.category.delete({ where: { id: fromId } });
+
+    return { merged, rulesRepointed, conditionsRewritten };
   });
 
-  await db.category.delete({ where: { id: fromId } });
-
-  res.json({ merged: count, from: from.name, to: to.name });
+  res.json({ ...result, from: from.name, to: to.name });
 });

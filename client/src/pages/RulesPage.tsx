@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ClientSideRowModelModule,
@@ -276,6 +276,10 @@ function RuleSection({
   const queryClient = useQueryClient();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draft, setDraft] = useState<Draft | null>(null);
+  // Bumped per "Add rule" click so the editor remounts and re-runs its
+  // scroll-into-view — otherwise a second click on an already-open editor is
+  // the same silent no-op it was before.
+  const [draftSeq, setDraftSeq] = useState(0);
 
   const categoryById = useMemo(
     () => new Map(categories.map((c) => [c.id, c] as const)),
@@ -314,6 +318,7 @@ function RuleSection({
   function startCreate() {
     setEditingId(null);
     setDraft(emptyDraft(kind, categories[0]?.id ?? null));
+    setDraftSeq((n) => n + 1);
   }
 
   return (
@@ -436,6 +441,7 @@ function RuleSection({
 
         {draft && editingId === null && (
           <RuleEditor
+            key={draftSeq}
             draft={draft}
             setDraft={setDraft}
             categories={categories}
@@ -501,6 +507,14 @@ function RuleEditor({
 }) {
   const queryClient = useQueryClient();
 
+  // A new rule is appended below the existing list, which on a long list puts it
+  // a screen or more under the "Add rule" button that opened it — clicking then
+  // looks like it did nothing at all. Bring the editor to the user instead.
+  const editorRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    editorRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, []);
+
   const save = useMutation({
     mutationFn: () =>
       ruleId ? api.patch(`/api/rules/${ruleId}`, draft) : api.post("/api/rules", draft),
@@ -528,7 +542,10 @@ function RuleEditor({
     "h-8 rounded-md border border-input bg-background px-2 text-xs shrink-0 min-w-0";
 
   return (
-    <div className="rounded-md border border-primary/40 bg-muted/30 p-3 space-y-3">
+    <div ref={editorRef} className="rounded-md border border-primary/40 bg-muted/30 p-3 space-y-3">
+      <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+        {ruleId ? "Editing rule" : "New rule — added to the bottom, so it runs last"}
+      </p>
       <div className="space-y-2">
         {draft.conditions.map((c, i) => (
           <div key={i} className="flex flex-wrap items-center gap-2">

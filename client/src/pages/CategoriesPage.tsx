@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosError } from "axios";
 import { Link } from "react-router-dom";
-import { Pencil, Trash2, Plus, ChevronRight, ArrowUpRight } from "lucide-react";
+import { Pencil, Trash2, Plus, ChevronRight, ArrowUpRight, Merge } from "lucide-react";
 import {
   createCategorySchema,
   RULE_FIELD_LABELS,
@@ -78,6 +78,7 @@ export function CategoriesPage() {
   const [editing, setEditing] = useState<CategoryRow | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<CategoryRow | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [mergeSource, setMergeSource] = useState<CategoryRow | null>(null);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
   const { data: categories, isPending } = useQuery<CategoryRow[]>({
@@ -229,6 +230,20 @@ export function CategoriesPage() {
                             <Button
                               variant="ghost"
                               size="icon"
+                              className="h-7 w-7"
+                              title={
+                                c.name === "Uncategorised"
+                                  ? "Uncategorised can't be merged away"
+                                  : "Merge into another category"
+                              }
+                              disabled={c.name === "Uncategorised"}
+                              onClick={() => setMergeSource(c)}
+                            >
+                              <Merge className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
                               className="h-7 w-7 text-destructive hover:text-destructive"
                               title="Delete"
                               onClick={() => {
@@ -344,6 +359,20 @@ export function CategoriesPage() {
           {deleteError && <p className="text-sm text-destructive">{deleteError}</p>}
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
+            {/* The 409 tells you to merge first; without this the dialog is a dead end. */}
+            {deleteTarget && deleteTarget.transactionCount > 0 && (
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setMergeSource(deleteTarget);
+                  setDeleteTarget(null);
+                  setDeleteError(null);
+                }}
+              >
+                <Merge className="h-4 w-4 mr-1" />
+                Merge instead
+              </Button>
+            )}
             <AlertDialogAction
               className="bg-red-500 hover:bg-red-600 text-white"
               onClick={(e) => {
@@ -357,7 +386,110 @@ export function CategoriesPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <MergeDialog
+        source={mergeSource}
+        categories={categories ?? []}
+        onClose={() => setMergeSource(null)}
+      />
     </div>
+  );
+}
+
+// ─── Merge ───────────────────────────────────────────────────────────────────
+// The only way to retire a category that is still in use: reassign its
+// transactions, carry its rules over, then delete it. Deleting outright is
+// refused precisely so this stays the deliberate path.
+
+function MergeDialog({
+  source,
+  categories,
+  onClose,
+}: {
+  source: CategoryRow | null;
+  categories: CategoryRow[];
+  onClose: () => void;
+}) {
+  const queryClient = useQueryClient();
+  const [targetId, setTargetId] = useState("");
+
+  const targets = categories.filter((c) => c.id !== source?.id);
+
+  const mergeMutation = useMutation({
+    mutationFn: () =>
+      api
+        .post(`/api/categories/${source?.id}/merge/${targetId}`)
+        .then((r) => r.data as { merged: number; rulesRepointed: number }),
+    onSuccess: () => {
+      // A merge rewrites category assignment, rule targets and every aggregate
+      // that groups by category — invalidate the lot.
+      for (const key of ["categories", "rules", "transactions", "summary", "analytics"]) {
+        queryClient.invalidateQueries({ queryKey: [key] });
+      }
+      onClose();
+    },
+  });
+
+  return (
+    <Dialog
+      open={!!source}
+      onOpenChange={(open) => {
+        if (!open) onClose();
+        else {
+          setTargetId("");
+          mergeMutation.reset();
+        }
+      }}
+    >
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Merge "{source?.name}" into…</DialogTitle>
+        </DialogHeader>
+
+        <div className="space-y-4 py-2">
+          <div className="space-y-1">
+            <Label htmlFor="merge-target">Target category</Label>
+            <select
+              id="merge-target"
+              value={targetId}
+              onChange={(e) => setTargetId(e.target.value)}
+              className="h-9 w-full rounded-md border border-input bg-background px-2 text-sm"
+            >
+              <option value="">Choose a category…</option>
+              {targets.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <p className="text-xs text-muted-foreground">
+            {source?.transactionCount.toLocaleString() ?? 0} transaction
+            {source?.transactionCount === 1 ? "" : "s"} move across, and any rule pointing at "
+            {source?.name}" is repointed rather than deleted. "{source?.name}" is then removed. This
+            can't be undone.
+          </p>
+
+          {mergeMutation.isError && (
+            <p className="text-sm text-destructive">{apiError(mergeMutation.error)}</p>
+          )}
+        </div>
+
+        <DialogFooter>
+          <Button type="button" variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button
+            type="button"
+            disabled={!targetId || mergeMutation.isPending}
+            onClick={() => mergeMutation.mutate()}
+          >
+            {mergeMutation.isPending ? "Merging…" : "Merge"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 
