@@ -391,6 +391,16 @@ exports.Prisma.TabScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.RecurringVerdictScalarFieldEnum = {
+  id: 'id',
+  owner: 'owner',
+  description: 'description',
+  status: 'status',
+  note: 'note',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.InvestmentAccountScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -480,6 +490,11 @@ exports.TabStatus = exports.$Enums.TabStatus = {
   Settled: 'Settled'
 };
 
+exports.RecurringStatus = exports.$Enums.RecurringStatus = {
+  Confirmed: 'Confirmed',
+  Rejected: 'Rejected'
+};
+
 exports.Prisma.ModelName = {
   User: 'User',
   Category: 'Category',
@@ -502,6 +517,7 @@ exports.Prisma.ModelName = {
   Account: 'Account',
   Note: 'Note',
   Tab: 'Tab',
+  RecurringVerdict: 'RecurringVerdict',
   InvestmentAccount: 'InvestmentAccount',
   InvestmentSnapshot: 'InvestmentSnapshot',
   Verification: 'Verification'

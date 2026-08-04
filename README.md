@@ -45,11 +45,8 @@ Supported: Monzo ✓ · Amex ✓ · Barclays ✓ · Santander ✓ · HSBC ✓ ·
 
 ## Todo 28-Jun-2026
 
-[] does every category have a 
-[x] for category rules, make them act more like ag-grid string filters, so i have more control i.e. allow me a dropdown to choose contains/ starts with/endswith and exact match! and still have the run rules, and allow a dryrun option on run rules before we confirm it so i can see whats gonna be affected before we smash it in !!
-[x] stats page - monthyl count of transacitons — Analytics page, replaced Fixed vs Variable
-[] keep the rows but automatically load with a ag-grid filter of 'not zeros' for this month so we can see less rows to have to enter! it should be removable
-[x] Auto-bucketing for neeeds and wants should also be customisable similar to how category auto-rules are.Decide if you think best to put in the categories page, or have another new page. Might be best to have one called rules that emcompasses both cat and bucketing maybe.. you should be able to make rules that can account for combinations of transaction descriptions, and categories, to decide a thing e.g. transport defaults to needs, transport + uber goes to wants, etc. then salary defaults to be ignored since its not part of your spending !
+[] categories page looks horrible, lets bring it back to nested under categories, and rules can be its own buckets page maybe.. im torn but i know i hate the look right now, they were better nested and hidden. As for buckets yeah sure it can have a page like it does, but it needs a redesign it looks awful! change quite drastically.
+[] Add visual marker using new endpoint that figured out our recurring transactions
 [] ANDROID PWA EXPERIENCE COULD IMPORVE, SHOPW TOP 10 BY TXNS FOR THAT USER, NOT BY ALPHABETICAL AND DONT LAUNCH KEYBOARD SO LIKELY WE ARE TAPPIUNG ONCE, ADD SCOLLY BAR INSTEAD
 [] quick question - how better could i be interracting with my data right now? rather than get you to write janky ralways scripts, better i eventually maybe a rest api i can just called endpoints to mess around and dlete bulk by id or by statement id or something?
 [] IOS PWA experience is garbage - I shared from safari rather than instlal fgrom chrome.. is that why? on android itypically install from chrome
@@ -57,9 +54,8 @@ Supported: Monzo ✓ · Amex ✓ · Barclays ✓ · Santander ✓ · HSBC ✓ ·
 [] S - Mobile all - dont open keyboard immediately, instead add a scrolly bar so you likely will never type. But you could if you prefer to tap the text and do that.
 [] Y - Amex YTD rec. unit tests for ALL of them. ensure GBP and all sums correctly. ignore 2025 in the jan upload. 
 [] - Run a monzo YTD rec against the transactions API to make sure it reconciles. For now it can appear 
-[x] Needs/Wants/Savings/Ignore should be the 4 categories, reove inherit concept. instad, you should be able to set up your own mappings similar to the cateogries where i can know that for example, investments category goes to savings, and my rent goes to needs etc. so i dont need to do much work re-categorising, but equally if its unclear which it should be, we should leave uncategorised I think. Default is unset, but it wont show that in the UI as that another option, once youve chosen one you cant go back to null, simply can flip between them
 [] duplicate ids on casey Amex
-[x] why does the savings page still have this stuff for the exclusion items? — gone; the Fixed/Fun/Saving, exclude-from-savings and direct-debit flags collapsed into the single Bucket field, surfaced in the FLAGS popover. [] ive figure out the right abstraction!! i think each transaciton row in the transaction page should have a collapseable extra fields underneath it, and a little arrow or something that pops out the extra flags, cos i realised i need one for exlcude from savings override, and SavingType (FIxed/Fun/Saving) enum, and possibly other properties about a transaction that i havent thought of yet , and isdirectdebit although i cant remember why we had that one maybe remove direct debit
+[] ive figure out the right abstraction!! i think each transaciton row in the transaction page should have a collapseable extra fields underneath it, and a little arrow or something that pops out the extra flags, cos i realised i need one for exlcude from savings override, and SavingType (FIxed/Fun/Saving) enum, and possibly other properties about a transaction that i havent thought of yet , and isdirectdebit although i cant remember why we had that one maybe remove direct debit
 
 [] Rate my app so far as a personal finance tracker. give me the top 3 highest hitting wins that are missing that would be useful for personal finance tracking you must be storngly confident they are gonna be helkpful or typical that others would use it for?
 [] Add keyboard shortcuts such ac ctrl+alt+1 for switching between tabs in my app, it should apply in the order of my navbar tabs e.g. analytics its ctrl+alt+1
@@ -71,3 +67,58 @@ Supported: Monzo ✓ · Amex ✓ · Barclays ✓ · Santander ✓ · HSBC ✓ ·
 [] Visual UI error for uploading wrong bank to tell you 'Cannot upload HSBC statement to SoFi' etc. I jsut did it myslef and realised its prone to user error. 
 
 [] **Goals page** — strip out investment value fluctuations; goals should reflect actual cash moved, not market swings
+
+---
+
+## Roadmap — competing with Emma (4-Aug-2026)
+
+**transatlantic couple splitting joint bills across two currencies**. The data
+already shows it — 1,588 GBP-native rows (£318,770) alongside 217 USD rows
+(£43,090), with Foxtons/Vodafone/TfL next to IRS/Wells Fargo/Chase/SoFi/Betterment.
+Emma, Snoop, Plum and YNAB are all single-player and single-country. Lean into
+joint + cross-border rather than chasing feature parity.
+
+
+[X] **1. Recurring / subscription detection** — Emma's flagship feature, and the
+data makes it nearly free. `group by description having count(distinct month) >= 4`
+already surfaces `GOOGLE*YOUTUBE £12.99 × 6`, `SO ENERGY £67.69 × 6`,
+`CONNECTIVITY £60.24 × 6`. No external dependency, no regulatory exposure, and it
+unlocks #2. Build this first.
+[] **2. Cash-flow forecast** — once #1 exists: "after your known direct debits
+you'll have £X on payday." Almost nobody does this well, Emma included. Highest
+differentiation per unit of work.
+[] **2. Per-bucket actual vs plan** — the savings score collapses to one number
+(saved vs 20%), so you can score 100 with Needs at 70% and Wants at 5%. 50/30/20
+is a three-way check: three bars, actual against plan, on the Savings page. Every
+input already exists.
+
+[] **3. Tabs as transactions** — a tab is a refund, and
+`aggregateMonthlySpend` already nets income-in-a-bucket off the spend it reverses.
+Give `Tab` a `bucket` and an optional `transactionId`, then materialise the contra
+as a real `Transaction` with `externalId = "tab:<id>"` so it shows in the grid and
+rules can match it. **Recognise on accrual** (tab creation date), not `settledAt` —
+money you're owed shouldn't count against March because they paid in April.
+Worked example: £1,950 stag do (Wants) + £1,560 TheyOwe contra (Wants) = £390 net,
+your real share. Tagging the whole thing `Ignore` scores it £0 and under-reports
+Wants every time you front money for a group.
+Fix `Tab.person` first — it's free text and already inconsistent (`Casey` vs
+`casey`, `Monzo` as a "person"), which breaks the moment you aggregate by who owes.
+
+
+
+[] **5. Open banking** — table stakes, real cost, do it *after* 1–4. It removes
+the monthly PDF upload but only reaches parity with Emma. Scope it to **our own
+accounts**, not a general integration: Enable Banking has self-serve "Restricted
+Production for own accounts" (EU/UK), Teller.io gives 100 free live US connections
+for Casey's Chase/SoFi/Wells Fargo side. GoCardless/Nordigen dropped its
+free-forever tier; Plaid and Tink are sales-led; TrueLayer publishes tiers.
+`plaid.ts` and `monzo.ts` already have full OAuth + sync routes, and the
+stage → process pipeline means a new sync source is just another staging table.
+
+[] **6. Multi-currency as a first-class concept** — `originalAmount`,
+`originalCurrency` and `lib/fxRates.ts` already exist. Surface "$X / £Y this month"
+and FX drag on the US accounts. No UK app offers this.
+
+**Deliberately not building:** credit score, rent reporting to credit agencies,
+crypto tracking. Regulated, commoditised, or irrelevant to two people — that's
+Emma's growth roadmap, not ours.

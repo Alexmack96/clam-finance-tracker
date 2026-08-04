@@ -122,6 +122,11 @@ export type Note = $Result.DefaultSelection<Prisma.$NotePayload>
  */
 export type Tab = $Result.DefaultSelection<Prisma.$TabPayload>
 /**
+ * Model RecurringVerdict
+ * 
+ */
+export type RecurringVerdict = $Result.DefaultSelection<Prisma.$RecurringVerdictPayload>
+/**
  * Model InvestmentAccount
  * 
  */
@@ -218,6 +223,14 @@ export const TabStatus: {
 
 export type TabStatus = (typeof TabStatus)[keyof typeof TabStatus]
 
+
+export const RecurringStatus: {
+  Confirmed: 'Confirmed',
+  Rejected: 'Rejected'
+};
+
+export type RecurringStatus = (typeof RecurringStatus)[keyof typeof RecurringStatus]
+
 }
 
 export type TransactionType = $Enums.TransactionType
@@ -255,6 +268,10 @@ export const TabDirection: typeof $Enums.TabDirection
 export type TabStatus = $Enums.TabStatus
 
 export const TabStatus: typeof $Enums.TabStatus
+
+export type RecurringStatus = $Enums.RecurringStatus
+
+export const RecurringStatus: typeof $Enums.RecurringStatus
 
 /**
  * ##  Prisma Client ʲˢ
@@ -586,6 +603,16 @@ export class PrismaClient<
     * ```
     */
   get tab(): Prisma.TabDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.recurringVerdict`: Exposes CRUD operations for the **RecurringVerdict** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more RecurringVerdicts
+    * const recurringVerdicts = await prisma.recurringVerdict.findMany()
+    * ```
+    */
+  get recurringVerdict(): Prisma.RecurringVerdictDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.investmentAccount`: Exposes CRUD operations for the **InvestmentAccount** model.
@@ -1071,6 +1098,7 @@ export namespace Prisma {
     Account: 'Account',
     Note: 'Note',
     Tab: 'Tab',
+    RecurringVerdict: 'RecurringVerdict',
     InvestmentAccount: 'InvestmentAccount',
     InvestmentSnapshot: 'InvestmentSnapshot',
     Verification: 'Verification'
@@ -1089,7 +1117,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "category" | "rule" | "ruleCondition" | "transaction" | "monzoApiTransaction" | "plaidItem" | "plaidTransaction" | "monzoCredential" | "monzoRecRun" | "statementFile" | "amexTransaction" | "barclaysTransaction" | "santanderTransaction" | "hsbcTransaction" | "chaseTransaction" | "sofiTransaction" | "session" | "account" | "note" | "tab" | "investmentAccount" | "investmentSnapshot" | "verification"
+      modelProps: "user" | "category" | "rule" | "ruleCondition" | "transaction" | "monzoApiTransaction" | "plaidItem" | "plaidTransaction" | "monzoCredential" | "monzoRecRun" | "statementFile" | "amexTransaction" | "barclaysTransaction" | "santanderTransaction" | "hsbcTransaction" | "chaseTransaction" | "sofiTransaction" | "session" | "account" | "note" | "tab" | "recurringVerdict" | "investmentAccount" | "investmentSnapshot" | "verification"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2647,6 +2675,80 @@ export namespace Prisma {
           }
         }
       }
+      RecurringVerdict: {
+        payload: Prisma.$RecurringVerdictPayload<ExtArgs>
+        fields: Prisma.RecurringVerdictFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.RecurringVerdictFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RecurringVerdictPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.RecurringVerdictFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RecurringVerdictPayload>
+          }
+          findFirst: {
+            args: Prisma.RecurringVerdictFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RecurringVerdictPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.RecurringVerdictFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RecurringVerdictPayload>
+          }
+          findMany: {
+            args: Prisma.RecurringVerdictFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RecurringVerdictPayload>[]
+          }
+          create: {
+            args: Prisma.RecurringVerdictCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RecurringVerdictPayload>
+          }
+          createMany: {
+            args: Prisma.RecurringVerdictCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.RecurringVerdictCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RecurringVerdictPayload>[]
+          }
+          delete: {
+            args: Prisma.RecurringVerdictDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RecurringVerdictPayload>
+          }
+          update: {
+            args: Prisma.RecurringVerdictUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RecurringVerdictPayload>
+          }
+          deleteMany: {
+            args: Prisma.RecurringVerdictDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.RecurringVerdictUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.RecurringVerdictUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RecurringVerdictPayload>[]
+          }
+          upsert: {
+            args: Prisma.RecurringVerdictUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RecurringVerdictPayload>
+          }
+          aggregate: {
+            args: Prisma.RecurringVerdictAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateRecurringVerdict>
+          }
+          groupBy: {
+            args: Prisma.RecurringVerdictGroupByArgs<ExtArgs>
+            result: $Utils.Optional<RecurringVerdictGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.RecurringVerdictCountArgs<ExtArgs>
+            result: $Utils.Optional<RecurringVerdictCountAggregateOutputType> | number
+          }
+        }
+      }
       InvestmentAccount: {
         payload: Prisma.$InvestmentAccountPayload<ExtArgs>
         fields: Prisma.InvestmentAccountFieldRefs
@@ -2998,6 +3100,7 @@ export namespace Prisma {
     account?: AccountOmit
     note?: NoteOmit
     tab?: TabOmit
+    recurringVerdict?: RecurringVerdictOmit
     investmentAccount?: InvestmentAccountOmit
     investmentSnapshot?: InvestmentSnapshotOmit
     verification?: VerificationOmit
@@ -26855,6 +26958,1030 @@ export namespace Prisma {
 
 
   /**
+   * Model RecurringVerdict
+   */
+
+  export type AggregateRecurringVerdict = {
+    _count: RecurringVerdictCountAggregateOutputType | null
+    _min: RecurringVerdictMinAggregateOutputType | null
+    _max: RecurringVerdictMaxAggregateOutputType | null
+  }
+
+  export type RecurringVerdictMinAggregateOutputType = {
+    id: string | null
+    owner: $Enums.Owner | null
+    description: string | null
+    status: $Enums.RecurringStatus | null
+    note: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type RecurringVerdictMaxAggregateOutputType = {
+    id: string | null
+    owner: $Enums.Owner | null
+    description: string | null
+    status: $Enums.RecurringStatus | null
+    note: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type RecurringVerdictCountAggregateOutputType = {
+    id: number
+    owner: number
+    description: number
+    status: number
+    note: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type RecurringVerdictMinAggregateInputType = {
+    id?: true
+    owner?: true
+    description?: true
+    status?: true
+    note?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type RecurringVerdictMaxAggregateInputType = {
+    id?: true
+    owner?: true
+    description?: true
+    status?: true
+    note?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type RecurringVerdictCountAggregateInputType = {
+    id?: true
+    owner?: true
+    description?: true
+    status?: true
+    note?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type RecurringVerdictAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which RecurringVerdict to aggregate.
+     */
+    where?: RecurringVerdictWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RecurringVerdicts to fetch.
+     */
+    orderBy?: RecurringVerdictOrderByWithRelationInput | RecurringVerdictOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: RecurringVerdictWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RecurringVerdicts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RecurringVerdicts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned RecurringVerdicts
+    **/
+    _count?: true | RecurringVerdictCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: RecurringVerdictMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: RecurringVerdictMaxAggregateInputType
+  }
+
+  export type GetRecurringVerdictAggregateType<T extends RecurringVerdictAggregateArgs> = {
+        [P in keyof T & keyof AggregateRecurringVerdict]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateRecurringVerdict[P]>
+      : GetScalarType<T[P], AggregateRecurringVerdict[P]>
+  }
+
+
+
+
+  export type RecurringVerdictGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: RecurringVerdictWhereInput
+    orderBy?: RecurringVerdictOrderByWithAggregationInput | RecurringVerdictOrderByWithAggregationInput[]
+    by: RecurringVerdictScalarFieldEnum[] | RecurringVerdictScalarFieldEnum
+    having?: RecurringVerdictScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: RecurringVerdictCountAggregateInputType | true
+    _min?: RecurringVerdictMinAggregateInputType
+    _max?: RecurringVerdictMaxAggregateInputType
+  }
+
+  export type RecurringVerdictGroupByOutputType = {
+    id: string
+    owner: $Enums.Owner
+    description: string
+    status: $Enums.RecurringStatus
+    note: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: RecurringVerdictCountAggregateOutputType | null
+    _min: RecurringVerdictMinAggregateOutputType | null
+    _max: RecurringVerdictMaxAggregateOutputType | null
+  }
+
+  type GetRecurringVerdictGroupByPayload<T extends RecurringVerdictGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<RecurringVerdictGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof RecurringVerdictGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], RecurringVerdictGroupByOutputType[P]>
+            : GetScalarType<T[P], RecurringVerdictGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type RecurringVerdictSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    owner?: boolean
+    description?: boolean
+    status?: boolean
+    note?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["recurringVerdict"]>
+
+  export type RecurringVerdictSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    owner?: boolean
+    description?: boolean
+    status?: boolean
+    note?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["recurringVerdict"]>
+
+  export type RecurringVerdictSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    owner?: boolean
+    description?: boolean
+    status?: boolean
+    note?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["recurringVerdict"]>
+
+  export type RecurringVerdictSelectScalar = {
+    id?: boolean
+    owner?: boolean
+    description?: boolean
+    status?: boolean
+    note?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type RecurringVerdictOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "owner" | "description" | "status" | "note" | "createdAt" | "updatedAt", ExtArgs["result"]["recurringVerdict"]>
+
+  export type $RecurringVerdictPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "RecurringVerdict"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      owner: $Enums.Owner
+      description: string
+      status: $Enums.RecurringStatus
+      note: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["recurringVerdict"]>
+    composites: {}
+  }
+
+  type RecurringVerdictGetPayload<S extends boolean | null | undefined | RecurringVerdictDefaultArgs> = $Result.GetResult<Prisma.$RecurringVerdictPayload, S>
+
+  type RecurringVerdictCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<RecurringVerdictFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: RecurringVerdictCountAggregateInputType | true
+    }
+
+  export interface RecurringVerdictDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['RecurringVerdict'], meta: { name: 'RecurringVerdict' } }
+    /**
+     * Find zero or one RecurringVerdict that matches the filter.
+     * @param {RecurringVerdictFindUniqueArgs} args - Arguments to find a RecurringVerdict
+     * @example
+     * // Get one RecurringVerdict
+     * const recurringVerdict = await prisma.recurringVerdict.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends RecurringVerdictFindUniqueArgs>(args: SelectSubset<T, RecurringVerdictFindUniqueArgs<ExtArgs>>): Prisma__RecurringVerdictClient<$Result.GetResult<Prisma.$RecurringVerdictPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one RecurringVerdict that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {RecurringVerdictFindUniqueOrThrowArgs} args - Arguments to find a RecurringVerdict
+     * @example
+     * // Get one RecurringVerdict
+     * const recurringVerdict = await prisma.recurringVerdict.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends RecurringVerdictFindUniqueOrThrowArgs>(args: SelectSubset<T, RecurringVerdictFindUniqueOrThrowArgs<ExtArgs>>): Prisma__RecurringVerdictClient<$Result.GetResult<Prisma.$RecurringVerdictPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first RecurringVerdict that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RecurringVerdictFindFirstArgs} args - Arguments to find a RecurringVerdict
+     * @example
+     * // Get one RecurringVerdict
+     * const recurringVerdict = await prisma.recurringVerdict.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends RecurringVerdictFindFirstArgs>(args?: SelectSubset<T, RecurringVerdictFindFirstArgs<ExtArgs>>): Prisma__RecurringVerdictClient<$Result.GetResult<Prisma.$RecurringVerdictPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first RecurringVerdict that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RecurringVerdictFindFirstOrThrowArgs} args - Arguments to find a RecurringVerdict
+     * @example
+     * // Get one RecurringVerdict
+     * const recurringVerdict = await prisma.recurringVerdict.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends RecurringVerdictFindFirstOrThrowArgs>(args?: SelectSubset<T, RecurringVerdictFindFirstOrThrowArgs<ExtArgs>>): Prisma__RecurringVerdictClient<$Result.GetResult<Prisma.$RecurringVerdictPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more RecurringVerdicts that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RecurringVerdictFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all RecurringVerdicts
+     * const recurringVerdicts = await prisma.recurringVerdict.findMany()
+     * 
+     * // Get first 10 RecurringVerdicts
+     * const recurringVerdicts = await prisma.recurringVerdict.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const recurringVerdictWithIdOnly = await prisma.recurringVerdict.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends RecurringVerdictFindManyArgs>(args?: SelectSubset<T, RecurringVerdictFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RecurringVerdictPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a RecurringVerdict.
+     * @param {RecurringVerdictCreateArgs} args - Arguments to create a RecurringVerdict.
+     * @example
+     * // Create one RecurringVerdict
+     * const RecurringVerdict = await prisma.recurringVerdict.create({
+     *   data: {
+     *     // ... data to create a RecurringVerdict
+     *   }
+     * })
+     * 
+     */
+    create<T extends RecurringVerdictCreateArgs>(args: SelectSubset<T, RecurringVerdictCreateArgs<ExtArgs>>): Prisma__RecurringVerdictClient<$Result.GetResult<Prisma.$RecurringVerdictPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many RecurringVerdicts.
+     * @param {RecurringVerdictCreateManyArgs} args - Arguments to create many RecurringVerdicts.
+     * @example
+     * // Create many RecurringVerdicts
+     * const recurringVerdict = await prisma.recurringVerdict.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends RecurringVerdictCreateManyArgs>(args?: SelectSubset<T, RecurringVerdictCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many RecurringVerdicts and returns the data saved in the database.
+     * @param {RecurringVerdictCreateManyAndReturnArgs} args - Arguments to create many RecurringVerdicts.
+     * @example
+     * // Create many RecurringVerdicts
+     * const recurringVerdict = await prisma.recurringVerdict.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many RecurringVerdicts and only return the `id`
+     * const recurringVerdictWithIdOnly = await prisma.recurringVerdict.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends RecurringVerdictCreateManyAndReturnArgs>(args?: SelectSubset<T, RecurringVerdictCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RecurringVerdictPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a RecurringVerdict.
+     * @param {RecurringVerdictDeleteArgs} args - Arguments to delete one RecurringVerdict.
+     * @example
+     * // Delete one RecurringVerdict
+     * const RecurringVerdict = await prisma.recurringVerdict.delete({
+     *   where: {
+     *     // ... filter to delete one RecurringVerdict
+     *   }
+     * })
+     * 
+     */
+    delete<T extends RecurringVerdictDeleteArgs>(args: SelectSubset<T, RecurringVerdictDeleteArgs<ExtArgs>>): Prisma__RecurringVerdictClient<$Result.GetResult<Prisma.$RecurringVerdictPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one RecurringVerdict.
+     * @param {RecurringVerdictUpdateArgs} args - Arguments to update one RecurringVerdict.
+     * @example
+     * // Update one RecurringVerdict
+     * const recurringVerdict = await prisma.recurringVerdict.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends RecurringVerdictUpdateArgs>(args: SelectSubset<T, RecurringVerdictUpdateArgs<ExtArgs>>): Prisma__RecurringVerdictClient<$Result.GetResult<Prisma.$RecurringVerdictPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more RecurringVerdicts.
+     * @param {RecurringVerdictDeleteManyArgs} args - Arguments to filter RecurringVerdicts to delete.
+     * @example
+     * // Delete a few RecurringVerdicts
+     * const { count } = await prisma.recurringVerdict.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends RecurringVerdictDeleteManyArgs>(args?: SelectSubset<T, RecurringVerdictDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more RecurringVerdicts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RecurringVerdictUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many RecurringVerdicts
+     * const recurringVerdict = await prisma.recurringVerdict.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends RecurringVerdictUpdateManyArgs>(args: SelectSubset<T, RecurringVerdictUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more RecurringVerdicts and returns the data updated in the database.
+     * @param {RecurringVerdictUpdateManyAndReturnArgs} args - Arguments to update many RecurringVerdicts.
+     * @example
+     * // Update many RecurringVerdicts
+     * const recurringVerdict = await prisma.recurringVerdict.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more RecurringVerdicts and only return the `id`
+     * const recurringVerdictWithIdOnly = await prisma.recurringVerdict.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends RecurringVerdictUpdateManyAndReturnArgs>(args: SelectSubset<T, RecurringVerdictUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RecurringVerdictPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one RecurringVerdict.
+     * @param {RecurringVerdictUpsertArgs} args - Arguments to update or create a RecurringVerdict.
+     * @example
+     * // Update or create a RecurringVerdict
+     * const recurringVerdict = await prisma.recurringVerdict.upsert({
+     *   create: {
+     *     // ... data to create a RecurringVerdict
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the RecurringVerdict we want to update
+     *   }
+     * })
+     */
+    upsert<T extends RecurringVerdictUpsertArgs>(args: SelectSubset<T, RecurringVerdictUpsertArgs<ExtArgs>>): Prisma__RecurringVerdictClient<$Result.GetResult<Prisma.$RecurringVerdictPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of RecurringVerdicts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RecurringVerdictCountArgs} args - Arguments to filter RecurringVerdicts to count.
+     * @example
+     * // Count the number of RecurringVerdicts
+     * const count = await prisma.recurringVerdict.count({
+     *   where: {
+     *     // ... the filter for the RecurringVerdicts we want to count
+     *   }
+     * })
+    **/
+    count<T extends RecurringVerdictCountArgs>(
+      args?: Subset<T, RecurringVerdictCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], RecurringVerdictCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a RecurringVerdict.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RecurringVerdictAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends RecurringVerdictAggregateArgs>(args: Subset<T, RecurringVerdictAggregateArgs>): Prisma.PrismaPromise<GetRecurringVerdictAggregateType<T>>
+
+    /**
+     * Group by RecurringVerdict.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RecurringVerdictGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends RecurringVerdictGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: RecurringVerdictGroupByArgs['orderBy'] }
+        : { orderBy?: RecurringVerdictGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, RecurringVerdictGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetRecurringVerdictGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the RecurringVerdict model
+   */
+  readonly fields: RecurringVerdictFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for RecurringVerdict.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__RecurringVerdictClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the RecurringVerdict model
+   */
+  interface RecurringVerdictFieldRefs {
+    readonly id: FieldRef<"RecurringVerdict", 'String'>
+    readonly owner: FieldRef<"RecurringVerdict", 'Owner'>
+    readonly description: FieldRef<"RecurringVerdict", 'String'>
+    readonly status: FieldRef<"RecurringVerdict", 'RecurringStatus'>
+    readonly note: FieldRef<"RecurringVerdict", 'String'>
+    readonly createdAt: FieldRef<"RecurringVerdict", 'DateTime'>
+    readonly updatedAt: FieldRef<"RecurringVerdict", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * RecurringVerdict findUnique
+   */
+  export type RecurringVerdictFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RecurringVerdict
+     */
+    select?: RecurringVerdictSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RecurringVerdict
+     */
+    omit?: RecurringVerdictOmit<ExtArgs> | null
+    /**
+     * Filter, which RecurringVerdict to fetch.
+     */
+    where: RecurringVerdictWhereUniqueInput
+  }
+
+  /**
+   * RecurringVerdict findUniqueOrThrow
+   */
+  export type RecurringVerdictFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RecurringVerdict
+     */
+    select?: RecurringVerdictSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RecurringVerdict
+     */
+    omit?: RecurringVerdictOmit<ExtArgs> | null
+    /**
+     * Filter, which RecurringVerdict to fetch.
+     */
+    where: RecurringVerdictWhereUniqueInput
+  }
+
+  /**
+   * RecurringVerdict findFirst
+   */
+  export type RecurringVerdictFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RecurringVerdict
+     */
+    select?: RecurringVerdictSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RecurringVerdict
+     */
+    omit?: RecurringVerdictOmit<ExtArgs> | null
+    /**
+     * Filter, which RecurringVerdict to fetch.
+     */
+    where?: RecurringVerdictWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RecurringVerdicts to fetch.
+     */
+    orderBy?: RecurringVerdictOrderByWithRelationInput | RecurringVerdictOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for RecurringVerdicts.
+     */
+    cursor?: RecurringVerdictWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RecurringVerdicts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RecurringVerdicts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of RecurringVerdicts.
+     */
+    distinct?: RecurringVerdictScalarFieldEnum | RecurringVerdictScalarFieldEnum[]
+  }
+
+  /**
+   * RecurringVerdict findFirstOrThrow
+   */
+  export type RecurringVerdictFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RecurringVerdict
+     */
+    select?: RecurringVerdictSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RecurringVerdict
+     */
+    omit?: RecurringVerdictOmit<ExtArgs> | null
+    /**
+     * Filter, which RecurringVerdict to fetch.
+     */
+    where?: RecurringVerdictWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RecurringVerdicts to fetch.
+     */
+    orderBy?: RecurringVerdictOrderByWithRelationInput | RecurringVerdictOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for RecurringVerdicts.
+     */
+    cursor?: RecurringVerdictWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RecurringVerdicts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RecurringVerdicts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of RecurringVerdicts.
+     */
+    distinct?: RecurringVerdictScalarFieldEnum | RecurringVerdictScalarFieldEnum[]
+  }
+
+  /**
+   * RecurringVerdict findMany
+   */
+  export type RecurringVerdictFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RecurringVerdict
+     */
+    select?: RecurringVerdictSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RecurringVerdict
+     */
+    omit?: RecurringVerdictOmit<ExtArgs> | null
+    /**
+     * Filter, which RecurringVerdicts to fetch.
+     */
+    where?: RecurringVerdictWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RecurringVerdicts to fetch.
+     */
+    orderBy?: RecurringVerdictOrderByWithRelationInput | RecurringVerdictOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing RecurringVerdicts.
+     */
+    cursor?: RecurringVerdictWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RecurringVerdicts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RecurringVerdicts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of RecurringVerdicts.
+     */
+    distinct?: RecurringVerdictScalarFieldEnum | RecurringVerdictScalarFieldEnum[]
+  }
+
+  /**
+   * RecurringVerdict create
+   */
+  export type RecurringVerdictCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RecurringVerdict
+     */
+    select?: RecurringVerdictSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RecurringVerdict
+     */
+    omit?: RecurringVerdictOmit<ExtArgs> | null
+    /**
+     * The data needed to create a RecurringVerdict.
+     */
+    data: XOR<RecurringVerdictCreateInput, RecurringVerdictUncheckedCreateInput>
+  }
+
+  /**
+   * RecurringVerdict createMany
+   */
+  export type RecurringVerdictCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many RecurringVerdicts.
+     */
+    data: RecurringVerdictCreateManyInput | RecurringVerdictCreateManyInput[]
+  }
+
+  /**
+   * RecurringVerdict createManyAndReturn
+   */
+  export type RecurringVerdictCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RecurringVerdict
+     */
+    select?: RecurringVerdictSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the RecurringVerdict
+     */
+    omit?: RecurringVerdictOmit<ExtArgs> | null
+    /**
+     * The data used to create many RecurringVerdicts.
+     */
+    data: RecurringVerdictCreateManyInput | RecurringVerdictCreateManyInput[]
+  }
+
+  /**
+   * RecurringVerdict update
+   */
+  export type RecurringVerdictUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RecurringVerdict
+     */
+    select?: RecurringVerdictSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RecurringVerdict
+     */
+    omit?: RecurringVerdictOmit<ExtArgs> | null
+    /**
+     * The data needed to update a RecurringVerdict.
+     */
+    data: XOR<RecurringVerdictUpdateInput, RecurringVerdictUncheckedUpdateInput>
+    /**
+     * Choose, which RecurringVerdict to update.
+     */
+    where: RecurringVerdictWhereUniqueInput
+  }
+
+  /**
+   * RecurringVerdict updateMany
+   */
+  export type RecurringVerdictUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update RecurringVerdicts.
+     */
+    data: XOR<RecurringVerdictUpdateManyMutationInput, RecurringVerdictUncheckedUpdateManyInput>
+    /**
+     * Filter which RecurringVerdicts to update
+     */
+    where?: RecurringVerdictWhereInput
+    /**
+     * Limit how many RecurringVerdicts to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * RecurringVerdict updateManyAndReturn
+   */
+  export type RecurringVerdictUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RecurringVerdict
+     */
+    select?: RecurringVerdictSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the RecurringVerdict
+     */
+    omit?: RecurringVerdictOmit<ExtArgs> | null
+    /**
+     * The data used to update RecurringVerdicts.
+     */
+    data: XOR<RecurringVerdictUpdateManyMutationInput, RecurringVerdictUncheckedUpdateManyInput>
+    /**
+     * Filter which RecurringVerdicts to update
+     */
+    where?: RecurringVerdictWhereInput
+    /**
+     * Limit how many RecurringVerdicts to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * RecurringVerdict upsert
+   */
+  export type RecurringVerdictUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RecurringVerdict
+     */
+    select?: RecurringVerdictSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RecurringVerdict
+     */
+    omit?: RecurringVerdictOmit<ExtArgs> | null
+    /**
+     * The filter to search for the RecurringVerdict to update in case it exists.
+     */
+    where: RecurringVerdictWhereUniqueInput
+    /**
+     * In case the RecurringVerdict found by the `where` argument doesn't exist, create a new RecurringVerdict with this data.
+     */
+    create: XOR<RecurringVerdictCreateInput, RecurringVerdictUncheckedCreateInput>
+    /**
+     * In case the RecurringVerdict was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<RecurringVerdictUpdateInput, RecurringVerdictUncheckedUpdateInput>
+  }
+
+  /**
+   * RecurringVerdict delete
+   */
+  export type RecurringVerdictDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RecurringVerdict
+     */
+    select?: RecurringVerdictSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RecurringVerdict
+     */
+    omit?: RecurringVerdictOmit<ExtArgs> | null
+    /**
+     * Filter which RecurringVerdict to delete.
+     */
+    where: RecurringVerdictWhereUniqueInput
+  }
+
+  /**
+   * RecurringVerdict deleteMany
+   */
+  export type RecurringVerdictDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which RecurringVerdicts to delete
+     */
+    where?: RecurringVerdictWhereInput
+    /**
+     * Limit how many RecurringVerdicts to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * RecurringVerdict without action
+   */
+  export type RecurringVerdictDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RecurringVerdict
+     */
+    select?: RecurringVerdictSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RecurringVerdict
+     */
+    omit?: RecurringVerdictOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Model InvestmentAccount
    */
 
@@ -30471,6 +31598,19 @@ export namespace Prisma {
   export type TabScalarFieldEnum = (typeof TabScalarFieldEnum)[keyof typeof TabScalarFieldEnum]
 
 
+  export const RecurringVerdictScalarFieldEnum: {
+    id: 'id',
+    owner: 'owner',
+    description: 'description',
+    status: 'status',
+    note: 'note',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type RecurringVerdictScalarFieldEnum = (typeof RecurringVerdictScalarFieldEnum)[keyof typeof RecurringVerdictScalarFieldEnum]
+
+
   export const InvestmentAccountScalarFieldEnum: {
     id: 'id',
     name: 'name',
@@ -30632,6 +31772,13 @@ export namespace Prisma {
    * Reference to a field of type 'TabStatus'
    */
   export type EnumTabStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TabStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'RecurringStatus'
+   */
+  export type EnumRecurringStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RecurringStatus'>
     
   /**
    * Deep Input Types
@@ -32326,6 +33473,69 @@ export namespace Prisma {
     note?: StringNullableWithAggregatesFilter<"Tab"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Tab"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Tab"> | Date | string
+  }
+
+  export type RecurringVerdictWhereInput = {
+    AND?: RecurringVerdictWhereInput | RecurringVerdictWhereInput[]
+    OR?: RecurringVerdictWhereInput[]
+    NOT?: RecurringVerdictWhereInput | RecurringVerdictWhereInput[]
+    id?: StringFilter<"RecurringVerdict"> | string
+    owner?: EnumOwnerFilter<"RecurringVerdict"> | $Enums.Owner
+    description?: StringFilter<"RecurringVerdict"> | string
+    status?: EnumRecurringStatusFilter<"RecurringVerdict"> | $Enums.RecurringStatus
+    note?: StringNullableFilter<"RecurringVerdict"> | string | null
+    createdAt?: DateTimeFilter<"RecurringVerdict"> | Date | string
+    updatedAt?: DateTimeFilter<"RecurringVerdict"> | Date | string
+  }
+
+  export type RecurringVerdictOrderByWithRelationInput = {
+    id?: SortOrder
+    owner?: SortOrder
+    description?: SortOrder
+    status?: SortOrder
+    note?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type RecurringVerdictWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    owner_description?: RecurringVerdictOwnerDescriptionCompoundUniqueInput
+    AND?: RecurringVerdictWhereInput | RecurringVerdictWhereInput[]
+    OR?: RecurringVerdictWhereInput[]
+    NOT?: RecurringVerdictWhereInput | RecurringVerdictWhereInput[]
+    owner?: EnumOwnerFilter<"RecurringVerdict"> | $Enums.Owner
+    description?: StringFilter<"RecurringVerdict"> | string
+    status?: EnumRecurringStatusFilter<"RecurringVerdict"> | $Enums.RecurringStatus
+    note?: StringNullableFilter<"RecurringVerdict"> | string | null
+    createdAt?: DateTimeFilter<"RecurringVerdict"> | Date | string
+    updatedAt?: DateTimeFilter<"RecurringVerdict"> | Date | string
+  }, "id" | "owner_description">
+
+  export type RecurringVerdictOrderByWithAggregationInput = {
+    id?: SortOrder
+    owner?: SortOrder
+    description?: SortOrder
+    status?: SortOrder
+    note?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: RecurringVerdictCountOrderByAggregateInput
+    _max?: RecurringVerdictMaxOrderByAggregateInput
+    _min?: RecurringVerdictMinOrderByAggregateInput
+  }
+
+  export type RecurringVerdictScalarWhereWithAggregatesInput = {
+    AND?: RecurringVerdictScalarWhereWithAggregatesInput | RecurringVerdictScalarWhereWithAggregatesInput[]
+    OR?: RecurringVerdictScalarWhereWithAggregatesInput[]
+    NOT?: RecurringVerdictScalarWhereWithAggregatesInput | RecurringVerdictScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"RecurringVerdict"> | string
+    owner?: EnumOwnerWithAggregatesFilter<"RecurringVerdict"> | $Enums.Owner
+    description?: StringWithAggregatesFilter<"RecurringVerdict"> | string
+    status?: EnumRecurringStatusWithAggregatesFilter<"RecurringVerdict"> | $Enums.RecurringStatus
+    note?: StringNullableWithAggregatesFilter<"RecurringVerdict"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"RecurringVerdict"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"RecurringVerdict"> | Date | string
   }
 
   export type InvestmentAccountWhereInput = {
@@ -34445,6 +35655,76 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type RecurringVerdictCreateInput = {
+    id?: string
+    owner: $Enums.Owner
+    description: string
+    status: $Enums.RecurringStatus
+    note?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type RecurringVerdictUncheckedCreateInput = {
+    id?: string
+    owner: $Enums.Owner
+    description: string
+    status: $Enums.RecurringStatus
+    note?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type RecurringVerdictUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
+    description?: StringFieldUpdateOperationsInput | string
+    status?: EnumRecurringStatusFieldUpdateOperationsInput | $Enums.RecurringStatus
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RecurringVerdictUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
+    description?: StringFieldUpdateOperationsInput | string
+    status?: EnumRecurringStatusFieldUpdateOperationsInput | $Enums.RecurringStatus
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RecurringVerdictCreateManyInput = {
+    id?: string
+    owner: $Enums.Owner
+    description: string
+    status: $Enums.RecurringStatus
+    note?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type RecurringVerdictUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
+    description?: StringFieldUpdateOperationsInput | string
+    status?: EnumRecurringStatusFieldUpdateOperationsInput | $Enums.RecurringStatus
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RecurringVerdictUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
+    description?: StringFieldUpdateOperationsInput | string
+    status?: EnumRecurringStatusFieldUpdateOperationsInput | $Enums.RecurringStatus
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type InvestmentAccountCreateInput = {
     id?: string
     name: string
@@ -36105,6 +37385,58 @@ export namespace Prisma {
     _max?: NestedEnumTabStatusFilter<$PrismaModel>
   }
 
+  export type EnumRecurringStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.RecurringStatus | EnumRecurringStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.RecurringStatus[]
+    notIn?: $Enums.RecurringStatus[]
+    not?: NestedEnumRecurringStatusFilter<$PrismaModel> | $Enums.RecurringStatus
+  }
+
+  export type RecurringVerdictOwnerDescriptionCompoundUniqueInput = {
+    owner: $Enums.Owner
+    description: string
+  }
+
+  export type RecurringVerdictCountOrderByAggregateInput = {
+    id?: SortOrder
+    owner?: SortOrder
+    description?: SortOrder
+    status?: SortOrder
+    note?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type RecurringVerdictMaxOrderByAggregateInput = {
+    id?: SortOrder
+    owner?: SortOrder
+    description?: SortOrder
+    status?: SortOrder
+    note?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type RecurringVerdictMinOrderByAggregateInput = {
+    id?: SortOrder
+    owner?: SortOrder
+    description?: SortOrder
+    status?: SortOrder
+    note?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type EnumRecurringStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.RecurringStatus | EnumRecurringStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.RecurringStatus[]
+    notIn?: $Enums.RecurringStatus[]
+    not?: NestedEnumRecurringStatusWithAggregatesFilter<$PrismaModel> | $Enums.RecurringStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumRecurringStatusFilter<$PrismaModel>
+    _max?: NestedEnumRecurringStatusFilter<$PrismaModel>
+  }
+
   export type FloatNullableFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel> | null
     in?: number[] | null
@@ -36760,6 +38092,10 @@ export namespace Prisma {
     set?: $Enums.TabStatus
   }
 
+  export type EnumRecurringStatusFieldUpdateOperationsInput = {
+    set?: $Enums.RecurringStatus
+  }
+
   export type InvestmentSnapshotCreateNestedManyWithoutAccountInput = {
     create?: XOR<InvestmentSnapshotCreateWithoutAccountInput, InvestmentSnapshotUncheckedCreateWithoutAccountInput> | InvestmentSnapshotCreateWithoutAccountInput[] | InvestmentSnapshotUncheckedCreateWithoutAccountInput[]
     connectOrCreate?: InvestmentSnapshotCreateOrConnectWithoutAccountInput | InvestmentSnapshotCreateOrConnectWithoutAccountInput[]
@@ -37263,6 +38599,23 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumTabStatusFilter<$PrismaModel>
     _max?: NestedEnumTabStatusFilter<$PrismaModel>
+  }
+
+  export type NestedEnumRecurringStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.RecurringStatus | EnumRecurringStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.RecurringStatus[]
+    notIn?: $Enums.RecurringStatus[]
+    not?: NestedEnumRecurringStatusFilter<$PrismaModel> | $Enums.RecurringStatus
+  }
+
+  export type NestedEnumRecurringStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.RecurringStatus | EnumRecurringStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.RecurringStatus[]
+    notIn?: $Enums.RecurringStatus[]
+    not?: NestedEnumRecurringStatusWithAggregatesFilter<$PrismaModel> | $Enums.RecurringStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumRecurringStatusFilter<$PrismaModel>
+    _max?: NestedEnumRecurringStatusFilter<$PrismaModel>
   }
 
   export type NestedFloatNullableWithAggregatesFilter<$PrismaModel = never> = {

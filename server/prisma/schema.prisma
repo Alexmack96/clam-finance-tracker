@@ -69,6 +69,11 @@ enum TabStatus {
   Settled
 }
 
+enum RecurringStatus {
+  Confirmed
+  Rejected
+}
+
 model User {
   id            String    @id @default(cuid())
   email         String    @unique
@@ -429,6 +434,30 @@ model Tab {
   updatedAt   DateTime     @updatedAt
 
   @@map("tab")
+}
+
+// A human verdict on a detected recurring series — and *only* the verdict.
+//
+// Cadence, amount, next-due and active state are recomputed from transactions
+// on every request; snapshotting them here would create a second source of
+// truth that goes stale the moment a statement lands. The absence of a row is
+// itself a state: undecided, i.e. "Proposed".
+//
+// Identity is (owner, description). Exact description equality is what makes a
+// series group in the first place, so it is a sound key by construction. If a
+// merchant's description shifts, the series reappears as a new proposal — that
+// is honest, and rare for anything regular enough to be detected.
+model RecurringVerdict {
+  id          String          @id @default(cuid())
+  owner       Owner
+  description String
+  status      RecurringStatus
+  note        String?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  @@unique([owner, description])
+  @@map("recurring_verdict")
 }
 
 model InvestmentAccount {
