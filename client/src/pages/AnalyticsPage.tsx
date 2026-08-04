@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import {
   BarChart,
   Bar,
+  Cell,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -37,7 +38,7 @@ const GRID = "rgba(128,128,128,0.15)";
 
 interface AnalyticsData {
   budget: { spent: number; limit: number; month: string; day: number; daysInMonth: number };
-  fixedVsVariable: { month: string; fixed: number; variable: number }[];
+  monthlyTransactionCount: { month: string; count: number; partial: boolean }[];
   monthlyFun: Record<string, number | string>[];
   funCategories: { name: string; color: string }[];
   monthlyVacation: { month: string; amount: number }[];
@@ -195,12 +196,16 @@ export function AnalyticsPage() {
         </Card>
       </div>
 
-      {/* Fixed vs Variable — full width */}
+      {/* Transaction volume — full width */}
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-xs uppercase tracking-wide text-muted-foreground">
-            Fixed vs Variable Spending
+            Transactions per Month
           </CardTitle>
+          <p className="text-xs text-muted-foreground">
+            Row count, not spend — a month that dips usually means a statement is missing. The
+            current month is still filling up.
+          </p>
         </CardHeader>
         <CardContent>
           {isPending ? (
@@ -208,7 +213,7 @@ export function AnalyticsPage() {
           ) : (
             <ResponsiveContainer width="100%" height={280}>
               <BarChart
-                data={data!.fixedVsVariable}
+                data={data!.monthlyTransactionCount}
                 margin={{ top: 4, right: 16, left: 8, bottom: 0 }}
               >
                 <CartesianGrid strokeDasharray="3 3" stroke={GRID} />
@@ -219,29 +224,30 @@ export function AnalyticsPage() {
                   tickLine={false}
                 />
                 <YAxis
-                  tickFormatter={(v) => `£${v}`}
+                  allowDecimals={false}
                   tick={{ fill: TICK, fontSize: 11 }}
                   axisLine={false}
                   tickLine={false}
                   width={56}
                 />
                 <Tooltip
-                  formatter={(v) => fmt(v as number)}
+                  formatter={(v, _n, item) => [
+                    `${(v as number).toLocaleString("en-GB")}${item?.payload?.partial ? " so far" : ""}`,
+                    "Transactions",
+                  ]}
                   contentStyle={{
                     background: "var(--popover)",
                     border: "1px solid var(--border)",
                     borderRadius: 8,
                   }}
                 />
-                <Legend wrapperStyle={{ fontSize: 12 }} />
-                <Bar dataKey="fixed" name="Fixed" stackId="a" fill="#3b82f6" />
-                <Bar
-                  dataKey="variable"
-                  name="Variable"
-                  stackId="a"
-                  fill="#f97316"
-                  radius={[4, 4, 0, 0]}
-                />
+                <Bar dataKey="count" name="Transactions" radius={[4, 4, 0, 0]}>
+                  {/* The in-progress month is dimmed so a short bar reads as
+                      "not finished" rather than "we stopped spending". */}
+                  {data!.monthlyTransactionCount.map((m) => (
+                    <Cell key={m.month} fill="var(--primary)" fillOpacity={m.partial ? 0.35 : 1} />
+                  ))}
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
           )}

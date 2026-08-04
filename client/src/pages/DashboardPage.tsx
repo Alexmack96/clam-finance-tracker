@@ -26,8 +26,8 @@ import type {
 } from "ag-grid-community";
 import { AgGridReact, useGridFilter } from "ag-grid-react";
 import type { CustomCellRendererProps, CustomFilterProps } from "ag-grid-react";
-import { ChevronDown, Copy, Download } from "lucide-react";
-import { buckets, type Bucket } from "@clam/core";
+import { ChevronDown, CircleDashed, Copy, Download } from "lucide-react";
+import { BUCKETS, type Bucket } from "@clam/core";
 import { Button } from "../components/ui/button.js";
 import { Input } from "../components/ui/input.js";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card.js";
@@ -100,7 +100,6 @@ interface Category {
   id: string;
   name: string;
   color: string;
-  bucket: Bucket | null;
 }
 
 interface Transaction {
@@ -704,6 +703,49 @@ function ReviewedFilter({
   );
 }
 
+// "none" is a first-class option, not the absence of a filter — an unbucketed
+// row is the thing you most often want to go find, and there is no other way to
+// ask for "null" through a value-equality filter.
+type BucketFilterValue = Bucket | "none";
+interface BucketFilterModel {
+  value: BucketFilterValue;
+}
+
+const BUCKET_FILTER_STYLES: Record<BucketFilterValue, string> = {
+  none: "text-muted-foreground border-muted-foreground/50 border-dashed",
+  Needs: "text-sky-600 border-sky-600",
+  Wants: "text-amber-600 border-amber-600",
+  Savings: "text-emerald-600 border-emerald-600",
+  Ignore: "text-muted-foreground border-muted-foreground/40",
+};
+
+function BucketFilter({
+  model,
+  onModelChange,
+}: CustomFilterProps<Transaction, any, BucketFilterModel>) {
+  useGridFilter({
+    doesFilterPass: (params) => {
+      if (!model) return true;
+      const bucket = (params.data as Transaction)?.bucket ?? null;
+      return model.value === "none" ? bucket === null : bucket === model.value;
+    },
+  });
+
+  const options: FilterOption[] = [
+    { value: "none", label: "Not bucketed", badgeClassName: BUCKET_FILTER_STYLES.none },
+    ...BUCKETS.map((b) => ({ value: b, label: b, badgeClassName: BUCKET_FILTER_STYLES[b] })),
+  ];
+
+  return (
+    <FilterList
+      options={options}
+      selected={model?.value ?? null}
+      onSelect={(value) => onModelChange(value ? { value: value as BucketFilterValue } : null)}
+      minWidth={150}
+    />
+  );
+}
+
 // ─── Cell renderers (outside component to avoid recreation on render) ─────────
 
 function NoteRenderer({ data, context }: CustomCellRendererProps<Transaction, string, GridCtx>) {
@@ -816,7 +858,7 @@ function FlagsControl({
       <PopoverContent align="end" className="w-56 p-3 space-y-2">
         <p className="text-xs font-semibold text-foreground">Bucket</p>
         <div className="flex flex-wrap gap-1">
-          {buckets.map((b) => (
+          {BUCKETS.map((b) => (
             <button
               key={b}
               className={chip(tx.bucket === b)}
@@ -983,6 +1025,7 @@ export function DashboardPage() {
     noteEditTriggers.current.delete(id);
   }, []);
   const [hasFilters, setHasFilters] = useState(false);
+  const [unbucketedOnly, setUnbucketedOnly] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [filteredCount, setFilteredCount] = useState<number | null>(null);
   const [filteredSum, setFilteredSum] = useState<number | null>(null);
@@ -1054,6 +1097,22 @@ export function DashboardPage() {
       gridApiRef.current?.deselectAll();
     },
   });
+
+  const unbucketedCount = useMemo(
+    () => transactions.filter((t) => t.bucket === null).length,
+    [transactions],
+  );
+
+  // Merged into the existing model rather than replacing it, so this composes
+  // with whatever column filters are already set instead of wiping them.
+  function toggleUnbucketed() {
+    const api = gridApiRef.current;
+    if (!api) return;
+    const model = { ...api.getFilterModel() };
+    if (unbucketedOnly) delete model.bucket;
+    else model.bucket = { value: "none" };
+    api.setFilterModel(model);
+  }
 
   function getFilteredIds(): string[] {
     const ids: string[] = [];
@@ -1295,11 +1354,15 @@ export function DashboardPage() {
         cellStyle: { display: "flex", alignItems: "center", justifyContent: "center" },
       },
       {
+        colId: "bucket",
         headerName: "FLAGS",
         width: 100,
         cellRenderer: FlagsRenderer,
-        sortable: false,
-        filter: false,
+        // Sorts and filters on the raw Bucket; null sorts first, which puts the
+        // rows still needing a decision at the top.
+        valueGetter: (p) => p.data?.bucket ?? null,
+        sortable: true,
+        filter: BucketFilter,
         floatingFilter: false,
         resizable: false,
         cellStyle: { display: "flex", alignItems: "center" },
@@ -1665,6 +1728,21 @@ export function DashboardPage() {
                   </Button>
                 )
               )}
+              {(unbucketedCount > 0 || unbucketedOnly) && (
+                <Button
+                  variant={unbucketedOnly ? "default" : "outline"}
+                  size="sm"
+                  className="text-xs"
+                  title="Show only transactions with no 50/30/20 bucket"
+                  onClick={toggleUnbucketed}
+                >
+                  <CircleDashed className="size-3.5" />
+                  Not bucketed
+                  <span className="font-numeric opacity-70">
+                    {unbucketedCount.toLocaleString("en-GB")}
+                  </span>
+                </Button>
+              )}
               <Button
                 variant="outline"
                 size="sm"
@@ -1728,6 +1806,12 @@ export function DashboardPage() {
                       const model = e.api.getFilterModel();
                       const active = Object.keys(model).length > 0;
                       setHasFilters(active);
+                      // Read back from the grid rather than tracking it locally, so
+                      // the toggle stays honest when the filter is set or cleared
+                      // from the column menu instead of the button.
+                      setUnbucketedOnly(
+                        (model.bucket as BucketFilterModel | undefined)?.value === "none",
+                      );
                       if (!active) {
                         setFilteredCount(null);
                         setFilteredSum(null);

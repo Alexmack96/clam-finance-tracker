@@ -17,8 +17,6 @@ export const knownBankSchema = z.enum(KNOWN_BANKS);
 export const BUCKETS = ["Needs", "Wants", "Savings", "Ignore"] as const;
 export type Bucket = (typeof BUCKETS)[number];
 export const bucketSchema = z.enum(BUCKETS);
-/** @deprecated Prefer `BUCKETS`; kept so existing call sites keep compiling. */
-export const buckets = BUCKETS;
 
 export const RULE_KINDS = ["Category", "Bucket"] as const;
 export type RuleKind = (typeof RULE_KINDS)[number];

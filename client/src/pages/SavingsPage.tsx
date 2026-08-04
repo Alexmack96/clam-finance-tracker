@@ -3,7 +3,7 @@ import { Info } from "lucide-react";
 import type { Bucket } from "@clam/core";
 import api from "../lib/api.js";
 import { findLatestSalary } from "../lib/salary.js";
-import { aggregateMonthlySavings } from "../lib/savings.js";
+import { aggregateMonthlySpend } from "../lib/savings.js";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card.js";
 import { Popover, PopoverContent, PopoverTrigger } from "../components/ui/popover.js";
 
@@ -34,9 +34,11 @@ interface Tx {
 interface MonthActual {
   key: string;
   label: string;
-  saved: number;
-  // Discretionary (Fun) spend that month — drives the in-progress month footnote.
-  variable: number;
+  // Net spend that month. Saved is planned income minus this — computed at the
+  // point of use, because the plan is a single figure and the spend is monthly.
+  spend: number;
+  // The Wants slice — drives the in-progress month footnote.
+  wantsSpend: number;
 }
 
 function useMonthlyIncome(owner: string) {
@@ -63,7 +65,7 @@ function useMonthlyActuals(owner: string) {
       ]);
 
       // Owner weighting (self ×1, Joint ×½) is applied inside the aggregator by `owner`.
-      const agg = aggregateMonthlySavings([...ownerTxs, ...jointTxs], owner);
+      const agg = aggregateMonthlySpend([...ownerTxs, ...jointTxs], owner);
 
       const months: MonthActual[] = Object.keys(agg)
         .filter((k) => k >= "2025-01")
@@ -74,7 +76,7 @@ function useMonthlyActuals(owner: string) {
             month: "short",
             year: "numeric",
           });
-          return { key, label, saved: agg[key].saved, variable: agg[key].variable };
+          return { key, label, spend: agg[key].spend, wantsSpend: agg[key].wantsSpend };
         });
 
       return months;
@@ -222,9 +224,12 @@ export function SavingsPage() {
   const scoreMonthKey = `${prevDate.getFullYear()}-${String(prevDate.getMonth() + 1).padStart(2, "0")}`;
   const scoreMonthName = prevDate.toLocaleDateString("en-GB", { month: "long", year: "numeric" });
 
+  // Saved = the plan (one month's take-home) minus what actually went out. Salary
+  // itself never appears on the spend side, so it can sit in Ignore where it
+  // belongs without the score losing its income.
   const scoreActual = actuals?.find((m) => m.key === scoreMonthKey);
-  const scoreSaved = scoreActual?.saved ?? null;
-  const currentVariable = actuals?.find((m) => m.key === currentMonthKey)?.variable ?? 0;
+  const scoreSaved = scoreActual && INCOME > 0 ? INCOME - scoreActual.spend : null;
+  const currentWantsSpend = actuals?.find((m) => m.key === currentMonthKey)?.wantsSpend ?? 0;
 
   // Convert saved-vs-target into a 0–100 score. Break-even (saved £0) sits at 20, hitting the
   // 20%-of-income target is 100, scaled linearly and clamped — so a small miss reads ~20, not 0.
@@ -276,12 +281,13 @@ export function SavingsPage() {
               <PopoverContent side="bottom" align="end" className="w-72 text-xs space-y-2 p-4">
                 <p className="font-semibold text-foreground">How the score works</p>
                 <p className="text-muted-foreground">
-                  Your score (out of 100) reflects last complete month — how close you got to saving
-                  20% of your take-home income. Hitting or beating the target scores 100.
+                  Your score (out of 100) reflects last complete month: one month's take-home minus
+                  everything you spent. Hitting or beating the 20% target scores 100.
                 </p>
                 <p className="text-muted-foreground">
-                  Tip: set one-off or mandatory items (a wedding ring, an investment transfer) to
-                  the Ignore bucket on the transactions table — they won't count against your score.
+                  Income comes from your salary, not from the buckets — so salary itself belongs in
+                  Ignore, alongside transfers and card payments. Anything that is neither a need, a
+                  want, nor saving should be there.
                 </p>
               </PopoverContent>
             </Popover>
@@ -312,13 +318,13 @@ export function SavingsPage() {
                   >
                     <p className="font-semibold text-foreground">How the score works</p>
                     <p className="text-muted-foreground">
-                      Your score (out of 100) reflects last complete month — how close you got to
-                      saving 20% of your take-home income. Hitting or beating the target scores 100.
+                      Your score (out of 100) reflects last complete month: one month's take-home
+                      minus everything you spent. Hitting or beating the 20% target scores 100.
                     </p>
                     <p className="text-muted-foreground">
-                      Tip: set one-off or mandatory items (a wedding ring, an investment transfer)
-                      to the Ignore bucket on the transactions table — they won't count against your
-                      score. Unplanned overspend stays in scope.
+                      Income comes from your salary, not from the buckets — so salary itself belongs
+                      in Ignore, alongside transfers and card payments. Unplanned overspend stays in
+                      scope.
                     </p>
                   </PopoverContent>
                 </Popover>
@@ -348,8 +354,8 @@ export function SavingsPage() {
           </div>
           <p className="text-xs text-muted-foreground mt-4 pt-3 border-t border-border">
             {currentMonthName} so far —{" "}
-            <span className="font-medium text-foreground">{fmt(currentVariable)}</span> spent
-            outside of fixed
+            <span className="font-medium text-foreground">{fmt(currentWantsSpend)}</span> spent on
+            Wants
           </p>
         </CardContent>
       </Card>
@@ -383,9 +389,10 @@ export function SavingsPage() {
             ) : (
               <div className="space-y-1.5">
                 {history.map((m) => {
-                  const s = toScore(m.saved);
+                  const monthSaved = INCOME > 0 ? INCOME - m.spend : null;
+                  const s = toScore(monthSaved);
                   const t = scoreTheme(s);
-                  const positive = m.saved >= 0;
+                  const positive = (monthSaved ?? 0) >= 0;
                   return (
                     <div key={m.key} className="flex items-center gap-3">
                       <span className="text-xs text-muted-foreground w-16 shrink-0">{m.label}</span>
@@ -406,7 +413,7 @@ export function SavingsPage() {
                           positive ? "text-emerald-500" : "text-red-500"
                         }`}
                       >
-                        {fmt(m.saved)}
+                        {monthSaved !== null ? fmt(monthSaved) : "—"}
                       </span>
                     </div>
                   );

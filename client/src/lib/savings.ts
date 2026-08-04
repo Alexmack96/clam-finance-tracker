@@ -11,8 +11,8 @@ export interface SavingsTxn {
 }
 
 export interface MonthAgg {
-  saved: number; // owner-weighted net saved that month
-  variable: number; // owner-weighted net Wants spend (the discretionary footnote)
+  spend: number; // owner-weighted net spend across null / Needs / Wants
+  wantsSpend: number; // the Wants slice of it (the discretionary footnote)
 }
 
 // Personal-view owner weighting: the viewer's own transactions count in full, Joint
@@ -23,12 +23,20 @@ export function ownerWeight(txnOwner: string, viewer: string): number {
   return 0;
 }
 
-// Symmetric Bucket savings model, grouped by YYYY-MM and owner-weighted for `viewer`:
-//   saved = nullIncome − nullSpend − needsNet − wantsNet
-// Income adds, expense subtracts, for the buckets that touch the score (null / Needs /
-// Wants). Savings and Ignore are excluded in *both* directions — money kept as savings,
-// or moved back out, is a wash. `variable` tracks net Wants spend for the footnote.
-export function aggregateMonthlySavings(
+/**
+ * Net spend per month (YYYY-MM), owner-weighted for `viewer`.
+ *
+ * The score is spend against a *plan*, not income minus outgoings — the planned
+ * figure comes from the salary lookup, which is deliberately independent of
+ * buckets. So salary is not income to this function; it is not spending, and a
+ * transaction that is neither belongs in Ignore. That is the whole reason
+ * Savings and Ignore are skipped in both directions: money set aside, moved back
+ * out, or transferred between accounts never touches the score.
+ *
+ * Income that *does* carry a spending bucket (null / Needs / Wants) is a refund,
+ * so it nets off the spend it reverses rather than counting as earnings.
+ */
+export function aggregateMonthlySpend(
   txns: SavingsTxn[],
   viewer: string,
 ): Record<string, MonthAgg> {
@@ -39,16 +47,11 @@ export function aggregateMonthlySavings(
     const weight = ownerWeight(t.owner, viewer);
     if (weight === 0) continue;
     const key = t.date.slice(0, 7);
-    if (!agg[key]) agg[key] = { saved: 0, variable: 0 };
+    if (!agg[key]) agg[key] = { spend: 0, wantsSpend: 0 };
     const amount = (typeof t.amount === "string" ? parseFloat(t.amount) : t.amount) * weight;
-    if (t.type === "Income") {
-      // Real income, or a refund that nets its bucket back.
-      agg[key].saved += amount;
-      if (b === "Wants") agg[key].variable -= amount;
-    } else {
-      agg[key].saved -= amount;
-      if (b === "Wants") agg[key].variable += amount;
-    }
+    const signed = t.type === "Income" ? -amount : amount;
+    agg[key].spend += signed;
+    if (b === "Wants") agg[key].wantsSpend += signed;
   }
   return agg;
 }

@@ -75,17 +75,16 @@ dashboardRouter.get("/analytics", async (req, res) => {
 
   const expenses = transactions.filter((t) => t.type === TransactionType.Expense);
 
-  const fixedVsVariable = MONTHS.slice(0, currentMonthIdx + 1).map((month, i) => {
-    const monthExp = expenses.filter((t) => new Date(t.date).getMonth() === i);
-    return {
-      month,
-      // Needs = fixed essentials; Wants = discretionary. Savings/Ignore aren't spending.
-      fixed: monthExp.filter((t) => t.bucket === "Needs").reduce((s, t) => s + Number(t.amount), 0),
-      variable: monthExp
-        .filter((t) => t.bucket === "Wants")
-        .reduce((s, t) => s + Number(t.amount), 0),
-    };
-  });
+  // Volume, not value — how many rows landed each month. Useful as an import
+  // sanity check: a month that suddenly drops usually means a statement never
+  // got uploaded, which no spending chart would show you.
+  const monthlyTransactionCount = MONTHS.slice(0, currentMonthIdx + 1).map((month, i) => ({
+    month,
+    count: transactions.filter((t) => new Date(t.date).getMonth() === i).length,
+    // The last month is still in progress, so its bar is not comparable to the
+    // rest. Flagged here rather than inferred client-side.
+    partial: i === currentMonthIdx,
+  }));
 
   const FUN_CATEGORIES = ["Food & Social", "Activities"];
   const funCats = await db.category.findMany({ where: { name: { in: FUN_CATEGORIES } } });
@@ -197,7 +196,7 @@ dashboardRouter.get("/analytics", async (req, res) => {
 
   res.json({
     budget,
-    fixedVsVariable,
+    monthlyTransactionCount,
     monthlyFun,
     funCategories,
     monthlyVacation,
