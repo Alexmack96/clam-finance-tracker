@@ -1,0 +1,65 @@
+<!--
+  Central Package Management: every version in the solution lives here, and the
+  csproj files carry bare <PackageReference Include="..." /> with no Version.
+
+  Worth the one extra file the moment there is more than one project — the
+  OpenTelemetry packages in particular must move as a set, and four csproj files
+  each naming their own version is how they silently drift apart.
+-->
+<Project>
+
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+  </PropertyGroup>
+
+  <ItemGroup Label="API">
+    <PackageVersion Include="Bogus" Version="35.6.5" />
+    <PackageVersion Include="Dapper" Version="2.1.79" />
+    <PackageVersion Include="FastEndpoints" Version="8.2.0" />
+    <PackageVersion Include="FastEndpoints.Swagger" Version="8.2.0" />
+    <PackageVersion Include="Microsoft.Data.SqlClient" Version="7.0.2" />
+  </ItemGroup>
+
+  <ItemGroup Label="Security">
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.10" />
+  </ItemGroup>
+
+  <ItemGroup Label="Results and health">
+    <PackageVersion Include="Ardalis.Result" Version="10.1.0" />
+    <PackageVersion Include="AspNetCore.HealthChecks.SqlServer" Version="9.0.0" />
+    <PackageVersion Include="AspNetCore.HealthChecks.UI.Client" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup Label="Aspire">
+    <!-- Aspire.Hosting.AppHost is deliberately absent: the Aspire.AppHost.Sdk
+         adds that reference implicitly and versions it from the SDK version in
+         Clam.AppHost.csproj. Declaring a PackageVersion for it here is an
+         outright error under central package management (NU1009). -->
+
+    <!-- AddViteApp + WithBun. Must track the AppHost SDK version. -->
+    <PackageVersion Include="Aspire.Hosting.JavaScript" Version="13.4.6" />
+    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="10.8.0" />
+    <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="10.8.0" />
+  </ItemGroup>
+
+  <ItemGroup Label="OpenTelemetry — keep on one version">
+    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.17.0" />
+    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.17.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.17.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.17.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.17.0" />
+    <!-- Dapper runs on SqlClient, so this is what puts each query on the Aspire
+         dashboard's trace timeline. -->
+    <PackageVersion Include="OpenTelemetry.Instrumentation.SqlClient" Version="1.17.0" />
+  </ItemGroup>
+
+  <ItemGroup Label="Tests">
+    <PackageVersion Include="FastEndpoints.Testing" Version="8.2.0" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.8.1" />
+    <PackageVersion Include="Shouldly" Version="4.3.0" />
+    <PackageVersion Include="xunit.v3" Version="3.2.2" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
+  </ItemGroup>
+
+</Project>

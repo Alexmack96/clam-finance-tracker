@@ -1,0 +1,7 @@
+# Build output. Scoped to this folder so the root .gitignore stays JS-focused.
+bin/
+obj/
+
+# User-specific launch settings and local secrets overrides.
+*.user
+appsettings.Local.json

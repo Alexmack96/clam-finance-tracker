@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <RootNamespace>Clam.Api</RootNamespace>
+    <UserSecretsId>clam-api-2b8f4e7c-1d93-4a6b-8c05-7e1a9f3d2c60</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Ardalis.Result" />
+    <PackageReference Include="AspNetCore.HealthChecks.SqlServer" />
+    <PackageReference Include="Bogus" />
+    <PackageReference Include="Dapper" />
+    <PackageReference Include="FastEndpoints" />
+    <PackageReference Include="FastEndpoints.Swagger" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+    <PackageReference Include="Microsoft.Data.SqlClient" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Clam.ServiceDefaults\Clam.ServiceDefaults.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The test fixture applies this against a throwaway LocalDB database. -->
+    <InternalsVisibleTo Include="Clam.Api.Tests" />
+  </ItemGroup>
+
+</Project>

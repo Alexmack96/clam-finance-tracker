@@ -45,6 +45,7 @@ Supported: Monzo ✓ · Amex ✓ · Barclays ✓ · Santander ✓ · HSBC ✓ ·
 
 ## Todo 28-Jun-2026
 
+[] - XL - Migrate the backend and with fake data
 [] categories page looks horrible, lets bring it back to nested under categories, and rules can be its own buckets page maybe.. im torn but i know i hate the look right now, they were better nested and hidden. As for buckets yeah sure it can have a page like it does, but it needs a redesign it looks awful! change quite drastically.
 [] Add visual marker using new endpoint that figured out our recurring transactions
 [] ANDROID PWA EXPERIENCE COULD IMPORVE, SHOPW TOP 10 BY TXNS FOR THAT USER, NOT BY ALPHABETICAL AND DONT LAUNCH KEYBOARD SO LIKELY WE ARE TAPPIUNG ONCE, ADD SCOLLY BAR INSTEAD

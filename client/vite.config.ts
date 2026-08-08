@@ -50,7 +50,10 @@ export default defineConfig({
     },
   },
   server: {
-    port: 5173,
+    // Aspire's AddViteApp assigns the port itself and passes it as PORT — it
+    // does not accept a pinned one. Falls back to 5173 for a plain `bun run dev`
+    // outside the AppHost, which is still the default way to run this.
+    port: Number(process.env.PORT) || 5173,
     proxy: {
       "/api": process.env.API_URL ?? "http://localhost:3000",
     },

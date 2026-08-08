@@ -1,0 +1,20 @@
+<!--
+  Settings every project under api-dotnet/ shares. Applies to Clam.Api,
+  Clam.AppHost, Clam.ServiceDefaults and the test project, so none of them
+  restates the target framework or nullability.
+
+  This is the csproj equivalent of the tier-3 rule in CLAUDE.md: it holds only
+  things with no business meaning.
+-->
+<Project>
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Money is parsed and formatted with InvariantCulture everywhere, but the
+         seeder and the Bogus locale still want real culture data present. -->
+    <InvariantGlobalization>false</InvariantGlobalization>
+  </PropertyGroup>
+
+</Project>
