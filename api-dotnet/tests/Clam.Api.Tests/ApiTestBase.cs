@@ -12,7 +12,7 @@ namespace Clam.Api.Tests;
 /// It also puts the ambient cancellation token in one place. xUnit v3 wants every
 /// awaited call to observe TestContext.Current.CancellationToken (xUnit1051), and
 /// threading that through by hand at each call site is how it ends up forgotten.
-public abstract class ApiTestBase<TApp>(TApp app) : TestBase<TApp>
+public abstract class ApiTestBase<TApp>(TApp app) : TestBaseWithAssemblyFixture<TApp>
     where TApp : ClamApp
 {
     protected TApp App { get; } = app;
@@ -31,15 +31,24 @@ public abstract class ApiTestBase<TApp>(TApp app) : TestBase<TApp>
     /// LocalDB. If it ever stops being affordable, the answer is a transaction
     /// rolled back per test, not a return to per-class setup.
     protected override async ValueTask SetupAsync()
-        => await TestDataSeeder.SeedAsync(App.ConnectionString, Ct);
+    {
+        await App.VerifyTargetsOwnDatabaseAsync(Ct);
+        await TestDataSeeder.SeedAsync(App.ConnectionString, Ct);
+    }
 
     protected async Task<JsonDocument> GetJsonAsync(
         string url,
         HttpStatusCode expected = HttpStatusCode.OK)
     {
         var response = await App.Client.GetAsync(url, Ct);
-        response.StatusCode.ShouldBe(expected);
-        return JsonDocument.Parse(await response.Content.ReadAsStringAsync(Ct));
+        var body = await response.Content.ReadAsStringAsync(Ct);
+
+        // The body is in the assertion message on purpose. A bare
+        // "expected OK but was InternalServerError" says nothing about which SQL
+        // broke, and the ProblemDetails the API returns names it.
+        response.StatusCode.ShouldBe(expected, $"GET {url} returned:{Environment.NewLine}{body}");
+
+        return JsonDocument.Parse(body);
     }
 
     protected Task<HttpResponseMessage> PostAsync<TBody>(string url, TBody body)

@@ -12,7 +12,7 @@ namespace Clam.Api.Features.Dev.SeedData;
 /// derived from it.
 public sealed class SeedDataCommand(IDbConnectionFactory factory)
 {
-    private const string DeleteSql = "DELETE FROM [Transaction]; DELETE FROM [Category];";
+    private const string DeleteSql = "DELETE FROM [Transactions]; DELETE FROM [Categories];";
 
     /// The seeder only ever writes `monzo:` external ids (see below), so a row
     /// carrying any other bank's namespace came from a real import. Finding one
@@ -20,16 +20,16 @@ public sealed class SeedDataCommand(IDbConnectionFactory factory)
     /// statement would be a DELETE of all of it.
     private const string RealDataProbeSql = """
         SELECT TOP 1 [externalId]
-        FROM   [Transaction]
+        FROM   [Transactions]
         WHERE  [externalId] IS NOT NULL
           AND  [externalId] NOT LIKE 'monzo:%';
         """;
 
     private const string InsertCategorySql =
-        "INSERT INTO [Category] ([id], [name], [color]) VALUES (@Id, @Name, @Color);";
+        "INSERT INTO [Categories] ([id], [name], [color]) VALUES (@Id, @Name, @Color);";
 
     private const string InsertTransactionSql = """
-        INSERT INTO [Transaction]
+        INSERT INTO [Transactions]
             ([id], [description], [amount], [type], [date], [createdAt], [categoryId],
              [externalId], [note], [owner], [reviewed], [bucket], [categoryPinned],
              [bucketPinned], [originalAmount], [originalCurrency], [statementFileId])
@@ -115,12 +115,12 @@ public sealed class SeedDataCommand(IDbConnectionFactory factory)
         {
             return Result<SeedDataResponse>.Conflict(
                 $"Refusing to seed: this database holds transactions from a real bank import " +
-                $"(found externalId '{foreignExternalId}'). Seeding deletes every Transaction and Category.");
+                $"(found externalId '{foreignExternalId}'). Seeding deletes every row in Transactions and Categories.");
         }
 
         using var tx = connection.BeginTransaction();
 
-        // Children first — the FK forbids clearing Category while rows reference it.
+        // Children first — the FK forbids clearing Categories while rows reference it.
         await connection.ExecuteAsync(DeleteSql, transaction: tx);
 
         await connection.ExecuteAsync(

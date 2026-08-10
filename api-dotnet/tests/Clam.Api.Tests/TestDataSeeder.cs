@@ -31,10 +31,10 @@ internal static class TestDataSeeder
     internal static readonly DateTime OldestDate = new(2026, 1, 5, 0, 0, 0, DateTimeKind.Utc);
 
     private const string InsertCategorySql =
-        "INSERT INTO [Category] ([id], [name], [color]) VALUES (@Id, @Name, @Color);";
+        "INSERT INTO [Categories] ([id], [name], [color]) VALUES (@Id, @Name, @Color);";
 
     private const string InsertTransactionSql = """
-        INSERT INTO [Transaction]
+        INSERT INTO [Transactions]
             ([id], [description], [amount], [type], [date], [createdAt], [categoryId],
              [externalId], [owner], [reviewed], [bucket])
         VALUES
@@ -53,9 +53,9 @@ internal static class TestDataSeeder
         await using var connection = new SqlConnection(connectionString);
         await connection.OpenAsync(ct);
 
-        // Children first — the FK forbids clearing Category while rows reference it.
+        // Children first — the FK forbids clearing Categories while rows reference it.
         await connection.ExecuteAsync(new CommandDefinition(
-            "DELETE FROM [Transaction]; DELETE FROM [Category];", cancellationToken: ct));
+            "DELETE FROM [Transactions]; DELETE FROM [Categories];", cancellationToken: ct));
 
         await connection.ExecuteAsync(new CommandDefinition(InsertCategorySql, new[]
         {

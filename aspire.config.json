@@ -1,0 +1,5 @@
+{
+  "appHost": {
+    "path": "api-dotnet/Clam.AppHost/Clam.AppHost.csproj"
+  }
+}

@@ -26,14 +26,14 @@ public sealed class GetDashboardSummaryQuery(IDbConnectionFactory factory)
                 WHEN t.[owner] = 'Joint'
                 THEN CASE WHEN t.[type] = 'Expense' THEN t.[amount] ELSE -t.[amount] END
             END), 0) AS [jointExpenses]
-        FROM [Transaction] t
-        JOIN [Category] c ON c.[id] = t.[categoryId];
+        FROM [Transactions] t
+        JOIN [Categories] c ON c.[id] = t.[categoryId];
 
         SELECT      c.[name],
                     c.[color],
                     SUM(t.[amount]) AS [value]
-        FROM        [Transaction] t
-        JOIN        [Category] c ON c.[id] = t.[categoryId]
+        FROM        [Transactions] t
+        JOIN        [Categories] c ON c.[id] = t.[categoryId]
         WHERE       t.[owner] = 'Joint'
           AND       t.[type]  = 'Expense'
         GROUP BY    c.[id], c.[name], c.[color]

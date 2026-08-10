@@ -1,6 +1,7 @@
 using FastEndpoints.Testing;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Clam.Api.Tests;
 
@@ -36,13 +37,26 @@ public class ClamApp : AppFixture<Program>
 
         a.UseEnvironment("Development");
 
-        // AddInMemoryCollection, not UseSetting.
+        // An environment variable, not UseSetting and not ConfigureAppConfiguration.
         //
-        // UseSetting writes to *host* configuration, which WebApplicationBuilder
-        // treats as a base layer — appsettings.Development.json is loaded after
-        // it and would win. That file points at the real ClamFinanceTracker
-        // database, so the suite would silently run against dev data and the
-        // seed tests would delete it. This provider is appended last, so it wins.
+        // This is the only mechanism that reliably wins. WebApplicationBuilder
+        // builds its configuration inside Program.cs before WebApplicationFactory
+        // gets a say, layering: host config -> appsettings.json ->
+        // appsettings.Development.json -> user secrets -> environment variables.
+        // UseSetting lands in the first layer and ConfigureAppConfiguration did
+        // not reliably land in the last, so appsettings.Development.json won —
+        // and it points at the real ClamFinanceTracker database.
+        //
+        // That is not a cosmetic bug: POST /dev/seed DELETEs every row, so the
+        // suite would have wiped the dev database. VerifyTargetsOwnDatabaseAsync
+        // below exists so this can never regress silently.
+        //
+        // Process-wide, but safe here: fixtures boot one at a time (test
+        // parallelization is off) and each host captures configuration when it is
+        // built, so a later fixture overwriting the variable cannot retarget an
+        // already-running one.
+        Environment.SetEnvironmentVariable("ConnectionStrings__Clam", ConnectionString);
+
         a.ConfigureAppConfiguration(cfg => cfg.AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["ConnectionStrings:Clam"] = ConnectionString,
@@ -67,19 +81,44 @@ public class ClamApp : AppFixture<Program>
     // No SetupAsync seeding here: ApiTestBase re-seeds before every test, which
     // is the only level at which isolation actually holds. See the note there.
 
-    /// Deliberately does NOT drop the database.
+    /// Fails the run if the booted app is not pointed at this fixture's throwaway
+    /// database.
     ///
-    /// A fixture instance is shared across every test class that uses it, but its
-    /// teardown fires when the *first* of those classes finishes. Dropping here
-    /// pulls the database out from under every later class, which fails in the
-    /// most confusing way possible: each class passes on its own and the suite
-    /// fails as a whole.
+    /// The guard is here because the failure it catches is both silent and
+    /// destructive. When the connection-string override loses to
+    /// appsettings.Development.json, every read still returns *something* and the
+    /// suite looks merely wrong — while POST /dev/seed quietly deletes the real
+    /// dev database. Better to refuse to run.
+    internal async Task VerifyTargetsOwnDatabaseAsync(CancellationToken ct)
+    {
+        var resolved = Services.GetRequiredService<IConfiguration>().GetConnectionString("Clam");
+
+        if (!string.Equals(resolved, ConnectionString, StringComparison.Ordinal))
+        {
+            throw new InvalidOperationException(
+                $"""
+                 The test host is not using this fixture's database.
+
+                   fixture expected : {ConnectionString}
+                   app resolved     : {resolved}
+
+                 The connection-string override in ClamApp.ConfigureApp has stopped
+                 winning over appsettings.Development.json. Refusing to run, because
+                 POST /api/dev/seed would delete every row in the dev database.
+                 """);
+        }
+    }
+
+    /// Safe to drop here only because these are registered as *assembly* fixtures
+    /// (see AssemblyInfo.cs), so this runs after the last test in the project.
+    /// Under a class fixture it fired after the first test class and pulled the
+    /// database out from under all the others.
     ///
-    /// Cleanup happens on the next run instead — PreSetupAsync sweeps stale
-    /// ClamTest_ databases. LocalDB is a dev machine, and a few megabytes of
-    /// leftover database until the next `dotnet test` is a much cheaper problem
-    /// than an order-dependent suite.
-    protected override ValueTask TearDownAsync() => ValueTask.CompletedTask;
+    /// PreSetupAsync still sweeps stale databases, which covers the case this
+    /// cannot: a run killed before teardown, which on a dev machine is most of
+    /// them.
+    protected override async ValueTask TearDownAsync()
+        => await LocalDbHarness.DropDatabaseAsync(_databaseName);
 }
 
 /// A second fixture type gets its own SUT, and therefore its own database, but

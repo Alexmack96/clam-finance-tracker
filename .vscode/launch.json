@@ -1,0 +1,60 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      // F5 target. Provided by the Aspire VS Code extension
+      // (microsoft-aspire.aspire-vscode), which drives the `aspire` CLI.
+      //
+      // The important difference from a hand-written coreclr launch: this debug
+      // type starts the AppHost *and attaches a debugger to each resource it
+      // spawns*. Breakpoints in Clam.Api bind. A plain coreclr launch of the
+      // AppHost dll only debugs the AppHost process itself, and Aspire runs the
+      // API as a separate child process the debugger never sees — so breakpoints
+      // in endpoints silently never hit. That is why this replaced it.
+      //
+      // `program` is the workspace root; the AppHost is located via
+      // aspire.config.json (appHost.path) at the repo root.
+      "name": "Aspire: full stack (API + React + dashboard)",
+      "type": "aspire",
+      "request": "launch",
+      "program": "${workspaceFolder}",
+      "command": "run",
+      // Opens the dashboard in your default browser, login token included.
+      // Swap to "debugChrome" to also attach a JS debugger to the React client
+      // and get breakpoints in .tsx; "integratedBrowser" keeps it inside VS Code.
+      "dashboardBrowser": "openExternalBrowser"
+    },
+    {
+      // For debugging the API in isolation. Skips Aspire entirely, so no
+      // dashboard, no traces and no React client — the connection string comes
+      // from appsettings.Development.json rather than being injected by the
+      // AppHost. Faster loop when the orchestration is not what you are testing.
+      "name": ".NET API only (no Aspire)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build: api",
+      "program": "${workspaceFolder}/api-dotnet/Clam.Api/bin/Debug/net10.0/Clam.Api.dll",
+      "cwd": "${workspaceFolder}/api-dotnet/Clam.Api",
+      "console": "internalConsole",
+      "stopAtEntry": false,
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "http://localhost:5299"
+      },
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "Now listening on:\\s+(https?://\\S+)",
+        "uriFormat": "%s/swagger"
+      }
+    },
+    {
+      // Fallback for when the Aspire extension is unavailable (a fresh clone
+      // without it, or a CI-ish machine): start the stack however you like, then
+      // run this and pick Clam.Api from the process list.
+      "name": "Attach to clam-api (fallback)",
+      "type": "coreclr",
+      "request": "attach",
+      "processName": "Clam.Api"
+    }
+  ]
+}

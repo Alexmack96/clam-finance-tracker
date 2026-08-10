@@ -306,3 +306,69 @@ Return ONLY the JSON array, no prose.` },
 - For multi-page statements, have the user upload one page at a time, or accept multiple files and loop.
 - If the image is a PDF, convert it to images server-side with a tool like `sharp` or ask the user to screenshot each page.
 - Always return `raw` in the 422 error response so you can inspect what Claude actually returned.
+
+---
+
+# .NET API (`api-dotnet/`)
+
+A second backend, alongside the Express/Prisma one — **FastEndpoints + Dapper + SQL Server**, organised as vertical slices. It currently serves read-only endpoints over synthetic data and exists to be byte-compatible with the Express API it shadows.
+
+Projects: `Clam.Api`, `Clam.AppHost` (Aspire), `Clam.ServiceDefaults`, `tests/Clam.Api.Tests`.
+
+## Running it
+
+```bash
+dotnet run --project api-dotnet/Clam.AppHost    # Aspire: API + React client + dashboard
+dotnet run --project api-dotnet/Clam.Api        # API alone on :5299
+dotnet test  api-dotnet/tests/Clam.Api.Tests    # integration tests (LocalDB, no Docker)
+```
+
+The AppHost prints a dashboard URL with a login token. It starts the API **and** the Vite client (`AddViteApp(...).WithBun()`), passing the API's address as `API_URL`, which `client/vite.config.ts` already uses as its `/api` proxy target. Drop that line and the client falls back to Express on `:3000`.
+
+Aspire uses `AddConnectionString("Clam")` — it does **not** run SQL Server in a container, so LocalDB and `Trusted_Connection` work. Set `ConnectionStrings:Clam` in `Clam.AppHost/appsettings.json`, or user-secrets for anything non-local.
+
+## Where code goes — the three tiers
+
+The hard part of vertical slice architecture is what to do with shared code. The rule is **promote by one level only, and only when it hurts**:
+
+| Tier | Location | What lives there |
+|---|---|---|
+| 1 — slice-local *(default)* | `Features/<Feature>/<Slice>/` | request, response, read models, the query/command |
+| 2 — feature-shared | `Features/<Feature>/*.cs` | what the 3rd slice in that feature genuinely repeats |
+| 3 — app-wide | `Infrastructure/`, `Domain/` | technical plumbing, or the database's own contract |
+
+- **Tier 1 is the default and duplication here is correct.** `TransactionCategory` and `CategoryListItem` are near-identical on purpose: Prisma's nested `include` returns no `_count`, its top-level query does. Two slices, two shapes, no type to negotiate over.
+- **Tier 2 on the rule of three, not two.** When a third slice in `Features/Transactions/` repeats the same SQL, it moves to `Features/Transactions/TransactionQueries.cs`.
+- **Tier 3 only if it has no business meaning** (connection factory, JSON converters) **or the database enforces it** (`Domain/Enums.cs` — those exact strings are in the CHECK constraints).
+
+**Do not add a shared `Clam.Core` project for this.** A csproj is a compile/deploy boundary, not a logical one — add one when another deployable consumes it, or for tests. "Shared" has no natural stopping point where "this feature's folder" does.
+
+## Conventions
+
+- **Central Package Management.** All versions in `Directory.Packages.props`; `<PackageReference>` carries no `Version`. `Aspire.Hosting.AppHost` is deliberately absent — the Aspire SDK adds it implicitly and declaring it is an error (NU1009).
+- **Tables are plural, columns are not.** `Transactions`, `Categories`; columns mirror Prisma field-for-field because those names go on the wire. Table names don't.
+- **Schema is `db/schema.sql`**, applied by hand and by the test fixture — there are no migrations. Apply with `sqlcmd -S "(localdb)\MSSQLLocalDB" -E -d ClamFinanceTracker -i api-dotnet/db/schema.sql -I -b` (the `-I` matters; the filtered index needs QUOTED_IDENTIFIER ON).
+- **Wire format is the contract.** Decimals serialise as strings and dates as `...Z` to match Prisma. Tests assert raw JSON, never a deserialised DTO, because deserialising hides exactly that.
+- **Results, not exceptions, for anticipated failures.** A slice that can fail returns `Result<T>` and inherits `ResultEndpoint<,>`; read slices that cannot fail stay on plain `Endpoint<,>`. Never use Ardalis' `ToMinimalApiResult()` — it serialises success with ASP.NET's default options and silently bypasses the converters above.
+- **Validation** is FastEndpoints' built-in `Validator<TRequest>`, discovered by reflection. No filter to register.
+- **Health:** `/api/health` and `/alive` never touch the database (Railway restarts a container whose probe fails, and a cold Azure SQL would loop). `/healthz` is the deep per-dependency report.
+
+## Tests
+
+Integration tests boot the real `Program.cs` against a throwaway LocalDB database created from `db/schema.sql`. Nothing is mocked. Two things are load-bearing and were each found the hard way:
+
+- Fixtures are declared **assembly-scoped** (`AssemblyInfo.cs`). FastEndpoints boots one SUT per fixture type for the whole project, so a class-scoped fixture is torn down while later classes are still using it.
+- The connection string is overridden with an **environment variable**. `UseSetting` and `ConfigureAppConfiguration` both lose to `appsettings.Development.json`, which points at the real dev database — and `POST /dev/seed` deletes every row. `ClamApp.VerifyTargetsOwnDatabaseAsync` fails the run if that override ever stops winning.
+
+## WorkOS setup
+
+Auth is wired but **inactive**: `WorkOS:ClientId` ships blank, which registers no JWT scheme, and every endpoint is still `AllowAnonymous()`.
+
+1. WorkOS Dashboard → Configuration → copy **Client ID** (`client_01H...`). Not a secret.
+2. Put it in `Clam.Api/appsettings.Development.json` under `WorkOS:ClientId`.
+3. Leave `Authority` and `Audience` blank for the classic User Management issuer. Only set them for an AuthKit custom domain (`https://<sub>.authkit.app`), whose tokens do carry `aud`.
+4. Delete `AllowAnonymous()` from an endpoint to require a token.
+
+Token validation needs only the public JWKS, so the API key is never read here. If a slice ever calls the WorkOS API, put it in user-secrets, never appsettings.
+
+Rate limiting is **global** (per-IP fixed window, `RateLimiting:*`), not opt-in per endpoint, so a new endpoint cannot be accidentally unprotected. CORS origins come from `AllowedOrigins`, defaulting to the Vite dev server in Development.

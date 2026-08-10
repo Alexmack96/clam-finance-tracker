@@ -1,0 +1,43 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      // Not a preLaunchTask any more — the Aspire debug type builds the AppHost
+      // itself. Kept as the default build task (Ctrl+Shift+B).
+      "label": "build: apphost",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/api-dotnet/Clam.AppHost/Clam.AppHost.csproj",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary"
+      ],
+      "problemMatcher": "$msCompile",
+      "group": { "kind": "build", "isDefault": true }
+    },
+    {
+      "label": "build: api",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/api-dotnet/Clam.Api/Clam.Api.csproj",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary"
+      ],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "test: .NET integration tests",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "test",
+        "${workspaceFolder}/api-dotnet/tests/Clam.Api.Tests/Clam.Api.Tests.csproj"
+      ],
+      "problemMatcher": "$msCompile",
+      "group": "test"
+    }
+  ]
+}

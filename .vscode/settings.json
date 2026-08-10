@@ -25,5 +25,81 @@
         "titleBar.inactiveBackground": "#6d64b999",
         "titleBar.inactiveForeground": "#e7e7e799"
     },
-    "peacock.color": "#6d64b9"
+    "peacock.color": "#6d64b9",
+
+    // ── Classic Visual Studio 2022 (Dark) colours for C# ─────────────────────
+    //
+    // VS Code's Dark+ was modelled on Visual Studio but diverged. These rules put
+    // the differences back. The one you notice immediately is controlKeyword:
+    // VS renders if/for/return/await in purple, VS Code renders them the same
+    // blue as every other keyword, which flattens control flow into the noise.
+    //
+    // Driven by Roslyn's semantic tokens, so they are accurate by construction —
+    // a class really is coloured as a class, not as "an identifier that looks
+    // like one". Requires the C# extension (installed).
+    "editor.semanticHighlighting.enabled": true,
+    "editor.semanticTokenColorCustomizations": {
+        "enabled": true,
+        "rules": {
+            // Keywords
+            "keyword": "#569CD6",
+            "controlKeyword": "#D8A0DF",
+            "preprocessorKeyword": "#9B9B9B",
+            "preprocessorText": "#A4A4A4",
+
+            // Types. VS distinguishes these; Dark+ paints most of them teal.
+            "class": "#4EC9B0",
+            "recordClass": "#4EC9B0",
+            "delegate": "#4EC9B0",
+            "struct": "#86C691",
+            "recordStruct": "#86C691",
+            "interface": "#B8D7A3",
+            "enum": "#B8D7A3",
+            "typeParameter": "#B8D7A3",
+            "namespace": "#DCDCDC",
+
+            // Members
+            "method": "#DCDCAA",
+            "extensionMethod": "#DCDCAA",
+            "property": "#DCDCDC",
+            "field": "#DCDCDC",
+            "event": "#DCDCDC",
+            "enumMember": "#B8D7A3",
+            "constant": "#DCDCDC",
+
+            // Locals
+            "parameter": "#9CDCFE",
+            "variable": "#9CDCFE",
+            "label": "#C8C8C8",
+
+            // Literals and trivia
+            "string": "#D69D85",
+            "stringVerbatim": "#D69D85",
+            "stringEscapeCharacter": "#FFD68F",
+            "number": "#B5CEA8",
+            "operator": "#B4B4B4",
+            "operatorOverloaded": "#B4B4B4",
+            "comment": "#57A64A",
+
+            // XML doc comments — this codebase leans on /// heavily, and Dark+
+            // greys the whole block out uniformly.
+            "xmlDocCommentText": "#57A64A",
+            "xmlDocCommentName": "#808080",
+            "xmlDocCommentDelimiter": "#808080",
+            "xmlDocCommentAttributeName": "#808080",
+            "xmlDocCommentAttributeValue": "#808080",
+            "xmlDocCommentComment": "#57A64A",
+            "xmlDocCommentCData": "#E9D585"
+        }
+    },
+    // TextMate fallback, for the moments before Roslyn has produced semantic
+    // tokens for a freshly opened file (and for .csproj / .slnx, which never get
+    // them at all).
+    "editor.tokenColorCustomizations": {
+        "textMateRules": [
+            { "scope": ["comment.line.double-slash.cs", "comment.block.cs"], "settings": { "foreground": "#57A64A" } },
+            { "scope": ["string.quoted.double.cs", "string.quoted.single.cs", "string.quoted.double.literal.cs"], "settings": { "foreground": "#D69D85" } },
+            { "scope": ["constant.numeric.decimal.cs", "constant.numeric.hex.cs"], "settings": { "foreground": "#B5CEA8" } }
+        ]
+    }
 }

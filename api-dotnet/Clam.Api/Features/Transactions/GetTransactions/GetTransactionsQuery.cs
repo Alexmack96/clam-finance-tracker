@@ -20,8 +20,8 @@ public sealed class GetTransactionsQuery(IDbConnectionFactory factory)
                 t.[bucket], t.[categoryPinned], t.[bucketPinned], t.[originalAmount],
                 t.[originalCurrency], t.[statementFileId],
                 c.[id], c.[name], c.[color]
-        FROM    [Transaction] t
-        JOIN    [Category] c ON c.[id] = t.[categoryId]
+        FROM    [Transactions] t
+        JOIN    [Categories] c ON c.[id] = t.[categoryId]
         WHERE   (@Type       IS NULL OR t.[type]       = @Type)
           AND   (@CategoryId IS NULL OR t.[categoryId] = @CategoryId)
           AND   (@Owner      IS NULL OR t.[owner]      = @Owner)

@@ -2,12 +2,66 @@
 
 Personal finance tracker. Import bank transactions (Monzo, Amex, Barclays, Santander), categorise spending, and track savings goals.
 
+## Run it — Aspire (API + React + dashboard)
+
+**In VS Code: press `F5`.** That's it — it picks the `Aspire: full stack` config, builds the AppHost, and opens the dashboard in your browser with its login token already in the URL.
+
+Or from a terminal:
+
+```bash
+dotnet run --project api-dotnet/Clam.AppHost
+```
+
+Then Ctrl-click the `Login to the dashboard at http://localhost:15187/login?t=…` line — the token is required, the bare URL won't let you in.
+
+One process starts **both** the .NET API and the React client, and gives you logs, distributed traces (every Dapper query is its own span) and metrics for both:
+
+| Resource | What it is |
+|---|---|
+| `clam-api` | FastEndpoints + Dapper API over SQL Server |
+| `clam-client` | the Vite/React app, launched with Bun |
+| `Clam` | your LocalDB connection, referenced not managed |
+
+**No Docker required.** Aspire references your existing LocalDB via `AddConnectionString` rather than starting a SQL Server container, so Windows integrated auth works. The client's `/api` proxy is pointed at the .NET API automatically (`API_URL`); remove that line in `AppHost.cs` and it falls back to the Express server on `:3000`.
+
+The API port is pinned to **5299**, so these are stable and bookmarkable:
+
+```
+http://localhost:5299/api/categories          # also /api/transactions, /api/dashboard/summary
+http://localhost:5299/swagger                 # also linked from the dashboard
+http://localhost:5299/healthz                 # per-dependency JSON
+```
+
+**Stopping:** `Shift+F5` (or `Ctrl+C` in the terminal) is enough — killing the AppHost tears down the API, Vite, Bun and esbuild with it. The browser tab is just a viewer; closing it stops nothing, and leaving it open costs nothing.
+
+**Breakpoints: yes, F5 just works** — set one in an endpoint and hit the URL. This depends on two prerequisites, both installed:
+
+- the [Aspire VS Code extension](https://marketplace.visualstudio.com/items?itemName=microsoft-aspire.aspire-vscode) (`microsoft-aspire.aspire-vscode`)
+- the Aspire CLI — `dotnet tool install -g Aspire.Cli` (must match the AppHost SDK version in `Clam.AppHost.csproj`)
+
+The extension contributes a `"type": "aspire"` debug configuration, which starts the AppHost *and attaches a debugger to every resource it spawns*. Without it, a plain `coreclr` launch debugs only the AppHost process — Aspire runs the API as a separate child process, so endpoint breakpoints silently never bind. Visual Studio handles this automatically, which makes it an easy trap in VS Code.
+
+Set `"dashboardBrowser": "debugChrome"` in [.vscode/launch.json](.vscode/launch.json) to also attach a JS debugger and get breakpoints in `.tsx`.
+
+`aspire.config.json` at the repo root points the CLI at the AppHost, so discovery works from anywhere in the tree.
+
+Prerequisites: .NET 10 SDK, SQL Server LocalDB, Bun. Apply the schema once with:
+
+```bash
+sqlcmd -S "(localdb)\MSSQLLocalDB" -E -d ClamFinanceTracker -i api-dotnet/db/schema.sql -I -b
+```
+
+Then `POST /api/dev/seed` to fill it with synthetic data. Health: `/alive` (liveness) and `/healthz` (per-dependency JSON).
+
+> The .NET API is where the backend is heading, but the migration is partial — it currently serves reads (transactions, categories, dashboard) and the Express server below still handles imports, rules and auth. See [CLAUDE.md](CLAUDE.md#net-api-api-dotnet) for its architecture and the vertical-slice conventions.
+
 ## Stack
 
-- **Server:** Express 5 + Prisma + SQLite (Bun runtime)
+- **Server (target):** .NET 10 + FastEndpoints + Dapper, Azure SQL / LocalDB — `api-dotnet/`, vertical slices, orchestrated by Aspire
+- **Server (current):** Express 5 + Prisma + SQLite on Bun — `server/`, still serves imports, rules and auth
 - **Client:** React 18 + React Router v6 + Tailwind v4 + shadcn/ui
-- **Auth:** Better Auth (server-side sessions)
-- **Monorepo:** Bun workspaces (`server/`, `client/`, `core/`)
+- **Auth:** Better Auth (server-side sessions); WorkOS JWT wired but inactive on the .NET side
+- **Monorepo:** Bun workspaces (`server/`, `client/`, `core/`) + a .NET solution in `api-dotnet/`
 
 ## Getting Started
 

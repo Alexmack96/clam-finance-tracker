@@ -23,6 +23,24 @@ var clamDb = builder.AddConnectionString("Clam");
 // ── .NET API ──────────────────────────────────────────────────────────────
 var api = builder.AddProject<Projects.Clam_Api>("clam-api")
                  .WithReference(clamDb)
+                 // Pinned rather than left to Aspire's dynamic allocation, so
+                 // http://localhost:5299/api/categories stays bookmarkable, the
+                 // .http file keeps working, and the address matches what the
+                 // project uses when launched on its own.
+                 .WithEndpoint("http", e => e.Port = 5299)
+                 // Adds a "Swagger" link alongside the endpoint on the dashboard,
+                 // so the API reference is one click from the resource list
+                 // rather than a path you have to remember.
+                 //
+                 // The callback overload that returns a new annotation *adds* a
+                 // link. The `url => { ... }` overload mutates the endpoint's own
+                 // URL instead, which would replace the plain endpoint link
+                 // rather than sit next to it.
+                 .WithUrlForEndpoint("http", _ => new ResourceUrlAnnotation
+                 {
+                     Url = "/swagger",
+                     DisplayText = "Swagger",
+                 })
                  // Aspire holds the resource "unhealthy" until this returns 200,
                  // so the dashboard shows the API as starting rather than running
                  // while LocalDB wakes up. /alive is the shallow probe on

@@ -2,8 +2,7 @@ using FastEndpoints;
 
 namespace Clam.Api.Features.Categories.GetCategories;
 
-public sealed class GetCategoriesEndpoint(GetCategoriesQuery query)
-    : EndpointWithoutRequest<GetCategoriesResponse>
+public sealed class GetCategoriesEndpoint(GetCategoriesQuery query): EndpointWithoutRequest<GetCategoriesResponse>
 {
     public override void Configure()
     {

@@ -25,48 +25,54 @@
 -- batches means `GO`, which rule 1 rules out.
 
 -- Dropped children-first: FK dependencies forbid the reverse order.
-DROP TABLE IF EXISTS [Transaction];
-DROP TABLE IF EXISTS [Category];
+DROP TABLE IF EXISTS [Transactions];
+DROP TABLE IF EXISTS [Categories];
 
-CREATE TABLE [Category] (
-    [id]    NVARCHAR(30)  NOT NULL CONSTRAINT [PK_Category] PRIMARY KEY,
+CREATE TABLE [Categories] (
+    [id]    NVARCHAR(30)  NOT NULL CONSTRAINT [PK_Categories] PRIMARY KEY,
     [name]  NVARCHAR(100) NOT NULL,
     [color] NVARCHAR(20)  NOT NULL,
-    CONSTRAINT [UQ_Category_name] UNIQUE ([name])
+    CONSTRAINT [UQ_Categories_name] UNIQUE ([name])
 );
 
--- `Transaction` is a reserved T-SQL keyword, so it is bracketed everywhere.
--- Renaming it would break JSON shape parity with the Express API, which is the
--- whole point of this service, so the brackets stay.
-CREATE TABLE [Transaction] (
-    [id]               NVARCHAR(30)   NOT NULL CONSTRAINT [PK_Transaction] PRIMARY KEY,
+-- Table names are plural; column names are not.
+--
+-- The columns mirror Prisma's model fields exactly, because those names go on
+-- the wire and JSON parity with the Express API is the point of this service.
+-- Table names do not go on the wire, so they are free to follow SQL convention
+-- instead. Pluralising also retires a real hazard: singular `Transaction` is a
+-- reserved T-SQL keyword and only worked bracketed, one missed pair away from a
+-- syntax error. `Transactions` is not reserved. Brackets are kept anyway, for
+-- consistency with the quoted camelCase columns rather than out of necessity.
+CREATE TABLE [Transactions] (
+    [id]               NVARCHAR(30)   NOT NULL CONSTRAINT [PK_Transactions] PRIMARY KEY,
     [description]      NVARCHAR(500)  NOT NULL,
     [amount]           DECIMAL(18, 2) NOT NULL,
     [type]             NVARCHAR(10)   NOT NULL,
     [date]             DATETIME2(3)   NOT NULL,
-    [createdAt]        DATETIME2(3)   NOT NULL CONSTRAINT [DF_Transaction_createdAt] DEFAULT SYSUTCDATETIME(),
+    [createdAt]        DATETIME2(3)   NOT NULL CONSTRAINT [DF_Transactions_createdAt] DEFAULT SYSUTCDATETIME(),
     [categoryId]       NVARCHAR(30)   NOT NULL,
     [externalId]       NVARCHAR(200)  NULL,
     [note]             NVARCHAR(MAX)  NULL,
-    [owner]            NVARCHAR(10)   NOT NULL CONSTRAINT [DF_Transaction_owner] DEFAULT 'Joint',
-    [reviewed]         BIT            NOT NULL CONSTRAINT [DF_Transaction_reviewed] DEFAULT 0,
+    [owner]            NVARCHAR(10)   NOT NULL CONSTRAINT [DF_Transactions_owner] DEFAULT 'Joint',
+    [reviewed]         BIT            NOT NULL CONSTRAINT [DF_Transactions_reviewed] DEFAULT 0,
     [bucket]           NVARCHAR(10)   NULL,
-    [categoryPinned]   BIT            NOT NULL CONSTRAINT [DF_Transaction_categoryPinned] DEFAULT 0,
-    [bucketPinned]     BIT            NOT NULL CONSTRAINT [DF_Transaction_bucketPinned] DEFAULT 0,
+    [categoryPinned]   BIT            NOT NULL CONSTRAINT [DF_Transactions_categoryPinned] DEFAULT 0,
+    [bucketPinned]     BIT            NOT NULL CONSTRAINT [DF_Transactions_bucketPinned] DEFAULT 0,
     [originalAmount]   DECIMAL(18, 2) NULL,
     [originalCurrency] NVARCHAR(10)   NULL,
     -- No FK yet: StatementFile is not part of this read-only slice. Kept as a
     -- plain column so the JSON shape still matches the Express response.
     [statementFileId]  NVARCHAR(30)   NULL,
 
-    CONSTRAINT [FK_Transaction_Category] FOREIGN KEY ([categoryId])
-        REFERENCES [Category] ([id]),
+    CONSTRAINT [FK_Transactions_Categories] FOREIGN KEY ([categoryId])
+        REFERENCES [Categories] ([id]),
 
     -- The Prisma enums, enforced at the database instead of only in code. SQLite
     -- never checked these; SQL Server can, so it does.
-    CONSTRAINT [CK_Transaction_type]   CHECK ([type] IN ('Income', 'Expense')),
-    CONSTRAINT [CK_Transaction_owner]  CHECK ([owner] IN ('Alex', 'Casey', 'Joint')),
-    CONSTRAINT [CK_Transaction_bucket] CHECK ([bucket] IN ('Needs', 'Wants', 'Savings', 'Ignore'))
+    CONSTRAINT [CK_Transactions_type]   CHECK ([type] IN ('Income', 'Expense')),
+    CONSTRAINT [CK_Transactions_owner]  CHECK ([owner] IN ('Alex', 'Casey', 'Joint')),
+    CONSTRAINT [CK_Transactions_bucket] CHECK ([bucket] IN ('Needs', 'Wants', 'Savings', 'Ignore'))
 );
 
 -- `externalId` is `String? @unique` in Prisma. SQLite and Postgres treat every
@@ -74,10 +80,10 @@ CREATE TABLE [Transaction] (
 -- NOT: a plain UNIQUE constraint permits exactly one NULL row and rejects the
 -- second with a duplicate-key error. A filtered index restores the intended
 -- semantics — unique among rows that actually have a value.
-CREATE UNIQUE NONCLUSTERED INDEX [UQ_Transaction_externalId]
-    ON [Transaction] ([externalId])
+CREATE UNIQUE NONCLUSTERED INDEX [UQ_Transactions_externalId]
+    ON [Transactions] ([externalId])
     WHERE [externalId] IS NOT NULL;
 
-CREATE NONCLUSTERED INDEX [IX_Transaction_categoryId] ON [Transaction] ([categoryId]);
-CREATE NONCLUSTERED INDEX [IX_Transaction_date]       ON [Transaction] ([date] DESC);
-CREATE NONCLUSTERED INDEX [IX_Transaction_owner_type] ON [Transaction] ([owner], [type]);
+CREATE NONCLUSTERED INDEX [IX_Transactions_categoryId] ON [Transactions] ([categoryId]);
+CREATE NONCLUSTERED INDEX [IX_Transactions_date]       ON [Transactions] ([date] DESC);
+CREATE NONCLUSTERED INDEX [IX_Transactions_owner_type] ON [Transactions] ([owner], [type]);

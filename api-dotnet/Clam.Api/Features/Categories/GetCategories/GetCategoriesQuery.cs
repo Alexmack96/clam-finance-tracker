@@ -13,8 +13,8 @@ public sealed class GetCategoriesQuery(IDbConnectionFactory factory)
                     c.[name],
                     c.[color],
                     COUNT(t.[id]) AS [transactionCount]
-        FROM        [Category] c
-        LEFT JOIN   [Transaction] t ON t.[categoryId] = c.[id]
+        FROM        [Categories] c
+        LEFT JOIN   [Transactions] t ON t.[categoryId] = c.[id]
         GROUP BY    c.[id], c.[name], c.[color]
         ORDER BY    c.[name] ASC
         """;

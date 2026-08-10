@@ -13,7 +13,9 @@ namespace Clam.Api.Infrastructure.Errors;
 /// message. That is a string match against text the driver is free to localise or
 /// reword, and it fires on any index name that happens to appear in any message.
 /// SqlException carries a stable numeric code, so this switches on that instead.
-public sealed class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IExceptionHandler
+public sealed class GlobalExceptionHandler(
+    ILogger<GlobalExceptionHandler> logger,
+    IHostEnvironment environment) : IExceptionHandler
 {
     // https://learn.microsoft.com/sql/relational-databases/errors-events/database-engine-events-and-errors
     private const int UniqueIndexViolation = 2601;
@@ -70,6 +72,16 @@ public sealed class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logge
             Instance = httpContext.Request.Path,
         };
         problemDetails.Extensions["traceId"] = httpContext.TraceIdentifier;
+
+        // The generic 500 detail above is right for a deployment and useless for
+        // debugging — a failing query returns "please contact support" and the
+        // real message only reaches the log. In Development the exception rides
+        // along, which is what makes an integration test failure diagnosable from
+        // the assertion message alone.
+        if (environment.IsDevelopment())
+        {
+            problemDetails.Extensions["exception"] = exception.ToString();
+        }
 
         httpContext.Response.StatusCode = statusCode;
         httpContext.Response.ContentType = "application/problem+json";
