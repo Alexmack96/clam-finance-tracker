@@ -2,7 +2,7 @@
   Status: 400 Bad Request,
   Content: {
     Headers: {
-      Content-Length: 343,
+      Content-Length: 288,
       Content-Type: application/problem+json; charset=utf-8
     },
     Value: {
@@ -11,15 +11,8 @@
       status: 400,
       instance: /api/rules/reorder,
       traceId: {Scrubbed},
+      detail: Reorder must not list the same rule twice,
       errors: [
-        {
-          name: ids[0],
-          reason: 'ids' must not be empty.
-        },
-        {
-          name: ids[1],
-          reason: 'ids' must not be empty.
-        },
         {
           name: ids,
           reason: Reorder must not list the same rule twice

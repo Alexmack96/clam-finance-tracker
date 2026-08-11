@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { ID_MAX_LENGTH } from "./ids.js";
 
 export const KNOWN_BANKS = [
   "monzo",
@@ -61,13 +62,24 @@ export const ruleConditionInputSchema = z.object({
   negate: z.boolean().default(false),
 });
 
+/**
+ * Every condition is a stored row and is re-evaluated against every transaction
+ * on every import, dry-run and apply. A rule this wide is a mistake rather than
+ * an intent, so the cost of one is bounded by something other than how much JSON
+ * fits in a request.
+ */
+export const MAX_RULE_CONDITIONS = 20;
+
 const ruleBase = z.object({
   kind: ruleKindSchema,
   joinOperator: ruleJoinSchema.default("AND"),
   bank: knownBankSchema.nullable().optional(),
-  categoryId: z.string().min(1).nullable().optional(),
+  categoryId: z.string().min(1).max(ID_MAX_LENGTH, "categoryId is not an id").nullable().optional(),
   bucket: bucketSchema.nullable().optional(),
-  conditions: z.array(ruleConditionInputSchema).min(1, "At least one condition is required"),
+  conditions: z
+    .array(ruleConditionInputSchema)
+    .min(1, "At least one condition is required")
+    .max(MAX_RULE_CONDITIONS, `A rule cannot have more than ${MAX_RULE_CONDITIONS} conditions`),
 });
 
 /**
@@ -92,9 +104,21 @@ export const createRuleSchema = ruleBase
 
 export const updateRuleSchema = createRuleSchema;
 
+/**
+ * The route checks this list against the rules that exist, by length and by
+ * membership — and `[a, a]` against `{a, b}` passes both. The reorder then writes
+ * two positions for `a` and none for `b`, leaving `b` at a stale position:
+ * precedence silently changes for a rule the user never touched. Distinctness is
+ * a property of the request alone, so it is checked here.
+ */
 export const reorderRulesSchema = z.object({
   kind: ruleKindSchema,
-  ids: z.array(z.string().min(1)).min(1),
+  ids: z
+    .array(z.string().min(1).max(ID_MAX_LENGTH))
+    .min(1)
+    .refine((ids) => new Set(ids).size === ids.length, {
+      message: "Reorder must not list the same rule twice",
+    }),
 });
 
 export type RuleConditionInput = z.infer<typeof ruleConditionInputSchema>;

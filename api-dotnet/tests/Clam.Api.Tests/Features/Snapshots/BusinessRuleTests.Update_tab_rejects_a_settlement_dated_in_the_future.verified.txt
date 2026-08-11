@@ -2,27 +2,20 @@
   Status: 400 Bad Request,
   Content: {
     Headers: {
-      Content-Length: 343,
+      Content-Length: 303,
       Content-Type: application/problem+json; charset=utf-8
     },
     Value: {
       type: https://www.rfc-editor.org/rfc/rfc7231#section-6.5.1,
       title: Bad Request,
       status: 400,
-      instance: /api/rules/reorder,
+      instance: /api/tabs/ctab00000000000000000open,
       traceId: {Scrubbed},
+      detail: A tab cannot be settled in the future,
       errors: [
         {
-          name: ids[0],
-          reason: 'ids' must not be empty.
-        },
-        {
-          name: ids[1],
-          reason: 'ids' must not be empty.
-        },
-        {
-          name: ids,
-          reason: Reorder must not list the same rule twice
+          name: settledAt,
+          reason: A tab cannot be settled in the future
         }
       ]
     }

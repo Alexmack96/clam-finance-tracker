@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { z } from "zod";
+import { ID_MAX_LENGTH } from "@clam/core";
 import { db } from "../db/client.js";
 import { Owner } from "../generated/prisma/index.js";
 
@@ -124,13 +125,42 @@ investmentsRouter.get("/", async (req, res) => {
   });
 });
 
+// ─── Shared bounds ───────────────────────────────────────────────────────────
+//
+// These mirror the .NET API's validators one for one. Both services write the
+// same columns, so a value one accepts and the other refuses is a bug in
+// whichever is looser.
+
+/** The width of `InvestmentAccount.name`. */
+const MAX_ACCOUNT_NAME_LENGTH = 200;
+
+/**
+ * `rate` is a percentage, shown as typed. Without a bound a fat-fingered `450` —
+ * or a `1e308` from a client bug — is stored and then projected forward. Negative
+ * is allowed: a `debt` account's rate is a cost, and negative deposit rates have
+ * happened.
+ */
+const accountRate = z
+  .number()
+  .min(-100, "Rate must be between -100 and 100 percent")
+  .max(100, "Rate must be between -100 and 100 percent");
+
+/** Sterling, and an order of magnitude past anything this app is for. */
+const MAX_SNAPSHOT_VALUE = 100_000_000;
+
+/**
+ * A snapshot is a reading taken on a day. The floor catches a two-digit year or a
+ * unix epoch that survived a client-side date parse, not history.
+ */
+const EARLIEST_SNAPSHOT = Date.parse("2000-01-01T00:00:00.000Z");
+
 // ─── POST /api/investments/accounts ──────────────────────────────────────────
 
 const createAccountSchema = z.object({
-  name: z.string().min(1),
+  name: z.string().min(1).max(MAX_ACCOUNT_NAME_LENGTH, "Name is too long"),
   category: z.enum(["pension", "crypto", "equity", "cash", "commodity", "debt"]),
   owner: z.enum(["Alex", "Casey", "Joint"]).optional(),
-  rate: z.number().nullable().optional(),
+  rate: accountRate.nullable().optional(),
   sortOrder: z.number().int().optional(),
 });
 
@@ -157,9 +187,9 @@ investmentsRouter.post("/accounts", async (req, res) => {
 // ─── PATCH /api/investments/accounts/:id ─────────────────────────────────────
 
 const updateAccountSchema = z.object({
-  name: z.string().min(1).optional(),
+  name: z.string().min(1).max(MAX_ACCOUNT_NAME_LENGTH, "Name is too long").optional(),
   category: z.enum(["pension", "crypto", "equity", "cash", "commodity", "debt"]).optional(),
-  rate: z.number().nullable().optional(),
+  rate: accountRate.nullable().optional(),
   sortOrder: z.number().int().optional(),
 });
 
@@ -181,18 +211,33 @@ investmentsRouter.delete("/accounts/:id", async (req, res) => {
 
 // ─── PUT /api/investments/snapshots (upsert) ─────────────────────────────────
 
-const upsertSnapshotSchema = z.object({
-  accountId: z.string().min(1),
-  date: z.string().min(1), // ISO date string
-  value: z.number(),
-});
+/**
+ * A function of the current instant rather than a constant schema, because one of
+ * its rules is about "now" and the clock is an input — a schema that reads the
+ * clock itself cannot be tested at a chosen instant.
+ *
+ * A future snapshot is not merely odd: it becomes the newest row, so it wins every
+ * "latest value" read and is reported as the current holding.
+ */
+const upsertSnapshotSchemaAt = (now: Date) =>
+  z.object({
+    accountId: z.string().min(1).max(ID_MAX_LENGTH, "accountId is not an id"),
+    date: z.iso
+      .datetime()
+      .refine((d) => Date.parse(d) <= now.getTime(), "A snapshot cannot be dated in the future")
+      .refine((d) => Date.parse(d) >= EARLIEST_SNAPSHOT, "A snapshot cannot be dated before 2000-01-01"),
+    // Negative is allowed on purpose: a `debt` account is a negative holding, and
+    // netting it off is the whole reason that category exists.
+    value: z.number().min(-MAX_SNAPSHOT_VALUE).max(MAX_SNAPSHOT_VALUE),
+  });
 
 investmentsRouter.put("/snapshots", async (req, res) => {
-  const body = upsertSnapshotSchema.parse(req.body);
+  const now = new Date();
+  const body = upsertSnapshotSchemaAt(now).parse(req.body);
   const date = new Date(body.date);
   const snapshot = await db.investmentSnapshot.upsert({
     where: { accountId_date: { accountId: body.accountId, date } },
-    update: { value: body.value, updatedAt: new Date() },
+    update: { value: body.value, updatedAt: now },
     create: { accountId: body.accountId, date, value: body.value },
   });
   res.json({ ...snapshot, date: snapshot.date.toISOString() });

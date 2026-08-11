@@ -19,10 +19,14 @@ public sealed class UpdateTabRequest
     public DateTime? SettledAt { get; set; }
 }
 
+/// Takes a <see cref="TimeProvider"/> for the same reason the snapshot validator
+/// does: "not in the future" is only testable against an injected clock.
 public sealed class UpdateTabValidator : Validator<UpdateTabRequest>
 {
-    public UpdateTabValidator()
+    public UpdateTabValidator(TimeProvider clock)
     {
+        ArgumentNullException.ThrowIfNull(clock);
+
         RuleFor(x => x.Person!)
             .NotEmpty()
             .MaximumLength(CreateTabValidator.MaxPersonLength).WithMessage("Person is too long")
@@ -37,6 +41,24 @@ public sealed class UpdateTabValidator : Validator<UpdateTabRequest>
         // client sent and so cannot be mapped back to an input.
         RuleFor(x => x.Amount)
             .Must(amount => amount > 0).WithMessage("Amount must be positive")
+            .Must(amount => amount <= CreateTabValidator.MaxAmount)
+            .WithMessage($"Amount must be {CreateTabValidator.MaxAmount:N0} or less")
+            .Must(amount => CreateTabValidator.IsWithinScale(amount!.Value))
+            .WithMessage($"Amount cannot have more than {CreateTabValidator.AmountScale} decimal places")
             .When(x => x.Amount is not null);
+
+        // Backdating a settlement is the point of this field; forward-dating one
+        // records a tab as settled on a day that has not happened.
+        RuleFor(x => x.SettledAt)
+            .Must(settledAt => settledAt <= clock.GetUtcNow().UtcDateTime)
+            .WithMessage("A tab cannot be settled in the future")
+            .When(x => x.SettledAt is not null);
+
+        // The command gives an explicit `settledAt` priority over the status, so
+        // sending both would store a settlement date on a tab the same request
+        // just reopened.
+        RuleFor(x => x.SettledAt)
+            .Null().WithMessage("An open tab cannot have a settled date")
+            .When(x => x.Status == TabStatus.Open);
     }
 }

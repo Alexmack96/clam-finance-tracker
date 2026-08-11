@@ -28,5 +28,12 @@ public sealed class UpdateInvestmentAccountValidator : Validator<UpdateInvestmen
             .Must(CreateInvestmentAccountValidator.Categories.Contains)
             .WithMessage("Unknown investment category")
             .When(x => x.Category is not null);
+
+        RuleFor(x => x.Rate)
+            .InclusiveBetween(CreateInvestmentAccountValidator.MinRate, CreateInvestmentAccountValidator.MaxRate)
+            .WithMessage(
+                $"Rate must be between {CreateInvestmentAccountValidator.MinRate:N0} " +
+                $"and {CreateInvestmentAccountValidator.MaxRate:N0} percent")
+            .When(x => x.Rate is not null);
     }
 }

@@ -59,6 +59,7 @@ using Clam.Api.Infrastructure.Fx;
 using Clam.Api.Infrastructure.Json;
 using Clam.Api.Infrastructure.Monzo;
 using Clam.Api.Infrastructure.Statements;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.FeatureManagement;
 using FastEndpoints;
 using FastEndpoints.Swagger;
@@ -90,8 +91,23 @@ public static class ServiceCollectionExtensions
         services.AddExceptionHandler<GlobalExceptionHandler>();
         services.AddProblemDetails();
 
+        // Kestrel's default is 30 MB, which is a sensible ceiling for a service
+        // that accepts uploads and an absurd one for this API — every endpoint
+        // here takes a small JSON document, and the largest single field is a
+        // note. A `MaximumLength` cannot help: the body is read and deserialised
+        // before any validator sees it, so the only bound on a 30 MB request full
+        // of one field is this one.
+        //
+        // Deliberately generous against that yardstick, because the failure mode
+        // of getting it wrong is a 413 with no field name to explain it. The
+        // Express API caps the same bodies at 50 kB.
+        services.Configure<KestrelServerOptions>(o => o.Limits.MaxRequestBodySize = MaxRequestBodyBytes);
+
         return services;
     }
+
+    /// 1 MB. See the note in <see cref="AddApiInfrastructure"/>.
+    internal const long MaxRequestBodyBytes = 1024 * 1024;
 
     public static IServiceCollection AddPersistence(this IServiceCollection services, string connectionString)
     {

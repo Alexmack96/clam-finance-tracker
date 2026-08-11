@@ -19,11 +19,22 @@ public sealed class CreateCategoryValidator : Validator<CreateCategoryRequest>
     /// A 6-digit hex colour, e.g. "#14b8a6".
     internal const string HexColorPattern = "^#[0-9a-fA-F]{6}$";
 
+    /// Well inside `Categories.name` (NVARCHAR(100)). The bound is what fits a
+    /// legend and a filter chip, not what fits the column.
+    internal const int MaxNameLength = 40;
+
     public CreateCategoryValidator()
     {
+        // Measured trimmed, because the command stores it trimmed. Checking the
+        // raw string instead rejects a 40-character name typed with a trailing
+        // space — the two ends have to agree on which string is the name.
+        //
+        // `Must` rather than `MaximumLength` on a transformed value: FluentValidation
+        // removed `Transform` in 12.0, which is the version FastEndpoints 8.2 brings.
+        // `NotEmpty` needs no such help — it already counts whitespace as empty.
         RuleFor(x => x.Name)
             .NotEmpty().WithMessage("Name is required")
-            .MaximumLength(40).WithMessage("Name is too long");
+            .Must(name => name.Trim().Length <= MaxNameLength).WithMessage("Name is too long");
 
         RuleFor(x => x.Color)
             .Matches(HexColorPattern).WithMessage("Must be a hex colour like #14b8a6");

@@ -18,5 +18,15 @@ public sealed class ReorderRulesValidator : Validator<ReorderRulesRequest>
     {
         RuleFor(x => x.Ids).NotEmpty();
         RuleForEach(x => x.Ids).NotEmpty();
+
+        // The command checks the list against the rules that exist, by count and
+        // by membership — and `[a, a]` against `{a, b}` passes both. The reorder
+        // then writes two positions for `a` and none for `b`, leaving `b` at a
+        // stale position: precedence silently changes for a rule the user never
+        // touched. Distinctness is a property of the request alone, so it belongs
+        // here rather than in the command's existence check.
+        RuleFor(x => x.Ids)
+            .Must(ids => ids.Distinct(StringComparer.Ordinal).Count() == ids.Count)
+            .WithMessage("Reorder must not list the same rule twice");
     }
 }

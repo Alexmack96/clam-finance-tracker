@@ -18,9 +18,12 @@ public sealed class UpdateCategoryValidator : Validator<UpdateCategoryRequest>
 {
     public UpdateCategoryValidator()
     {
+        // Trimmed before it is measured, matching the command and the create
+        // slice. See the note on CreateCategoryValidator.
         RuleFor(x => x.Name!)
             .NotEmpty()
-            .MaximumLength(40).WithMessage("Name is too long")
+            .Must(name => name.Trim().Length <= CreateCategoryValidator.MaxNameLength)
+            .WithMessage("Name is too long")
             .When(x => x.Name is not null);
 
         RuleFor(x => x.Color!)

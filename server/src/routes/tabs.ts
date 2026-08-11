@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { db } from "../db/client.js";
 import { TabDirection, TabStatus } from "../generated/prisma/index.js";
-import { createTabSchema, updateTabSchema } from "@clam/core";
+import { createTabSchema, updateTabSchemaAt } from "@clam/core";
 
 export const tabsRouter = Router();
 
@@ -47,11 +47,15 @@ tabsRouter.post("/", async (req, res) => {
 
 // PATCH /api/tabs/:id
 tabsRouter.patch("/:id", async (req, res) => {
-  const body = updateTabSchema.parse(req.body);
+  // Read once, here at the edge, and passed down. The schema and the settle
+  // stamp then agree on what "now" is, and neither reads the clock itself.
+  const now = new Date();
+
+  const body = updateTabSchemaAt(now).parse(req.body);
   const data: Record<string, unknown> = { ...body };
 
   if (body.status === "Settled" && body.settledAt === undefined) {
-    data.settledAt = new Date();
+    data.settledAt = now;
   }
   if (body.status === "Open") {
     data.settledAt = null;

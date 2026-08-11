@@ -39,10 +39,18 @@ public sealed class RuleInputValidator : AbstractValidator<RuleInput>
     private static readonly string[] KnownBanks =
         ["monzo", "flex", "amex", "barclays", "santander", "hsbc", "sofi", "chase"];
 
+    /// Every condition is a row in [RuleConditions] and is re-evaluated against
+    /// every transaction on every import, dry-run and apply. A rule this wide is
+    /// a mistake rather than an intent — the ceiling is here so the cost of one
+    /// is bounded by something other than how much JSON fits in a request.
+    internal const int MaxConditions = 20;
+
     public RuleInputValidator()
     {
         RuleFor(r => r.Conditions)
-            .NotEmpty().WithMessage("At least one condition is required");
+            .NotEmpty().WithMessage("At least one condition is required")
+            .Must(conditions => conditions.Count <= MaxConditions)
+            .WithMessage($"A rule cannot have more than {MaxConditions} conditions");
 
         RuleForEach(r => r.Conditions).ChildRules(condition =>
         {
@@ -69,6 +77,14 @@ public sealed class RuleInputValidator : AbstractValidator<RuleInput>
         RuleFor(r => r.CategoryId)
             .NotEmpty().WithMessage("A category rule must set a category")
             .When(r => r.Kind == RuleKind.Category);
+
+        // [Rules].[categoryId] is an id column and this value is INSERTed into
+        // it, so an over-long one is a truncation 500 rather than the "no such
+        // category" the caller deserves. Checked on both kinds: a Bucket rule may
+        // still carry a categoryId, and it is stored just the same.
+        RuleFor(r => r.CategoryId!)
+            .MaximumLength(Ids.MaxLength).WithMessage("categoryId is not an id")
+            .When(r => r.CategoryId is not null);
 
         RuleFor(r => r.Bucket)
             .NotNull().WithMessage("A bucket rule must set a bucket")

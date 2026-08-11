@@ -44,16 +44,14 @@ public sealed class UpdateTransactionRequest
 /// silently rather than failing loudly if they are not checked.
 public sealed class UpdateTransactionValidator : Validator<UpdateTransactionRequest>
 {
-    /// Every id column in db/schema.sql is NVARCHAR(30). Longer than that is not
-    /// a missing category, it is not an id at all — and the UPDATE COALESCEs it
-    /// straight into the column, where the truncation error is a 500.
-    private const int IdLength = 30;
-
     public UpdateTransactionValidator()
     {
+        // Longer than an id column is not a missing category, it is not an id at
+        // all — and the UPDATE COALESCEs it straight into the column, where the
+        // truncation error is a 500. See <see cref="Ids"/>.
         RuleFor(x => x.CategoryId!)
             .NotEmpty().WithMessage("categoryId cannot be blank")
-            .MaximumLength(IdLength).WithMessage("categoryId is not an id")
+            .MaximumLength(Ids.MaxLength).WithMessage("categoryId is not an id")
             .When(x => x.CategoryId is not null);
 
         // `Note` binds as a raw JsonElement so an explicit null can be told from

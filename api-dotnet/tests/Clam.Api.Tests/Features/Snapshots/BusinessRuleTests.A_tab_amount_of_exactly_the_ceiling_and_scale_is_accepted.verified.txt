@@ -1,0 +1,22 @@
+﻿{
+  Status: 201 Created,
+  Content: {
+    Headers: {
+      Content-Length: 261,
+      Content-Type: application/json; charset=utf-8
+    },
+    Value: {
+      id: cgen00000000000000000001,
+      person: Sam,
+      description: the whole holiday,
+      amount: 1000000,
+      direction: TheyOwe,
+      status: Open,
+      dueDate: null,
+      settledAt: {Scrubbed},
+      note: null,
+      createdAt: {Scrubbed},
+      updatedAt: {Scrubbed}
+    }
+  }
+}
