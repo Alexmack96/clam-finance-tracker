@@ -1,0 +1,30 @@
+﻿{
+  Status: 400 Bad Request,
+  Content: {
+    Headers: {
+      Content-Length: 347,
+      Content-Type: application/problem+json; charset=utf-8
+    },
+    Value: {
+      type: https://www.rfc-editor.org/rfc/rfc7231#section-6.5.1,
+      title: Bad Request,
+      status: 400,
+      instance: /api/admin/users,
+      traceId: {Scrubbed},
+      errors: [
+        {
+          name: name,
+          reason: Name must be at least 3 characters
+        },
+        {
+          name: email,
+          reason: Invalid email address
+        },
+        {
+          name: password,
+          reason: Password must be at least 8 characters
+        }
+      ]
+    }
+  }
+}

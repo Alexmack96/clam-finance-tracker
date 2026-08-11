@@ -1,0 +1,26 @@
+﻿{
+  Status: 400 Bad Request,
+  Content: {
+    Headers: {
+      Content-Length: 270,
+      Content-Type: application/problem+json; charset=utf-8
+    },
+    Value: {
+      type: https://www.rfc-editor.org/rfc/rfc7231#section-6.5.1,
+      title: Bad Request,
+      status: 400,
+      instance: /api/categories,
+      traceId: {Scrubbed},
+      errors: [
+        {
+          name: name,
+          reason: Name is required
+        },
+        {
+          name: color,
+          reason: Must be a hex colour like #14b8a6
+        }
+      ]
+    }
+  }
+}

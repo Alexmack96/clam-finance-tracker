@@ -1,0 +1,23 @@
+﻿{
+  Status: 400 Bad Request,
+  Content: {
+    Headers: {
+      Content-Length: 271,
+      Content-Type: application/problem+json; charset=utf-8
+    },
+    Value: {
+      type: https://www.rfc-editor.org/rfc/rfc7231#section-6.5.1,
+      title: Bad Request,
+      status: 400,
+      instance: /api/investments/accounts/cacct0000000000001equity,
+      traceId: {Scrubbed},
+      detail: Name is too long,
+      errors: [
+        {
+          name: name,
+          reason: Name is too long
+        }
+      ]
+    }
+  }
+}

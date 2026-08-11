@@ -1,0 +1,30 @@
+﻿{
+  Status: 400 Bad Request,
+  Content: {
+    Headers: {
+      Content-Length: 340,
+      Content-Type: application/problem+json; charset=utf-8
+    },
+    Value: {
+      type: https://www.rfc-editor.org/rfc/rfc7231#section-6.5.1,
+      title: Bad Request,
+      status: 400,
+      instance: /api/tabs/nope,
+      traceId: {Scrubbed},
+      errors: [
+        {
+          name: person,
+          reason: 'person' must not be empty.
+        },
+        {
+          name: description,
+          reason: 'description' must not be empty.
+        },
+        {
+          name: amount,
+          reason: Amount must be positive
+        }
+      ]
+    }
+  }
+}

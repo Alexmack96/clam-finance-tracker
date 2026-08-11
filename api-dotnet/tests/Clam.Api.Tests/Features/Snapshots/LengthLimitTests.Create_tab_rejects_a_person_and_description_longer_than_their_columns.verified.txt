@@ -1,0 +1,26 @@
+﻿{
+  Status: 400 Bad Request,
+  Content: {
+    Headers: {
+      Content-Length: 264,
+      Content-Type: application/problem+json; charset=utf-8
+    },
+    Value: {
+      type: https://www.rfc-editor.org/rfc/rfc7231#section-6.5.1,
+      title: Bad Request,
+      status: 400,
+      instance: /api/tabs,
+      traceId: {Scrubbed},
+      errors: [
+        {
+          name: person,
+          reason: Person is too long
+        },
+        {
+          name: description,
+          reason: Description is too long
+        }
+      ]
+    }
+  }
+}

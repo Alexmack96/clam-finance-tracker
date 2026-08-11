@@ -1,4 +1,5 @@
 using System.Net.Http.Json;
+using System.Text;
 
 namespace Clam.Api.Tests;
 
@@ -31,4 +32,21 @@ public abstract class ApiTest(ClamApiFactory api)
         => Client.PutAsJsonAsync(url, body, Ct);
 
     protected Task<HttpResponseMessage> Delete(string url) => Client.DeleteAsync(url, Ct);
+
+    /// A body written as a literal JSON string rather than serialised from an
+    /// anonymous object.
+    ///
+    /// The typed helpers above can only send JSON that C#'s type system can
+    /// produce, which is a strictly smaller set than what reaches a public API:
+    /// a string where a number belongs, a null on a non-nullable, a malformed
+    /// document. Those fail in the *binder*, before any validator runs, and this
+    /// is the only way to write one.
+    protected Task<HttpResponseMessage> PostRaw(string url, string json)
+        => Client.PostAsync(url, JsonBody(json), Ct);
+
+    protected Task<HttpResponseMessage> PatchRaw(string url, string json)
+        => Client.PatchAsync(url, JsonBody(json), Ct);
+
+    private static StringContent JsonBody(string json)
+        => new(json, Encoding.UTF8, "application/json");
 }

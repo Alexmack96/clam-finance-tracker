@@ -19,7 +19,10 @@ public sealed class UpdateInvestmentAccountValidator : Validator<UpdateInvestmen
 {
     public UpdateInvestmentAccountValidator()
     {
-        RuleFor(x => x.Name!).NotEmpty().When(x => x.Name is not null);
+        RuleFor(x => x.Name!)
+            .NotEmpty().WithMessage("An account needs a name")
+            .MaximumLength(CreateInvestmentAccountValidator.MaxNameLength).WithMessage("Name is too long")
+            .When(x => x.Name is not null);
 
         RuleFor(x => x.Category!)
             .Must(CreateInvestmentAccountValidator.Categories.Contains)

@@ -1,0 +1,22 @@
+﻿{
+  Status: 201 Created,
+  Content: {
+    Headers: {
+      Content-Length: 241,
+      Content-Type: application/json; charset=utf-8
+    },
+    Value: {
+      id: cgen00000000000000000001,
+      person: Sam,
+      description: dinner,
+      amount: 5,
+      direction: IOwe,
+      status: Open,
+      dueDate: null,
+      settledAt: {Scrubbed},
+      note: null,
+      createdAt: {Scrubbed},
+      updatedAt: {Scrubbed}
+    }
+  }
+}

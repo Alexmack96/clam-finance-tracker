@@ -1,3 +1,4 @@
+using Clam.Api.Features.Notes.CreateNote;
 using FastEndpoints;
 using FluentValidation;
 
@@ -17,6 +18,9 @@ public sealed class UpdateNoteValidator : Validator<UpdateNoteRequest>
 {
     public UpdateNoteValidator()
     {
-        RuleFor(x => x.Title!).NotEmpty().When(x => x.Title is not null);
+        RuleFor(x => x.Title!)
+            .NotEmpty()
+            .MaximumLength(CreateNoteValidator.MaxTitleLength).WithMessage("Title is too long")
+            .When(x => x.Title is not null);
     }
 }

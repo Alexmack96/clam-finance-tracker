@@ -1,0 +1,23 @@
+﻿{
+  Status: 400 Bad Request,
+  Content: {
+    Headers: {
+      Content-Length: 283,
+      Content-Type: application/problem+json; charset=utf-8
+    },
+    Value: {
+      type: https://www.rfc-editor.org/rfc/rfc7231#section-6.5.1,
+      title: Bad Request,
+      status: 400,
+      instance: /api/transactions/ctest00000000000000001tx,
+      traceId: {Scrubbed},
+      detail: categoryId is not an id,
+      errors: [
+        {
+          name: categoryId,
+          reason: categoryId is not an id
+        }
+      ]
+    }
+  }
+}

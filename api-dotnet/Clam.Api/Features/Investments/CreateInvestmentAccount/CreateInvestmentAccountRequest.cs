@@ -22,9 +22,15 @@ public sealed class CreateInvestmentAccountValidator : Validator<CreateInvestmen
     internal static readonly string[] Categories =
         ["pension", "crypto", "equity", "cash", "commodity", "debt"];
 
+    /// The width of `InvestmentAccounts.name` in db/schema.sql. `Category` needs
+    /// no length rule — the membership check below is narrower than the column.
+    internal const int MaxNameLength = 200;
+
     public CreateInvestmentAccountValidator()
     {
-        RuleFor(x => x.Name).NotEmpty();
+        RuleFor(x => x.Name)
+            .NotEmpty().WithMessage("An account needs a name")
+            .MaximumLength(MaxNameLength).WithMessage("Name is too long");
         RuleFor(x => x.Category).Must(Categories.Contains).WithMessage("Unknown investment category");
     }
 }

@@ -1,0 +1,26 @@
+﻿{
+  Status: 400 Bad Request,
+  Content: {
+    Headers: {
+      Content-Length: 316,
+      Content-Type: application/problem+json; charset=utf-8
+    },
+    Value: {
+      type: https://www.rfc-editor.org/rfc/rfc7231#section-6.5.1,
+      title: Bad Request,
+      status: 400,
+      instance: /api/recurring/verdict,
+      traceId: {Scrubbed},
+      errors: [
+        {
+          name: owner,
+          reason: Recurring series belong to a person, not to Joint
+        },
+        {
+          name: description,
+          reason: 'description' must not be empty.
+        }
+      ]
+    }
+  }
+}

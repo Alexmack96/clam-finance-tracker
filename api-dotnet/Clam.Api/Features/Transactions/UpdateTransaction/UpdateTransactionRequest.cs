@@ -1,5 +1,7 @@
 using System.Text.Json;
 using Clam.Api.Domain;
+using FastEndpoints;
+using FluentValidation;
 
 namespace Clam.Api.Features.Transactions.UpdateTransaction;
 
@@ -35,4 +37,35 @@ public sealed class UpdateTransactionRequest
     /// The note to store: the string when one was sent, null when the caller
     /// sent an explicit null. Meaningless unless <see cref="NoteProvided"/>.
     internal string? NoteValue => Note.ValueKind == JsonValueKind.String ? Note.GetString() : null;
+}
+
+/// Most of this request is enums and bools the binder has already vetted. Two
+/// fields reach here able to be well-formed and still wrong, and both write
+/// silently rather than failing loudly if they are not checked.
+public sealed class UpdateTransactionValidator : Validator<UpdateTransactionRequest>
+{
+    /// Every id column in db/schema.sql is NVARCHAR(30). Longer than that is not
+    /// a missing category, it is not an id at all — and the UPDATE COALESCEs it
+    /// straight into the column, where the truncation error is a 500.
+    private const int IdLength = 30;
+
+    public UpdateTransactionValidator()
+    {
+        RuleFor(x => x.CategoryId!)
+            .NotEmpty().WithMessage("categoryId cannot be blank")
+            .MaximumLength(IdLength).WithMessage("categoryId is not an id")
+            .When(x => x.CategoryId is not null);
+
+        // `Note` binds as a raw JsonElement so an explicit null can be told from
+        // an absent key, which means the binder accepts any JSON shape at all.
+        // Without this rule an object or a number takes the "not a string" branch
+        // of NoteValue, lands as null, and *clears* the note — a destructive
+        // write in response to a malformed request, answered 200.
+        //
+        // No length rule: the column is NVARCHAR(MAX).
+        RuleFor(x => x.Note)
+            .Must(note => note.ValueKind is JsonValueKind.String or JsonValueKind.Null)
+            .WithMessage("note must be a string or null")
+            .When(x => x.NoteProvided);
+    }
 }

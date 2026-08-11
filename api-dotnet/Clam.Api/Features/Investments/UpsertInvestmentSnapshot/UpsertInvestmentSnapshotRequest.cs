@@ -16,7 +16,7 @@ public sealed class UpsertInvestmentSnapshotValidator : Validator<UpsertInvestme
 {
     public UpsertInvestmentSnapshotValidator()
     {
-        RuleFor(x => x.AccountId).NotEmpty();
+        RuleFor(x => x.AccountId).NotEmpty().WithMessage("A snapshot needs an account");
         RuleFor(x => x.Date).NotEqual(default(DateTime)).WithMessage("A snapshot needs a date");
     }
 }
