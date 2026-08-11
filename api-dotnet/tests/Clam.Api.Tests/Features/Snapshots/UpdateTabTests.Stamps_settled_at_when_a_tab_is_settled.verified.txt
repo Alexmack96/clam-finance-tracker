@@ -1,0 +1,22 @@
+﻿{
+  Status: 200 OK,
+  Content: {
+    Headers: {
+      Content-Length: 273,
+      Content-Type: application/json; charset=utf-8
+    },
+    Value: {
+      id: ctab00000000000000000open,
+      person: Sam,
+      description: dinner,
+      amount: 20.5,
+      direction: TheyOwe,
+      status: Settled,
+      dueDate: null,
+      settledAt: {Scrubbed},
+      note: null,
+      createdAt: {Scrubbed},
+      updatedAt: {Scrubbed}
+    }
+  }
+}

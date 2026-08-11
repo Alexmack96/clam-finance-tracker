@@ -1,0 +1,27 @@
+﻿{
+  Status: 200 OK,
+  Content: {
+    Headers: {
+      Content-Length: 357,
+      Content-Type: application/json; charset=utf-8
+    },
+    Value: [
+      {
+        id: cnote0000000000000pinned,
+        title: Rules to rewrite,
+        body: null,
+        pinned: true,
+        createdAt: {Scrubbed},
+        updatedAt: {Scrubbed}
+      },
+      {
+        id: cnote00000000000000plain,
+        title: Chase the Amex statement,
+        body: February is missing,
+        pinned: false,
+        createdAt: {Scrubbed},
+        updatedAt: {Scrubbed}
+      }
+    ]
+  }
+}

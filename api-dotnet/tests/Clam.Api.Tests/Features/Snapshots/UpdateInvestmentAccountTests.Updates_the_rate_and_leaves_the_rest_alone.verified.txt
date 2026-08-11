@@ -1,0 +1,19 @@
+﻿{
+  Status: 200 OK,
+  Content: {
+    Headers: {
+      Content-Length: 189,
+      Content-Type: application/json; charset=utf-8
+    },
+    Value: {
+      id: cacct00000000000002cash,
+      name: Chase Saver,
+      category: cash,
+      owner: Alex,
+      rate: 3.9,
+      sortOrder: 2,
+      createdAt: {Scrubbed},
+      updatedAt: {Scrubbed}
+    }
+  }
+}

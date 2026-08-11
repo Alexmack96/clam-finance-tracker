@@ -1,0 +1,16 @@
+﻿{
+  Status: 200 OK,
+  Content: {
+    Headers: {
+      Content-Length: 59,
+      Content-Type: application/json; charset=utf-8
+    },
+    Value: {
+      tabs: [],
+      totals: {
+        theyOweMe: 0.00,
+        iOweThem: 0.00
+      }
+    }
+  }
+}

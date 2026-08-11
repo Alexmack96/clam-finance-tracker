@@ -1,0 +1,14 @@
+﻿{
+  Status: 200 OK,
+  Content: {
+    Headers: {
+      Content-Length: 70,
+      Content-Type: application/json; charset=utf-8
+    },
+    Value: {
+      id: ctest000000000000002groc,
+      name: Groceries,
+      color: #111111
+    }
+  }
+}

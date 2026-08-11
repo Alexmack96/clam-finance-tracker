@@ -1,0 +1,16 @@
+﻿{
+  Status: 404 Not Found,
+  Content: {
+    Headers: {
+      Content-Length: 115,
+      Content-Type: application/problem+json
+    },
+    Value: {
+      title: Not Found,
+      status: 404,
+      detail: Rule not found,
+      instance: /api/rules/nope,
+      traceId: {Scrubbed}
+    }
+  }
+}

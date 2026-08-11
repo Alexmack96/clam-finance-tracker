@@ -1,0 +1,33 @@
+﻿{
+  Status: 200 OK,
+  Content: {
+    Headers: {
+      Content-Length: 483,
+      Content-Type: application/json; charset=utf-8
+    },
+    Value: {
+      id: ctest00000000000000001tx,
+      description: RENT PAYMENT,
+      amount: 1000.5,
+      type: Expense,
+      date: 2026-03-10T00:00:00.000Z,
+      createdAt: {Scrubbed},
+      categoryId: ctest000000000000002groc,
+      externalId: null,
+      note: null,
+      owner: Joint,
+      reviewed: true,
+      bucket: Needs,
+      categoryPinned: true,
+      bucketPinned: false,
+      originalAmount: null,
+      originalCurrency: null,
+      statementFileId: null,
+      category: {
+        id: ctest000000000000002groc,
+        name: Groceries,
+        color: #84cc16
+      }
+    }
+  }
+}

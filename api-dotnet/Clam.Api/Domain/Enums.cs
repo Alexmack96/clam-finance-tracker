@@ -32,3 +32,55 @@ public enum Bucket
     Savings,
     Ignore,
 }
+
+/// Rules run as a two-pass pipeline: every Category rule is evaluated first,
+/// then every Bucket rule — so a Bucket rule can condition on the Category a
+/// Category rule just assigned.
+public enum RuleKind
+{
+    Category,
+    Bucket,
+}
+
+/// Joins a rule's *positive* conditions only. Negated conditions are always
+/// ANDed as exclusions.
+public enum RuleJoin
+{
+    AND,
+    OR,
+}
+
+public enum RuleField
+{
+    Description,
+    Category,
+    Type,
+}
+
+public enum RuleOperator
+{
+    Contains,
+    StartsWith,
+    EndsWith,
+    Exact,
+}
+
+public enum TabDirection
+{
+    IOwe,
+    TheyOwe,
+}
+
+public enum TabStatus
+{
+    Open,
+    Settled,
+}
+
+/// A verdict on a detected recurring series. There is deliberately no third
+/// member for "Proposed" — the absence of a row is that state.
+public enum RecurringStatus
+{
+    Confirmed,
+    Rejected,
+}

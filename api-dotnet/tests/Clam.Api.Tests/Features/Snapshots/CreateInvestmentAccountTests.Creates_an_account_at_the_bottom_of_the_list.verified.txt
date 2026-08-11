@@ -1,0 +1,20 @@
+﻿{
+  Status: 201 Created,
+  Content: {
+    Headers: {
+      Content-Length: 206,
+      Content-Type: application/json; charset=utf-8
+    },
+    Value: {
+      id: cgen00000000000000000001,
+      name: Freetrade,
+      category: equity,
+      owner: Alex,
+      rate: null,
+      sortOrder: 4,
+      createdAt: {Scrubbed},
+      updatedAt: {Scrubbed},
+      snapshots: []
+    }
+  }
+}

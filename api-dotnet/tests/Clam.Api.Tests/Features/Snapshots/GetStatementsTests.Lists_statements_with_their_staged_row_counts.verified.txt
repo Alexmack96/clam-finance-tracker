@@ -1,0 +1,25 @@
+﻿{
+  Status: 200 OK,
+  Content: {
+    Headers: {
+      Content-Length: 314,
+      Content-Type: application/json; charset=utf-8
+    },
+    Value: [
+      {
+        id: cstmt0000000000000000001,
+        bank: amex,
+        owner: Alex,
+        statementDate: February 2026,
+        originalName: amex-feb.pdf,
+        contentHash: a1b2c3d4e5f6,
+        byteSize: 20480,
+        storageKey: amex/Alex/February-2026-a1b2c3d4e5f6.pdf,
+        uploadedAt: {Scrubbed},
+        rowCount: 2,
+        reconciled: true,
+        stagedRows: 2
+      }
+    ]
+  }
+}

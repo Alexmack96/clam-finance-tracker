@@ -8,23 +8,27 @@
 
   <ItemGroup>
     <Using Include="Xunit" />
-    <Using Include="Shouldly" />
+    <!-- Every test's assert line is a bare `Verify(response)`. -->
+    <Using Include="VerifyXunit.Verifier" Static="True" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FastEndpoints.Testing" />
+    <!-- WebApplicationFactory: the standard ASP.NET Core in-memory host. -->
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+    <PackageReference Include="Microsoft.Extensions.TimeProvider.Testing" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
-    <PackageReference Include="Shouldly" />
+    <PackageReference Include="Verify.Http" />
+    <PackageReference Include="Verify.XunitV3" />
     <PackageReference Include="xunit.v3" />
     <PackageReference Include="xunit.runner.visualstudio" />
-    <!-- The fixture talks to LocalDB directly to create, populate and drop its
+    <!-- The harness talks to LocalDB directly to create, populate and drop its
          throwaway database. -->
     <PackageReference Include="Dapper" />
     <PackageReference Include="Microsoft.Data.SqlClient" />
   </ItemGroup>
 
   <ItemGroup>
-    <!-- The single source of truth for the schema. The fixture applies this
+    <!-- The single source of truth for the schema. The harness applies this
          exact file, so a migration that is not reflected here fails the suite
          rather than passing against a hand-maintained copy. -->
     <None Include="..\..\db\schema.sql" Link="db\schema.sql" CopyToOutputDirectory="PreserveNewest" />
@@ -32,6 +36,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Clam.Api\Clam.Api.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Approved snapshots are source. The .received.* files Verify writes on a
+         mismatch are not — they are the diff, and committing one would approve
+         a regression by accident. -->
+    <None Update="Snapshots\**\*.verified.*" CopyToOutputDirectory="Never" />
   </ItemGroup>
 
 </Project>

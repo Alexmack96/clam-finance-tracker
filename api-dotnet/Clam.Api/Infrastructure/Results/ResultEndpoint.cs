@@ -27,6 +27,44 @@ public abstract class ResultEndpointWithoutRequest<TResponse> : EndpointWithoutR
         => this.SendAsResultAsync(result, ct);
 }
 
+/// For slices whose success case has no body — the deletes, which answer 204.
+/// They still need the failure mapping, which is the only reason they are here
+/// rather than on plain <c>Endpoint&lt;TRequest&gt;</c>.
+public abstract class ResultEndpointWithoutResponse<TRequest> : Endpoint<TRequest>
+    where TRequest : notnull
+{
+    protected Task SendResultAsync(Result result, CancellationToken ct)
+        => this.SendAsResultAsync(result, ct);
+}
+
+public static class ResultPropagation
+{
+    /// Re-types a failed <see cref="Result{T}"/> without losing its status.
+    ///
+    /// Needed whenever a slice delegates to a shared step that returns its own
+    /// Result — <c>Result&lt;TTo&gt;.Error(source.Errors)</c> would flatten a 401
+    /// or a 400 into a 422, which is exactly the distinction the caller is
+    /// meant to act on.
+    public static Result<TTo> PropagateFailure<TFrom, TTo>(this Result<TFrom> source)
+    {
+        ArgumentNullException.ThrowIfNull(source);
+
+        var messages = source.Errors.ToArray();
+        var message = messages.FirstOrDefault() ?? "The request could not be completed";
+
+        return source.Status switch
+        {
+            ResultStatus.Invalid => Result<TTo>.Invalid(source.ValidationErrors.ToList()),
+            ResultStatus.NotFound => Result<TTo>.NotFound(messages),
+            ResultStatus.Unauthorized => Result<TTo>.Unauthorized(messages),
+            ResultStatus.Forbidden => Result<TTo>.Forbidden(messages),
+            ResultStatus.Conflict => Result<TTo>.Conflict(messages),
+            ResultStatus.Unavailable => Result<TTo>.Unavailable(messages),
+            _ => Result<TTo>.Error(message),
+        };
+    }
+}
+
 internal static class ResultEndpointExtensions
 {
     /// Shared by both base classes above. `Send` is not reachable from here, so
@@ -61,5 +99,27 @@ internal static class ResultEndpointExtensions
             : StatusCodes.Status200OK;
 
         await httpContext.Response.SendAsync(result.Value, statusCode, cancellation: ct);
+    }
+
+    /// The bodyless counterpart. Success is always 204 here: a slice with no
+    /// response type has nothing to say with a 200.
+    internal static async Task SendAsResultAsync(
+        this IEndpoint endpoint,
+        Result result,
+        CancellationToken ct)
+    {
+        ArgumentNullException.ThrowIfNull(endpoint);
+        ArgumentNullException.ThrowIfNull(result);
+
+        var httpContext = endpoint.HttpContext;
+
+        if (!result.IsSuccess)
+        {
+            await ResultProblem.WriteAsync(
+                httpContext, result.Status, result.Errors, result.ValidationErrors, ct);
+            return;
+        }
+
+        await httpContext.Response.SendNoContentAsync(ct);
     }
 }

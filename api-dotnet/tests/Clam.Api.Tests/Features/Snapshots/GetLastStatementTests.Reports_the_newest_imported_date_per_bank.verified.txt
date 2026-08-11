@@ -1,0 +1,19 @@
+﻿{
+  Status: 200 OK,
+  Content: {
+    Headers: {
+      Content-Length: 121,
+      Content-Type: application/json; charset=utf-8
+    },
+    Value: {
+      monzo: 2026-02-01,
+      amex: null,
+      barclays: null,
+      santander: null,
+      hsbc: null,
+      sofi: null,
+      chase: null,
+      amexByOwner: {}
+    }
+  }
+}

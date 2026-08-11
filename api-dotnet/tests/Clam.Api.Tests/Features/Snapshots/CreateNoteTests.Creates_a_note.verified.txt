@@ -1,0 +1,17 @@
+﻿{
+  Status: 201 Created,
+  Content: {
+    Headers: {
+      Content-Length: 168,
+      Content-Type: application/json; charset=utf-8
+    },
+    Value: {
+      id: cgen00000000000000000001,
+      title: Statements to chase,
+      body: null,
+      pinned: false,
+      createdAt: {Scrubbed},
+      updatedAt: {Scrubbed}
+    }
+  }
+}

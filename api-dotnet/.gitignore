@@ -5,3 +5,8 @@ obj/
 # User-specific launch settings and local secrets overrides.
 *.user
 appsettings.Local.json
+
+# Verify's failure output. The .verified.* files beside these are source and are
+# committed; a .received.* is the diff from a test that just failed, and
+# committing one approves a regression by accident.
+*.received.*

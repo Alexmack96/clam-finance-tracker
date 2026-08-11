@@ -1,0 +1,15 @@
+﻿{
+  Status: 200 OK,
+  Content: {
+    Headers: {
+      Content-Length: 70,
+      Content-Type: application/json; charset=utf-8
+    },
+    Value: {
+      categoryChanges: 1,
+      bucketChanges: 2,
+      affected: 2,
+      pinnedSkipped: 0
+    }
+  }
+}

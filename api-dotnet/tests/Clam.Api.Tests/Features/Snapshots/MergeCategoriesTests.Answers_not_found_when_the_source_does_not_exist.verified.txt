@@ -1,0 +1,16 @@
+﻿{
+  Status: 404 Not Found,
+  Content: {
+    Headers: {
+      Content-Length: 163,
+      Content-Type: application/problem+json
+    },
+    Value: {
+      title: Not Found,
+      status: 404,
+      detail: Source category not found,
+      instance: /api/categories/nope/merge/ctest0000000000000001rent,
+      traceId: {Scrubbed}
+    }
+  }
+}

@@ -1,0 +1,14 @@
+﻿{
+  Status: 201 Created,
+  Content: {
+    Headers: {
+      Content-Length: 67,
+      Content-Type: application/json; charset=utf-8
+    },
+    Value: {
+      id: cgen00000000000000000001,
+      name: Coffee,
+      color: #14b8a6
+    }
+  }
+}

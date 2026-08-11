@@ -1,0 +1,16 @@
+﻿{
+  Status: 200 OK,
+  Content: {
+    Headers: {
+      Content-Length: 86,
+      Content-Type: application/json; charset=utf-8
+    },
+    Value: {
+      merged: 1,
+      rulesRepointed: 0,
+      conditionsRewritten: 0,
+      from: Groceries,
+      to: Rent
+    }
+  }
+}

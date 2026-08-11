@@ -1,0 +1,39 @@
+﻿{
+  Status: 200 OK,
+  Content: {
+    Headers: {
+      Content-Length: 543,
+      Content-Type: application/json; charset=utf-8
+    },
+    Value: {
+      owner: Alex,
+      income: [],
+      expense: [
+        {
+          description: NETFLIX.COM,
+          kind: Expense,
+          cadence: Monthly,
+          medianGapDays: 30,
+          occurrences: 6,
+          irregularity: 0,
+          coverage: 1,
+          lastDate: 2026-06-07T00:00:00.000Z,
+          lastAmount: 15.99,
+          averageAmount: 13.49,
+          nextDueDate: 2026-07-07T00:00:00.000Z,
+          bucket: Wants,
+          categoryName: Groceries,
+          bank: monzo,
+          active: true,
+          daysSinceLast: 0,
+          bankDataEndsAt: null,
+          status: Confirmed,
+          note: null,
+          monthlyEquivalent: 13.686729166666666
+        }
+      ],
+      committedOutPerMonth: 13.686729166666666,
+      committedInPerMonth: 0
+    }
+  }
+}

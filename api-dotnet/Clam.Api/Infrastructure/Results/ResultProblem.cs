@@ -70,16 +70,18 @@ internal static class ResultProblem
         {
             Status = statusCode,
             Title = TitleFor(status),
-            // Never surface raw error text on a 5xx — CriticalError messages are
-            // written for the log, not for the caller.
-            Detail = statusCode >= StatusCodes.Status500InternalServerError
+            // Never surface raw error text on a 500 — CriticalError messages are
+            // written for the log, not for the caller. A 503 is different: it
+            // means a dependency is unconfigured or unreachable, and the message
+            // names which one, which is the only actionable thing about it.
+            Detail = statusCode == StatusCodes.Status500InternalServerError
                 ? "An unexpected error occurred. Please contact support."
                 : messages.FirstOrDefault(),
             Instance = context.Request.Path,
         };
         problem.Extensions["traceId"] = context.TraceIdentifier;
 
-        if (messages.Length > 1 && statusCode < StatusCodes.Status500InternalServerError)
+        if (messages.Length > 1 && statusCode != StatusCodes.Status500InternalServerError)
         {
             problem.Extensions["errors"] = messages;
         }

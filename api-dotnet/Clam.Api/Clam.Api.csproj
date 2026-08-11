@@ -9,11 +9,13 @@
     <PackageReference Include="Ardalis.Result" />
     <PackageReference Include="AspNetCore.HealthChecks.SqlServer" />
     <PackageReference Include="Bogus" />
+    <PackageReference Include="BouncyCastle.Cryptography" />
     <PackageReference Include="Dapper" />
     <PackageReference Include="FastEndpoints" />
     <PackageReference Include="FastEndpoints.Swagger" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
     <PackageReference Include="Microsoft.Data.SqlClient" />
+    <PackageReference Include="Microsoft.FeatureManagement" />
   </ItemGroup>
 
   <ItemGroup>

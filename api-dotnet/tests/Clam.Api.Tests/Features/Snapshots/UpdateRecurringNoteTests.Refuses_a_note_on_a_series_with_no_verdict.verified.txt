@@ -1,0 +1,16 @@
+﻿{
+  Status: 404 Not Found,
+  Content: {
+    Headers: {
+      Content-Length: 155,
+      Content-Type: application/problem+json
+    },
+    Value: {
+      title: Not Found,
+      status: 404,
+      detail: Confirm or reject this series before adding a note,
+      instance: /api/recurring/note,
+      traceId: {Scrubbed}
+    }
+  }
+}

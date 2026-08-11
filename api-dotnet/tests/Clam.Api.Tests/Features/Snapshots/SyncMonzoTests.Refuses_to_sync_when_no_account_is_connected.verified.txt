@@ -1,0 +1,20 @@
+﻿{
+  Status: 400 Bad Request,
+  Content: {
+    Headers: {
+      Content-Length: 200,
+      Content-Type: application/problem+json
+    },
+    Value: {
+      title: One or more validation errors occurred.,
+      status: 400,
+      instance: /api/admin/monzo/sync,
+      errors: {
+        request: [
+          Monzo not connected — click Connect Monzo first
+        ]
+      },
+      traceId: {Scrubbed}
+    }
+  }
+}

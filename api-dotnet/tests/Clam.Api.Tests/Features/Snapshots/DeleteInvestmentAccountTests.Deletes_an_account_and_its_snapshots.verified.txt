@@ -1,0 +1,9 @@
+﻿{
+  Response: {
+    Status: 204 No Content
+  },
+  Request: {
+    Method: DELETE,
+    Uri: http://localhost/api/investments/accounts/cacct0000000000001equity
+  }
+}

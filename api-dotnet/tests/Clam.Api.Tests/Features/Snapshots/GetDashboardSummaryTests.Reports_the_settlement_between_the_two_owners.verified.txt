@@ -1,0 +1,26 @@
+﻿{
+  Status: 200 OK,
+  Content: {
+    Headers: {
+      Content-Length: 190,
+      Content-Type: application/json; charset=utf-8
+    },
+    Value: {
+      caseyIn: 600,
+      jointExpenses: 1200.5,
+      settlement: -0.25,
+      spendingByCategory: [
+        {
+          name: Rent,
+          color: #ef4444,
+          value: 1000.5
+        },
+        {
+          name: Groceries,
+          color: #84cc16,
+          value: 200
+        }
+      ]
+    }
+  }
+}

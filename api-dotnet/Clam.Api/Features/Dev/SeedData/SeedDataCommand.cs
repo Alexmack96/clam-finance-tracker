@@ -10,7 +10,7 @@ namespace Clam.Api.Features.Dev.SeedData;
 /// database, and nothing should be: this service is unauthenticated while it is
 /// a read-only spike, so "realistic" has to mean shaped like the real thing, not
 /// derived from it.
-public sealed class SeedDataCommand(IDbConnectionFactory factory)
+public sealed class SeedDataCommand(IDbConnectionFactory factory, TimeProvider clock)
 {
     private const string DeleteSql = "DELETE FROM [Transactions]; DELETE FROM [Categories];";
 
@@ -49,10 +49,10 @@ public sealed class SeedDataCommand(IDbConnectionFactory factory)
             .Select(c => new { Definition = c, Id = NewCuid(faker) })
             .ToList();
 
-        var yearStart = new DateTime(DateTime.UtcNow.Year, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         // Clamped to now, not to midnight-plus-a-random-offset: a transaction
         // dated later today reads as a bug to anyone looking at the UI.
-        var latest = DateTime.UtcNow;
+        var latest = clock.GetUtcNow().UtcDateTime;
+        var yearStart = new DateTime(latest.Year, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         var span = (latest - yearStart).TotalMinutes;
 
         var transactions = new List<object>(transactionCount);

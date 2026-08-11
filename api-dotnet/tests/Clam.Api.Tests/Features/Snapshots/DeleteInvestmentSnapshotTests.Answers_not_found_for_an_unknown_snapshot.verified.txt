@@ -1,0 +1,16 @@
+﻿{
+  Status: 404 Not Found,
+  Content: {
+    Headers: {
+      Content-Length: 135,
+      Content-Type: application/problem+json
+    },
+    Value: {
+      title: Not Found,
+      status: 404,
+      detail: Snapshot not found,
+      instance: /api/investments/snapshots/nope,
+      traceId: {Scrubbed}
+    }
+  }
+}

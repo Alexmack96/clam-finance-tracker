@@ -1,0 +1,59 @@
+﻿{
+  Status: 200 OK,
+  Content: {
+    Headers: {
+      Content-Length: 1015,
+      Content-Type: application/json; charset=utf-8
+    },
+    Value: [
+      {
+        id: ctest00000000000000003tx,
+        description: MONZO TRANSFER FROM CASEY,
+        amount: 600,
+        type: Income,
+        date: 2026-02-01T00:00:00.000Z,
+        createdAt: {Scrubbed},
+        categoryId: ctest00000000000000003net,
+        externalId: monzo:tx_casey_settlement,
+        note: null,
+        owner: Casey,
+        reviewed: true,
+        bucket: Ignore,
+        categoryPinned: false,
+        bucketPinned: false,
+        originalAmount: null,
+        originalCurrency: null,
+        statementFileId: null,
+        category: {
+          id: ctest00000000000000003net,
+          name: Net,
+          color: #3b82f6
+        }
+      },
+      {
+        id: ctest00000000000000004tx,
+        description: ACME LTD SALARY,
+        amount: 3000,
+        type: Income,
+        date: 2026-01-05T00:00:00.000Z,
+        createdAt: {Scrubbed},
+        categoryId: ctest0000000000000004sal,
+        externalId: monzo:tx_alex_salary,
+        note: null,
+        owner: Alex,
+        reviewed: true,
+        bucket: Ignore,
+        categoryPinned: false,
+        bucketPinned: false,
+        originalAmount: null,
+        originalCurrency: null,
+        statementFileId: null,
+        category: {
+          id: ctest0000000000000004sal,
+          name: Salary,
+          color: #16a34a
+        }
+      }
+    ]
+  }
+}

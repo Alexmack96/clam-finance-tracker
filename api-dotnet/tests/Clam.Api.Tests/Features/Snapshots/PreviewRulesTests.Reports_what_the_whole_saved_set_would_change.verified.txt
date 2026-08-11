@@ -1,0 +1,45 @@
+﻿{
+  Status: 200 OK,
+  Content: {
+    Headers: {
+      Content-Length: 710,
+      Content-Type: application/json; charset=utf-8
+    },
+    Value: {
+      rows: [
+        {
+          id: ctest00000000000000001tx,
+          date: 2026-03-10T00:00:00.000Z,
+          description: RENT PAYMENT,
+          amount: 1000.5,
+          type: Expense,
+          bank: null,
+          currentCategory: Rent,
+          proposedCategory: null,
+          currentBucket: Needs,
+          proposedBucket: Wants,
+          categoryRuleId: null,
+          bucketRuleId: crule000000000000001bkt
+        },
+        {
+          id: ctest00000000000000002tx,
+          date: 2026-02-14T00:00:00.000Z,
+          description: TESCO STORES,
+          amount: 200,
+          type: Expense,
+          bank: null,
+          currentCategory: Groceries,
+          proposedCategory: Rent,
+          currentBucket: Needs,
+          proposedBucket: Wants,
+          categoryRuleId: crule0000000000000001cat,
+          bucketRuleId: crule000000000000001bkt
+        }
+      ],
+      scanned: 4,
+      categoryChanges: 1,
+      bucketChanges: 2,
+      pinnedSkipped: 0
+    }
+  }
+}

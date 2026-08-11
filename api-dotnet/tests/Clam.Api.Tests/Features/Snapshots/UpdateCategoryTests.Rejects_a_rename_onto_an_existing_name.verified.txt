@@ -1,0 +1,16 @@
+﻿{
+  Status: 409 Conflict,
+  Content: {
+    Headers: {
+      Content-Length: 165,
+      Content-Type: application/problem+json
+    },
+    Value: {
+      title: Conflict,
+      status: 409,
+      detail: A category named "Rent" already exists,
+      instance: /api/categories/ctest000000000000002groc,
+      traceId: {Scrubbed}
+    }
+  }
+}

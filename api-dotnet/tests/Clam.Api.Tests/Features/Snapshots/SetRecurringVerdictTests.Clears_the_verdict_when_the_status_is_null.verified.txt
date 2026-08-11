@@ -1,0 +1,16 @@
+﻿{
+  Response: {
+    Status: 204 No Content
+  },
+  Request: {
+    Method: PUT,
+    Uri: http://localhost/api/recurring/verdict,
+    Content: {
+      Headers: {
+        Content-Length: 58,
+        Content-Type: application/json; charset=utf-8
+      },
+      Value: 
+    }
+  }
+}

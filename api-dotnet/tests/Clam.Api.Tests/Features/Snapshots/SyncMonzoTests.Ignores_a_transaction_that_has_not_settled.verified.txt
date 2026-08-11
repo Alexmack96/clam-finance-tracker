@@ -1,0 +1,18 @@
+﻿{
+  Status: 200 OK,
+  Content: {
+    Headers: {
+      Content-Length: 86,
+      Content-Type: application/json; charset=utf-8
+    },
+    Value: {
+      imported: 0,
+      duplicates: 0,
+      reconciled: {
+        window: 90d,
+        missing: 0,
+        backfilled: 0
+      }
+    }
+  }
+}

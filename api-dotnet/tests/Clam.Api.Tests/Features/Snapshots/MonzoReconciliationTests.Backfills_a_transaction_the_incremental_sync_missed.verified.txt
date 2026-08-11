@@ -1,0 +1,36 @@
+﻿{
+  Status: 200 OK,
+  Content: {
+    Headers: {
+      Content-Length: 401,
+      Content-Type: application/json; charset=utf-8
+    },
+    Value: {
+      id: cgen00000000000000000002,
+      ranAt: {Scrubbed},
+      window: 90d,
+      trigger: manual,
+      totalMissing: 1,
+      totalBackfilled: 1,
+      results: [
+        {
+          accountId: acc_retail,
+          accountType: uk_retail,
+          apiSettledCount: 1,
+          missingCount: 1,
+          backfilledCount: 1,
+          missing: [
+            {
+              id: tx_missed,
+              created: 2026-08-01T09:00:00.000Z,
+              amountPence: -1200,
+              description: Gails,
+              recovered: true
+            }
+          ],
+          error: null
+        }
+      ]
+    }
+  }
+}

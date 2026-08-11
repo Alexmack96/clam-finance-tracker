@@ -1,0 +1,16 @@
+﻿{
+  Status: 503 Service Unavailable,
+  Content: {
+    Headers: {
+      Content-Length: 207,
+      Content-Type: application/problem+json
+    },
+    Value: {
+      title: Service Unavailable,
+      status: 503,
+      detail: The stored PDF for this statement is missing from the volume,
+      instance: /api/admin/statements/cstmt0000000000000000001/file,
+      traceId: {Scrubbed}
+    }
+  }
+}

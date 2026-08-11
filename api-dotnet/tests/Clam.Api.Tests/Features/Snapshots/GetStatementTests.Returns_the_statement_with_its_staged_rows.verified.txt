@@ -1,0 +1,56 @@
+﻿{
+  Status: 200 OK,
+  Content: {
+    Headers: {
+      Content-Length: 1032,
+      Content-Type: application/json; charset=utf-8
+    },
+    Value: {
+      id: cstmt0000000000000000001,
+      bank: amex,
+      owner: Alex,
+      statementDate: February 2026,
+      originalName: amex-feb.pdf,
+      contentHash: a1b2c3d4e5f6,
+      byteSize: 20480,
+      storageKey: amex/Alex/February-2026-a1b2c3d4e5f6.pdf,
+      uploadedAt: {Scrubbed},
+      rowCount: 2,
+      reconciled: true,
+      stagedRows: 2,
+      transactions: 0,
+      rows: [
+        {
+          transactionId: amex_stmt_1,
+          transactionDate: 2026-02-10,
+          processDate: 2026-02-11,
+          description: PRET A MANGER,
+          amount: 4.85,
+          isCredit: false,
+          foreignCurrency: null,
+          foreignAmount: null,
+          statementDate: February 2026,
+          owner: Alex,
+          importedAt: {Scrubbed},
+          status: processed,
+          statementFileId: cstmt0000000000000000001
+        },
+        {
+          transactionId: amex_stmt_2,
+          transactionDate: 2026-02-12,
+          processDate: 2026-02-13,
+          description: UBER TRIP,
+          amount: 9.20,
+          isCredit: false,
+          foreignCurrency: null,
+          foreignAmount: null,
+          statementDate: February 2026,
+          owner: Alex,
+          importedAt: {Scrubbed},
+          status: pending,
+          statementFileId: cstmt0000000000000000001
+        }
+      ]
+    }
+  }
+}

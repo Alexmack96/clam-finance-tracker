@@ -1,0 +1,59 @@
+﻿{
+  Status: 200 OK,
+  Content: {
+    Headers: {
+      Content-Length: 586,
+      Content-Type: application/json; charset=utf-8
+    },
+    Value: {
+      month: August 2026,
+      utilities: [
+        {
+          id: ctest0000000000000001rent,
+          name: Rent,
+          color: #ef4444,
+          payments: {
+            Alex: [],
+            Casey: [],
+            Joint: [
+              {
+                amount: 1400,
+                date: 2026-08-03T00:00:00.000Z,
+                description: RENT
+              }
+            ]
+          },
+          totalThisMonth: 1400
+        },
+        {
+          id: ctest00000000000006water,
+          name: Water,
+          color: #0ea5e9,
+          payments: {
+            Alex: [
+              {
+                amount: 32.1,
+                date: 2026-08-03T00:00:00.000Z,
+                description: THAMES WATER
+              }
+            ],
+            Casey: [],
+            Joint: []
+          },
+          totalThisMonth: 32.1
+        },
+        {
+          id: ctest00000000000007wifi,
+          name: Wifi,
+          color: #8b5cf6,
+          payments: {
+            Alex: [],
+            Casey: [],
+            Joint: []
+          },
+          totalThisMonth: 0
+        }
+      ]
+    }
+  }
+}

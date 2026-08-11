@@ -1,0 +1,20 @@
+﻿{
+  Status: 400 Bad Request,
+  Content: {
+    Headers: {
+      Content-Length: 240,
+      Content-Type: application/problem+json
+    },
+    Value: {
+      title: One or more validation errors occurred.,
+      status: 400,
+      instance: /api/categories/ctest0000000000000001rent/merge/ctest0000000000000001rent,
+      errors: {
+        toId: [
+          Source and target categories must differ
+        ]
+      },
+      traceId: {Scrubbed}
+    }
+  }
+}

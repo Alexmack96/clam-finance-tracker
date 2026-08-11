@@ -1,0 +1,16 @@
+﻿{
+  Status: 409 Conflict,
+  Content: {
+    Headers: {
+      Content-Length: 197,
+      Content-Type: application/problem+json
+    },
+    Value: {
+      title: Conflict,
+      status: 409,
+      detail: "Rent" still has 1 transaction. Merge it into another category first.,
+      instance: /api/categories/ctest0000000000000001rent,
+      traceId: {Scrubbed}
+    }
+  }
+}

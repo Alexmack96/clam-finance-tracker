@@ -1,0 +1,29 @@
+﻿{
+  Status: 201 Created,
+  Content: {
+    Headers: {
+      Content-Length: 328,
+      Content-Type: application/json; charset=utf-8
+    },
+    Value: {
+      id: cgen00000000000000000001,
+      kind: Category,
+      position: 1,
+      joinOperator: AND,
+      bank: null,
+      categoryId: ctest0000000000000001rent,
+      bucket: null,
+      createdAt: {Scrubbed},
+      conditions: [
+        {
+          id: cgen00000000000000000002,
+          field: Description,
+          operator: Contains,
+          value: TESCO,
+          negate: false,
+          position: 0
+        }
+      ]
+    }
+  }
+}

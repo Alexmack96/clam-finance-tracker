@@ -19,10 +19,16 @@
     <PackageVersion Include="FastEndpoints" Version="8.2.0" />
     <PackageVersion Include="FastEndpoints.Swagger" Version="8.2.0" />
     <PackageVersion Include="Microsoft.Data.SqlClient" Version="7.0.2" />
+    <!-- Feature flags. The base package, not .AspNetCore: nothing here needs the
+         middleware or tag helpers, only IFeatureManager. -->
+    <PackageVersion Include="Microsoft.FeatureManagement" Version="4.6.0" />
   </ItemGroup>
 
   <ItemGroup Label="Security">
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.10" />
+    <!-- scrypt, for Better Auth-compatible password hashing. .NET ships PBKDF2
+         and nothing else; Better Auth's stored format is scrypt or nothing. -->
+    <PackageVersion Include="BouncyCastle.Cryptography" Version="2.7.0" />
   </ItemGroup>
 
   <ItemGroup Label="Results and health">
@@ -55,9 +61,13 @@
   </ItemGroup>
 
   <ItemGroup Label="Tests">
-    <PackageVersion Include="FastEndpoints.Testing" Version="8.2.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.10" />
+    <PackageVersion Include="Microsoft.Extensions.TimeProvider.Testing" Version="10.8.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.8.1" />
-    <PackageVersion Include="Shouldly" Version="4.3.0" />
+    <!-- Snapshot assertions. Verify.Http knows how to render an
+         HttpResponseMessage, which is what every test here asserts on. -->
+    <PackageVersion Include="Verify.Http" Version="7.5.1" />
+    <PackageVersion Include="Verify.XunitV3" Version="31.28.0" />
     <PackageVersion Include="xunit.v3" Version="3.2.2" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
   </ItemGroup>

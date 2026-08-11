@@ -1,0 +1,6 @@
+﻿{
+  Response: {
+    Status: 401 Unauthorized
+  },
+  Request: http://localhost/api/me
+}

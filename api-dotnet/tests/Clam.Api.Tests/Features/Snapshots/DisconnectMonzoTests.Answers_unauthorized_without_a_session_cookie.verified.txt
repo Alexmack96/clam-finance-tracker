@@ -1,0 +1,16 @@
+﻿{
+  Response: {
+    Status: 401 Unauthorized
+  },
+  Request: {
+    Method: POST,
+    Uri: http://localhost/api/admin/monzo/disconnect,
+    Content: {
+      Headers: {
+        Content-Length: 2,
+        Content-Type: application/json; charset=utf-8
+      },
+      Value: 
+    }
+  }
+}

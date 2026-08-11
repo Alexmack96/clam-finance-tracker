@@ -1,0 +1,16 @@
+﻿{
+  Status: 404 Not Found,
+  Content: {
+    Headers: {
+      Content-Length: 144,
+      Content-Type: application/problem+json
+    },
+    Value: {
+      title: Not Found,
+      status: 404,
+      detail: Investment account not found,
+      instance: /api/investments/accounts/nope,
+      traceId: {Scrubbed}
+    }
+  }
+}

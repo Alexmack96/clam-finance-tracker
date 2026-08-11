@@ -1,0 +1,16 @@
+﻿{
+  Status: 409 Conflict,
+  Content: {
+    Headers: {
+      Content-Length: 156,
+      Content-Type: application/problem+json
+    },
+    Value: {
+      title: Conflict,
+      status: 409,
+      detail: Alex already has an account named "Vanguard",
+      instance: /api/investments/accounts,
+      traceId: {Scrubbed}
+    }
+  }
+}

@@ -1,0 +1,14 @@
+﻿{
+  Response: {
+    Status: 204 No Content
+  },
+  Request: {
+    Method: DELETE,
+    Uri: {
+      Path: http://localhost/api/investments/snapshots/date/2026-01-31,
+      Query: {
+        owner: Alex
+      }
+    }
+  }
+}

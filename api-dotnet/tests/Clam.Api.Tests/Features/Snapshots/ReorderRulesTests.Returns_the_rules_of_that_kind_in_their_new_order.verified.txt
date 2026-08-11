@@ -1,0 +1,31 @@
+﻿{
+  Status: 200 OK,
+  Content: {
+    Headers: {
+      Content-Length: 330,
+      Content-Type: application/json; charset=utf-8
+    },
+    Value: [
+      {
+        id: crule0000000000000001cat,
+        kind: Category,
+        position: 0,
+        joinOperator: AND,
+        bank: null,
+        categoryId: ctest0000000000000001rent,
+        bucket: null,
+        createdAt: {Scrubbed},
+        conditions: [
+          {
+            id: ccond0000000000000001cat,
+            field: Description,
+            operator: Contains,
+            value: TESCO,
+            negate: false,
+            position: 0
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,16 @@
+﻿{
+  Status: 404 Not Found,
+  Content: {
+    Headers: {
+      Content-Length: 129,
+      Content-Type: application/problem+json
+    },
+    Value: {
+      title: Not Found,
+      status: 404,
+      detail: Transaction not found,
+      instance: /api/transactions/nope,
+      traceId: {Scrubbed}
+    }
+  }
+}

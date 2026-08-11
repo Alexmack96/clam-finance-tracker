@@ -1,0 +1,22 @@
+﻿{
+  Status: 200 OK,
+  Content: {
+    Headers: {
+      Content-Length: 245,
+      Content-Type: application/json; charset=utf-8
+    },
+    Value: {
+      id: ctab000000000000000settl,
+      person: Kit,
+      description: cinema,
+      amount: 99,
+      direction: TheyOwe,
+      status: Open,
+      dueDate: null,
+      settledAt: {Scrubbed},
+      note: null,
+      createdAt: {Scrubbed},
+      updatedAt: {Scrubbed}
+    }
+  }
+}

@@ -1,0 +1,13 @@
+﻿{
+  Status: 200 OK,
+  Content: {
+    Headers: {
+      Content-Length: 38,
+      Content-Type: application/json; charset=utf-8
+    },
+    Value: {
+      month: August 2026,
+      utilities: []
+    }
+  }
+}

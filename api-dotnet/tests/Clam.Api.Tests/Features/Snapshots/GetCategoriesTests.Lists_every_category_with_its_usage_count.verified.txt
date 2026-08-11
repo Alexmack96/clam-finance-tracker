@@ -1,0 +1,41 @@
+﻿{
+  Status: 200 OK,
+  Content: {
+    Headers: {
+      Content-Length: 446,
+      Content-Type: application/json; charset=utf-8
+    },
+    Value: [
+      {
+        id: ctest000000000000002groc,
+        name: Groceries,
+        color: #84cc16,
+        transactionCount: 1
+      },
+      {
+        id: ctest00000000000000003net,
+        name: Net,
+        color: #3b82f6,
+        transactionCount: 1
+      },
+      {
+        id: ctest0000000000000001rent,
+        name: Rent,
+        color: #ef4444,
+        transactionCount: 1
+      },
+      {
+        id: ctest0000000000000004sal,
+        name: Salary,
+        color: #16a34a,
+        transactionCount: 1
+      },
+      {
+        id: ctest000000000000005none,
+        name: Unused,
+        color: #000000,
+        transactionCount: 0
+      }
+    ]
+  }
+}

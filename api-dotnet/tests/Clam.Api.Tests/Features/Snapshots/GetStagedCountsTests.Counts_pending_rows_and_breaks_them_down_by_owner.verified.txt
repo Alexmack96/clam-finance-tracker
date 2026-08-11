@@ -1,0 +1,64 @@
+﻿{
+  Status: 200 OK,
+  Content: {
+    Headers: {
+      Content-Length: 538,
+      Content-Type: application/json; charset=utf-8
+    },
+    Value: {
+      monzo: {
+        pending: 0,
+        processed: 0,
+        skipped: 0,
+        errored: 0,
+        byOwner: null
+      },
+      amex: {
+        pending: 1,
+        processed: 0,
+        skipped: 0,
+        errored: 0,
+        byOwner: {
+          Alex: {
+            pending: 1
+          }
+        }
+      },
+      barclays: {
+        pending: 0,
+        processed: 0,
+        skipped: 0,
+        errored: 0,
+        byOwner: {}
+      },
+      santander: {
+        pending: 0,
+        processed: 0,
+        skipped: 0,
+        errored: 0,
+        byOwner: {}
+      },
+      hsbc: {
+        pending: 0,
+        processed: 0,
+        skipped: 0,
+        errored: 0,
+        byOwner: {}
+      },
+      sofi: {
+        pending: 0,
+        processed: 0,
+        skipped: 0,
+        errored: 0,
+        byOwner: {}
+      },
+      chase: {
+        pending: 0,
+        processed: 0,
+        skipped: 0,
+        errored: 0,
+        byOwner: {}
+      }
+    }
+  }
+}
