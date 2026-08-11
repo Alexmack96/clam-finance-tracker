@@ -20,9 +20,21 @@
       "program": "${workspaceFolder}",
       "command": "run",
       // Opens the dashboard in your default browser, login token included.
+      // The extension's own default for this is "none", which opens nothing.
       // Swap to "debugChrome" to also attach a JS debugger to the React client
       // and get breakpoints in .tsx; "integratedBrowser" keeps it inside VS Code.
-      "dashboardBrowser": "openExternalBrowser"
+      "dashboardBrowser": "openExternalBrowser",
+      // Belt and braces on top of launchSettings.json having a single HTTP
+      // profile. These pin the dashboard to HTTP no matter which profile the
+      // extension decides to use — it prefers an "https" profile when one
+      // exists, which is what produced ERR_HTTP2_INADEQUATE_TRANSPORT_SECURITY
+      // on :17158 in Chrome.
+      "env": {
+        "ASPIRE_ALLOW_UNSECURED_TRANSPORT": "true",
+        "ASPNETCORE_URLS": "http://localhost:15187",
+        "DOTNET_DASHBOARD_OTLP_ENDPOINT_URL": "http://localhost:19187",
+        "DOTNET_RESOURCE_SERVICE_ENDPOINT_URL": "http://localhost:20187"
+      }
     },
     {
       // For debugging the API in isolation. Skips Aspire entirely, so no

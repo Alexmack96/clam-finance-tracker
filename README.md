@@ -45,6 +45,14 @@ Set `"dashboardBrowser": "debugChrome"` in [.vscode/launch.json](.vscode/launch.
 
 `aspire.config.json` at the repo root points the CLI at the AppHost, so discovery works from anywhere in the tree.
 
+**The dashboard runs over plain HTTP on purpose, and `Clam.AppHost/Properties/launchSettings.json` has exactly one profile.**
+
+The usual `https` profile is a trap here: it serves the dashboard on `:17158`, Chrome ALPN-negotiates HTTP/2, then refuses the connection with `ERR_HTTP2_INADEQUATE_TRANSPORT_SECURITY` because the negotiated cipher doesn't clear its HTTP/2 bar. The ASP.NET dev certificate is present and trusted — that is *not* the cause, and re-running `dotnet dev-certs https --trust` won't help.
+
+Reordering the profiles is not enough: the Aspire VS Code extension picks an `https` profile **by preference, not by position**. Deleting it is what removes the choice. `.vscode/launch.json` also pins `ASPNETCORE_URLS` in its `env` block as a second line of defence.
+
+⚠️ **Never put `//` comments in `launchSettings.json`.** Unlike `appsettings.json` it is parsed as strict JSON; `dotnet run` rejects the whole profile and Aspire silently falls back to a random dashboard port. This has bitten twice.
+
 Prerequisites: .NET 10 SDK, SQL Server LocalDB, Bun. Apply the schema once with:
 
 ```bash
