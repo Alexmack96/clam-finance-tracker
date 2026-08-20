@@ -16,8 +16,6 @@ public sealed class PlanTransaction
     public string? ExternalId { get; set; }
     public string CategoryId { get; set; } = "";
     public Bucket? Bucket { get; set; }
-    public bool CategoryPinned { get; set; }
-    public bool BucketPinned { get; set; }
 }
 
 public sealed class PlanRow
@@ -33,7 +31,6 @@ public sealed class Plan
 {
     public required IReadOnlyList<PlanRow> Rows { get; init; }
     public int Scanned { get; init; }
-    public int PinnedSkipped { get; init; }
 }
 
 /// Feature-shared (tier 2): the preview and the apply slices are the same
@@ -62,7 +59,6 @@ public static class RulePlanner
         var bucketRules = rules.Where(r => r.Kind == RuleKind.Bucket).ToList();
 
         var rows = new List<PlanRow>();
-        var pinnedSkipped = 0;
 
         foreach (var tx in transactions)
         {
@@ -71,26 +67,17 @@ public static class RulePlanner
             var categoryWinner = RuleEngine.ResolveRule(basis, categoryRules);
             var proposedCategoryId = categoryWinner?.CategoryId;
 
-            // A pinned category is never replaced, so the bucket pass must see
-            // the category that will actually be in place — not the one a rule
-            // wanted.
-            var effectiveCategoryId = tx.CategoryPinned
-                ? tx.CategoryId
-                : proposedCategoryId ?? tx.CategoryId;
+            // The bucket pass must see the category that will actually be in
+            // place once the category pass has run, not the one on the row now.
+            var effectiveCategoryId = proposedCategoryId ?? tx.CategoryId;
 
             var bucketBasis = basis with { CategoryName = categoryNameById.GetValueOrDefault(effectiveCategoryId) };
             var bucketWinner = RuleEngine.ResolveRule(bucketBasis, bucketRules);
             var proposedBucket = bucketWinner?.Bucket;
 
-            var categoryWouldChange = proposedCategoryId is not null
+            var categoryChanges = proposedCategoryId is not null
                 && !string.Equals(proposedCategoryId, tx.CategoryId, StringComparison.Ordinal);
-            var bucketWouldChange = proposedBucket is not null && proposedBucket != tx.Bucket;
-
-            var categoryChanges = !tx.CategoryPinned && categoryWouldChange;
-            var bucketChanges = !tx.BucketPinned && bucketWouldChange;
-
-            if (tx.CategoryPinned && categoryWouldChange) pinnedSkipped++;
-            else if (tx.BucketPinned && bucketWouldChange) pinnedSkipped++;
+            var bucketChanges = proposedBucket is not null && proposedBucket != tx.Bucket;
 
             if (!categoryChanges && !bucketChanges) continue;
 
@@ -112,7 +99,7 @@ public static class RulePlanner
             });
         }
 
-        return new Plan { Rows = rows, Scanned = transactions.Count, PinnedSkipped = pinnedSkipped };
+        return new Plan { Rows = rows, Scanned = transactions.Count };
     }
 
     /// How many transactions a single rule's conditions accept, ignoring
@@ -157,7 +144,7 @@ public static class RulePlanner
             if (focus.Kind == RuleKind.Bucket)
             {
                 var proposed = RuleEngine.ResolveRule(basis, categoryRules)?.CategoryId;
-                var effective = tx.CategoryPinned ? tx.CategoryId : proposed ?? tx.CategoryId;
+                var effective = proposed ?? tx.CategoryId;
                 basis = basis with { CategoryName = categoryNameById.GetValueOrDefault(effective) };
             }
 

@@ -24,8 +24,6 @@ public sealed class TransactionRecord
     public Owner Owner { get; set; }
     public bool Reviewed { get; set; }
     public Bucket? Bucket { get; set; }
-    public bool CategoryPinned { get; set; }
-    public bool BucketPinned { get; set; }
     public decimal? OriginalAmount { get; set; }
     public string? OriginalCurrency { get; set; }
     public string? StatementFileId { get; set; }

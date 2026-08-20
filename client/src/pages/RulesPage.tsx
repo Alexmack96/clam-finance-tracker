@@ -9,17 +9,7 @@ import {
 } from "ag-grid-community";
 import type { ColDef } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
-import {
-  ArrowDown,
-  ArrowUp,
-  Ban,
-  Pencil,
-  Play,
-  Plus,
-  Trash2,
-  TriangleAlert,
-  X,
-} from "lucide-react";
+import { ArrowDown, ArrowUp, Pencil, Play, Plus, Trash2, TriangleAlert, X } from "lucide-react";
 import {
   BUCKETS,
   KNOWN_BANKS,
@@ -233,7 +223,7 @@ function RunAllCard({ onPreview }: { onPreview: (p: RulePreview) => void }) {
           <p className="text-sm font-medium">Run all rules</p>
           <p className="text-xs text-muted-foreground">
             Evaluates every rule over every transaction. You see exactly what changes before
-            anything is written — pinned fields are never touched.
+            anything is written.
           </p>
         </div>
         <Button
@@ -538,20 +528,26 @@ function RuleEditor({
   }
 
   const positives = draft.conditions.filter((c) => !c.negate).length;
+  const multi = draft.conditions.length > 1;
   const selectClass =
-    "h-8 rounded-md border border-input bg-background px-2 text-xs shrink-0 min-w-0";
+    "h-9 rounded-md border border-input bg-background px-2.5 text-sm shrink-0 min-w-0";
+  const label = "text-[11px] font-semibold uppercase tracking-wide text-muted-foreground";
 
   return (
-    <div ref={editorRef} className="rounded-md border border-primary/40 bg-muted/30 p-3 space-y-3">
-      <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-        {ruleId ? "Editing rule" : "New rule — added to the bottom, so it runs last"}
+    <div ref={editorRef} className="rounded-lg border border-primary/40 bg-card p-4 space-y-5">
+      <p className="text-sm font-medium">
+        {ruleId ? "Edit rule" : draft.kind === "Category" ? "New category rule" : "New bucket rule"}
+        {!ruleId && (
+          <span className="ml-2 text-xs font-normal text-muted-foreground">runs last</span>
+        )}
       </p>
+
+      {/* When ─────────────────────────────────────────────────────────────── */}
       <div className="space-y-2">
+        <p className={label}>When</p>
+
         {draft.conditions.map((c, i) => (
           <div key={i} className="flex flex-wrap items-center gap-2">
-            <span className="w-14 shrink-0 text-[10px] font-semibold text-muted-foreground">
-              {i === 0 ? "WHERE" : c.negate ? "EXCEPT" : draft.joinOperator}
-            </span>
             <select
               value={c.field}
               onChange={(e) => setCondition(i, { field: e.target.value as RuleField })}
@@ -564,8 +560,14 @@ function RuleEditor({
               ))}
             </select>
             <select
-              value={c.operator}
-              onChange={(e) => setCondition(i, { operator: e.target.value as RuleOperator })}
+              value={`${c.negate ? "!" : ""}${c.operator}`}
+              onChange={(e) => {
+                const v = e.target.value;
+                setCondition(i, {
+                  negate: v.startsWith("!"),
+                  operator: v.replace("!", "") as RuleOperator,
+                });
+              }}
               className={selectClass}
             >
               {RULE_OPERATORS.map((op) => (
@@ -573,130 +575,134 @@ function RuleEditor({
                   {RULE_OPERATOR_LABELS[op]}
                 </option>
               ))}
+              {RULE_OPERATORS.map((op) => (
+                <option key={`!${op}`} value={`!${op}`}>
+                  does not {RULE_OPERATOR_LABELS[op]}
+                </option>
+              ))}
             </select>
             <Input
               value={c.value}
               onChange={(e) => setCondition(i, { value: e.target.value })}
-              placeholder="value"
-              className="h-8 text-xs flex-1 min-w-[10rem]"
+              placeholder="text to match"
+              className="h-9 text-sm flex-1 min-w-[12rem]"
             />
-            <Button
-              type="button"
-              variant={c.negate ? "default" : "outline"}
-              size="sm"
-              className="h-8 shrink-0"
-              title={c.negate ? "Exclusion — click to make it a match" : "Turn into an exclusion"}
-              onClick={() => setCondition(i, { negate: !c.negate })}
-            >
-              <Ban className="h-3 w-3" />
-              not
-            </Button>
             <Button
               type="button"
               variant="ghost"
               size="icon"
-              className="h-8 w-8 shrink-0"
+              className="h-9 w-9 shrink-0 text-muted-foreground"
+              title="Remove condition"
               disabled={draft.conditions.length === 1}
               onClick={() =>
                 setDraft({ ...draft, conditions: draft.conditions.filter((_, idx) => idx !== i) })
               }
             >
-              <X className="h-3 w-3" />
+              <X className="h-4 w-4" />
             </Button>
           </div>
         ))}
+
+        <div className="flex flex-wrap items-center gap-3 pt-0.5">
+          <button
+            type="button"
+            className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+            onClick={() =>
+              setDraft({
+                ...draft,
+                conditions: [
+                  ...draft.conditions,
+                  { field: "Description", operator: "Contains", value: "", negate: false },
+                ],
+              })
+            }
+          >
+            <Plus className="h-3.5 w-3.5" />
+            Add condition
+          </button>
+
+          {/* Meaningless with a single condition, so it only appears once it
+              can actually change the outcome. */}
+          {multi && (
+            <label className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              Match
+              <select
+                value={draft.joinOperator}
+                onChange={(e) => setDraft({ ...draft, joinOperator: e.target.value as RuleJoin })}
+                className="h-7 rounded-md border border-input bg-background px-1.5 text-xs"
+              >
+                <option value="AND">all of them</option>
+                <option value="OR">any of them</option>
+              </select>
+            </label>
+          )}
+        </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-2">
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          className="h-8"
-          onClick={() =>
-            setDraft({
-              ...draft,
-              conditions: [
-                ...draft.conditions,
-                { field: "Description", operator: "Contains", value: "", negate: false },
-              ],
-            })
-          }
-        >
-          <Plus className="h-3 w-3" />
-          Condition
-        </Button>
-
-        <label className="flex items-center gap-1.5 text-xs">
-          <span className="text-muted-foreground">Match</span>
+      {/* Then ─────────────────────────────────────────────────────────────── */}
+      <div className="space-y-2 border-t border-border pt-4">
+        <p className={label}>Then</p>
+        <div className="flex flex-wrap items-center gap-2 text-sm">
+          <span className="text-muted-foreground">Set the</span>
+          <span>{draft.kind === "Category" ? "category" : "bucket"} to</span>
+          {draft.kind === "Category" ? (
+            <select
+              value={draft.categoryId ?? ""}
+              onChange={(e) => setDraft({ ...draft, categoryId: e.target.value || null })}
+              className={selectClass}
+            >
+              {categories.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <select
+              value={draft.bucket ?? ""}
+              onChange={(e) => setDraft({ ...draft, bucket: e.target.value as Bucket })}
+              className={selectClass}
+            >
+              {BUCKETS.map((b) => (
+                <option key={b} value={b}>
+                  {b}
+                </option>
+              ))}
+            </select>
+          )}
+          <span className="text-muted-foreground">for</span>
           <select
-            value={draft.joinOperator}
-            onChange={(e) => setDraft({ ...draft, joinOperator: e.target.value as RuleJoin })}
+            value={draft.bank ?? ""}
+            onChange={(e) =>
+              setDraft({
+                ...draft,
+                bank: e.target.value === "" ? null : (e.target.value as KnownBank),
+              })
+            }
             className={selectClass}
           >
-            <option value="AND">all conditions</option>
-            <option value="OR">any condition</option>
-          </select>
-        </label>
-
-        <select
-          value={draft.bank ?? ""}
-          onChange={(e) =>
-            setDraft({
-              ...draft,
-              bank: e.target.value === "" ? null : (e.target.value as KnownBank),
-            })
-          }
-          className={selectClass}
-        >
-          <option value="">Any bank</option>
-          {KNOWN_BANKS.map((b) => (
-            <option key={b} value={b}>
-              {BANK_LABELS[b]}
-            </option>
-          ))}
-        </select>
-
-        <span className="text-xs text-muted-foreground">→</span>
-
-        {draft.kind === "Category" ? (
-          <select
-            value={draft.categoryId ?? ""}
-            onChange={(e) => setDraft({ ...draft, categoryId: e.target.value || null })}
-            className={selectClass}
-          >
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-        ) : (
-          <select
-            value={draft.bucket ?? ""}
-            onChange={(e) => setDraft({ ...draft, bucket: e.target.value as Bucket })}
-            className={selectClass}
-          >
-            {BUCKETS.map((b) => (
+            <option value="">any bank</option>
+            {KNOWN_BANKS.map((b) => (
               <option key={b} value={b}>
-                {b}
+                {BANK_LABELS[b]}
               </option>
             ))}
           </select>
-        )}
+        </div>
       </div>
 
       {positives === 0 && (
         <p className="flex items-center gap-1.5 text-xs text-amber-600 dark:text-amber-400">
-          <TriangleAlert className="h-3 w-3" />A rule needs at least one condition that isn’t an
-          exclusion — otherwise it matches almost everything.
+          <TriangleAlert className="h-3.5 w-3.5 shrink-0" />
+          Needs at least one condition that isn’t a “does not” — otherwise it matches almost
+          everything.
         </p>
       )}
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 border-t border-border pt-4">
         <Button
           size="sm"
-          className="h-8"
+          className="h-9"
           disabled={save.isPending || positives === 0}
           onClick={() => save.mutate()}
         >
@@ -705,14 +711,14 @@ function RuleEditor({
         <Button
           size="sm"
           variant="outline"
-          className="h-8"
+          className="h-9"
           disabled={previewDraft.isPending || positives === 0}
           onClick={() => previewDraft.mutate()}
         >
-          <Play className="h-3 w-3" />
+          <Play className="h-3.5 w-3.5" />
           {previewDraft.isPending ? "Checking…" : "Dry run"}
         </Button>
-        <Button size="sm" variant="ghost" className="h-8" onClick={onDone}>
+        <Button size="sm" variant="ghost" className="h-9 ml-auto" onClick={onDone}>
           Cancel
         </Button>
       </div>
@@ -836,13 +842,6 @@ function PreviewDialog({
                   {preview.matched > 0 && preview.won === 0 && (
                     <> Nothing will change — move it up the list if it should take precedence.</>
                   )}
-                </p>
-              )}
-              {preview.pinnedSkipped > 0 && (
-                <p className="text-amber-600 dark:text-amber-400">
-                  {preview.pinnedSkipped.toLocaleString()} transaction
-                  {preview.pinnedSkipped === 1 ? " was" : "s were"} left alone because the field was
-                  pinned by a hand edit.
                 </p>
               )}
             </div>

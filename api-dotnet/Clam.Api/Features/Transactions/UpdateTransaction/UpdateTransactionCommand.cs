@@ -6,11 +6,6 @@ namespace Clam.Api.Features.Transactions.UpdateTransaction;
 
 public sealed class UpdateTransactionCommand(IDbConnectionFactory factory)
 {
-    /// Editing a field by hand pins it, so "Run all rules" can never stamp over
-    /// the choice. An explicit pin flag in the same request still wins — that is
-    /// how a row gets handed back to the rules engine, which is why the pin
-    /// columns COALESCE the request's flag *over* the implicit pin.
-    ///
     /// `@NoteProvided` rather than `COALESCE(@Note, [note])`, because clearing a
     /// note means sending null and COALESCE cannot tell that from an absent field.
     private const string UpdateSql = """
@@ -19,19 +14,14 @@ public sealed class UpdateTransactionCommand(IDbConnectionFactory factory)
                 [categoryId]     = COALESCE(@CategoryId, [categoryId]),
                 [owner]          = COALESCE(@Owner, [owner]),
                 [reviewed]       = COALESCE(@Reviewed, [reviewed]),
-                [bucket]         = COALESCE(@Bucket, [bucket]),
-                [categoryPinned] = COALESCE(@CategoryPinned,
-                                       CASE WHEN @CategoryId IS NOT NULL THEN 1 ELSE [categoryPinned] END),
-                [bucketPinned]   = COALESCE(@BucketPinned,
-                                       CASE WHEN @Bucket IS NOT NULL THEN 1 ELSE [bucketPinned] END)
+                [bucket]         = COALESCE(@Bucket, [bucket])
         WHERE   [id] = @Id;
         """;
 
     private const string SelectSql = """
         SELECT  t.[id], t.[description], t.[amount], t.[type], t.[date], t.[createdAt],
                 t.[categoryId], t.[externalId], t.[note], t.[owner], t.[reviewed],
-                t.[bucket], t.[categoryPinned], t.[bucketPinned], t.[originalAmount],
-                t.[originalCurrency], t.[statementFileId],
+                t.[bucket], t.[originalAmount], t.[originalCurrency], t.[statementFileId],
                 c.[id], c.[name], c.[color]
         FROM    [Transactions] t
         JOIN    [Categories] c ON c.[id] = t.[categoryId]
@@ -53,8 +43,6 @@ public sealed class UpdateTransactionCommand(IDbConnectionFactory factory)
             Owner = request.Owner?.ToString(),
             request.Reviewed,
             Bucket = request.Bucket?.ToString(),
-            request.CategoryPinned,
-            request.BucketPinned,
         };
 
         using var connection = await factory.OpenAsync(ct);

@@ -46,7 +46,7 @@ public class UpdateTransactionTests(ClamApiFactory api) : ApiTest(api)
     }
 
     [Fact]
-    public async Task Pins_the_category_when_it_is_set_by_hand()
+    public async Task Sets_the_category_when_it_is_sent()
     {
         await Given.SeededAsync();
         var response = await Patch($"/api/transactions/{Arrange.RentTransactionId}",
@@ -55,19 +55,10 @@ public class UpdateTransactionTests(ClamApiFactory api) : ApiTest(api)
     }
 
     [Fact]
-    public async Task Pins_the_bucket_when_it_is_set_by_hand()
+    public async Task Sets_the_bucket_when_it_is_sent()
     {
         await Given.SeededAsync();
         var response = await Patch($"/api/transactions/{Arrange.RentTransactionId}", new { bucket = "Wants" });
-        await Verify(response);
-    }
-
-    [Fact]
-    public async Task Lets_an_explicit_unpin_in_the_same_request_win()
-    {
-        await Given.SeededAsync();
-        var response = await Patch($"/api/transactions/{Arrange.RentTransactionId}",
-            new { categoryId = Arrange.GroceriesCategoryId, categoryPinned = false });
         await Verify(response);
     }
 

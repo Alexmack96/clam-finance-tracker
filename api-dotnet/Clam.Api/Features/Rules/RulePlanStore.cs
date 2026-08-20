@@ -10,7 +10,7 @@ public static class RulePlanStore
 {
     private const string PlanTransactionsSql = """
         SELECT  [id], [date], [description], [amount], [type], [externalId],
-                [categoryId], [bucket], [categoryPinned], [bucketPinned]
+                [categoryId], [bucket]
         FROM    [Transactions]
         ORDER BY [date] DESC;
         """;
@@ -39,8 +39,7 @@ public static class RulePlanStore
     }
 
     /// Writes a plan, grouped by target value so an 1800-row run is a handful of
-    /// statements rather than a row-at-a-time loop. Never touches the pin flags —
-    /// a pin is only ever set by a hand edit.
+    /// statements rather than a row-at-a-time loop.
     public static async Task<(int CategoryChanges, int BucketChanges)> ApplyPlanAsync(
         IDbConnection connection,
         Plan plan,

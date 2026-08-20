@@ -18,7 +18,8 @@ namespace Clam.Api.Features.Import.ImportAmex;
 public sealed class ImportAmexCommand(
     IDbConnectionFactory factory,
     IStatementStore store,
-    IIdGenerator ids)
+    IIdGenerator ids,
+    TimeProvider clock)
 {
     private const string Bank = "amex";
     private const string DefaultOwner = "Alex";
@@ -34,10 +35,10 @@ public sealed class ImportAmexCommand(
     private const string InsertStatementFileSql = """
         INSERT INTO [StatementFiles]
             ([id], [bank], [owner], [statementDate], [originalName], [contentHash],
-             [byteSize], [storageKey], [rowCount], [reconciled])
+             [byteSize], [storageKey], [uploadedAt], [rowCount], [reconciled])
         VALUES
             (@Id, @Bank, @Owner, @StatementDate, @OriginalName, @ContentHash,
-             @ByteSize, @StorageKey, @RowCount, 1);
+             @ByteSize, @StorageKey, @UploadedAt, @RowCount, 1);
         """;
 
     private const string InsertRowSql = """
@@ -139,6 +140,10 @@ public sealed class ImportAmexCommand(
                 ContentHash = contentHash,
                 ByteSize = pdf.Length,
                 StorageKey = storageKey,
+                // Stamped from the clock, not left to the column's SYSUTCDATETIME
+                // default: the duplicate-upload 409 prints this date back, so a
+                // default-stamped row makes that message change by the day.
+                UploadedAt = clock.GetUtcNow().UtcDateTime,
                 RowCount = parsed.Rows.Count,
             }, transaction, cancellationToken: ct));
 

@@ -2,7 +2,7 @@
   Status: 200 OK,
   Content: {
     Headers: {
-      Content-Length: 427,
+      Content-Length: 409,
       Content-Type: application/json; charset=utf-8
     },
     Value: {
@@ -25,7 +25,6 @@
       scanned: 4,
       categoryChanges: 1,
       bucketChanges: 1,
-      pinnedSkipped: 0,
       matched: 1,
       won: 1
     }

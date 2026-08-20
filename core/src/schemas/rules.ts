@@ -179,6 +179,4 @@ export type RulePreview = {
    */
   matched?: number;
   won?: number;
-  /** Rows skipped because the field was pinned by hand. */
-  pinnedSkipped: number;
 };

@@ -128,7 +128,6 @@ public sealed class PreviewRulesQuery(IDbConnectionFactory factory, TimeProvider
             Scanned = plan.Scanned,
             CategoryChanges = plan.Rows.Count(r => r.NextCategoryId is not null),
             BucketChanges = plan.Rows.Count(r => r.NextBucket is not null),
-            PinnedSkipped = plan.PinnedSkipped,
             Matched = matched,
             Won = won,
         };

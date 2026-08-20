@@ -35,7 +35,6 @@ public sealed class ApplyRulesCommand(IDbConnectionFactory factory)
             CategoryChanges = categoryChanges,
             BucketChanges = bucketChanges,
             Affected = plan.Rows.Count,
-            PinnedSkipped = plan.PinnedSkipped,
         });
     }
 }

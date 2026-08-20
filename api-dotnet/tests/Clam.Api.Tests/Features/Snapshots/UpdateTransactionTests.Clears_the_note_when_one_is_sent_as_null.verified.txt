@@ -2,7 +2,7 @@
   Status: 200 OK,
   Content: {
     Headers: {
-      Content-Length: 481,
+      Content-Length: 437,
       Content-Type: application/json; charset=utf-8
     },
     Value: {
@@ -18,8 +18,6 @@
       owner: Joint,
       reviewed: true,
       bucket: Needs,
-      categoryPinned: false,
-      bucketPinned: false,
       originalAmount: null,
       originalCurrency: null,
       statementFileId: null,

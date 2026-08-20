@@ -27,10 +27,6 @@ public sealed class UpdateTransactionRequest
     /// be flipped between the four — the client never sends null to clear it.
     public Bucket? Bucket { get; set; }
 
-    /// Explicit unpin — hands the field back to the rules engine.
-    public bool? CategoryPinned { get; set; }
-    public bool? BucketPinned { get; set; }
-
     /// True when the caller sent a `note` key at all, whatever its value.
     internal bool NoteProvided => Note.ValueKind != JsonValueKind.Undefined;
 

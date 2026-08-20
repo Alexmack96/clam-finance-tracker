@@ -61,7 +61,11 @@ One `Rule` model with an ordered list per kind, and a child `RuleCondition` tabl
   rather than replaying the plan.
 - **`Category.bucket` is dropped**, migrated into explicit Bucket rules.
 - **`Transaction.categoryPinned` / `bucketPinned`** are set when a field is
-  edited by hand; rules skip pinned fields.
+  edited by hand; rules skip pinned fields. **Reversed 2026-08-20** — both
+  columns are dropped and rules now rewrite every row they match. A pin was
+  invisible state that made a rule silently do nothing on the rows it was aimed
+  at; the dry run already shows what a run would change before it is written,
+  which is the protection the pin was standing in for.
 - **Buckets are assigned to income too.** The per-bank `income → bucket: null`
   gate is removed, so a refund nets against its Bucket — which 0001 described
   but never implemented. Scope a rule to expenses with a `Type` condition.

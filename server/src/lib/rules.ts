@@ -76,8 +76,6 @@ type PlanTransaction = {
   externalId: string | null;
   categoryId: string;
   bucket: string | null;
-  categoryPinned: boolean;
-  bucketPinned: boolean;
 };
 
 export type PlanRow = {
@@ -91,7 +89,6 @@ export type PlanRow = {
 export type Plan = {
   rows: PlanRow[];
   scanned: number;
-  pinnedSkipped: number;
 };
 
 /**
@@ -112,7 +109,6 @@ export function buildPlan(
   const bucketRules = rules.filter((r) => r.kind === "Bucket");
 
   const rows: PlanRow[] = [];
-  let pinnedSkipped = 0;
 
   for (const tx of transactions) {
     const base: MatchableTransaction = {
@@ -125,11 +121,9 @@ export function buildPlan(
     const categoryWinner = resolveRule(base, categoryRules);
     const proposedCategoryId = categoryWinner?.categoryId ?? null;
 
-    // A pinned category is never replaced, so the bucket pass must see the
-    // category that will actually be in place — not the one a rule wanted.
-    const effectiveCategoryId = tx.categoryPinned
-      ? tx.categoryId
-      : (proposedCategoryId ?? tx.categoryId);
+    // The bucket pass must see the category that will actually be in place
+    // once the category pass has run, not the one on the row now.
+    const effectiveCategoryId = proposedCategoryId ?? tx.categoryId;
 
     const bucketWinner = resolveRule(
       { ...base, categoryName: categoryNameById.get(effectiveCategoryId) ?? null },
@@ -137,16 +131,8 @@ export function buildPlan(
     );
     const proposedBucket = bucketWinner?.bucket ?? null;
 
-    const categoryChanges =
-      !tx.categoryPinned && proposedCategoryId !== null && proposedCategoryId !== tx.categoryId;
-    const bucketChanges =
-      !tx.bucketPinned && proposedBucket !== null && proposedBucket !== tx.bucket;
-
-    if (tx.categoryPinned && proposedCategoryId !== null && proposedCategoryId !== tx.categoryId) {
-      pinnedSkipped++;
-    } else if (tx.bucketPinned && proposedBucket !== null && proposedBucket !== tx.bucket) {
-      pinnedSkipped++;
-    }
+    const categoryChanges = proposedCategoryId !== null && proposedCategoryId !== tx.categoryId;
+    const bucketChanges = proposedBucket !== null && proposedBucket !== tx.bucket;
 
     if (!categoryChanges && !bucketChanges) continue;
 
@@ -166,7 +152,7 @@ export function buildPlan(
     });
   }
 
-  return { rows, scanned: transactions.length, pinnedSkipped };
+  return { rows, scanned: transactions.length };
 }
 
 /** How many transactions a single rule's conditions accept, ignoring precedence. */
@@ -218,7 +204,7 @@ export function countWins(
     let context = base;
     if (focus.kind === "Bucket") {
       const proposed = resolveRule(base, categoryRules)?.categoryId ?? null;
-      const effective = tx.categoryPinned ? tx.categoryId : (proposed ?? tx.categoryId);
+      const effective = proposed ?? tx.categoryId;
       context = { ...base, categoryName: categoryNameById.get(effective) ?? null };
     }
 
@@ -238,8 +224,6 @@ export async function loadPlanTransactions(): Promise<PlanTransaction[]> {
       externalId: true,
       categoryId: true,
       bucket: true,
-      categoryPinned: true,
-      bucketPinned: true,
     },
     orderBy: { date: "desc" },
   })) as PlanTransaction[];
@@ -276,15 +260,13 @@ export function toPreview(
     scanned: plan.scanned,
     categoryChanges: plan.rows.filter((r) => r.nextCategoryId !== null).length,
     bucketChanges: plan.rows.filter((r) => r.nextBucket !== null).length,
-    pinnedSkipped: plan.pinnedSkipped,
     ...(extra ?? {}),
   };
 }
 
 /**
  * Writes a plan, grouped by target value so a 1800-row run is a handful of
- * `updateMany`s rather than a row-at-a-time loop. Never touches the pin flags —
- * a pin is only ever set by a hand edit.
+ * `updateMany`s rather than a row-at-a-time loop.
  */
 export async function applyPlan(plan: Plan): Promise<{
   categoryChanges: number;

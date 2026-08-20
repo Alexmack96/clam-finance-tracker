@@ -17,8 +17,7 @@ public sealed class GetTransactionsQuery(IDbConnectionFactory factory)
     private const string Sql = """
         SELECT  t.[id], t.[description], t.[amount], t.[type], t.[date], t.[createdAt],
                 t.[categoryId], t.[externalId], t.[note], t.[owner], t.[reviewed],
-                t.[bucket], t.[categoryPinned], t.[bucketPinned], t.[originalAmount],
-                t.[originalCurrency], t.[statementFileId],
+                t.[bucket], t.[originalAmount], t.[originalCurrency], t.[statementFileId],
                 c.[id], c.[name], c.[color]
         FROM    [Transactions] t
         JOIN    [Categories] c ON c.[id] = t.[categoryId]

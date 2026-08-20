@@ -287,5 +287,5 @@ rulesRouter.post("/apply", async (req, res) => {
   // silently skipped. The counts come back so the client can report the truth.
   const plan = buildPlan(transactions, rules, categoryNameById, focusId);
   const result = await applyPlan(plan);
-  res.json({ ...result, affected: plan.rows.length, pinnedSkipped: plan.pinnedSkipped });
+  res.json({ ...result, affected: plan.rows.length });
 });

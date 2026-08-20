@@ -143,10 +143,6 @@ model Transaction {
   owner            Owner           @default(Joint)
   reviewed         Boolean         @default(false)
   bucket           Bucket? // 50/30/20 classification; null = uncategorised. Source of truth for savings maths
-  /// Set automatically when the field is edited by hand. Rules skip pinned
-  /// fields, so "Run all rules" can never stamp over a deliberate choice.
-  categoryPinned   Boolean         @default(false)
-  bucketPinned     Boolean         @default(false)
   originalAmount   Decimal?
   originalCurrency String?
   /// The statement PDF this transaction was derived from, where one is known.

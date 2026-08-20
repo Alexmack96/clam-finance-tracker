@@ -7906,8 +7906,6 @@ export namespace Prisma {
     owner: $Enums.Owner | null
     reviewed: boolean | null
     bucket: $Enums.Bucket | null
-    categoryPinned: boolean | null
-    bucketPinned: boolean | null
     originalAmount: Decimal | null
     originalCurrency: string | null
     statementFileId: string | null
@@ -7926,8 +7924,6 @@ export namespace Prisma {
     owner: $Enums.Owner | null
     reviewed: boolean | null
     bucket: $Enums.Bucket | null
-    categoryPinned: boolean | null
-    bucketPinned: boolean | null
     originalAmount: Decimal | null
     originalCurrency: string | null
     statementFileId: string | null
@@ -7946,8 +7942,6 @@ export namespace Prisma {
     owner: number
     reviewed: number
     bucket: number
-    categoryPinned: number
-    bucketPinned: number
     originalAmount: number
     originalCurrency: number
     statementFileId: number
@@ -7978,8 +7972,6 @@ export namespace Prisma {
     owner?: true
     reviewed?: true
     bucket?: true
-    categoryPinned?: true
-    bucketPinned?: true
     originalAmount?: true
     originalCurrency?: true
     statementFileId?: true
@@ -7998,8 +7990,6 @@ export namespace Prisma {
     owner?: true
     reviewed?: true
     bucket?: true
-    categoryPinned?: true
-    bucketPinned?: true
     originalAmount?: true
     originalCurrency?: true
     statementFileId?: true
@@ -8018,8 +8008,6 @@ export namespace Prisma {
     owner?: true
     reviewed?: true
     bucket?: true
-    categoryPinned?: true
-    bucketPinned?: true
     originalAmount?: true
     originalCurrency?: true
     statementFileId?: true
@@ -8125,8 +8113,6 @@ export namespace Prisma {
     owner: $Enums.Owner
     reviewed: boolean
     bucket: $Enums.Bucket | null
-    categoryPinned: boolean
-    bucketPinned: boolean
     originalAmount: Decimal | null
     originalCurrency: string | null
     statementFileId: string | null
@@ -8164,8 +8150,6 @@ export namespace Prisma {
     owner?: boolean
     reviewed?: boolean
     bucket?: boolean
-    categoryPinned?: boolean
-    bucketPinned?: boolean
     originalAmount?: boolean
     originalCurrency?: boolean
     statementFileId?: boolean
@@ -8186,8 +8170,6 @@ export namespace Prisma {
     owner?: boolean
     reviewed?: boolean
     bucket?: boolean
-    categoryPinned?: boolean
-    bucketPinned?: boolean
     originalAmount?: boolean
     originalCurrency?: boolean
     statementFileId?: boolean
@@ -8208,8 +8190,6 @@ export namespace Prisma {
     owner?: boolean
     reviewed?: boolean
     bucket?: boolean
-    categoryPinned?: boolean
-    bucketPinned?: boolean
     originalAmount?: boolean
     originalCurrency?: boolean
     statementFileId?: boolean
@@ -8230,14 +8210,12 @@ export namespace Prisma {
     owner?: boolean
     reviewed?: boolean
     bucket?: boolean
-    categoryPinned?: boolean
-    bucketPinned?: boolean
     originalAmount?: boolean
     originalCurrency?: boolean
     statementFileId?: boolean
   }
 
-  export type TransactionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "description" | "amount" | "type" | "date" | "createdAt" | "categoryId" | "externalId" | "note" | "owner" | "reviewed" | "bucket" | "categoryPinned" | "bucketPinned" | "originalAmount" | "originalCurrency" | "statementFileId", ExtArgs["result"]["transaction"]>
+  export type TransactionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "description" | "amount" | "type" | "date" | "createdAt" | "categoryId" | "externalId" | "note" | "owner" | "reviewed" | "bucket" | "originalAmount" | "originalCurrency" | "statementFileId", ExtArgs["result"]["transaction"]>
   export type TransactionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     category?: boolean | CategoryDefaultArgs<ExtArgs>
     statementFile?: boolean | Transaction$statementFileArgs<ExtArgs>
@@ -8270,12 +8248,6 @@ export namespace Prisma {
       owner: $Enums.Owner
       reviewed: boolean
       bucket: $Enums.Bucket | null
-      /**
-       * Set automatically when the field is edited by hand. Rules skip pinned
-       * fields, so "Run all rules" can never stamp over a deliberate choice.
-       */
-      categoryPinned: boolean
-      bucketPinned: boolean
       originalAmount: Prisma.Decimal | null
       originalCurrency: string | null
       /**
@@ -8721,8 +8693,6 @@ export namespace Prisma {
     readonly owner: FieldRef<"Transaction", 'Owner'>
     readonly reviewed: FieldRef<"Transaction", 'Boolean'>
     readonly bucket: FieldRef<"Transaction", 'Bucket'>
-    readonly categoryPinned: FieldRef<"Transaction", 'Boolean'>
-    readonly bucketPinned: FieldRef<"Transaction", 'Boolean'>
     readonly originalAmount: FieldRef<"Transaction", 'Decimal'>
     readonly originalCurrency: FieldRef<"Transaction", 'String'>
     readonly statementFileId: FieldRef<"Transaction", 'String'>
@@ -31323,8 +31293,6 @@ export namespace Prisma {
     owner: 'owner',
     reviewed: 'reviewed',
     bucket: 'bucket',
-    categoryPinned: 'categoryPinned',
-    bucketPinned: 'bucketPinned',
     originalAmount: 'originalAmount',
     originalCurrency: 'originalCurrency',
     statementFileId: 'statementFileId'
@@ -32059,8 +32027,6 @@ export namespace Prisma {
     owner?: EnumOwnerFilter<"Transaction"> | $Enums.Owner
     reviewed?: BoolFilter<"Transaction"> | boolean
     bucket?: EnumBucketNullableFilter<"Transaction"> | $Enums.Bucket | null
-    categoryPinned?: BoolFilter<"Transaction"> | boolean
-    bucketPinned?: BoolFilter<"Transaction"> | boolean
     originalAmount?: DecimalNullableFilter<"Transaction"> | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: StringNullableFilter<"Transaction"> | string | null
     statementFileId?: StringNullableFilter<"Transaction"> | string | null
@@ -32081,8 +32047,6 @@ export namespace Prisma {
     owner?: SortOrder
     reviewed?: SortOrder
     bucket?: SortOrderInput | SortOrder
-    categoryPinned?: SortOrder
-    bucketPinned?: SortOrder
     originalAmount?: SortOrderInput | SortOrder
     originalCurrency?: SortOrderInput | SortOrder
     statementFileId?: SortOrderInput | SortOrder
@@ -32106,8 +32070,6 @@ export namespace Prisma {
     owner?: EnumOwnerFilter<"Transaction"> | $Enums.Owner
     reviewed?: BoolFilter<"Transaction"> | boolean
     bucket?: EnumBucketNullableFilter<"Transaction"> | $Enums.Bucket | null
-    categoryPinned?: BoolFilter<"Transaction"> | boolean
-    bucketPinned?: BoolFilter<"Transaction"> | boolean
     originalAmount?: DecimalNullableFilter<"Transaction"> | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: StringNullableFilter<"Transaction"> | string | null
     statementFileId?: StringNullableFilter<"Transaction"> | string | null
@@ -32128,8 +32090,6 @@ export namespace Prisma {
     owner?: SortOrder
     reviewed?: SortOrder
     bucket?: SortOrderInput | SortOrder
-    categoryPinned?: SortOrder
-    bucketPinned?: SortOrder
     originalAmount?: SortOrderInput | SortOrder
     originalCurrency?: SortOrderInput | SortOrder
     statementFileId?: SortOrderInput | SortOrder
@@ -32156,8 +32116,6 @@ export namespace Prisma {
     owner?: EnumOwnerWithAggregatesFilter<"Transaction"> | $Enums.Owner
     reviewed?: BoolWithAggregatesFilter<"Transaction"> | boolean
     bucket?: EnumBucketNullableWithAggregatesFilter<"Transaction"> | $Enums.Bucket | null
-    categoryPinned?: BoolWithAggregatesFilter<"Transaction"> | boolean
-    bucketPinned?: BoolWithAggregatesFilter<"Transaction"> | boolean
     originalAmount?: DecimalNullableWithAggregatesFilter<"Transaction"> | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: StringNullableWithAggregatesFilter<"Transaction"> | string | null
     statementFileId?: StringNullableWithAggregatesFilter<"Transaction"> | string | null
@@ -34020,8 +33978,6 @@ export namespace Prisma {
     owner?: $Enums.Owner
     reviewed?: boolean
     bucket?: $Enums.Bucket | null
-    categoryPinned?: boolean
-    bucketPinned?: boolean
     originalAmount?: Decimal | DecimalJsLike | number | string | null
     originalCurrency?: string | null
     category: CategoryCreateNestedOneWithoutTransactionsInput
@@ -34041,8 +33997,6 @@ export namespace Prisma {
     owner?: $Enums.Owner
     reviewed?: boolean
     bucket?: $Enums.Bucket | null
-    categoryPinned?: boolean
-    bucketPinned?: boolean
     originalAmount?: Decimal | DecimalJsLike | number | string | null
     originalCurrency?: string | null
     statementFileId?: string | null
@@ -34060,8 +34014,6 @@ export namespace Prisma {
     owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
     reviewed?: BoolFieldUpdateOperationsInput | boolean
     bucket?: NullableEnumBucketFieldUpdateOperationsInput | $Enums.Bucket | null
-    categoryPinned?: BoolFieldUpdateOperationsInput | boolean
-    bucketPinned?: BoolFieldUpdateOperationsInput | boolean
     originalAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
     category?: CategoryUpdateOneRequiredWithoutTransactionsNestedInput
@@ -34081,8 +34033,6 @@ export namespace Prisma {
     owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
     reviewed?: BoolFieldUpdateOperationsInput | boolean
     bucket?: NullableEnumBucketFieldUpdateOperationsInput | $Enums.Bucket | null
-    categoryPinned?: BoolFieldUpdateOperationsInput | boolean
-    bucketPinned?: BoolFieldUpdateOperationsInput | boolean
     originalAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
     statementFileId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -34101,8 +34051,6 @@ export namespace Prisma {
     owner?: $Enums.Owner
     reviewed?: boolean
     bucket?: $Enums.Bucket | null
-    categoryPinned?: boolean
-    bucketPinned?: boolean
     originalAmount?: Decimal | DecimalJsLike | number | string | null
     originalCurrency?: string | null
     statementFileId?: string | null
@@ -34120,8 +34068,6 @@ export namespace Prisma {
     owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
     reviewed?: BoolFieldUpdateOperationsInput | boolean
     bucket?: NullableEnumBucketFieldUpdateOperationsInput | $Enums.Bucket | null
-    categoryPinned?: BoolFieldUpdateOperationsInput | boolean
-    bucketPinned?: BoolFieldUpdateOperationsInput | boolean
     originalAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
   }
@@ -34139,8 +34085,6 @@ export namespace Prisma {
     owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
     reviewed?: BoolFieldUpdateOperationsInput | boolean
     bucket?: NullableEnumBucketFieldUpdateOperationsInput | $Enums.Bucket | null
-    categoryPinned?: BoolFieldUpdateOperationsInput | boolean
-    bucketPinned?: BoolFieldUpdateOperationsInput | boolean
     originalAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
     statementFileId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -36411,8 +36355,6 @@ export namespace Prisma {
     owner?: SortOrder
     reviewed?: SortOrder
     bucket?: SortOrder
-    categoryPinned?: SortOrder
-    bucketPinned?: SortOrder
     originalAmount?: SortOrder
     originalCurrency?: SortOrder
     statementFileId?: SortOrder
@@ -36436,8 +36378,6 @@ export namespace Prisma {
     owner?: SortOrder
     reviewed?: SortOrder
     bucket?: SortOrder
-    categoryPinned?: SortOrder
-    bucketPinned?: SortOrder
     originalAmount?: SortOrder
     originalCurrency?: SortOrder
     statementFileId?: SortOrder
@@ -36456,8 +36396,6 @@ export namespace Prisma {
     owner?: SortOrder
     reviewed?: SortOrder
     bucket?: SortOrder
-    categoryPinned?: SortOrder
-    bucketPinned?: SortOrder
     originalAmount?: SortOrder
     originalCurrency?: SortOrder
     statementFileId?: SortOrder
@@ -38779,8 +38717,6 @@ export namespace Prisma {
     owner?: $Enums.Owner
     reviewed?: boolean
     bucket?: $Enums.Bucket | null
-    categoryPinned?: boolean
-    bucketPinned?: boolean
     originalAmount?: Decimal | DecimalJsLike | number | string | null
     originalCurrency?: string | null
     statementFile?: StatementFileCreateNestedOneWithoutTransactionsInput
@@ -38798,8 +38734,6 @@ export namespace Prisma {
     owner?: $Enums.Owner
     reviewed?: boolean
     bucket?: $Enums.Bucket | null
-    categoryPinned?: boolean
-    bucketPinned?: boolean
     originalAmount?: Decimal | DecimalJsLike | number | string | null
     originalCurrency?: string | null
     statementFileId?: string | null
@@ -38877,8 +38811,6 @@ export namespace Prisma {
     owner?: EnumOwnerFilter<"Transaction"> | $Enums.Owner
     reviewed?: BoolFilter<"Transaction"> | boolean
     bucket?: EnumBucketNullableFilter<"Transaction"> | $Enums.Bucket | null
-    categoryPinned?: BoolFilter<"Transaction"> | boolean
-    bucketPinned?: BoolFilter<"Transaction"> | boolean
     originalAmount?: DecimalNullableFilter<"Transaction"> | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: StringNullableFilter<"Transaction"> | string | null
     statementFileId?: StringNullableFilter<"Transaction"> | string | null
@@ -39245,8 +39177,6 @@ export namespace Prisma {
     owner?: $Enums.Owner
     reviewed?: boolean
     bucket?: $Enums.Bucket | null
-    categoryPinned?: boolean
-    bucketPinned?: boolean
     originalAmount?: Decimal | DecimalJsLike | number | string | null
     originalCurrency?: string | null
     category: CategoryCreateNestedOneWithoutTransactionsInput
@@ -39265,8 +39195,6 @@ export namespace Prisma {
     owner?: $Enums.Owner
     reviewed?: boolean
     bucket?: $Enums.Bucket | null
-    categoryPinned?: boolean
-    bucketPinned?: boolean
     originalAmount?: Decimal | DecimalJsLike | number | string | null
     originalCurrency?: string | null
   }
@@ -39752,8 +39680,6 @@ export namespace Prisma {
     owner?: $Enums.Owner
     reviewed?: boolean
     bucket?: $Enums.Bucket | null
-    categoryPinned?: boolean
-    bucketPinned?: boolean
     originalAmount?: Decimal | DecimalJsLike | number | string | null
     originalCurrency?: string | null
     statementFileId?: string | null
@@ -39781,8 +39707,6 @@ export namespace Prisma {
     owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
     reviewed?: BoolFieldUpdateOperationsInput | boolean
     bucket?: NullableEnumBucketFieldUpdateOperationsInput | $Enums.Bucket | null
-    categoryPinned?: BoolFieldUpdateOperationsInput | boolean
-    bucketPinned?: BoolFieldUpdateOperationsInput | boolean
     originalAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
     statementFile?: StatementFileUpdateOneWithoutTransactionsNestedInput
@@ -39800,8 +39724,6 @@ export namespace Prisma {
     owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
     reviewed?: BoolFieldUpdateOperationsInput | boolean
     bucket?: NullableEnumBucketFieldUpdateOperationsInput | $Enums.Bucket | null
-    categoryPinned?: BoolFieldUpdateOperationsInput | boolean
-    bucketPinned?: BoolFieldUpdateOperationsInput | boolean
     originalAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
     statementFileId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -39819,8 +39741,6 @@ export namespace Prisma {
     owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
     reviewed?: BoolFieldUpdateOperationsInput | boolean
     bucket?: NullableEnumBucketFieldUpdateOperationsInput | $Enums.Bucket | null
-    categoryPinned?: BoolFieldUpdateOperationsInput | boolean
-    bucketPinned?: BoolFieldUpdateOperationsInput | boolean
     originalAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
     statementFileId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -39922,8 +39842,6 @@ export namespace Prisma {
     owner?: $Enums.Owner
     reviewed?: boolean
     bucket?: $Enums.Bucket | null
-    categoryPinned?: boolean
-    bucketPinned?: boolean
     originalAmount?: Decimal | DecimalJsLike | number | string | null
     originalCurrency?: string | null
   }
@@ -39985,8 +39903,6 @@ export namespace Prisma {
     owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
     reviewed?: BoolFieldUpdateOperationsInput | boolean
     bucket?: NullableEnumBucketFieldUpdateOperationsInput | $Enums.Bucket | null
-    categoryPinned?: BoolFieldUpdateOperationsInput | boolean
-    bucketPinned?: BoolFieldUpdateOperationsInput | boolean
     originalAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
     category?: CategoryUpdateOneRequiredWithoutTransactionsNestedInput
@@ -40005,8 +39921,6 @@ export namespace Prisma {
     owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
     reviewed?: BoolFieldUpdateOperationsInput | boolean
     bucket?: NullableEnumBucketFieldUpdateOperationsInput | $Enums.Bucket | null
-    categoryPinned?: BoolFieldUpdateOperationsInput | boolean
-    bucketPinned?: BoolFieldUpdateOperationsInput | boolean
     originalAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
   }
@@ -40024,8 +39938,6 @@ export namespace Prisma {
     owner?: EnumOwnerFieldUpdateOperationsInput | $Enums.Owner
     reviewed?: BoolFieldUpdateOperationsInput | boolean
     bucket?: NullableEnumBucketFieldUpdateOperationsInput | $Enums.Bucket | null
-    categoryPinned?: BoolFieldUpdateOperationsInput | boolean
-    bucketPinned?: BoolFieldUpdateOperationsInput | boolean
     originalAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     originalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
   }

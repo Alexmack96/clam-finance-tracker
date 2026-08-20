@@ -8,5 +8,4 @@ public sealed class ApplyRulesResponse
     public int CategoryChanges { get; set; }
     public int BucketChanges { get; set; }
     public int Affected { get; set; }
-    public int PinnedSkipped { get; set; }
 }

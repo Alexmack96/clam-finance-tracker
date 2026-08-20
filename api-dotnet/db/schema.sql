@@ -100,8 +100,6 @@ CREATE TABLE [Transactions] (
     [owner]            NVARCHAR(10)   NOT NULL CONSTRAINT [DF_Transactions_owner] DEFAULT 'Joint',
     [reviewed]         BIT            NOT NULL CONSTRAINT [DF_Transactions_reviewed] DEFAULT 0,
     [bucket]           NVARCHAR(10)   NULL,
-    [categoryPinned]   BIT            NOT NULL CONSTRAINT [DF_Transactions_categoryPinned] DEFAULT 0,
-    [bucketPinned]     BIT            NOT NULL CONSTRAINT [DF_Transactions_bucketPinned] DEFAULT 0,
     [originalAmount]   DECIMAL(18, 2) NULL,
     [originalCurrency] NVARCHAR(10)   NULL,
     [statementFileId]  NVARCHAR(30)   NULL,

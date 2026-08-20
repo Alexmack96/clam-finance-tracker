@@ -207,23 +207,6 @@ public class ApplyRulesTests(ClamApiFactory api) : ApiTest(api)
         await Verify(response);
     }
 
-    /// The Tesco row's category is pinned by hand, so the rule that wants to
-    /// move it has to report a skip rather than a change.
-    private async Task TheTescoRowsCategoryIsPinned()
-    {
-        await Given.SeededWithRulesAsync();
-        await Patch($"/api/transactions/{Arrange.GroceriesTransactionId}",
-            new { categoryId = Arrange.GroceriesCategoryId });
-    }
-
-    [Fact]
-    public async Task Counts_a_pinned_field_as_skipped_rather_than_rewritten()
-    {
-        await TheTescoRowsCategoryIsPinned();
-        var response = await Post("/api/rules/apply", new { scope = "all" });
-        await Verify(response);
-    }
-
     [Fact]
     public async Task Refuses_to_apply_a_draft()
     {

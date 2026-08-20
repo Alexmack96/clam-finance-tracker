@@ -31,12 +31,10 @@ public sealed class SeedDataCommand(IDbConnectionFactory factory, TimeProvider c
     private const string InsertTransactionSql = """
         INSERT INTO [Transactions]
             ([id], [description], [amount], [type], [date], [createdAt], [categoryId],
-             [externalId], [note], [owner], [reviewed], [bucket], [categoryPinned],
-             [bucketPinned], [originalAmount], [originalCurrency], [statementFileId])
+             [externalId], [note], [owner], [reviewed], [bucket], [originalAmount], [originalCurrency], [statementFileId])
         VALUES
             (@id, @description, @amount, @type, @date, @createdAt, @categoryId,
-             @externalId, @note, @owner, @reviewed, @bucket, @categoryPinned,
-             @bucketPinned, @originalAmount, @originalCurrency, @statementFileId);
+             @externalId, @note, @owner, @reviewed, @bucket, @originalAmount, @originalCurrency, @statementFileId);
         """;
 
     public async Task<Result<SeedDataResponse>> ExecuteAsync(int transactionCount, CancellationToken ct)
@@ -93,8 +91,6 @@ public sealed class SeedDataCommand(IDbConnectionFactory factory, TimeProvider c
                 owner = owner.ToString(),
                 reviewed = faker.Random.Bool(0.6f),
                 bucket = category.Bucket.ToString(),
-                categoryPinned = faker.Random.Bool(0.1f),
-                bucketPinned = faker.Random.Bool(0.1f),
                 originalAmount = (decimal?)null,
                 originalCurrency = (string?)null,
                 statementFileId = (string?)null,

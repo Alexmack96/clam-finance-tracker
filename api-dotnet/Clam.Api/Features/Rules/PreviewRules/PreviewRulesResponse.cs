@@ -40,9 +40,6 @@ public sealed class PreviewRulesResponse
     public int CategoryChanges { get; set; }
     public int BucketChanges { get; set; }
 
-    /// Rows skipped because the field was pinned by hand.
-    public int PinnedSkipped { get; set; }
-
     /// Single-rule previews only, and absent rather than zero on a whole-set
     /// preview — the Express route spreads them in, so the key is simply not
     /// there. `Matched` counts every transaction the rule's conditions accept;

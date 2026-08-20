@@ -167,8 +167,6 @@ exports.Prisma.TransactionScalarFieldEnum = {
   owner: 'owner',
   reviewed: 'reviewed',
   bucket: 'bucket',
-  categoryPinned: 'categoryPinned',
-  bucketPinned: 'bucketPinned',
   originalAmount: 'originalAmount',
   originalCurrency: 'originalCurrency',
   statementFileId: 'statementFileId'

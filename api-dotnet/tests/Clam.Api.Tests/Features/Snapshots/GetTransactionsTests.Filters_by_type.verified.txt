@@ -2,7 +2,7 @@
   Status: 200 OK,
   Content: {
     Headers: {
-      Content-Length: 1015,
+      Content-Length: 927,
       Content-Type: application/json; charset=utf-8
     },
     Value: [
@@ -19,8 +19,6 @@
         owner: Casey,
         reviewed: true,
         bucket: Ignore,
-        categoryPinned: false,
-        bucketPinned: false,
         originalAmount: null,
         originalCurrency: null,
         statementFileId: null,
@@ -43,8 +41,6 @@
         owner: Alex,
         reviewed: true,
         bucket: Ignore,
-        categoryPinned: false,
-        bucketPinned: false,
         originalAmount: null,
         originalCurrency: null,
         statementFileId: null,
