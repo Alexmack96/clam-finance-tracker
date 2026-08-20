@@ -1,0 +1,165 @@
+﻿{
+  StatementDate: 10 March to 9 April 2026,
+  RowCount: 21,
+  Rows: [
+    {
+      TransactionId: 99d59af84a8b1a71,
+      Date: 2026-03-11,
+      PaymentType: BP,
+      Description: Alex Monzo March groceries,
+      MoneyOut: 300.00,
+      Balance: 10,183.50
+    },
+    {
+      TransactionId: 7dd932d1cd4de4eb,
+      Date: 2026-03-12,
+      PaymentType: BP,
+      Description: Alex Monzo March part 2,
+      MoneyOut: 300.00,
+      Balance: 9,883.50
+    },
+    {
+      TransactionId: 1e3ad43d14299837,
+      Date: 2026-03-18,
+      PaymentType: OBP,
+      Description: AMERICAN EXP 3773 PB9057******92328,
+      MoneyOut: 1,971.15
+    },
+    {
+      TransactionId: 3a0de096f0d55ffe,
+      Date: 2026-03-18,
+      PaymentType: BP,
+      Description: 2MB Management Lim 13.6 Terrace Rent,
+      MoneyOut: 100.00,
+      Balance: 7,812.35
+    },
+    {
+      TransactionId: e78aacfe7b2efba6,
+      Date: 2026-03-22,
+      PaymentType: CR,
+      Description: ALEXANDER MACKINTO food - groceries,
+      MoneyIn: 12.50,
+      Balance: 7,824.85
+    },
+    {
+      TransactionId: 1bbb4a5d07ff1d34,
+      Date: 2026-03-23,
+      PaymentType: VIS,
+      Description: BOOTS ONLINE DOCTO NOTTINGHAM,
+      MoneyOut: 45.00,
+      Balance: 7,779.85
+    },
+    {
+      TransactionId: e1c9087085b449dc,
+      Date: 2026-03-25,
+      PaymentType: DD,
+      Description: SKY TV,
+      MoneyOut: 51.00,
+      Balance: 7,728.85
+    },
+    {
+      TransactionId: 0f98b57579651c45,
+      Date: 2026-03-30,
+      PaymentType: DD,
+      Description: OCTOPUS ENERGY,
+      MoneyOut: 50.29
+    },
+    {
+      TransactionId: 0966b559a2f93317,
+      Date: 2026-03-30,
+      PaymentType: SO,
+      Description: CHASE EVANS FLAT 205 RENT,
+      MoneyOut: 2,730.00,
+      Balance: 4,948.56
+    },
+    {
+      TransactionId: 36984bc9ff82dc20,
+      Date: 2026-03-31,
+      PaymentType: CR,
+      Description: BLOOM LP WAGES,
+      MoneyIn: 6,014.82,
+      Balance: 10,963.38
+    },
+    {
+      TransactionId: 0dbab9c9a973218c,
+      Date: 2026-04-01,
+      PaymentType: DD,
+      Description: NUFFIELD HEALTH,
+      MoneyOut: 79.50
+    },
+    {
+      TransactionId: b6b7d7a5b785e47f,
+      Date: 2026-04-01,
+      PaymentType: DD,
+      Description: TV LICENCE MBP,
+      MoneyOut: 34.90
+    },
+    {
+      TransactionId: 37a759cd60da8342,
+      Date: 2026-04-01,
+      PaymentType: VIS,
+      Description: INT'L 0037007562 WELLS FARGO BANK C 800-869-3557 USD 164.73 @1.3169 Visa Rate,
+      MoneyOut: 125.08
+    },
+    {
+      TransactionId: 95db033e5cdb384a,
+      Date: 2026-04-01,
+      PaymentType: DR,
+      Description: Non-Sterling Transaction Fee,
+      MoneyOut: 3.43,
+      Balance: 10,720.47
+    },
+    {
+      TransactionId: 2ef15768d74a6761,
+      Date: 2026-04-06,
+      PaymentType: OBP,
+      Description: Casey Jean Liddy PP1872750345,
+      MoneyOut: 3,000.00
+    },
+    {
+      TransactionId: 6266b278a9948ef0,
+      Date: 2026-04-06,
+      PaymentType: OBP,
+      Description: AMERICAN EXP 3773 PB3328******14089,
+      MoneyOut: 1,691.93
+    },
+    {
+      TransactionId: b2804e85f3c0bc48,
+      Date: 2026-04-06,
+      PaymentType: BP,
+      Description: Alex Monzo April Monzo Settle,
+      MoneyOut: 800.00,
+      Balance: 5,228.54
+    },
+    {
+      TransactionId: 9e9d8a956db9f72d,
+      Date: 2026-04-07,
+      PaymentType: DD,
+      Description: L B I COUNCIL TAX,
+      MoneyOut: 171.87
+    },
+    {
+      TransactionId: 02dcd6c8bb565026,
+      Date: 2026-04-07,
+      PaymentType: DD,
+      Description: VODAFONE LTD,
+      MoneyOut: 28.83
+    },
+    {
+      TransactionId: d40477480cf32bde,
+      Date: 2026-04-07,
+      PaymentType: DD,
+      Description: THAMES WATER,
+      MoneyOut: 46.00,
+      Balance: 4,981.84
+    },
+    {
+      TransactionId: 4a7c01cd335c8483,
+      Date: 2026-04-08,
+      PaymentType: VIS,
+      Description: BOOTS ONLINE DOCTO NOTTINGHAM,
+      MoneyOut: 45.00,
+      Balance: 4,936.84
+    }
+  ]
+}

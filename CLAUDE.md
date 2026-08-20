@@ -214,6 +214,14 @@ Adding a bank to this: give its staging model a `statementFileId`, set
 `statementFileId` on the `Transaction` its process block creates, and record a
 `StatementFile` in its upload route.
 
+Then add it to the **statement views**, which is the step that is easy to miss
+because nothing fails when you skip it. The list's `stagedRows` count and the
+detail's row query each read the staging tables directly, so a bank absent from
+them reports an uploaded statement as having produced **zero rows** — which
+looks exactly like a parse that silently dropped everything, rather than like a
+missing case. Both are a UNION over the staging tables, one arm per bank; a
+statement file belongs to one bank, so only one arm ever contributes.
+
 ### Bank Import Flow
 
 Two-step pipeline: **stage → process**.
@@ -225,11 +233,18 @@ Two-step pipeline: **stage → process**.
 
 `externalId` is namespaced (`monzo:tx_...`, `amex:ref_...`) to prevent cross-bank collisions.
 
-Planned banks: Monzo ✓, Amex ✓, Barclays ✓, Santander ✓, HSBC (coming).
+Planned banks: Monzo ✓, Amex ✓, Barclays ✓, Santander ✓, HSBC ✓.
 
 ## Adding a New Bank via Image Upload (fast path)
 
-Use this for any bank where `pdf-parse` text extraction is unreliable (HSBC, etc.). Instead of writing regex parsers, accept a JPEG/PNG screenshot of the statement and call Claude vision to extract structured data.
+**Not used by any bank, and HSBC is not an example of it** — despite what this
+section used to say. HSBC has always been a positional text parser, in both the
+Express and the .NET services. Reach for this only if a bank's PDF genuinely
+resists text extraction; a statement whose text *can* be read should be parsed
+from coordinates, because that is checkable against the statement's own totals
+and a vision call is not.
+
+Instead of writing regex parsers, accept a JPEG/PNG screenshot of the statement and call Claude vision to extract structured data.
 
 ### Implementation checklist
 
@@ -352,6 +367,117 @@ The hard part of vertical slice architecture is what to do with shared code. The
 - **Results, not exceptions, for anticipated failures.** A slice that can fail returns `Result<T>` and inherits `ResultEndpoint<,>`; read slices that cannot fail stay on plain `Endpoint<,>`. Never use Ardalis' `ToMinimalApiResult()` — it serialises success with ASP.NET's default options and silently bypasses the converters above.
 - **Validation** is FastEndpoints' built-in `Validator<TRequest>`, discovered by reflection. No filter to register.
 - **Health:** `/api/health` and `/alive` never touch the database (Railway restarts a container whose probe fails, and a cold Azure SQL would loop). `/healthz` is the deep per-dependency report.
+
+## Statement parsing (`Features/Import/`)
+
+PDFs are read with **PdfPig** (Apache 2.0 — the only free .NET reader exposing
+per-word coordinates). `StatementGrid` rebuilds a statement table from x/y
+positions into fixed columns; reading order is unusable, because it emits all
+descriptions then all amounts, and re-pairing them by index is what slid every
+amount on a page down by one row.
+
+`StatementGrid` is feature-shared (tier 2) ahead of the usual rule of three, on
+purpose: it is mechanical geometry with no business meaning, parameterised by
+one thing — where the column bounds fall. Each bank keeps its own bounds in its
+own slice (`AmexStatementGrid`, `HsbcStatementGrid`). Two copies of subtle
+coordinate code is how the copies drift, and the resulting bug is a silently
+wrong number rather than a crash.
+
+The one thing to know if you port another bank: PdfPig emits **words** where
+pdf.js emitted **runs**, so words must be coalesced back into runs *before*
+column assignment. Otherwise a description running past a column bound is torn
+in half and its tail is read as a different column's value.
+
+### Amex (`ImportAmex/`)
+
+Nothing is written until the parse is proven:
+
+1. **Bank marker** — the statement's text must name American Express, else 422
+   naming whichever bank it does look like.
+2. **Account Summary** — its own arithmetic must hold, then Σ debits and Σ
+   credits must equal New Debits and New Credits.
+3. **Printed rate, per foreign row** — Amex prints `Exchange Rate x + Nonsterling
+   Transaction Fee y`, and `foreign ÷ rate + fee` must reconstruct the sterling.
+   Tolerance is relative: the rate is printed to 4dp and *truncated*, which is
+   ~9p of drift on £1,250.
+
+**No FX service call here, deliberately.** Amex converts the charge itself and
+prints the sterling it took, at its own rate including its fee. Re-converting
+against ECB rates would be wrong (MYR 575.00 settles at £108.60; ECB says ~£101)
+*and* would contradict the statement total the parse was just reconciled to. The
+foreign side is recorded on `Transactions.originalAmount`/`originalCurrency`,
+never recomputed. `IFxRateService` stays for SoFi/Chase, whose statements are
+USD-only and have no sterling figure to trust.
+
+`AmexBusinessKeys` hashes row content so a re-upload is recognised rather than
+double-counted, suffixing `-1`, `-2` … for genuinely identical charges on one
+statement. **These ids differ from the Express importer's**: descriptions now
+have their column padding collapsed (`LIME*RIDE KHJA          LONDON` →
+`LIME*RIDE KHJA LONDON`), because that padding is typography, not data — keying
+on it makes an id depend on how many spaces Amex used to line up a column. Every
+other field is byte-identical, verified row by row against the TypeScript parser
+over four statements.
+
+**No re-key migration: the statements get re-uploaded into the new database
+instead.** That is the cheaper direction and it also retires the two id schemes
+that already exist side by side in the Express data, rather than adding a third
+to reconcile them with. The consequence to remember is that a row carried across
+from Express by any other route keeps its old id, and will not be recognised as
+a duplicate of the same charge imported here.
+
+### HSBC (`ImportHsbc/`)
+
+A four-column current-account table: details, £ Paid out, £ Paid in, £ Balance.
+
+**A payment's direction is the column its figure sat in, never its payment
+type.** Some incoming payments are typed `BP` — the same code most outgoing ones
+carry — so a type-driven parser books them backwards. This is the whole reason
+the parse is positional, and it is asserted in the tests rather than assumed.
+
+One transaction spans several printed lines: a payment-type code opens one, the
+following lines extend its description, and the figures usually print on the
+*last* of them. Pages end with a running `BALANCE CARRIED FORWARD`, which flushes
+the transaction in hand but never ends the parse.
+
+Two traps, both found against the real statements:
+
+- **The Account Summary labels sit in the paid-out column, not the details
+  column** — the box is set right of centre. Read the label off the whole line.
+- **Headings are letter-spaced** (`Ope ning Balance`, `Dat e Pay m e nt`), so
+  they are matched with whitespace squashed out. No regex tolerance survives it.
+
+**HSBC now reconciles, and never did before.** The TypeScript importer's comment
+claimed a `reconcileHsbc` that was never written, so a dropped or mis-read row
+imported silently. `Opening + Payments In − Payments Out = Closing` is checked
+first, then the parsed rows must sum to those same two totals.
+
+The payment-type pattern also requires the code to be a **whole token**. The
+TypeScript original let it run into the next word, which turns the interest-rates
+footer's `Cre dit inte re s t` into a `CR` transaction invented out of page
+furniture.
+
+### Re-parse (`Features/Statements/ReparseStatement/`)
+
+Re-runs the current parser over bytes already on the volume, which is how a
+parser fix reaches a statement without the original file. **Amex and HSBC both
+re-parse here**; the Express route refuses every bank but Amex, which was the
+absence of a parser rather than a policy.
+
+Two orderings carry the whole slice. It **parses before deleting**, so a
+statement that no longer parses keeps the rows it already had rather than
+trading a good import for a failed one. And the delete and the re-stage share
+one transaction, so a failure part-way cannot leave the statement holding
+nothing — which is indistinguishable from a statement that legitimately parsed
+to zero rows. The normalised `Transactions` go too, not just the staged rows:
+leaving them would double every figure the statement contributed the next time
+it was processed.
+
+A statement whose bytes have left the volume is **410, not 503**. `Unavailable`
+maps to 503 in the shared table, and both this slice and the download one
+override it — the override is passed *into* `ResultProblem.WriteAsync`, which
+assigns `Response.StatusCode` itself. Setting it on the response beforehand only
+looked like it worked, and for a while the download endpoint documented a 410,
+named its test after one, and answered 503.
 
 ## Tests
 

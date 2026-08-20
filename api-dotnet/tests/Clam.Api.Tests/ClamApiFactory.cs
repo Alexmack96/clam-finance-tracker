@@ -110,8 +110,10 @@ public sealed class ClamApiFactory : WebApplicationFactory<Program>, IAsyncLifet
             // machine with WorkOS configured locally does not change the suite.
             ["WorkOS:ClientId"] = "",
 
-            // Somewhere harmless for the statement store to resolve to. No test
-            // writes a PDF; the download test asserts the "bytes are gone" path.
+            // Somewhere harmless for the statement store to resolve to. The Amex
+            // upload tests do write real PDFs here, which is fine to leave
+            // behind: a storage key is derived from the file's content hash, so
+            // re-running the suite overwrites rather than accumulates.
             ["Statements:Directory"] = Path.Combine(Path.GetTempPath(), "clam-tests", "statements"),
         }));
 

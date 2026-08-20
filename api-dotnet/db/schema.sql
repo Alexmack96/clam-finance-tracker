@@ -225,7 +225,10 @@ CREATE TABLE [AmexTransactions] (
     [description]     NVARCHAR(500) NOT NULL,
     [amount]          NVARCHAR(40)  NOT NULL,
     [isCredit]        BIT           NOT NULL CONSTRAINT [DF_AmexTransactions_isCredit] DEFAULT 0,
-    [foreignCurrency] NVARCHAR(20)  NULL,
+    -- Amex prints the currency's *name*, not its ISO code, and the name is what
+    -- gets staged. "UNITED STATES DOLLAR" is exactly 20 characters, so 20 was a
+    -- ceiling the very next currency would have hit.
+    [foreignCurrency] NVARCHAR(60)  NULL,
     [foreignAmount]   NVARCHAR(40)  NULL,
     [statementDate]   NVARCHAR(40)  NOT NULL,
     [owner]           NVARCHAR(10)  NOT NULL CONSTRAINT [DF_AmexTransactions_owner] DEFAULT 'Alex',
@@ -293,9 +296,16 @@ CREATE TABLE [HsbcTransactions] (
     [owner]         NVARCHAR(10)  NOT NULL CONSTRAINT [DF_HsbcTransactions_owner] DEFAULT 'Joint',
     [importedAt]    DATETIME2(3)  NOT NULL CONSTRAINT [DF_HsbcTransactions_importedAt] DEFAULT SYSUTCDATETIME(),
     [status]        NVARCHAR(20)  NOT NULL CONSTRAINT [DF_HsbcTransactions_status] DEFAULT 'pending',
+    -- Nullable: rows staged before statement tracking existed have no source file.
+    [statementFileId] NVARCHAR(30) NULL,
 
-    CONSTRAINT [UQ_HsbcTransactions_transactionId] UNIQUE ([transactionId])
+    CONSTRAINT [UQ_HsbcTransactions_transactionId] UNIQUE ([transactionId]),
+    CONSTRAINT [FK_HsbcTransactions_StatementFiles] FOREIGN KEY ([statementFileId])
+        REFERENCES [StatementFiles] ([id]) ON DELETE CASCADE
 );
+
+CREATE NONCLUSTERED INDEX [IX_HsbcTransactions_statementFileId] ON [HsbcTransactions] ([statementFileId]);
+CREATE NONCLUSTERED INDEX [IX_HsbcTransactions_status] ON [HsbcTransactions] ([status]);
 
 CREATE TABLE [ChaseTransactions] (
     [id]            INT           NOT NULL IDENTITY(1,1) CONSTRAINT [PK_ChaseTransactions] PRIMARY KEY,

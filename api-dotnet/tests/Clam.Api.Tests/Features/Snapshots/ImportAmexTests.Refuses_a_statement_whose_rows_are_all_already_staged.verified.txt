@@ -1,0 +1,16 @@
+﻿{
+  Status: 409 Conflict,
+  Content: {
+    Headers: {
+      Content-Length: 191,
+      Content-Type: application/problem+json
+    },
+    Value: {
+      title: Conflict,
+      status: 409,
+      detail: Every transaction on this statement (67) is already imported, so nothing was stored.,
+      instance: /api/admin/import/amex,
+      traceId: {Scrubbed}
+    }
+  }
+}

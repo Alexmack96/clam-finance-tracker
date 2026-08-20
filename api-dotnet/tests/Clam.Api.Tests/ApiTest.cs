@@ -1,3 +1,4 @@
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
 
@@ -46,6 +47,33 @@ public abstract class ApiTest(ClamApiFactory api)
 
     protected Task<HttpResponseMessage> PatchRaw(string url, string json)
         => Client.PatchAsync(url, JsonBody(json), Ct);
+
+    /// A multipart upload, which is how statements arrive. The file name matters
+    /// to the assertion — it is echoed back in the duplicate-file message — so
+    /// it is a parameter rather than a constant.
+    protected Task<HttpResponseMessage> PostFile(
+        string url,
+        byte[] bytes,
+        string fileName,
+        string field = "file",
+        IReadOnlyDictionary<string, string>? fields = null)
+    {
+        var form = new MultipartFormDataContent();
+        var file = new ByteArrayContent(bytes);
+        file.Headers.ContentType = new MediaTypeHeaderValue("application/pdf");
+        form.Add(file, field, fileName);
+
+        if (fields is not null)
+        {
+            foreach (var (key, value) in fields) form.Add(new StringContent(value), key);
+        }
+
+        return Client.PostAsync(url, form, Ct);
+    }
+
+    /// The real statement PDFs, copied beside the test assembly by the csproj.
+    protected static byte[] Statement(string fileName)
+        => File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "Statements", fileName));
 
     private static StringContent JsonBody(string json)
         => new(json, Encoding.UTF8, "application/json");

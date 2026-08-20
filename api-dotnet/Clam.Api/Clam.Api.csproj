@@ -15,7 +15,9 @@
     <PackageReference Include="FastEndpoints.Swagger" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
     <PackageReference Include="Microsoft.Data.SqlClient" />
+    <PackageReference Include="Microsoft.Data.SqlClient.Extensions.Azure" />
     <PackageReference Include="Microsoft.FeatureManagement" />
+    <PackageReference Include="PdfPig" />
   </ItemGroup>
 
   <ItemGroup>

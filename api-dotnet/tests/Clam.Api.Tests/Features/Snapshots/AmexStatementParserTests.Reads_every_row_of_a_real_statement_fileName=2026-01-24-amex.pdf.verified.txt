@@ -1,0 +1,562 @@
+﻿{
+  StatementDate: 24/01/26,
+  RowCount: 67,
+  Debits: 4575.34,
+  Credits: 1285.75,
+  Rows: [
+    {
+      TransactionId: 60cf5ed0c4b29245,
+      TransactionDate: 2025-12-24,
+      ProcessDate: 2025-12-24,
+      Description: ZETTLE *CHESTNUT BAKERY LONDON,
+      Amount: 3.75,
+      IsCredit: false
+    },
+    {
+      TransactionId: 79b4c2afef4b452c,
+      TransactionDate: 2025-12-25,
+      ProcessDate: 2025-12-26,
+      Description: GOOGLE*GOOGLE PLAY APPS LONDON,
+      Amount: 8.99,
+      IsCredit: false
+    },
+    {
+      TransactionId: 90f6a165acf69545,
+      TransactionDate: 2025-12-27,
+      ProcessDate: 2025-12-27,
+      Description: GOOGLE*GOOGLE ONE LONDON,
+      Amount: 18.99,
+      IsCredit: false
+    },
+    {
+      TransactionId: 3d533d21243d3f7c,
+      TransactionDate: 2025-12-28,
+      ProcessDate: 2025-12-28,
+      Description: SAINSBURY'S SUPERMARKET LONDON,
+      Amount: 29.04,
+      IsCredit: false
+    },
+    {
+      TransactionId: 30d3d8a499df698e,
+      TransactionDate: 2025-12-29,
+      ProcessDate: 2025-12-30,
+      Description: TFL TRAVEL CHARGE TFL.GOV.UK/CP,
+      Amount: 5.25,
+      IsCredit: false
+    },
+    {
+      TransactionId: ac72b437d3be598d,
+      TransactionDate: 2025-12-30,
+      ProcessDate: 2025-12-30,
+      Description: SELFRIDGES RETAIL LONDON,
+      Amount: 219.00,
+      IsCredit: false
+    },
+    {
+      TransactionId: e0f8c6c04807be68,
+      TransactionDate: 2025-12-31,
+      ProcessDate: 2026-01-01,
+      Description: 1 TORTILLA ISLINGTON 13 LONDON,
+      Amount: 32.40,
+      IsCredit: false
+    },
+    {
+      TransactionId: 4fcf0ca57ef72b43,
+      TransactionDate: 2025-12-31,
+      ProcessDate: 2026-01-01,
+      Description: TFL TRAVEL CHARGE TFL.GOV.UK/CP,
+      Amount: 5.90,
+      IsCredit: false
+    },
+    {
+      TransactionId: e02f0f955aaaf963,
+      TransactionDate: 2026-01-01,
+      ProcessDate: 2026-01-01,
+      Description: 4226 - ISLINGTON LONDON,
+      Amount: 88.00,
+      IsCredit: false
+    },
+    {
+      TransactionId: c1d32e80ac694f93,
+      TransactionDate: 2026-01-01,
+      ProcessDate: 2026-01-01,
+      Description: CARLTON LEISURE (UK) LT LONDON,
+      Amount: 1,029.78,
+      IsCredit: false
+    },
+    {
+      TransactionId: f5f5d1d398fddb13,
+      TransactionDate: 2026-01-01,
+      ProcessDate: 2026-01-01,
+      Description: DOJO*WORKER S CAFE LONDON,
+      Amount: 50.40,
+      IsCredit: false
+    },
+    {
+      TransactionId: b004590f622179d0,
+      TransactionDate: 2026-01-01,
+      ProcessDate: 2026-01-01,
+      Description: PRIME VIDEO RENT / BUY AMZN.UK/BILL,
+      Amount: 3.49,
+      IsCredit: false
+    },
+    {
+      TransactionId: 3da216f930585d62,
+      TransactionDate: 2026-01-01,
+      ProcessDate: 2026-01-01,
+      Description: TRAVIX TRAVIX AMSTERDAM,
+      Amount: 416.40,
+      IsCredit: false
+    },
+    {
+      TransactionId: 652c465b0519d281,
+      TransactionDate: 2026-01-01,
+      ProcessDate: 2026-01-02,
+      Description: BRITISH AIRWAYS GB DIRE WEST DRAYTON,
+      Amount: 239.35,
+      IsCredit: false
+    },
+    {
+      TransactionId: 652c465b0519d281-1,
+      TransactionDate: 2026-01-01,
+      ProcessDate: 2026-01-02,
+      Description: BRITISH AIRWAYS GB DIRE WEST DRAYTON,
+      Amount: 239.35,
+      IsCredit: false
+    },
+    {
+      TransactionId: 8676461cba9998b3,
+      TransactionDate: 2026-01-01,
+      ProcessDate: 2026-01-03,
+      Description: BRITISH AIRWAYS MY DIRE MALAYSIA,
+      Amount: 108.60,
+      IsCredit: false,
+      ForeignAmount: 575.00,
+      ForeignCurrency: MALAYSIAN RINGGIT
+    },
+    {
+      TransactionId: 8676461cba9998b3-1,
+      TransactionDate: 2026-01-01,
+      ProcessDate: 2026-01-03,
+      Description: BRITISH AIRWAYS MY DIRE MALAYSIA,
+      Amount: 108.60,
+      IsCredit: false,
+      ForeignAmount: 575.00,
+      ForeignCurrency: MALAYSIAN RINGGIT
+    },
+    {
+      TransactionId: 115bcd64c5fe33b2,
+      TransactionDate: 2026-01-01,
+      ProcessDate: 2026-01-03,
+      Description: BRITISH AIRWAYS MY DIRE MALAYSIA,
+      Amount: 25.88,
+      IsCredit: false,
+      ForeignAmount: 137.00,
+      ForeignCurrency: MALAYSIAN RINGGIT
+    },
+    {
+      TransactionId: 115bcd64c5fe33b2-1,
+      TransactionDate: 2026-01-01,
+      ProcessDate: 2026-01-03,
+      Description: BRITISH AIRWAYS MY DIRE MALAYSIA,
+      Amount: 25.88,
+      IsCredit: false,
+      ForeignAmount: 137.00,
+      ForeignCurrency: MALAYSIAN RINGGIT
+    },
+    {
+      TransactionId: 22acbc26d7088c93,
+      TransactionDate: 2026-01-01,
+      ProcessDate: 2026-01-03,
+      Description: BRITISH AIRWAYS MY DIRE MALAYSIA,
+      Amount: 537.90,
+      IsCredit: false,
+      ForeignAmount: 2,848.00,
+      ForeignCurrency: MALAYSIAN RINGGIT
+    },
+    {
+      TransactionId: 22acbc26d7088c93-1,
+      TransactionDate: 2026-01-01,
+      ProcessDate: 2026-01-03,
+      Description: BRITISH AIRWAYS MY DIRE MALAYSIA,
+      Amount: 537.90,
+      IsCredit: false,
+      ForeignAmount: 2,848.00,
+      ForeignCurrency: MALAYSIAN RINGGIT
+    },
+    {
+      TransactionId: 4726694fe1609b4b,
+      TransactionDate: 2026-01-02,
+      ProcessDate: 2026-01-02,
+      Description: JD Wetherspoons PLC Watford,,
+      Amount: 48.38,
+      IsCredit: false
+    },
+    {
+      TransactionId: afe4501ae2ae113e,
+      TransactionDate: 2026-01-02,
+      ProcessDate: 2026-01-02,
+      Description: UBER TRIP HTTPS://HELP.UB,
+      Amount: 21.65,
+      IsCredit: false
+    },
+    {
+      TransactionId: 3e5a5ca221afcd2a,
+      TransactionDate: 2026-01-03,
+      ProcessDate: 2026-01-03,
+      Description: LEETCODE.COM PALO ALTO,
+      Amount: 121.91,
+      IsCredit: false,
+      ForeignAmount: 159.00,
+      ForeignCurrency: UNITED STATES DOLLAR
+    },
+    {
+      TransactionId: 8b3339bc8842fea6,
+      TransactionDate: 2026-01-03,
+      ProcessDate: 2026-01-03,
+      Description: UBER TRIP HTTPS://HELP.UB,
+      Amount: 18.56,
+      IsCredit: false,
+      ForeignAmount: 86.96,
+      ForeignCurrency: POLISH ZLOTY
+    },
+    {
+      TransactionId: c42b3f01fa0b4f9d,
+      TransactionDate: 2026-01-04,
+      ProcessDate: 2026-01-04,
+      Description: PRIME VIDEO RENT / BUY AMZN.UK/BILL,
+      Amount: 18.99,
+      IsCredit: false
+    },
+    {
+      TransactionId: ab67a076f35fe0a8,
+      TransactionDate: 2026-01-04,
+      ProcessDate: 2026-01-04,
+      Description: TFL TRAVEL CHARGE TFL.GOV.UK/CP,
+      Amount: 13.50,
+      IsCredit: false
+    },
+    {
+      TransactionId: 972a3e9ce0b1135d,
+      TransactionDate: 2026-01-04,
+      ProcessDate: 2026-01-04,
+      Description: UBER TRIP HTTPS://HELP.UB,
+      Amount: 19.85,
+      IsCredit: false,
+      ForeignAmount: 92.97,
+      ForeignCurrency: POLISH ZLOTY
+    },
+    {
+      TransactionId: 9cd2e917a1e3b66c,
+      TransactionDate: 2026-01-04,
+      ProcessDate: 2026-01-05,
+      Description: 73 Upper Street GB00000 LONDON,
+      Amount: 18.00,
+      IsCredit: false
+    },
+    {
+      TransactionId: d24a380ca3547c38,
+      TransactionDate: 2026-01-05,
+      ProcessDate: 2026-01-05,
+      Description: LIME*RIDE KHJA LONDON,
+      Amount: 1.32,
+      IsCredit: false
+    },
+    {
+      TransactionId: 9a8d36daa941971f,
+      TransactionDate: 2026-01-05,
+      ProcessDate: 2026-01-05,
+      Description: PAYMENT RECEIVED - THANK YOU,
+      Amount: 1,285.75,
+      IsCredit: true
+    },
+    {
+      TransactionId: b7ee1e084bc56f7c,
+      TransactionDate: 2026-01-05,
+      ProcessDate: 2026-01-06,
+      Description: TFL TRAVEL CHARGE TFL.GOV.UK/CP,
+      Amount: 7.00,
+      IsCredit: false
+    },
+    {
+      TransactionId: 3708d61ca3334079,
+      TransactionDate: 2026-01-06,
+      ProcessDate: 2026-01-06,
+      Description: LIME*RIDE KHJA LONDON,
+      Amount: 0.99,
+      IsCredit: false
+    },
+    {
+      TransactionId: 0fb7b5365cefdf91,
+      TransactionDate: 2026-01-06,
+      ProcessDate: 2026-01-07,
+      Description: TFL TRAVEL CHARGE TFL.GOV.UK/CP,
+      Amount: 3.50,
+      IsCredit: false
+    },
+    {
+      TransactionId: 63c7d0f0cc4f61e8,
+      TransactionDate: 2026-01-07,
+      ProcessDate: 2026-01-07,
+      Description: LIME*RIDE KHJA LONDON,
+      Amount: 0.99,
+      IsCredit: false
+    },
+    {
+      TransactionId: 1c5c033ac247e080,
+      TransactionDate: 2026-01-07,
+      ProcessDate: 2026-01-07,
+      Description: MFKENSINGTON_2 BRIGHTON,
+      Amount: 9.75,
+      IsCredit: false
+    },
+    {
+      TransactionId: 27d3a6a1275be4b1,
+      TransactionDate: 2026-01-07,
+      ProcessDate: 2026-01-08,
+      Description: TFL TRAVEL CHARGE TFL.GOV.UK/CP,
+      Amount: 3.50,
+      IsCredit: false
+    },
+    {
+      TransactionId: 987b42a33fa1e0e9,
+      TransactionDate: 2026-01-08,
+      ProcessDate: 2026-01-09,
+      Description: TFL TRAVEL CHARGE TFL.GOV.UK/CP,
+      Amount: 2.90,
+      IsCredit: false
+    },
+    {
+      TransactionId: 97d88c426ece1102,
+      TransactionDate: 2026-01-09,
+      ProcessDate: 2026-01-09,
+      Description: DETROIT PIZZA LONDON,
+      Amount: 64.32,
+      IsCredit: false
+    },
+    {
+      TransactionId: bd855d0ce818eb5c,
+      TransactionDate: 2026-01-09,
+      ProcessDate: 2026-01-09,
+      Description: LIME*RIDE KHJA LONDON,
+      Amount: 1.32,
+      IsCredit: false
+    },
+    {
+      TransactionId: 314097703e4e8634,
+      TransactionDate: 2026-01-09,
+      ProcessDate: 2026-01-10,
+      Description: TFL TRAVEL CHARGE TFL.GOV.UK/CP,
+      Amount: 6.40,
+      IsCredit: false
+    },
+    {
+      TransactionId: 9c734fc496f94ecf,
+      TransactionDate: 2026-01-10,
+      ProcessDate: 2026-01-10,
+      Description: CADDI CLUB CHELSEA LTD London,
+      Amount: 6.87,
+      IsCredit: false
+    },
+    {
+      TransactionId: 54efb8f016891bec,
+      TransactionDate: 2026-01-10,
+      ProcessDate: 2026-01-10,
+      Description: DOJO*NO 5 BARBERS LONDON,
+      Amount: 30.00,
+      IsCredit: false
+    },
+    {
+      TransactionId: 2d975d5dc32c0619,
+      TransactionDate: 2026-01-10,
+      ProcessDate: 2026-01-10,
+      Description: LIME*RIDE KHJA LONDON,
+      Amount: 1.32,
+      IsCredit: false
+    },
+    {
+      TransactionId: 2d975d5dc32c0619-1,
+      TransactionDate: 2026-01-10,
+      ProcessDate: 2026-01-10,
+      Description: LIME*RIDE KHJA LONDON,
+      Amount: 1.32,
+      IsCredit: false
+    },
+    {
+      TransactionId: 741659369703ceb6,
+      TransactionDate: 2026-01-10,
+      ProcessDate: 2026-01-10,
+      Description: LIME*RIDE KHJA LONDON,
+      Amount: 1.65,
+      IsCredit: false
+    },
+    {
+      TransactionId: 4f35bd570f4ccbea,
+      TransactionDate: 2026-01-10,
+      ProcessDate: 2026-01-10,
+      Description: LIME*RIDE KHJA LONDON,
+      Amount: 2.31,
+      IsCredit: false
+    },
+    {
+      TransactionId: 6fbcdd7cc30e51e2,
+      TransactionDate: 2026-01-10,
+      ProcessDate: 2026-01-10,
+      Description: SAINSBURY'S SUPERMARKET LONDON,
+      Amount: 5.05,
+      IsCredit: false
+    },
+    {
+      TransactionId: 6bfd09475264297a,
+      TransactionDate: 2026-01-10,
+      ProcessDate: 2026-01-10,
+      Description: SCOTTSDALE GOLF UK LTD SALE,
+      Amount: 79.98,
+      IsCredit: false
+    },
+    {
+      TransactionId: 18bff5e5c7f1ccb8,
+      TransactionDate: 2026-01-10,
+      ProcessDate: 2026-01-11,
+      Description: GOOGLE*YOUTUBE LONDON,
+      Amount: 12.99,
+      IsCredit: false
+    },
+    {
+      TransactionId: d687ffc1e23bf373,
+      TransactionDate: 2026-01-13,
+      ProcessDate: 2026-01-14,
+      Description: TFL TRAVEL CHARGE TFL.GOV.UK/CP,
+      Amount: 7.00,
+      IsCredit: false
+    },
+    {
+      TransactionId: 75d5d9b5fbc583a8,
+      TransactionDate: 2026-01-14,
+      ProcessDate: 2026-01-14,
+      Description: LIME*RIDE KHJA LONDON,
+      Amount: 0.99,
+      IsCredit: false
+    },
+    {
+      TransactionId: c3e910750e9b7179,
+      TransactionDate: 2026-01-14,
+      ProcessDate: 2026-01-14,
+      Description: N1-GOLF-STAGING_ECOM_ST LONDON,
+      Amount: 46.00,
+      IsCredit: false
+    },
+    {
+      TransactionId: aa53fb2c970f9625,
+      TransactionDate: 2026-01-15,
+      ProcessDate: 2026-01-16,
+      Description: TFL TRAVEL CHARGE TFL.GOV.UK/CP,
+      Amount: 6.40,
+      IsCredit: false
+    },
+    {
+      TransactionId: 64809359046124ac,
+      TransactionDate: 2026-01-15,
+      ProcessDate: 2026-01-16,
+      Description: VIVA*DAVIDOFF OF LONDON LONDON,
+      Amount: 150.00,
+      IsCredit: false
+    },
+    {
+      TransactionId: d277c63a14254860,
+      TransactionDate: 2026-01-16,
+      ProcessDate: 2026-01-17,
+      Description: TFL TRAVEL CHARGE TFL.GOV.UK/CP,
+      Amount: 3.50,
+      IsCredit: false
+    },
+    {
+      TransactionId: add2a4caafe8b403,
+      TransactionDate: 2026-01-17,
+      ProcessDate: 2026-01-17,
+      Description: SAINSBURY'S SUPERMARKET LONDON,
+      Amount: 9.45,
+      IsCredit: false
+    },
+    {
+      TransactionId: c28f0d3eb6eade00,
+      TransactionDate: 2026-01-17,
+      ProcessDate: 2026-01-18,
+      Description: OLE AND STEEN VICTORIA LONDON,
+      Amount: 11.90,
+      IsCredit: false
+    },
+    {
+      TransactionId: 72d3839dd48099fc,
+      TransactionDate: 2026-01-18,
+      ProcessDate: 2026-01-18,
+      Description: PRIME VIDEO RENT / BUY AMZN.UK/BILL,
+      Amount: 3.49,
+      IsCredit: false
+    },
+    {
+      TransactionId: 2f777b33a6f2c36f,
+      TransactionDate: 2026-01-18,
+      ProcessDate: 2026-01-18,
+      Description: WAITROSE ISLINGTON LONDON,
+      Amount: 13.55,
+      IsCredit: false
+    },
+    {
+      TransactionId: b932069db974b099,
+      TransactionDate: 2026-01-19,
+      ProcessDate: 2026-01-19,
+      Description: SAINSBURY'S LONDON,
+      Amount: 5.50,
+      IsCredit: false
+    },
+    {
+      TransactionId: ff360d92cbaca93a,
+      TransactionDate: 2026-01-19,
+      ProcessDate: 2026-01-20,
+      Description: TFL TRAVEL CHARGE TFL.GOV.UK/CP,
+      Amount: 3.50,
+      IsCredit: false
+    },
+    {
+      TransactionId: 0a92593ba6c31526,
+      TransactionDate: 2026-01-21,
+      ProcessDate: 2026-01-21,
+      Description: SAINSBURY'S SUPERMARKET LONDON,
+      Amount: 5.50,
+      IsCredit: false
+    },
+    {
+      TransactionId: 2af6d1d722daff61,
+      TransactionDate: 2026-01-22,
+      ProcessDate: 2026-01-22,
+      Description: SAINSBURY'S SUPERMARKET LONDON,
+      Amount: 10.99,
+      IsCredit: false
+    },
+    {
+      TransactionId: d0eb7fc821e59a85,
+      TransactionDate: 2026-01-22,
+      ProcessDate: 2026-01-23,
+      Description: NO 5 BARBER NO 5 BARBER LONDON,
+      Amount: 25.00,
+      IsCredit: false
+    },
+    {
+      TransactionId: 776c71aaa498b914,
+      TransactionDate: 2026-01-22,
+      ProcessDate: 2026-01-23,
+      Description: TFL TRAVEL CHARGE TFL.GOV.UK/CP,
+      Amount: 6.40,
+      IsCredit: false
+    },
+    {
+      TransactionId: 2f52277e186f7057,
+      TransactionDate: 2026-01-23,
+      ProcessDate: 2026-01-24,
+      Description: TFL TRAVEL CHARGE TFL.GOV.UK/CP,
+      Amount: 7.00,
+      IsCredit: false
+    }
+  ]
+}

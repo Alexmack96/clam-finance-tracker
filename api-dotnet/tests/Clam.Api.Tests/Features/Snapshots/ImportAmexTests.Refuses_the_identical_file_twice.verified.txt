@@ -1,0 +1,16 @@
+﻿{
+  Status: 409 Conflict,
+  Content: {
+    Headers: {
+      Content-Length: 184,
+      Content-Type: application/problem+json
+    },
+    Value: {
+      title: Conflict,
+      status: 409,
+      detail: This exact PDF was already uploaded on 2026-08-11 as "2026-01-24-amex.pdf".,
+      instance: /api/admin/import/amex,
+      traceId: {Scrubbed}
+    }
+  }
+}

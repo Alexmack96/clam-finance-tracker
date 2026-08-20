@@ -11,6 +11,8 @@ using Clam.Api.Features.Dev.SeedData;
 using Clam.Api.Features.Import.BackfillUsdGbp;
 using Clam.Api.Features.Import.GetLastStatement;
 using Clam.Api.Features.Import.GetStagedCounts;
+using Clam.Api.Features.Import.ImportAmex;
+using Clam.Api.Features.Import.ImportHsbc;
 using Clam.Api.Features.Import.ProcessStaged;
 using Clam.Api.Features.Investments.CreateInvestmentAccount;
 using Clam.Api.Features.Investments.DeleteInvestmentAccount;
@@ -42,6 +44,7 @@ using Clam.Api.Features.Statements.DeleteStatement;
 using Clam.Api.Features.Statements.DownloadStatement;
 using Clam.Api.Features.Statements.GetStatement;
 using Clam.Api.Features.Statements.GetStatements;
+using Clam.Api.Features.Statements.ReparseStatement;
 using Clam.Api.Features.Tabs.CreateTab;
 using Clam.Api.Features.Tabs.DeleteTab;
 using Clam.Api.Features.Tabs.GetTabs;
@@ -263,12 +266,15 @@ public static class ServiceCollectionExtensions
         services.AddScoped<GetStatementQuery>();
         services.AddScoped<DownloadStatementQuery>();
         services.AddScoped<DeleteStatementCommand>();
+        services.AddScoped<ReparseStatementCommand>();
 
         // Import pipeline
         services.AddScoped<GetStagedCountsQuery>();
         services.AddScoped<GetLastStatementQuery>();
         services.AddScoped<ProcessStagedCommand>();
         services.AddScoped<BackfillUsdGbpCommand>();
+        services.AddScoped<ImportAmexCommand>();
+        services.AddScoped<ImportHsbcCommand>();
 
         // Monzo
         services.AddScoped<MonzoConnectionResolver>();

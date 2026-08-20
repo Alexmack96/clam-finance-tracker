@@ -1,0 +1,17 @@
+﻿{
+  Status: 200 OK,
+  Content: {
+    Headers: {
+      Content-Length: 72,
+      Content-Type: application/json; charset=utf-8
+    },
+    Value: {
+      removed: {
+        staged: 21,
+        transactions: 0
+      },
+      imported: 21,
+      duplicates: []
+    }
+  }
+}

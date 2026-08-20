@@ -2,14 +2,14 @@
   Status: 410 Gone,
   Content: {
     Headers: {
-      Content-Length: 192,
+      Content-Length: 195,
       Content-Type: application/problem+json
     },
     Value: {
       title: Gone,
       status: 410,
       detail: The stored PDF for this statement is missing from the volume,
-      instance: /api/admin/statements/cstmt0000000000000000001/file,
+      instance: /api/admin/statements/cstmt0000000000000000001/reparse,
       traceId: {Scrubbed}
     }
   }

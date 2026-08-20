@@ -1,0 +1,20 @@
+﻿{
+  Status: 400 Bad Request,
+  Content: {
+    Headers: {
+      Content-Length: 234,
+      Content-Type: application/problem+json
+    },
+    Value: {
+      title: One or more validation errors occurred.,
+      status: 400,
+      instance: /api/admin/statements/cstmt0000000000000000002/reparse,
+      errors: {
+        bank: [
+          Re-parse is not supported for barclays statements yet
+        ]
+      },
+      traceId: {Scrubbed}
+    }
+  }
+}

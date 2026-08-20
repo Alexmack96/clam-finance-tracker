@@ -29,10 +29,10 @@
         "@sentry/react": "^10.51.0",
         "@tanstack/react-query": "^5.96.2",
         "@tanstack/react-virtual": "^3.14.7",
+        "@workos-inc/authkit-react": "^0.16.2",
         "ag-grid-community": "^35.2.1",
         "ag-grid-react": "^35.2.1",
         "axios": "^1.14.0",
-        "better-auth": "^1.5.6",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
         "cmdk": "^1.1.1",
@@ -1113,6 +1113,10 @@
     "@vitest/spy": ["@vitest/spy@4.1.2", "", {}, "sha512-DU4fBnbVCJGNBwVA6xSToNXrkZNSiw59H8tcuUspVMsBDBST4nfvsPsEHDHGtWRRnqBERBQu7TrTKskmjqTXKA=="],
 
     "@vitest/utils": ["@vitest/utils@4.1.2", "", { "dependencies": { "@vitest/pretty-format": "4.1.2", "convert-source-map": "^2.0.0", "tinyrainbow": "^3.1.0" } }, "sha512-xw2/TiX82lQHA06cgbqRKFb5lCAy3axQ4H4SoUFhUsg+wztiet+co86IAMDtF6Vm1hc7J6j09oh/rgDn+JdKIQ=="],
+
+    "@workos-inc/authkit-js": ["@workos-inc/authkit-js@0.20.2", "", {}, "sha512-EEo8VitBko7ON5shVRS4AMmgezWhWfxKKtGV7QpJMgsejKBXi0DujCFf7blR7z46z3xr3Ge55yVEMSrOMtMOzg=="],
+
+    "@workos-inc/authkit-react": ["@workos-inc/authkit-react@0.16.2", "", { "dependencies": { "@workos-inc/authkit-js": "^0.20.1" }, "peerDependencies": { "react": ">=17" } }, "sha512-Q10bTJ3sd8zfbIlxl8KavLeHLuW7v2aJLfq+syyWsVa9VzbrBVFyr7HNxt3aAVJq1kcMfTJu1p9gSJT3Gswulg=="],
 
     "abort-controller": ["abort-controller@3.0.0", "", { "dependencies": { "event-target-shim": "^5.0.0" } }, "sha512-h8lQ8tacZYnR3vNQTgibj+tODHI5/+l06Au2Pcriv/Gmet0eaj4TwWH41sO9wnHDiQsEj19q0drzdWdeAHtweg=="],
 

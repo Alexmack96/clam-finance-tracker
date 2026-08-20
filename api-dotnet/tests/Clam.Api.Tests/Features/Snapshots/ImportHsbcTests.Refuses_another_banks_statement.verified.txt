@@ -1,0 +1,16 @@
+﻿{
+  Status: 422 Unprocessable Entity,
+  Content: {
+    Headers: {
+      Content-Length: 226,
+      Content-Type: application/problem+json
+    },
+    Value: {
+      title: Unprocessable Entity,
+      status: 422,
+      detail: This looks like an American Express statement, not HSBC. Upload it under the American Express card instead.,
+      instance: /api/admin/import/hsbc,
+      traceId: {Scrubbed}
+    }
+  }
+}

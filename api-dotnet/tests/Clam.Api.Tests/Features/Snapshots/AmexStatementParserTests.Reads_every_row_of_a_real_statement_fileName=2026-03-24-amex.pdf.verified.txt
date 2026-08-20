@@ -1,0 +1,540 @@
+﻿{
+  StatementDate: 24/03/26,
+  RowCount: 63,
+  Debits: 2180.19,
+  Credits: 1934.85,
+  Rows: [
+    {
+      TransactionId: 861bca7861db6346,
+      TransactionDate: 2026-02-24,
+      ProcessDate: 2026-02-24,
+      Description: LIME*RIDE KHJA LONDON,
+      Amount: 2.64,
+      IsCredit: false
+    },
+    {
+      TransactionId: 2ce58a0a660c7f15,
+      TransactionDate: 2026-02-24,
+      ProcessDate: 2026-02-24,
+      Description: W H SMITH EUROPE TRAVEL LONDON,
+      Amount: 2.49,
+      IsCredit: false
+    },
+    {
+      TransactionId: db0901ffb2386905,
+      TransactionDate: 2026-02-24,
+      ProcessDate: 2026-02-25,
+      Description: TFL TRAVEL CHARGE TFL.GOV.UK/CP,
+      Amount: 3.50,
+      IsCredit: false
+    },
+    {
+      TransactionId: 9a51ec5bf6fb95e3,
+      TransactionDate: 2026-02-25,
+      ProcessDate: 2026-02-25,
+      Description: NOXY BROTHERS London,
+      Amount: 8.15,
+      IsCredit: false
+    },
+    {
+      TransactionId: 7d3efe728a5b743a,
+      TransactionDate: 2026-02-25,
+      ProcessDate: 2026-02-26,
+      Description: GOOGLE *GOOGLE PLAY AP G.CO/HELPPAY#,
+      Amount: 8.99,
+      IsCredit: false
+    },
+    {
+      TransactionId: fb9cbba91895cb1c,
+      TransactionDate: 2026-02-25,
+      ProcessDate: 2026-02-27,
+      Description: GOOGLE*GOOGLE ONE LONDON,
+      Amount: 2.49,
+      IsCredit: false
+    },
+    {
+      TransactionId: 70ea79d578193235,
+      TransactionDate: 2026-02-26,
+      ProcessDate: 2026-02-26,
+      Description: SAINSBURY'S SUPERMARKET LONDON,
+      Amount: 8.38,
+      IsCredit: false
+    },
+    {
+      TransactionId: 89c556dfffb492b0,
+      TransactionDate: 2026-02-26,
+      ProcessDate: 2026-02-26,
+      Description: TFL TRAVEL CHARGE TFL.GOV.UK/CP,
+      Amount: 6.40,
+      IsCredit: false
+    },
+    {
+      TransactionId: b25f83e1ecec4419,
+      TransactionDate: 2026-02-27,
+      ProcessDate: 2026-02-27,
+      Description: LIME*RIDE KHJA LONDON,
+      Amount: 1.32,
+      IsCredit: false
+    },
+    {
+      TransactionId: ecc7951278b409d0,
+      TransactionDate: 2026-02-28,
+      ProcessDate: 2026-03-01,
+      Description: TARGET 015446 09 STAMFORD,
+      Amount: 11.49,
+      IsCredit: false,
+      ForeignAmount: 14.99,
+      ForeignCurrency: UNITED STATES DOLLAR
+    },
+    {
+      TransactionId: e05c84ee6c9cfd60,
+      TransactionDate: 2026-02-28,
+      ProcessDate: 2026-03-01,
+      Description: TARGET 015446 09 STAMFORD,
+      Amount: 34.31,
+      IsCredit: false,
+      ForeignAmount: 44.77,
+      ForeignCurrency: UNITED STATES DOLLAR
+    },
+    {
+      TransactionId: 6ac2949684200daf,
+      TransactionDate: 2026-02-28,
+      ProcessDate: 2026-03-01,
+      Description: WINFIELD COFFEE STAMFOR STAMFORD,
+      Amount: 7.19,
+      IsCredit: false,
+      ForeignAmount: 9.39,
+      ForeignCurrency: UNITED STATES DOLLAR
+    },
+    {
+      TransactionId: 087c09b7f65278a5,
+      TransactionDate: 2026-03-01,
+      ProcessDate: 2026-03-01,
+      Description: TARGET 015446 09 STAMFORD,
+      Amount: 59.60,
+      IsCredit: false,
+      ForeignAmount: 77.75,
+      ForeignCurrency: UNITED STATES DOLLAR
+    },
+    {
+      TransactionId: 6d864efe246db98c,
+      TransactionDate: 2026-03-06,
+      ProcessDate: 2026-03-07,
+      Description: SHG - LC 06888002175848 NEW YORK,
+      Amount: 4.64,
+      IsCredit: false,
+      ForeignAmount: 6.00,
+      ForeignCurrency: UNITED STATES DOLLAR
+    },
+    {
+      TransactionId: 4163bf513051b2e8,
+      TransactionDate: 2026-03-06,
+      ProcessDate: 2026-03-07,
+      Description: SHG - LC 06888002175848 NEW YORK,
+      Amount: 5.47,
+      IsCredit: false,
+      ForeignAmount: 7.08,
+      ForeignCurrency: UNITED STATES DOLLAR
+    },
+    {
+      TransactionId: 81eb92bd0bc08bfd,
+      TransactionDate: 2026-03-06,
+      ProcessDate: 2026-03-07,
+      Description: TST* THE SMITH - LINCOL NEW YORK,
+      Amount: 30.34,
+      IsCredit: false,
+      ForeignAmount: 39.20,
+      ForeignCurrency: UNITED STATES DOLLAR
+    },
+    {
+      TransactionId: ba6efeed98bf8b46,
+      TransactionDate: 2026-03-07,
+      ProcessDate: 2026-03-07,
+      Description: LLOYD HOTEL STAMFORD LL STAMFORD,
+      Amount: 1,283.46,
+      IsCredit: false,
+      ForeignAmount: 1,658.44,
+      ForeignCurrency: UNITED STATES DOLLAR
+    },
+    {
+      TransactionId: 02c2b46f80e8e4ca,
+      TransactionDate: 2026-03-07,
+      ProcessDate: 2026-03-08,
+      Description: CORNER EATS NEW YORK,
+      Amount: 3.49,
+      IsCredit: false,
+      ForeignAmount: 4.51,
+      ForeignCurrency: UNITED STATES DOLLAR
+    },
+    {
+      TransactionId: 2094ccb80b663447,
+      TransactionDate: 2026-03-07,
+      ProcessDate: 2026-03-08,
+      Description: NYCT PAYGO NEW YORK,
+      Amount: 2.31,
+      IsCredit: false,
+      ForeignAmount: 3.00,
+      ForeignCurrency: UNITED STATES DOLLAR
+    },
+    {
+      TransactionId: d8ab8f96fdd49752,
+      TransactionDate: 2026-03-07,
+      ProcessDate: 2026-03-08,
+      Description: TST* LOULOU 00023495 NEW YORK,
+      Amount: 40.89,
+      IsCredit: false,
+      ForeignAmount: 52.85,
+      ForeignCurrency: UNITED STATES DOLLAR
+    },
+    {
+      TransactionId: 84d7f46e8f2fcae6,
+      TransactionDate: 2026-03-07,
+      ProcessDate: 2026-03-08,
+      Description: TST* RUSS & DAUGHTERS - NEW YORK,
+      Amount: 16.29,
+      IsCredit: false,
+      ForeignAmount: 21.05,
+      ForeignCurrency: UNITED STATES DOLLAR
+    },
+    {
+      TransactionId: 450899e6073d9785,
+      TransactionDate: 2026-03-07,
+      ProcessDate: 2026-03-08,
+      Description: TST* SCARRS PIZZA 00186 NEW YORK,
+      Amount: 12.75,
+      IsCredit: false,
+      ForeignAmount: 16.48,
+      ForeignCurrency: UNITED STATES DOLLAR
+    },
+    {
+      TransactionId: 3845cf89bf7c7bef,
+      TransactionDate: 2026-03-08,
+      ProcessDate: 2026-03-08,
+      Description: PAYMENT RECEIVED - THANK YOU,
+      Amount: 1,934.85,
+      IsCredit: true
+    },
+    {
+      TransactionId: bbd73c64d2f83e18,
+      TransactionDate: 2026-03-08,
+      ProcessDate: 2026-03-08,
+      Description: TST* SOURMOUSE 00003369 NEW YORK,
+      Amount: 14.68,
+      IsCredit: false,
+      ForeignAmount: 18.98,
+      ForeignCurrency: UNITED STATES DOLLAR
+    },
+    {
+      TransactionId: 87e94fd9bfe1b6ca,
+      TransactionDate: 2026-03-09,
+      ProcessDate: 2026-03-10,
+      Description: TFL TRAVEL CHARGE TFL.GOV.UK/CP,
+      Amount: 6.20,
+      IsCredit: false
+    },
+    {
+      TransactionId: 0bfa584d09f88012,
+      TransactionDate: 2026-03-10,
+      ProcessDate: 2026-03-10,
+      Description: DOJO*NO 5 BARBERS LONDON,
+      Amount: 33.00,
+      IsCredit: false
+    },
+    {
+      TransactionId: 0c628c7194614d50,
+      TransactionDate: 2026-03-10,
+      ProcessDate: 2026-03-10,
+      Description: ROSA'S ANGEL LONDON,
+      Amount: 37.90,
+      IsCredit: false
+    },
+    {
+      TransactionId: 09fd1ad48e8d7ce2,
+      TransactionDate: 2026-03-10,
+      ProcessDate: 2026-03-10,
+      Description: ZETTLE *CHESTNUT BAKERY LONDON,
+      Amount: 3.75,
+      IsCredit: false
+    },
+    {
+      TransactionId: b122950879eb0327,
+      TransactionDate: 2026-03-10,
+      ProcessDate: 2026-03-11,
+      Description: GOOGLE*YOUTUBE LONDON,
+      Amount: 12.99,
+      IsCredit: false
+    },
+    {
+      TransactionId: c68cbf2a440145bf,
+      TransactionDate: 2026-03-10,
+      ProcessDate: 2026-03-11,
+      Description: TFL TRAVEL CHARGE TFL.GOV.UK/CP,
+      Amount: 6.20,
+      IsCredit: false
+    },
+    {
+      TransactionId: 861c72ce00bf5056,
+      TransactionDate: 2026-03-11,
+      ProcessDate: 2026-03-12,
+      Description: TFL TRAVEL CHARGE TFL.GOV.UK/CP,
+      Amount: 3.10,
+      IsCredit: false
+    },
+    {
+      TransactionId: 702d984fd36e0cf6,
+      TransactionDate: 2026-03-12,
+      ProcessDate: 2026-03-14,
+      Description: INTERCROISETTE LES BELLEVILLE,
+      Amount: 16.94,
+      IsCredit: false
+    },
+    {
+      TransactionId: a4c4a7b0d15f02ac,
+      TransactionDate: 2026-03-14,
+      ProcessDate: 2026-03-16,
+      Description: PROSNEIGE SHOP LES BELLEVILLE,
+      Amount: 192.62,
+      IsCredit: false
+    },
+    {
+      TransactionId: c7da96fc34f409c2,
+      TransactionDate: 2026-03-14,
+      ProcessDate: 2026-03-16,
+      Description: TFL TRAVEL CHARGE TFL.GOV.UK/CP,
+      Amount: 17.20,
+      IsCredit: false
+    },
+    {
+      TransactionId: 0805359cce496dab,
+      TransactionDate: 2026-03-16,
+      ProcessDate: 2026-03-16,
+      Description: LIME*RIDE KHJA LONDON,
+      Amount: 1.32,
+      IsCredit: false
+    },
+    {
+      TransactionId: 39846e5648dd2f04,
+      TransactionDate: 2026-03-16,
+      ProcessDate: 2026-03-16,
+      Description: ZETTLE *DEFICHI LTD LONDON,
+      Amount: 3.50,
+      IsCredit: false
+    },
+    {
+      TransactionId: 4dab9b5a880d4517,
+      TransactionDate: 2026-03-16,
+      ProcessDate: 2026-03-17,
+      Description: HEATHROW BLACK CAB SERV London,
+      Amount: 24.80,
+      IsCredit: false
+    },
+    {
+      TransactionId: 5d3deea9c01e7513,
+      TransactionDate: 2026-03-16,
+      ProcessDate: 2026-03-17,
+      Description: TFL TRAVEL CHARGE TFL.GOV.UK/CP,
+      Amount: 3.60,
+      IsCredit: false
+    },
+    {
+      TransactionId: 4053fd2e4534d6e1,
+      TransactionDate: 2026-03-17,
+      ProcessDate: 2026-03-17,
+      Description: LIME*RIDE KHJA LONDON,
+      Amount: 0.99,
+      IsCredit: false
+    },
+    {
+      TransactionId: 889a08c21ffa7884,
+      TransactionDate: 2026-03-17,
+      ProcessDate: 2026-03-18,
+      Description: TFL TRAVEL CHARGE TFL.GOV.UK/CP,
+      Amount: 3.60,
+      IsCredit: false
+    },
+    {
+      TransactionId: c3f7b30f26e1c4d2,
+      TransactionDate: 2026-03-18,
+      ProcessDate: 2026-03-19,
+      Description: TFL TRAVEL CHARGE TFL.GOV.UK/CP,
+      Amount: 6.70,
+      IsCredit: false
+    },
+    {
+      TransactionId: f1e8d56962d242ab,
+      TransactionDate: 2026-03-19,
+      ProcessDate: 2026-03-19,
+      Description: LIME*RIDE KHJA LONDON,
+      Amount: 1.32,
+      IsCredit: false
+    },
+    {
+      TransactionId: faaa91ac8ccae83c,
+      TransactionDate: 2026-03-19,
+      ProcessDate: 2026-03-19,
+      Description: LIME*RIDE KHJA LONDON,
+      Amount: 1.65,
+      IsCredit: false
+    },
+    {
+      TransactionId: bcc63a8cab08bd8a,
+      TransactionDate: 2026-03-19,
+      ProcessDate: 2026-03-19,
+      Description: SAINSBURY'S SUPERMARKET LONDON,
+      Amount: 11.30,
+      IsCredit: false
+    },
+    {
+      TransactionId: 19147336f87552a0,
+      TransactionDate: 2026-03-19,
+      ProcessDate: 2026-03-19,
+      Description: ZETTLE *DEFICHI LTD LONDON,
+      Amount: 3.50,
+      IsCredit: false
+    },
+    {
+      TransactionId: 7220c74fe3053ab3,
+      TransactionDate: 2026-03-19,
+      ProcessDate: 2026-03-20,
+      Description: TFL TRAVEL CHARGE TFL.GOV.UK/CP,
+      Amount: 6.70,
+      IsCredit: false
+    },
+    {
+      TransactionId: 5228d2bcf079ce3d,
+      TransactionDate: 2026-03-20,
+      ProcessDate: 2026-03-20,
+      Description: DELIVEROO LONDON,
+      Amount: 0.77,
+      IsCredit: false
+    },
+    {
+      TransactionId: 67590fa754befe70,
+      TransactionDate: 2026-03-20,
+      ProcessDate: 2026-03-20,
+      Description: LIME*RIDE KHJA LONDON,
+      Amount: 1.32,
+      IsCredit: false
+    },
+    {
+      TransactionId: 968ccf350d5746d1,
+      TransactionDate: 2026-03-20,
+      ProcessDate: 2026-03-20,
+      Description: NOXY BROTHERS London,
+      Amount: 3.80,
+      IsCredit: false
+    },
+    {
+      TransactionId: 0312b86a3cd4562b,
+      TransactionDate: 2026-03-20,
+      ProcessDate: 2026-03-21,
+      Description: TFL TRAVEL CHARGE TFL.GOV.UK/CP,
+      Amount: 6.70,
+      IsCredit: false
+    },
+    {
+      TransactionId: 4af4d6941880f3ea,
+      TransactionDate: 2026-03-21,
+      ProcessDate: 2026-03-21,
+      Description: ALPERTON SPORTS GROUND WEMBLEY,
+      Amount: 8.00,
+      IsCredit: false
+    },
+    {
+      TransactionId: 4d9208e9a3b020eb,
+      TransactionDate: 2026-03-21,
+      ProcessDate: 2026-03-21,
+      Description: LIME*PRIME KHJA LONDON,
+      Amount: 8.99,
+      IsCredit: false
+    },
+    {
+      TransactionId: 3b8a4477ecc31523,
+      TransactionDate: 2026-03-21,
+      ProcessDate: 2026-03-21,
+      Description: LIME*RIDE KHJA LONDON,
+      Amount: 1.32,
+      IsCredit: false
+    },
+    {
+      TransactionId: 3b8a4477ecc31523-1,
+      TransactionDate: 2026-03-21,
+      ProcessDate: 2026-03-21,
+      Description: LIME*RIDE KHJA LONDON,
+      Amount: 1.32,
+      IsCredit: false
+    },
+    {
+      TransactionId: 4e3d0188511c52cd,
+      TransactionDate: 2026-03-21,
+      ProcessDate: 2026-03-21,
+      Description: LIME*RIDE KHJA LONDON,
+      Amount: 2.31,
+      IsCredit: false
+    },
+    {
+      TransactionId: 9e85d5ffc96ebef0,
+      TransactionDate: 2026-03-21,
+      ProcessDate: 2026-03-21,
+      Description: LIME*RIDE KHJA LONDON,
+      Amount: 5.94,
+      IsCredit: false
+    },
+    {
+      TransactionId: 0ece46d70b1f890f,
+      TransactionDate: 2026-03-21,
+      ProcessDate: 2026-03-21,
+      Description: ZETTLE *MAURICO (COFFEE LONDON,
+      Amount: 4.20,
+      IsCredit: false
+    },
+    {
+      TransactionId: 38567f29297a271a,
+      TransactionDate: 2026-03-21,
+      ProcessDate: 2026-03-22,
+      Description: TFL TRAVEL CHARGE TFL.GOV.UK/CP,
+      Amount: 8.90,
+      IsCredit: false
+    },
+    {
+      TransactionId: c26b91dae5391c72,
+      TransactionDate: 2026-03-22,
+      ProcessDate: 2026-03-22,
+      Description: LIME*RIDE KHJA LONDON,
+      Amount: 0.99,
+      IsCredit: false
+    },
+    {
+      TransactionId: 5cfd8ecedcc24ecf,
+      TransactionDate: 2026-03-23,
+      ProcessDate: 2026-03-23,
+      Description: LIME*RIDE KHJA LONDON,
+      Amount: 0.99,
+      IsCredit: false
+    },
+    {
+      TransactionId: 3bbf179505214f67,
+      TransactionDate: 2026-03-23,
+      ProcessDate: 2026-03-24,
+      Description: TFL TRAVEL CHARGE TFL.GOV.UK/CP,
+      Amount: 3.60,
+      IsCredit: false
+    },
+    {
+      TransactionId: 7b23fae632f112ca,
+      TransactionDate: 2026-03-24,
+      ProcessDate: 2026-03-24,
+      Description: DISNEY PLUS HAMMERSMITH, LO,
+      Amount: 149.90,
+      IsCredit: false
+    },
+    {
+      TransactionId: 184b67f0b3cb0a61,
+      TransactionDate: 2026-03-24,
+      ProcessDate: 2026-03-24,
+      Description: LIME*RIDE KHJA LONDON,
+      Amount: 0.99,
+      IsCredit: false
+    }
+  ]
+}

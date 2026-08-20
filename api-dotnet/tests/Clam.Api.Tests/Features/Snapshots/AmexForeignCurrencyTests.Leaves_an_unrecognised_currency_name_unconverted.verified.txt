@@ -1,0 +1,59 @@
+﻿{
+  Status: 200 OK,
+  Content: {
+    Headers: {
+      Content-Length: 1018,
+      Content-Type: application/json; charset=utf-8
+    },
+    Value: [
+      {
+        id: cgen00000000000000000001,
+        description: BRITISH AIRWAYS MY DIRE MALAYSIA,
+        amount: 108.6,
+        type: Expense,
+        date: 2026-02-14T00:00:00.000Z,
+        createdAt: {Scrubbed},
+        categoryId: ctest00000000000006uncat,
+        externalId: amex:amex_fx_1,
+        note: null,
+        owner: Alex,
+        reviewed: false,
+        bucket: null,
+        categoryPinned: false,
+        bucketPinned: false,
+        originalAmount: null,
+        originalCurrency: null,
+        statementFileId: null,
+        category: {
+          id: ctest00000000000006uncat,
+          name: Uncategorised,
+          color: #d1d5db
+        }
+      },
+      {
+        id: ctest00000000000000004tx,
+        description: ACME LTD SALARY,
+        amount: 3000,
+        type: Income,
+        date: 2026-01-05T00:00:00.000Z,
+        createdAt: {Scrubbed},
+        categoryId: ctest0000000000000004sal,
+        externalId: monzo:tx_alex_salary,
+        note: null,
+        owner: Alex,
+        reviewed: true,
+        bucket: Ignore,
+        categoryPinned: false,
+        bucketPinned: false,
+        originalAmount: null,
+        originalCurrency: null,
+        statementFileId: null,
+        category: {
+          id: ctest0000000000000004sal,
+          name: Salary,
+          color: #16a34a
+        }
+      }
+    ]
+  }
+}

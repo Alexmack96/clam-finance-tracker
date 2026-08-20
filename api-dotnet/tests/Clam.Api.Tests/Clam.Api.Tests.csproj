@@ -32,6 +32,22 @@
          exact file, so a migration that is not reflected here fails the suite
          rather than passing against a hand-maintained copy. -->
     <None Include="..\..\db\schema.sql" Link="db\schema.sql" CopyToOutputDirectory="PreserveNewest" />
+
+    <!-- Real Amex statements, shared with the Playwright suite rather than
+         copied, so there is one set of fixtures to keep current. The parser is
+         a reader of other people's file format: the only test of it worth
+         trusting is one that reads the actual documents. -->
+    <None Include="..\..\..\e2e\resources\statements\*-amex.pdf"
+          Link="Statements\%(Filename)%(Extension)"
+          CopyToOutputDirectory="PreserveNewest" />
+
+    <!-- The HSBC statements, which are both fixtures for their own parser and
+         the "wrong bank" case for Amex's guard. A truncated or synthetic PDF
+         cannot stand in for the latter: it fails in the extractor, which is a
+         different rejection with a different status. -->
+    <None Include="..\..\..\e2e\resources\statements\*-hsbc-statement.pdf"
+          Link="Statements\%(Filename)%(Extension)"
+          CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>

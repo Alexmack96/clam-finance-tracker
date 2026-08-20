@@ -2,7 +2,7 @@
   Status: 200 OK,
   Content: {
     Headers: {
-      Content-Length: 1032,
+      Content-Length: 1100,
       Content-Type: application/json; charset=utf-8
     },
     Value: {
@@ -29,6 +29,8 @@
           isCredit: false,
           foreignCurrency: null,
           foreignAmount: null,
+          paymentType: null,
+          balance: null,
           statementDate: February 2026,
           owner: Alex,
           importedAt: {Scrubbed},
@@ -44,6 +46,8 @@
           isCredit: false,
           foreignCurrency: null,
           foreignAmount: null,
+          paymentType: null,
+          balance: null,
           statementDate: February 2026,
           owner: Alex,
           importedAt: {Scrubbed},

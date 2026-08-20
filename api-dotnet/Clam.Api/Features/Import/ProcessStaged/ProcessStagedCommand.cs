@@ -126,7 +126,8 @@ public sealed class ProcessStagedCommand(IDbConnectionFactory factory, IIdGenera
         {
             const string Sql = """
                 SELECT  [transactionId], [transactionDate], [description], [amount],
-                        [isCredit], [owner], [statementFileId]
+                        [isCredit], [owner], [statementFileId],
+                        [foreignAmount], [foreignCurrency]
                 FROM    [AmexTransactions]
                 WHERE   [status] = 'pending';
                 """;
@@ -148,6 +149,16 @@ public sealed class ProcessStagedCommand(IDbConnectionFactory factory, IIdGenera
                 var type = row.IsCredit ? TransactionType.Income : TransactionType.Expense;
                 var (categoryId, bucket) = Classify("amex", row.Description, type);
 
+                // No FX service call here, deliberately. Amex converts a foreign
+                // charge itself and prints the sterling it actually took — at
+                // its own rate, including its non-sterling fee — so that figure
+                // is already authoritative. Re-converting the foreign amount
+                // against ECB rates would produce a number that is both wrong
+                // (MYR 575.00 settles at £108.60, ECB says about £101) and
+                // inconsistent with the statement total the parse was reconciled
+                // against. The foreign side is recorded, not recomputed.
+                var (originalAmount, originalCurrency) = ForeignSide(row);
+
                 await InsertAsync(new NormalisedTransaction
                 {
                     ExternalId = $"amex:{row.TransactionId}",
@@ -159,11 +170,25 @@ public sealed class ProcessStagedCommand(IDbConnectionFactory factory, IIdGenera
                     Bucket = bucket,
                     Owner = row.Owner,
                     StatementFileId = row.StatementFileId,
+                    OriginalAmount = originalAmount,
+                    OriginalCurrency = originalCurrency,
                 }, ct);
 
                 await MarkAsync("AmexTransactions", "transactionId", row.TransactionId, StagedStatus.Processed, ct);
                 Tally.Processed++;
             }
+        }
+
+        /// Both halves or neither: an amount with no currency says nothing, and
+        /// a currency with no amount says less. A name this build does not
+        /// recognise therefore yields nothing at all — see <see cref="CurrencyNames"/>.
+        private static (decimal? Amount, string? Currency) ForeignSide(AmexRow row)
+        {
+            var currency = CurrencyNames.ToIsoCode(row.ForeignCurrency);
+            if (currency is null) return (null, null);
+
+            var amount = StagedAmount.Parse(row.ForeignAmount);
+            return amount is null ? (null, null) : (amount, currency);
         }
 
         // ── Barclays ───────────────────────────────────────────────────────
@@ -241,7 +266,9 @@ public sealed class ProcessStagedCommand(IDbConnectionFactory factory, IIdGenera
 
                 var status = await ProcessTwoColumnRowAsync(
                     "santander", $"santander:{row.TransactionId ?? row.Id.ToString(System.Globalization.CultureInfo.InvariantCulture)}",
-                    row.Description, amount, date, isIncome, row.Owner, ct);
+                    // No statement file: Santander's upload route is not ported
+                    // yet, so its staging table has no column to link one.
+                    row.Description, amount, date, isIncome, row.Owner, null, ct);
 
                 await MarkAsync("SantanderTransactions", "id", row.Id, status, ct);
             }
@@ -251,7 +278,8 @@ public sealed class ProcessStagedCommand(IDbConnectionFactory factory, IIdGenera
         internal async Task ProcessHsbcAsync(CancellationToken ct)
         {
             const string Sql = """
-                SELECT [id], [transactionId], [date], [description], [moneyIn], [moneyOut], [owner]
+                SELECT [id], [transactionId], [date], [description], [moneyIn], [moneyOut],
+                       [owner], [statementFileId]
                 FROM   [HsbcTransactions]
                 WHERE  [status] = 'pending';
                 """;
@@ -260,13 +288,16 @@ public sealed class ProcessStagedCommand(IDbConnectionFactory factory, IIdGenera
 
             foreach (var row in rows)
             {
+                // Direction is which column the figure was printed in, decided
+                // by the parser. Never the payment type: some incoming payments
+                // are typed BP, the same code most outgoing ones carry.
                 var isIncome = row.MoneyIn is not null;
                 var amount = StagedAmount.Parse(row.MoneyIn ?? row.MoneyOut);
                 var date = StagedAmount.ParseDate(row.Date);
 
                 var status = await ProcessTwoColumnRowAsync(
                     "hsbc", $"hsbc:{row.TransactionId}",
-                    row.Description, amount, date, isIncome, row.Owner, ct);
+                    row.Description, amount, date, isIncome, row.Owner, row.StatementFileId, ct);
 
                 await MarkAsync("HsbcTransactions", "id", row.Id, status, ct);
             }
@@ -325,7 +356,8 @@ public sealed class ProcessStagedCommand(IDbConnectionFactory factory, IIdGenera
         /// date, and a zero row that means "statement filler, not a payment".
         private async Task<string> ProcessTwoColumnRowAsync(
             string bank, string externalId, string description,
-            decimal? amount, DateTime? date, bool isIncome, string owner, CancellationToken ct)
+            decimal? amount, DateTime? date, bool isIncome, string owner,
+            string? statementFileId, CancellationToken ct)
         {
             // A row with an unparseable amount or date is marked errored and
             // skipped — one bad row must never abort the whole run.
@@ -354,6 +386,7 @@ public sealed class ProcessStagedCommand(IDbConnectionFactory factory, IIdGenera
                 CategoryId = categoryId,
                 Bucket = bucket,
                 Owner = owner,
+                StatementFileId = statementFileId,
             }, ct);
 
             Tally.Processed++;
@@ -486,6 +519,12 @@ public sealed class ProcessStagedCommand(IDbConnectionFactory factory, IIdGenera
         public bool IsCredit { get; set; }
         public string Owner { get; set; } = "";
         public string? StatementFileId { get; set; }
+
+        /// As the statement printed them: the amount charged in the merchant's
+        /// currency, and that currency's *name* rather than its ISO code.
+        public string? ForeignAmount { get; set; }
+
+        public string? ForeignCurrency { get; set; }
     }
 
     private sealed class BarclaysRow
@@ -519,6 +558,10 @@ public sealed class ProcessStagedCommand(IDbConnectionFactory factory, IIdGenera
         public string? MoneyIn { get; set; }
         public string? MoneyOut { get; set; }
         public string Owner { get; set; } = "";
+
+        /// The PDF this row was read out of, so the normalised transaction can
+        /// trace back to its source document in one join.
+        public string? StatementFileId { get; set; }
     }
 
     private sealed class SofiRow

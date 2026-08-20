@@ -1,0 +1,121 @@
+﻿{
+  StatementDate: 10 April to 9 May 2026,
+  RowCount: 15,
+  Rows: [
+    {
+      TransactionId: 2104d1e98e29e88e,
+      Date: 2026-04-13,
+      PaymentType: BP,
+      Description: SIMON M Showwww,
+      MoneyIn: 140.00
+    },
+    {
+      TransactionId: bfc6bae1e4e0cd52,
+      Date: 2026-04-13,
+      PaymentType: BP,
+      Description: WHITE A Tickets,
+      MoneyIn: 140.00,
+      Balance: 5,216.84
+    },
+    {
+      TransactionId: 57fde986534ed316,
+      Date: 2026-04-24,
+      PaymentType: DD,
+      Description: SKY TV,
+      MoneyOut: 56.00,
+      Balance: 5,160.84
+    },
+    {
+      TransactionId: b23dd78232131e71,
+      Date: 2026-04-25,
+      PaymentType: BP,
+      Description: Alex Mackintosh Flash tickets,
+      MoneyOut: 286.00,
+      Balance: 4,874.84
+    },
+    {
+      TransactionId: 236ff47075a25fc9,
+      Date: 2026-04-26,
+      PaymentType: OBP,
+      Description: AMERICAN EXP 3773 PB5155******58051,
+      MoneyOut: 3,188.23
+    },
+    {
+      TransactionId: a72fcfc27aa01997,
+      Date: 2026-04-26,
+      PaymentType: BP,
+      Description: Morenike balogun Flash dinner,
+      MoneyOut: 54.24,
+      Balance: 1,632.37
+    },
+    {
+      TransactionId: b76b8370d173d565,
+      Date: 2026-04-28,
+      PaymentType: DD,
+      Description: OCTOPUS ENERGY,
+      MoneyOut: 50.29,
+      Balance: 1,582.08
+    },
+    {
+      TransactionId: dcc6d20638aedf48,
+      Date: 2026-04-30,
+      PaymentType: CR,
+      Description: BLOOM LP WAGES,
+      MoneyIn: 6,054.80
+    },
+    {
+      TransactionId: 3ed58e551495f2a4,
+      Date: 2026-04-30,
+      PaymentType: SO,
+      Description: CHASE EVANS FLAT 205 RENT,
+      MoneyOut: 2,730.00,
+      Balance: 4,906.88
+    },
+    {
+      TransactionId: 58b3a5c00c642e4d,
+      Date: 2026-05-01,
+      PaymentType: DD,
+      Description: NUFFIELD HEALTH,
+      MoneyOut: 79.50
+    },
+    {
+      TransactionId: 8aebae129bafd7ef,
+      Date: 2026-05-01,
+      PaymentType: DD,
+      Description: TV LICENCE MBP,
+      MoneyOut: 34.90,
+      Balance: 4,792.48
+    },
+    {
+      TransactionId: 678f88e802f914b4,
+      Date: 2026-05-05,
+      PaymentType: DD,
+      Description: L B I COUNCIL TAX,
+      MoneyOut: 176.00
+    },
+    {
+      TransactionId: 85bc793468678453,
+      Date: 2026-05-05,
+      PaymentType: DD,
+      Description: THAMES WATER,
+      MoneyOut: 46.00,
+      Balance: 4,570.48
+    },
+    {
+      TransactionId: 0b9a1e47728462e0,
+      Date: 2026-05-06,
+      PaymentType: CR,
+      Description: ALEXANDER MACKINTO settle up,
+      MoneyIn: 230.00,
+      Balance: 4,800.48
+    },
+    {
+      TransactionId: 7a7a99427f75e890,
+      Date: 2026-05-07,
+      PaymentType: DD,
+      Description: VODAFONE LTD,
+      MoneyOut: 29.29,
+      Balance: 4,771.19
+    }
+  ]
+}

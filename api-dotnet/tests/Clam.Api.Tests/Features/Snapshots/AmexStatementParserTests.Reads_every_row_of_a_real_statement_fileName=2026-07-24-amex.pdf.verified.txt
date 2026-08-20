@@ -1,0 +1,346 @@
+﻿{
+  StatementDate: 24/07/26,
+  RowCount: 42,
+  Debits: 2739.16,
+  Credits: 2815.95,
+  Rows: [
+    {
+      TransactionId: 14f333b960077c16,
+      TransactionDate: 2026-06-24,
+      ProcessDate: 2026-06-24,
+      Description: TFL TRAVEL CHARGE TFL.GOV.UK/CP,
+      Amount: 1.75,
+      IsCredit: false
+    },
+    {
+      TransactionId: 3ec6bd4dc286a562,
+      TransactionDate: 2026-06-25,
+      ProcessDate: 2026-06-25,
+      Description: TFL TRAVEL CHARGE TFL.GOV.UK/CP,
+      Amount: 1.75,
+      IsCredit: false
+    },
+    {
+      TransactionId: ac14a7889b4e6379,
+      TransactionDate: 2026-06-25,
+      ProcessDate: 2026-06-26,
+      Description: TAXICODE AMSTERDAM,
+      Amount: 43.50,
+      IsCredit: false
+    },
+    {
+      TransactionId: 762dc1abbbe682f5,
+      TransactionDate: 2026-06-25,
+      ProcessDate: 2026-06-27,
+      Description: GOOGLE*GOOGLE ONE LONDON,
+      Amount: 2.49,
+      IsCredit: false
+    },
+    {
+      TransactionId: d9a8d94f407dd716,
+      TransactionDate: 2026-06-26,
+      ProcessDate: 2026-06-26,
+      Description: GUESTRS*THEVIEWHOT DALLAS,
+      Amount: 304.54,
+      IsCredit: false
+    },
+    {
+      TransactionId: 26c0f3fe07009f40,
+      TransactionDate: 2026-06-26,
+      ProcessDate: 2026-06-26,
+      Description: HOTEL ON BOOKING.COM AMSTERDAM,
+      Amount: 172.68,
+      IsCredit: false
+    },
+    {
+      TransactionId: 8a990587082d33f2,
+      TransactionDate: 2026-06-26,
+      ProcessDate: 2026-06-26,
+      Description: LIME*RIDE KHJA LONDON,
+      Amount: 1.70,
+      IsCredit: false
+    },
+    {
+      TransactionId: 9bf37f0a2cdea5a2,
+      TransactionDate: 2026-06-26,
+      ProcessDate: 2026-06-26,
+      Description: SAINSBURY'S SUPERMARKET LONDON,
+      Amount: 2.50,
+      IsCredit: false
+    },
+    {
+      TransactionId: 82290407901cc601,
+      TransactionDate: 2026-06-26,
+      ProcessDate: 2026-06-27,
+      Description: TFL TRAVEL CHARGE TFL.GOV.UK/CP,
+      Amount: 1.75,
+      IsCredit: false
+    },
+    {
+      TransactionId: bc314b333b315249,
+      TransactionDate: 2026-06-27,
+      ProcessDate: 2026-06-28,
+      Description: NO 5 BARBER NO 5 BARBER LONDON,
+      Amount: 30.00,
+      IsCredit: false
+    },
+    {
+      TransactionId: 14edbf7878d6ae44,
+      TransactionDate: 2026-06-27,
+      ProcessDate: 2026-06-28,
+      Description: TFL TRAVEL CHARGE TFL.GOV.UK/CP,
+      Amount: 7.05,
+      IsCredit: false
+    },
+    {
+      TransactionId: 37598ea64d7370c0,
+      TransactionDate: 2026-06-28,
+      ProcessDate: 2026-06-28,
+      Description: ANTHROPIC* CLAUDE SUB SAN FRANCISCO,
+      Amount: 18.00,
+      IsCredit: false
+    },
+    {
+      TransactionId: f74f38755b2096fc,
+      TransactionDate: 2026-06-28,
+      ProcessDate: 2026-06-28,
+      Description: Waitrose Clapham Common London,
+      Amount: 14.74,
+      IsCredit: false
+    },
+    {
+      TransactionId: 2901dc4466ad2854,
+      TransactionDate: 2026-06-28,
+      ProcessDate: 2026-06-28,
+      Description: Waitrose Clapham Common London,
+      Amount: 3.10,
+      IsCredit: false
+    },
+    {
+      TransactionId: 034030429e6c6e89,
+      TransactionDate: 2026-06-29,
+      ProcessDate: 2026-06-29,
+      Description: NOXY BROTHERS London,
+      Amount: 9.20,
+      IsCredit: false
+    },
+    {
+      TransactionId: a0824b282943e397,
+      TransactionDate: 2026-06-29,
+      ProcessDate: 2026-06-29,
+      Description: SAINSBURY'S SUPERMARKET LONDON,
+      Amount: 3.50,
+      IsCredit: false
+    },
+    {
+      TransactionId: 662873f369d78d8d,
+      TransactionDate: 2026-06-29,
+      ProcessDate: 2026-06-29,
+      Description: TFL TRAVEL CHARGE TFL.GOV.UK/CP,
+      Amount: 8.45,
+      IsCredit: false
+    },
+    {
+      TransactionId: 62ff06b49d99970a,
+      TransactionDate: 2026-06-30,
+      ProcessDate: 2026-06-30,
+      Description: DISCOVERY COMMUNICATION AMSTERDAM,
+      Amount: 9.99,
+      IsCredit: false
+    },
+    {
+      TransactionId: e6c27497990a452b,
+      TransactionDate: 2026-06-30,
+      ProcessDate: 2026-06-30,
+      Description: LIME*RIDE KHJA LONDON,
+      Amount: 1.70,
+      IsCredit: false
+    },
+    {
+      TransactionId: bf7f23c0482914f1,
+      TransactionDate: 2026-06-30,
+      ProcessDate: 2026-06-30,
+      Description: RAILWAY SAN FRANCISCO,
+      Amount: 2.00,
+      IsCredit: false,
+      ForeignAmount: 2.57,
+      ForeignCurrency: UNITED STATES DOLLAR
+    },
+    {
+      TransactionId: 35941697137b8884,
+      TransactionDate: 2026-06-30,
+      ProcessDate: 2026-06-30,
+      Description: RESETSAUNA LONDON,
+      Amount: 104.00,
+      IsCredit: false
+    },
+    {
+      TransactionId: 0a7f436af1fe16ae,
+      TransactionDate: 2026-06-30,
+      ProcessDate: 2026-07-01,
+      Description: TFL TRAVEL CHARGE TFL.GOV.UK/CP,
+      Amount: 1.75,
+      IsCredit: false
+    },
+    {
+      TransactionId: 5c195cd1c675bdcd,
+      TransactionDate: 2026-07-01,
+      ProcessDate: 2026-07-01,
+      Description: LEBARA MOBILE LIMITED LONDON,
+      Amount: 1.34,
+      IsCredit: false
+    },
+    {
+      TransactionId: f6e061273ba5a6b0,
+      TransactionDate: 2026-07-02,
+      ProcessDate: 2026-07-02,
+      Description: LIME*RIDE KHJA LONDON,
+      Amount: 1.00,
+      IsCredit: false
+    },
+    {
+      TransactionId: bd0ae6f49019980a,
+      TransactionDate: 2026-07-02,
+      ProcessDate: 2026-07-02,
+      Description: TC AND REVE London,
+      Amount: 1,615.00,
+      IsCredit: false
+    },
+    {
+      TransactionId: 883138403ca0ef73,
+      TransactionDate: 2026-07-03,
+      ProcessDate: 2026-07-04,
+      Description: TFL TRAVEL CHARGE TFL.GOV.UK/CP,
+      Amount: 4.85,
+      IsCredit: false
+    },
+    {
+      TransactionId: 37072d047ffdb28e,
+      TransactionDate: 2026-07-05,
+      ProcessDate: 2026-07-05,
+      Description: DELIVEROO LONDON,
+      Amount: 49.99,
+      IsCredit: false
+    },
+    {
+      TransactionId: a7e61aae9b2875fd,
+      TransactionDate: 2026-07-05,
+      ProcessDate: 2026-07-05,
+      Description: DELIVEROO,
+      Amount: 5.00,
+      IsCredit: true
+    },
+    {
+      TransactionId: a5a08fb2731762bb,
+      TransactionDate: 2026-07-05,
+      ProcessDate: 2026-07-05,
+      Description: TFL TRAVEL CHARGE TFL.GOV.UK/CP,
+      Amount: 1.75,
+      IsCredit: false
+    },
+    {
+      TransactionId: 78158e7a35af09ba,
+      TransactionDate: 2026-07-06,
+      ProcessDate: 2026-07-06,
+      Description: PAYMENT RECEIVED - THANK YOU,
+      Amount: 2,805.95,
+      IsCredit: true
+    },
+    {
+      TransactionId: 88c1e30f617370cb,
+      TransactionDate: 2026-07-07,
+      ProcessDate: 2026-07-08,
+      Description: TFL TRAVEL CHARGE TFL.GOV.UK/CP,
+      Amount: 1.75,
+      IsCredit: false
+    },
+    {
+      TransactionId: 46d504b1bf8238dd,
+      TransactionDate: 2026-07-08,
+      ProcessDate: 2026-07-09,
+      Description: TFL TRAVEL CHARGE TFL.GOV.UK/CP,
+      Amount: 1.75,
+      IsCredit: false
+    },
+    {
+      TransactionId: 8a21d8b7772863d8,
+      TransactionDate: 2026-07-09,
+      ProcessDate: 2026-07-10,
+      Description: TFL TRAVEL CHARGE TFL.GOV.UK/CP,
+      Amount: 5.35,
+      IsCredit: false
+    },
+    {
+      TransactionId: f2d8f0428ad064a9,
+      TransactionDate: 2026-07-10,
+      ProcessDate: 2026-07-10,
+      Description: LIME*RIDE KHJA LONDON,
+      Amount: 1.70,
+      IsCredit: false
+    },
+    {
+      TransactionId: f2d8f0428ad064a9-1,
+      TransactionDate: 2026-07-10,
+      ProcessDate: 2026-07-10,
+      Description: LIME*RIDE KHJA LONDON,
+      Amount: 1.70,
+      IsCredit: false
+    },
+    {
+      TransactionId: a7812b01a287889e,
+      TransactionDate: 2026-07-10,
+      ProcessDate: 2026-07-11,
+      Description: DELIVEROO LONDON,
+      Amount: 44.40,
+      IsCredit: false
+    },
+    {
+      TransactionId: 4b161cf4d5c88134,
+      TransactionDate: 2026-07-10,
+      ProcessDate: 2026-07-11,
+      Description: GOOGLE*YOUTUBE LONDON,
+      Amount: 12.99,
+      IsCredit: false
+    },
+    {
+      TransactionId: d11234f4988507ab,
+      TransactionDate: 2026-07-10,
+      ProcessDate: 2026-07-11,
+      Description: TFL TRAVEL CHARGE TFL.GOV.UK/CP,
+      Amount: 1.75,
+      IsCredit: false
+    },
+    {
+      TransactionId: 6663c6d434702950,
+      TransactionDate: 2026-07-11,
+      ProcessDate: 2026-07-11,
+      Description: DELIVEROO,
+      Amount: 5.00,
+      IsCredit: true
+    },
+    {
+      TransactionId: 429b1837b5e22655,
+      TransactionDate: 2026-07-11,
+      ProcessDate: 2026-07-11,
+      Description: LIME*RIDE KHJA LONDON,
+      Amount: 1.70,
+      IsCredit: false
+    },
+    {
+      TransactionId: e951c7b83e2bc2fe,
+      TransactionDate: 2026-07-19,
+      ProcessDate: 2026-07-19,
+      Description: SUPERCUBE SUPERCUBE UNITED KINGDOM,
+      Amount: 90.00,
+      IsCredit: false
+    },
+    {
+      TransactionId: 28c187414fa06744,
+      TransactionDate: 2026-07-19,
+      ProcessDate: 2026-07-20,
+      Description: GLASGOW COMMUNITY SAUN GLASGOW,
+      Amount: 156.00,
+      IsCredit: false
+    }
+  ]
+}

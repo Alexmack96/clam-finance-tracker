@@ -19,9 +19,22 @@
     <PackageVersion Include="FastEndpoints" Version="8.2.0" />
     <PackageVersion Include="FastEndpoints.Swagger" Version="8.2.0" />
     <PackageVersion Include="Microsoft.Data.SqlClient" Version="7.0.2" />
+    <!-- Entra ID auth for Azure SQL. Separate package on purpose: SqlClient 7.0
+         removed Azure.Core/Azure.Identity from the core driver so that everyone
+         connecting with Windows auth stops paying for that dependency tree.
+         Nothing references it in code — it registers the auth providers, and
+         `Authentication=Active Directory Default` in a connection string is what
+         uses them. Which is also how its absence fails: at runtime, on connect,
+         looking like a config problem rather than a missing reference. Keep the
+         version in step with Microsoft.Data.SqlClient above. -->
+    <PackageVersion Include="Microsoft.Data.SqlClient.Extensions.Azure" Version="7.0.2" />
     <!-- Feature flags. The base package, not .AspNetCore: nothing here needs the
          middleware or tag helpers, only IFeatureManager. -->
     <PackageVersion Include="Microsoft.FeatureManagement" Version="4.6.0" />
+    <!-- Statement PDF text extraction. Apache 2.0, and the only free .NET reader
+         that exposes per-word coordinates — which the Amex parser needs, because
+         that table is rebuilt from x/y positions, not from reading order. -->
+    <PackageVersion Include="PdfPig" Version="0.1.15" />
   </ItemGroup>
 
   <ItemGroup Label="Security">

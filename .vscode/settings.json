@@ -1,31 +1,43 @@
 {
+    // ── Peacock: the app's own brand violet ──────────────────────────────────
+    //
+    // #b58dff is `--primary: oklch(0.74 0.19 295)` from client/src/index.css,
+    // the violet the dark theme is built around.
+    //
+    // "Exact" has a limit here: that colour's blue channel converts to 1.199,
+    // outside sRGB, so it cannot be written as a hex triplet at all — this is
+    // the clipped equivalent, and it reads very slightly less vivid than the app
+    // does on a wide-gamut display. Peacock takes hex only, so there is no
+    // version of this that is closer.
+    //
+    // The other two derive from it the way Peacock does: HSL lightness ±10.
     "workbench.colorCustomizations": {
-        "activityBar.activeBackground": "#8e87c9",
-        "activityBar.background": "#8e87c9",
+        "activityBar.activeBackground": "#d6c0ff",
+        "activityBar.background": "#d6c0ff",
         "activityBar.foreground": "#15202b",
         "activityBar.inactiveForeground": "#15202b99",
-        "activityBarBadge.background": "#84433b",
+        "activityBarBadge.background": "#df4e00",
         "activityBarBadge.foreground": "#e7e7e7",
-        "activityBarTop.activeBackground": "#8e87c9",
-        "activityBarTop.background": "#8e87c9",
+        "activityBarTop.activeBackground": "#d6c0ff",
+        "activityBarTop.background": "#d6c0ff",
         "activityBarTop.foreground": "#15202b",
         "activityBarTop.inactiveForeground": "#15202b99",
-        "commandCenter.border": "#e7e7e799",
-        "commandCenter.foreground": "#e7e7e7",
-        "sash.hoverBorder": "#8e87c9",
-        "statusBar.background": "#6d64b9",
-        "statusBar.debuggingBackground": "#6d64b9",
-        "statusBar.debuggingForeground": "#e7e7e7",
-        "statusBar.foreground": "#e7e7e7",
-        "statusBarItem.hoverBackground": "#8e87c9",
-        "statusBarItem.remoteBackground": "#cd9891",
-        "statusBarItem.remoteForeground": "#e7e7e7",
-        "titleBar.activeBackground": "#6d64b9",
-        "titleBar.activeForeground": "#e7e7e7",
-        "titleBar.inactiveBackground": "#6d64b999",
-        "titleBar.inactiveForeground": "#e7e7e799"
+        "commandCenter.border": "#15202b99",
+        "commandCenter.foreground": "#15202b",
+        "sash.hoverBorder": "#d6c0ff",
+        "statusBar.background": "#b58dff",
+        "statusBar.debuggingBackground": "#b58dff",
+        "statusBar.debuggingForeground": "#15202b",
+        "statusBar.foreground": "#15202b",
+        "statusBarItem.hoverBackground": "#945aff",
+        "statusBarItem.remoteBackground": "#bf4300",
+        "statusBarItem.remoteForeground": "#15202b",
+        "titleBar.activeBackground": "#b58dff",
+        "titleBar.activeForeground": "#15202b",
+        "titleBar.inactiveBackground": "#b58dff99",
+        "titleBar.inactiveForeground": "#15202b99"
     },
-    "peacock.color": "#6d64b9",
+    "peacock.color": "#b58dff",
 
     // ── Classic Visual Studio 2022 (Dark) colours for C# ─────────────────────
     //

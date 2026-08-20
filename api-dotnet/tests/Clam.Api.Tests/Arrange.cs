@@ -245,6 +245,25 @@ public sealed class Arrange(string connectionString, Action resetIds)
             new { TransactionId = transactionId, Amount = amount });
     }
 
+    /// An Amex row charged in a foreign currency, staged exactly as the parser
+    /// leaves it: the sterling Amex actually took in [amount], and the
+    /// merchant's own figures alongside it under the currency's printed *name*.
+    public async Task StagedForeignAmexRowAsync(
+        string transactionId = "amex_fx_1",
+        string amount = "108.60",
+        string foreignAmount = "575.00",
+        string foreignCurrency = "MALAYSIAN RINGGIT")
+    {
+        await ExecuteAsync("""
+            INSERT INTO [AmexTransactions]
+                ([transactionId], [transactionDate], [processDate], [description], [amount],
+                 [isCredit], [foreignAmount], [foreignCurrency], [statementDate], [owner])
+            VALUES (@TransactionId, '2026-02-14', '2026-02-15', 'BRITISH AIRWAYS MY DIRE MALAYSIA', @Amount,
+                    0, @ForeignAmount, @ForeignCurrency, 'February 2026', 'Alex');
+            """,
+            new { TransactionId = transactionId, Amount = amount, ForeignAmount = foreignAmount, ForeignCurrency = foreignCurrency });
+    }
+
     /// One Barclays credit and one Barclays debit. The credit must be skipped —
     /// it is a payment to the card from an account already imported.
     public Task StagedBarclaysPairAsync() => ExecuteAsync("""
@@ -372,6 +391,22 @@ public sealed class Arrange(string connectionString, Action resetIds)
                ('amex_stmt_2', '2026-02-12', '2026-02-13', 'UBER TRIP',     '9.20', 0,
                 'February 2026', 'Alex', 'pending',   'cstmt0000000000000000001');
         """);
+
+    /// A world: a statement from a bank this service has no PDF parser for.
+    /// Barclays stages from a parser that was never ported, so its statement
+    /// rows can exist while nothing here can re-read the document.
+    public async Task StatementOfAnUnparseableBankAsync()
+    {
+        await NothingAsync();
+        await ExecuteAsync("""
+            INSERT INTO [StatementFiles]
+                ([id], [bank], [owner], [statementDate], [originalName], [contentHash],
+                 [byteSize], [storageKey], [rowCount], [reconciled])
+            VALUES ('cstmt0000000000000000002', 'barclays', 'Alex', 'February 2026',
+                    'barclays-feb.pdf', 'f6e5d4c3b2a1', 10240,
+                    'barclays/Alex/February-2026-f6e5d4c3b2a1.pdf', 2, 1);
+            """);
+    }
 
     public const string PinnedNoteId = "cnote0000000000000pinned";
     public const string PlainNoteId = "cnote00000000000000plain";
