@@ -236,42 +236,6 @@ public class BusinessRuleTests(ClamApiFactory api) : ApiTest(api)
         await Verify(response);
     }
 
-    // ─── Users ───────────────────────────────────────────────────────────────
-
-    /// 129 characters. Not a column width — the password is hashed before it is
-    /// stored — but a bound on work: scrypt is deliberately expensive, and this
-    /// is the one endpoint where an unauthenticated caller chooses how much of it
-    /// to ask for.
-    [Fact]
-    public async Task Create_user_rejects_a_password_longer_than_the_hasher_should_be_asked_for()
-    {
-        await Given.NothingAsync();
-
-        var response = await Post("/api/admin/users", new
-        {
-            name = "Sam Reed",
-            email = "sam@example.com",
-            password = Looong(129),
-        });
-
-        await Verify(response);
-    }
-
-    [Fact]
-    public async Task A_password_of_exactly_the_maximum_length_is_accepted()
-    {
-        await Given.NothingAsync();
-
-        var response = await Post("/api/admin/users", new
-        {
-            name = "Sam Reed",
-            email = "sam@example.com",
-            password = Looong(128),
-        });
-
-        await Verify(response);
-    }
-
     // ─── Categories ──────────────────────────────────────────────────────────
 
     /// The command stores the name trimmed, so the validator measures it trimmed.

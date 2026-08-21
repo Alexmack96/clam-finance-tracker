@@ -8,7 +8,6 @@ public sealed class DeleteNoteEndpoint(DeleteNoteCommand command) : ResultEndpoi
     public override void Configure()
     {
         Delete("notes/{Id}");
-        AllowAnonymous();
         Description(b => b.WithName("DeleteNote"));
     }
 

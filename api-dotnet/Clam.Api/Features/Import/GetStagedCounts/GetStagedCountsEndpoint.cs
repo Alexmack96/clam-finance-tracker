@@ -8,7 +8,6 @@ public sealed class GetStagedCountsEndpoint(GetStagedCountsQuery query)
     public override void Configure()
     {
         Get("admin/staged");
-        AllowAnonymous();
         Description(b => b.WithName("GetStagedCounts"));
     }
 

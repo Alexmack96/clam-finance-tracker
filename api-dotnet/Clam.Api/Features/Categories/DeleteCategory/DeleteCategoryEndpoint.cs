@@ -9,7 +9,6 @@ public sealed class DeleteCategoryEndpoint(DeleteCategoryCommand command)
     public override void Configure()
     {
         Delete("categories/{Id}");
-        AllowAnonymous();
         Description(b => b.WithName("DeleteCategory"));
     }
 

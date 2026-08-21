@@ -9,7 +9,6 @@ public sealed class CreateCategoryEndpoint(CreateCategoryCommand command)
     public override void Configure()
     {
         Post("categories");
-        AllowAnonymous();
         Description(b => b.WithName("CreateCategory"));
     }
 

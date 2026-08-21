@@ -9,9 +9,24 @@ Sentry.init({
 });
 import { BrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { AuthKitProvider } from "@workos-inc/authkit-react";
 import "./index.css";
 import { App } from "./App.js";
 import { ThemeProvider } from "./context/ThemeContext.js";
+import { AuthTokenBridge, ProvisionOnFirstSignIn } from "./components/AuthBridge.js";
+
+const workOsClientId = import.meta.env.VITE_WORKOS_CLIENT_ID;
+
+if (!workOsClientId) {
+  // Failing here beats failing at the first API call. Without a client id
+  // AuthKit cannot start a sign-in, so every request goes out unauthenticated
+  // and the app looks broken in a way that points at the API rather than at a
+  // missing environment variable.
+  throw new Error(
+    "VITE_WORKOS_CLIENT_ID is not set. Copy the Client ID from the WorkOS " +
+      "dashboard (Configuration -> Client ID) into the repo-root .env.",
+  );
+}
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -37,13 +52,18 @@ const queryClient = new QueryClient({
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <Sentry.ErrorBoundary fallback={<p>Something went wrong.</p>}>
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider>
-          <BrowserRouter>
-            <App />
-          </BrowserRouter>
-        </ThemeProvider>
-      </QueryClientProvider>
+      <AuthKitProvider clientId={workOsClientId}>
+        <QueryClientProvider client={queryClient}>
+          <AuthTokenBridge>
+            <ThemeProvider>
+              <BrowserRouter>
+                <ProvisionOnFirstSignIn />
+                <App />
+              </BrowserRouter>
+            </ThemeProvider>
+          </AuthTokenBridge>
+        </QueryClientProvider>
+      </AuthKitProvider>
     </Sentry.ErrorBoundary>
   </StrictMode>,
 );

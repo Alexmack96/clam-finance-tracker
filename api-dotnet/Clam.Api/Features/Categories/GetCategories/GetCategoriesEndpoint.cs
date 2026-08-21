@@ -7,7 +7,6 @@ public sealed class GetCategoriesEndpoint(GetCategoriesQuery query): EndpointWit
     public override void Configure()
     {
         Get("categories");
-        AllowAnonymous();
         Description(b => b.WithName("GetCategories"));
     }
 

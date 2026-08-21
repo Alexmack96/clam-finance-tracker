@@ -9,7 +9,6 @@ public sealed class DeleteInvestmentSnapshotEndpoint(DeleteInvestmentSnapshotCom
     public override void Configure()
     {
         Delete("investments/snapshots/{Id}");
-        AllowAnonymous();
         Description(b => b.WithName("DeleteInvestmentSnapshot"));
     }
 

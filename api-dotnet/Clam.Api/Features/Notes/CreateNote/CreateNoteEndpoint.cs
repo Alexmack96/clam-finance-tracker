@@ -7,7 +7,6 @@ public sealed class CreateNoteEndpoint(CreateNoteCommand command) : Endpoint<Cre
     public override void Configure()
     {
         Post("notes");
-        AllowAnonymous();
         Description(b => b.WithName("CreateNote"));
     }
 

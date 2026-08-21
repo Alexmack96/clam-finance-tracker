@@ -8,7 +8,6 @@ public sealed class GetMonzoRecRunsEndpoint(GetMonzoRecRunsQuery query)
     public override void Configure()
     {
         Get("admin/monzo/rec");
-        AllowAnonymous();
         Description(b => b.WithName("GetMonzoRecRuns"));
     }
 

@@ -9,7 +9,6 @@ public sealed class UpdateRecurringNoteEndpoint(UpdateRecurringNoteCommand comma
     public override void Configure()
     {
         Patch("recurring/note");
-        AllowAnonymous();
         Description(b => b.WithName("UpdateRecurringNote"));
     }
 

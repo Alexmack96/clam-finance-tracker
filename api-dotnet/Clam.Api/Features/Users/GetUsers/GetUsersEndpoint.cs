@@ -7,7 +7,6 @@ public sealed class GetUsersEndpoint(GetUsersQuery query) : EndpointWithoutReque
     public override void Configure()
     {
         Get("admin/users");
-        AllowAnonymous();
         Description(b => b.WithName("GetUsers"));
     }
 

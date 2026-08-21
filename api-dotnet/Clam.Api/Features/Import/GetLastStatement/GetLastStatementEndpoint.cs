@@ -8,7 +8,6 @@ public sealed class GetLastStatementEndpoint(GetLastStatementQuery query)
     public override void Configure()
     {
         Get("admin/last-statement");
-        AllowAnonymous();
         Description(b => b.WithName("GetLastStatement"));
     }
 

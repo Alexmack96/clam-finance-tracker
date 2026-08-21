@@ -10,7 +10,6 @@ public sealed class ImportAmexEndpoint(ImportAmexCommand command)
     {
         Post("admin/import/amex");
         AllowFileUploads();
-        AllowAnonymous();
         Description(b => b.WithName("ImportAmex"));
     }
 

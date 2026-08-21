@@ -9,7 +9,6 @@ public sealed class CreateRuleEndpoint(CreateRuleCommand command) : ResultEndpoi
     public override void Configure()
     {
         Post("rules");
-        AllowAnonymous();
         Description(b => b.WithName("CreateRule"));
     }
 

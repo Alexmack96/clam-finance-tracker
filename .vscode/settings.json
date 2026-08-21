@@ -1,4 +1,21 @@
 {
+    // ── appsettings*.json are JSONC, not JSON ────────────────────────────────
+    //
+    // .NET's JsonConfigurationProvider parses them with CommentHandling.Skip and
+    // AllowTrailingCommas, so `//` is legal and this codebase uses it heavily to
+    // explain what each setting is for. VS Code defaults them to strict `json`
+    // and reports every comment as error 521, which buries real problems under
+    // a dozen fake ones.
+    //
+    // launchSettings.json is deliberately NOT in this list. That one really is
+    // strict JSON — `dotnet run` rejects the whole profile over a comment, and
+    // Aspire then falls back to a random dashboard port. Leaving VS Code to
+    // complain about it there is the correct behaviour.
+    "files.associations": {
+        "appsettings.json": "jsonc",
+        "appsettings.*.json": "jsonc"
+    },
+
     // ── Peacock: the app's own brand violet ──────────────────────────────────
     //
     // #b58dff is `--primary: oklch(0.74 0.19 295)` from client/src/index.css,

@@ -9,7 +9,6 @@ public sealed class UpdateCategoryEndpoint(UpdateCategoryCommand command)
     public override void Configure()
     {
         Patch("categories/{Id}");
-        AllowAnonymous();
         Description(b => b.WithName("UpdateCategory"));
     }
 

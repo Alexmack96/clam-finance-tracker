@@ -17,6 +17,10 @@ public sealed class SeedDataEndpoint(SeedDataCommand command)
     public override void Configure()
     {
         Post("dev/seed");
+
+        // Program.cs filters this endpoint out entirely unless Seed:Enabled, which
+        // defaults to Development only. Anonymous is moot where it exists and it
+        // does not exist where it would matter.
         AllowAnonymous();
         Description(b => b
             .WithName("SeedDevData")

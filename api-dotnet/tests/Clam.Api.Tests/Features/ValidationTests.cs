@@ -40,15 +40,6 @@ public class EveryFieldInvalidTests(ClamApiFactory api) : ApiTest(api)
     }
 
     [Fact]
-    public async Task Create_user_reports_every_bad_field()
-    {
-        await Given.NothingAsync();
-        var response = await Post("/api/admin/users",
-            new { name = "ab", email = "not-an-address", password = "short" });
-        await Verify(response);
-    }
-
-    [Fact]
     public async Task Create_note_reports_every_bad_field()
     {
         await Given.NothingAsync();

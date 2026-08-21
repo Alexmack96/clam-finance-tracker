@@ -49,6 +49,21 @@ internal static class StatementGrid
     /// out of a matrix multiplication rather than a literal.
     private const double BaselineEpsilon = 0.01;
 
+    /// A vertical slice of the page, read top to bottom in full before the next
+    /// slice begins, with its own column bounds.
+    ///
+    /// Statements that print one table across the page are a single band. A
+    /// magazine-style layout — Barclaycard's, where the entries flow down the
+    /// left half of the page and continue at the top of the right half — is two,
+    /// and reading it as one table is not a near miss but nonsense: y-order
+    /// interleaves the two halves, so the 13th of the month lands between the
+    /// 22nd and the 24th.
+    ///
+    /// <param name="Left">Inclusive x at which the band starts.</param>
+    /// <param name="Right">Exclusive x at which the band ends.</param>
+    /// <param name="UpperBounds">This band's column bounds, in page coordinates.</param>
+    internal readonly record struct Band(double Left, double Right, double[] UpperBounds);
+
     /// One printed line per entry, split into columns. A column the line does not
     /// reach is an empty string, never null, so callers can index freely.
     ///
@@ -58,8 +73,18 @@ internal static class StatementGrid
     /// </param>
     internal static List<string[]> Build(byte[] pdf, double[] upperBounds)
     {
-        ArgumentNullException.ThrowIfNull(pdf);
         ArgumentNullException.ThrowIfNull(upperBounds);
+
+        return Build(pdf, [new Band(double.NegativeInfinity, double.PositiveInfinity, upperBounds)]);
+    }
+
+    /// The banded form: every band of a page is read out in full before the next
+    /// band of that page begins, which is what puts a two-column layout back into
+    /// reading order.
+    internal static List<string[]> Build(byte[] pdf, Band[] bands)
+    {
+        ArgumentNullException.ThrowIfNull(pdf);
+        ArgumentNullException.ThrowIfNull(bands);
 
         using var stream = new MemoryStream(pdf, writable: false);
         using var document = PdfDocument.Open(stream);
@@ -79,7 +104,14 @@ internal static class StatementGrid
                 .OrderByDescending(w => w.Y).ThenBy(w => w.Left)
                 .ToList();
 
-            AppendPage(lines, Coalesce(words), upperBounds);
+            // Words are filtered to the band before they are coalesced, so a run
+            // can never straddle the fold and be classified into the wrong half's
+            // columns.
+            foreach (var band in bands)
+            {
+                var inBand = words.Where(w => w.Left >= band.Left && w.Left < band.Right).ToList();
+                AppendPage(lines, Coalesce(inBand), band.UpperBounds);
+            }
         }
 
         return lines;

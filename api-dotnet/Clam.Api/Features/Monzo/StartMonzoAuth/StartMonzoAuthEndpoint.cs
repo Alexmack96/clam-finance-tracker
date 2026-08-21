@@ -7,17 +7,27 @@ using FastEndpoints;
 
 namespace Clam.Api.Features.Monzo.StartMonzoAuth;
 
-/// Redirects the browser to Monzo's consent screen. It answers with a 302 rather
-/// than JSON, so it handles its own response — there is nothing here for a
-/// command to return.
+public sealed class StartMonzoAuthResponse
+{
+    public string Url { get; set; } = "";
+}
+
+/// Hands back Monzo's consent URL for the client to navigate to.
+///
+/// It used to answer 302 and the Import page linked straight at it. That worked
+/// while a session cookie carried the caller's identity, because the browser
+/// attaches cookies to a plain link. A bearer token it does not attach, so a
+/// link would arrive here unauthenticated every time. Returning the URL lets the
+/// client send its token on an ordinary XHR and then set window.location itself.
 public sealed class StartMonzoAuthEndpoint(
     IDbConnectionFactory factory,
-    ISessionReader sessions,
+    ICurrentUserAccessor currentUser,
     MonzoOptions options,
-    TimeProvider clock) : EndpointWithoutRequest
+    TimeProvider clock) : EndpointWithoutRequest<StartMonzoAuthResponse>
 {
-    /// Borrowed from Better Auth's generic key/value store. A dedicated table
-    /// for one ten-minute value would be a migration for nothing.
+    /// Better Auth is gone but its generic key/value table stays, and this still
+    /// borrows it. A dedicated table for one ten-minute value would be a
+    /// migration for nothing.
     internal const string StateIdentifier = "monzo-oauth-state";
 
     private static readonly TimeSpan StateLifetime = TimeSpan.FromMinutes(10);
@@ -30,7 +40,6 @@ public sealed class StartMonzoAuthEndpoint(
     public override void Configure()
     {
         Get("admin/monzo/auth");
-        AllowAnonymous();
         Description(b => b.WithName("StartMonzoAuth"));
     }
 
@@ -46,10 +55,10 @@ public sealed class StartMonzoAuthEndpoint(
         }
 
         // The credential is stored against the user who authorised it, so the
-        // callback needs to know who started the flow — and the callback itself
-        // cannot be authenticated, because Monzo is what calls it.
-        var user = await sessions.GetCurrentUserAsync(HttpContext, ct);
-        if (user is null)
+        // callback needs to know who started the flow. The callback cannot ask,
+        // because Monzo is what calls it, so the answer rides in the state value.
+        var caller = currentUser.Get();
+        if (caller?.UserId is null)
         {
             await Send.UnauthorizedAsync(ct);
             return;
@@ -62,7 +71,7 @@ public sealed class StartMonzoAuthEndpoint(
         {
             Id = Convert.ToHexStringLower(RandomNumberGenerator.GetBytes(8)),
             Identifier = StateIdentifier,
-            Value = MonzoOAuthState.Serialise(state, user.Id),
+            Value = MonzoOAuthState.Serialise(state, caller.UserId),
             ExpiresAt = clock.GetUtcNow().UtcDateTime.Add(StateLifetime),
         }, cancellationToken: ct));
 
@@ -70,6 +79,6 @@ public sealed class StartMonzoAuthEndpoint(
             + $"&redirect_uri={Uri.EscapeDataString(options.RedirectUri!)}"
             + $"&response_type=code&state={Uri.EscapeDataString(state)}";
 
-        await Send.RedirectAsync(url, isPermanent: false, allowRemoteRedirects: true);
+        await Send.OkAsync(new StartMonzoAuthResponse { Url = url }, ct);
     }
 }

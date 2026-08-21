@@ -9,7 +9,6 @@ public sealed class DeleteRuleEndpoint(DeleteRuleCommand command)
     public override void Configure()
     {
         Delete("rules/{Id}");
-        AllowAnonymous();
         Description(b => b.WithName("DeleteRule"));
     }
 

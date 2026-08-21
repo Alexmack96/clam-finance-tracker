@@ -9,7 +9,6 @@ public sealed class ReorderRulesEndpoint(ReorderRulesCommand command)
     public override void Configure()
     {
         Post("rules/reorder");
-        AllowAnonymous();
         Description(b => b.WithName("ReorderRules"));
     }
 

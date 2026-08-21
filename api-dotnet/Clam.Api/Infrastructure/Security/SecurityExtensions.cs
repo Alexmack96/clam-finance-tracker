@@ -1,4 +1,7 @@
+using System.Security.Claims;
 using System.Threading.RateLimiting;
+using Clam.Api.Infrastructure.Data;
+using Dapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
@@ -96,48 +99,43 @@ public static class SecurityExtensions
         });
     }
 
-    /// Validates AuthKit access tokens against the WorkOS JWKS.
+    /// Validates AuthKit access tokens against the WorkOS JWKS, and projects the
+    /// caller's local user row onto the principal.
     ///
-    /// Registers nothing when WorkOS:ClientId is blank — which is the shipped
-    /// state, so a fresh clone starts without credentials. Calling AddJwtBearer
-    /// with an empty Authority would instead fail at the first request with a
-    /// discovery error that looks like a network problem.
-    ///
-    /// The other difference from PremPoints: no OnTokenValidated hook. That one
-    /// hits the database on every single request to map the WorkOS subject onto
-    /// an internal user id. This schema has no User table, and adding a
-    /// per-request query for a claim nothing reads yet would be pure cost.
+    /// **Whether this registers anything is the whole of the API's access
+    /// control.** With no scheme registered, <see cref="AuthEnabled"/> is false
+    /// and Program.cs leaves every endpoint anonymous — so a blank client id
+    /// does not mean "unprotected endpoints return 401", it means the API is
+    /// open. That is correct for the local host and the integration tests, which
+    /// boot without credentials, and unacceptable anywhere else, so Production
+    /// refuses to start rather than come up open. PremPoints throws
+    /// unconditionally; it has no test host that needs the other behaviour.
     public static IServiceCollection AddWorkOsAuthentication(
         this IServiceCollection services,
-        IConfiguration config)
+        IConfiguration config,
+        bool isProduction)
     {
         ArgumentNullException.ThrowIfNull(config);
 
-        var clientId = config["WorkOS:ClientId"];
+        var workOs = WorkOsOptions.TryFromConfiguration(config);
 
-        if (string.IsNullOrWhiteSpace(clientId))
+        if (workOs is null)
         {
-            // AddAuthentication() with no scheme still has to be called.
+            if (isProduction)
+            {
+                throw new InvalidOperationException(
+                    $"{WorkOsOptions.SectionName}:ClientId is not configured. Without it no authentication " +
+                    "scheme is registered and every endpoint would be reachable anonymously, so the host " +
+                    "refuses to start in Production. Set WorkOS__ClientId in the deployment.");
+            }
+
+            // AddAuthentication() with no scheme still has to be called:
             // UseAuthentication() resolves IAuthenticationSchemeProvider from the
-            // container, and without this the *host fails to start* — which,
-            // since blank is the shipped default, would mean a fresh clone or an
-            // unconfigured deployment never boots at all.
-            //
-            // Registered but scheme-less is the correct end state here: the
-            // pipeline is uniform, and there is simply no scheme that can
-            // authenticate anyone.
+            // container, and without it the host fails to start at all.
             services.AddAuthentication();
             services.AddAuthorization();
             return services;
         }
-
-        // Override for an AuthKit custom domain (https://<sub>.authkit.app),
-        // whose JWKS lives at /oauth2/jwks instead. Default is the classic User
-        // Management issuer, which is what PremPoints validates against today.
-        var authority = config["WorkOS:Authority"]
-            ?? $"https://api.workos.com/user_management/{clientId}";
-
-        var audience = config["WorkOS:Audience"];
 
         services
             .AddAuthentication(options =>
@@ -147,23 +145,88 @@ public static class SecurityExtensions
             })
             .AddJwtBearer(options =>
             {
-                options.Authority = authority;
+                options.Authority = workOs.Issuer;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
-                    ValidIssuer = authority,
+                    ValidIssuer = workOs.Issuer,
                     // WorkOS omits `aud` on classic User Management tokens, so
                     // validating it there rejects every token. AuthKit custom
                     // domains do set it to the client id — fill in
                     // WorkOS:Audience and it is checked.
-                    ValidateAudience = !string.IsNullOrWhiteSpace(audience),
-                    ValidAudience = audience,
+                    ValidateAudience = workOs.Audience is not null,
+                    ValidAudience = workOs.Audience,
                     ValidateLifetime = true,
                     ClockSkew = TimeSpan.FromSeconds(30),
+                };
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnTokenValidated = OnTokenValidatedAsync,
                 };
             });
 
         services.AddAuthorization();
         return services;
     }
+
+    /// True once a scheme has actually been registered. Program.cs reads this to
+    /// decide whether endpoints require authorization — asking for it with no
+    /// scheme registered throws on the first challenge rather than returning
+    /// 401, so the two decisions have to agree.
+    public static bool AuthEnabled(IConfiguration config) =>
+        WorkOsOptions.TryFromConfiguration(config) is not null;
+
+    /// A valid token proves *which WorkOS user* is calling and nothing else — an
+    /// access token carries `sub` and no email or name at all, those being on the
+    /// ID token. So the local row is the only source of anything this API needs
+    /// about the caller, and it is looked up here and hung on the principal.
+    ///
+    /// A token with no matching row is left authenticated but unmapped, rather
+    /// than rejected: that is the state a newly invited user is in before they
+    /// provision, and `GET /me` answers 404 so the client knows to.
+    ///
+    /// No role claim, unlike PremPoints. There is no role column and no admin
+    /// gate here — every signed-in user reaches every route, which is the whole
+    /// of this app's authorization model and is documented as such.
+    private static async Task OnTokenValidatedAsync(TokenValidatedContext context)
+    {
+        var workOsUserId = context.Principal?.FindFirst(ClaimTypes.NameIdentifier)?.Value
+            ?? context.Principal?.FindFirst("sub")?.Value;
+
+        if (string.IsNullOrEmpty(workOsUserId)) return;
+        if (context.Principal?.Identity is not ClaimsIdentity identity) return;
+
+        var factory = context.HttpContext.RequestServices.GetRequiredService<IDbConnectionFactory>();
+        using var connection = await factory.OpenAsync(context.HttpContext.RequestAborted);
+
+        var user = await connection.QuerySingleOrDefaultAsync<LocalUser>(new CommandDefinition(
+            "SELECT [id], [owner] FROM [Users] WHERE [workOsUserId] = @WorkOsUserId;",
+            new { WorkOsUserId = workOsUserId },
+            cancellationToken: context.HttpContext.RequestAborted));
+
+        if (user is null) return;
+
+        identity.AddClaim(new Claim(ClamClaims.UserId, user.Id));
+
+        // Alex / Casey / Joint. Not an authorization boundary — it is which
+        // person's figures a page defaults to, and every user may read every
+        // owner's data.
+        if (user.Owner is not null) identity.AddClaim(new Claim(ClamClaims.Owner, user.Owner));
+    }
+
+    private sealed class LocalUser
+    {
+        public string Id { get; set; } = "";
+        public string? Owner { get; set; }
+    }
+}
+
+/// Claim types this API adds to a validated principal. Constants rather than
+/// literals: a typo in a claim name reads as "not signed in" rather than as an
+/// error.
+public static class ClamClaims
+{
+    public const string UserId = "clam:userId";
+    public const string Owner = "clam:owner";
 }

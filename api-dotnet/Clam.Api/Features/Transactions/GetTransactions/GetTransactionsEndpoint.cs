@@ -13,7 +13,6 @@ public sealed class GetTransactionsEndpoint(GetTransactionsQuery query)
         // database that holds only synthetic data, and Better Auth sessions live
         // in the *other* database, so there is nothing here it could validate
         // against. The moment real data lands, this line has to go first.
-        AllowAnonymous();
 
         Description(b => b.WithName("GetTransactions"));
     }

@@ -9,7 +9,6 @@ public sealed class UpdateRuleEndpoint(UpdateRuleCommand command) : ResultEndpoi
     public override void Configure()
     {
         Patch("rules/{Id}");
-        AllowAnonymous();
         Description(b => b.WithName("UpdateRule"));
     }
 

@@ -8,7 +8,6 @@ public sealed class ProcessStagedEndpoint(ProcessStagedCommand command)
     public override void Configure()
     {
         Post("admin/process");
-        AllowAnonymous();
         Description(b => b.WithName("ProcessStaged"));
     }
 

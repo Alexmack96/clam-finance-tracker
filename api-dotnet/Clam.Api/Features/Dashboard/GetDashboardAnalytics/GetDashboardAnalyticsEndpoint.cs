@@ -8,7 +8,6 @@ public sealed class GetDashboardAnalyticsEndpoint(GetDashboardAnalyticsQuery que
     public override void Configure()
     {
         Get("dashboard/analytics");
-        AllowAnonymous();
         Description(b => b.WithName("GetDashboardAnalytics"));
     }
 

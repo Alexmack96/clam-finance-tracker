@@ -9,7 +9,6 @@ public sealed class UpsertInvestmentSnapshotEndpoint(UpsertInvestmentSnapshotCom
     public override void Configure()
     {
         Put("investments/snapshots");
-        AllowAnonymous();
         Description(b => b.WithName("UpsertInvestmentSnapshot"));
     }
 

@@ -79,20 +79,6 @@ public class LengthLimitTests(ClamApiFactory api) : ApiTest(api)
         await Verify(response);
     }
 
-    /// Users.name is NVARCHAR(200), Users.email is NVARCHAR(320).
-    [Fact]
-    public async Task Create_user_rejects_a_name_and_email_longer_than_their_columns()
-    {
-        await Given.NothingAsync();
-        var response = await Post("/api/admin/users", new
-        {
-            name = new string('n', 201),
-            email = new string('e', 320) + "@example.com",
-            password = "correct horse battery staple",
-        });
-        await Verify(response);
-    }
-
     /// Transactions.categoryId is NVARCHAR(30). Not a length the client would
     /// ever hit by accident, but the UPDATE COALESCEs it straight into the column
     /// and a truncation error there is indistinguishable from a real failure.

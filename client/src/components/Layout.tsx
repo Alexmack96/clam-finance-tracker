@@ -1,6 +1,6 @@
 import { Suspense, useEffect, useRef } from "react";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { signOut } from "../lib/authClient.js";
+import { Outlet, useLocation } from "react-router-dom";
+import { useAuth } from "@workos-inc/authkit-react";
 import { Navbar } from "./Navbar.js";
 import { BottomNav } from "./BottomNav.js";
 import { Skeleton } from "./ui/skeleton.js";
@@ -15,7 +15,7 @@ function PageFallback() {
 }
 
 export function Layout() {
-  const navigate = useNavigate();
+  const { signOut } = useAuth();
   const { pathname } = useLocation();
   const mainRef = useRef<HTMLElement>(null);
 
@@ -23,9 +23,10 @@ export function Layout() {
     mainRef.current?.scrollTo({ top: 0 });
   }, [pathname]);
 
-  async function handleSignOut() {
-    await signOut();
-    navigate("/logged-out");
+  // AuthKit ends the WorkOS session and then redirects, so there is no navigate
+  // call here and nothing after this runs.
+  function handleSignOut() {
+    signOut({ returnTo: `${window.location.origin}/logged-out` });
   }
 
   return (

@@ -9,7 +9,6 @@ public sealed class UpdateInvestmentAccountEndpoint(UpdateInvestmentAccountComma
     public override void Configure()
     {
         Patch("investments/accounts/{Id}");
-        AllowAnonymous();
         Description(b => b.WithName("UpdateInvestmentAccount"));
     }
 

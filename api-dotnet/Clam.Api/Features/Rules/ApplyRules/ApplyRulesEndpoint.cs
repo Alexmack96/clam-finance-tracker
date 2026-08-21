@@ -9,7 +9,6 @@ public sealed class ApplyRulesEndpoint(ApplyRulesCommand command)
     public override void Configure()
     {
         Post("rules/apply");
-        AllowAnonymous();
         Description(b => b.WithName("ApplyRules"));
     }
 

@@ -9,7 +9,6 @@ public sealed class SetRecurringVerdictEndpoint(SetRecurringVerdictCommand comma
     public override void Configure()
     {
         Put("recurring/verdict");
-        AllowAnonymous();
         Description(b => b.WithName("SetRecurringVerdict"));
     }
 

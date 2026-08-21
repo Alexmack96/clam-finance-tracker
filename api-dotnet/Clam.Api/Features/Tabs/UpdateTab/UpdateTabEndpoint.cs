@@ -8,7 +8,6 @@ public sealed class UpdateTabEndpoint(UpdateTabCommand command) : ResultEndpoint
     public override void Configure()
     {
         Patch("tabs/{Id}");
-        AllowAnonymous();
         Description(b => b.WithName("UpdateTab"));
     }
 

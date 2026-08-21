@@ -9,7 +9,6 @@ public sealed class DeleteInvestmentAccountEndpoint(DeleteInvestmentAccountComma
     public override void Configure()
     {
         Delete("investments/accounts/{Id}");
-        AllowAnonymous();
         Description(b => b.WithName("DeleteInvestmentAccount"));
     }
 

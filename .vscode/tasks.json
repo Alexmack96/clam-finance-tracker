@@ -17,6 +17,28 @@
       "group": { "kind": "build", "isDefault": true }
     },
     {
+      // Blocks until Vite answers on 5173, so the browser in the "Aspire + React
+      // client" compound opens a page rather than a connection error. Aspire
+      // needs ~10-20s to build the API, start it, wait for its health check and
+      // only then start the client, and a browser launched at t=0 just fails.
+      //
+      // Polling rather than a background task with a problemMatcher: the client
+      // is a grandchild process (aspire -> bun -> vite), so its stdout never
+      // reaches a VS Code task and there is no output to match on.
+      //
+      // This only works because the client's port is pinned. See AppHost.cs.
+      "label": "wait: client on 5173",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "$deadline = (Get-Date).AddMinutes(3); while ((Get-Date) -lt $deadline) { try { Invoke-WebRequest 'http://localhost:5173' -UseBasicParsing -TimeoutSec 2 | Out-Null; exit 0 } catch { Start-Sleep -Milliseconds 400 } }; Write-Host 'Timed out after 3 minutes waiting for the client on 5173.'; exit 1"
+      ],
+      "presentation": { "reveal": "silent", "panel": "dedicated", "clear": true },
+      "problemMatcher": []
+    },
+    {
       "label": "build: api",
       "command": "dotnet",
       "type": "process",

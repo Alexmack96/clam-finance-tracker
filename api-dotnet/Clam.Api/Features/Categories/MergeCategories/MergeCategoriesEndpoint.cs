@@ -9,7 +9,6 @@ public sealed class MergeCategoriesEndpoint(MergeCategoriesCommand command)
     public override void Configure()
     {
         Post("categories/{FromId}/merge/{ToId}");
-        AllowAnonymous();
         Description(b => b.WithName("MergeCategories"));
     }
 

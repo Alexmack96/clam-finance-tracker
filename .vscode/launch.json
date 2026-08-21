@@ -37,6 +37,32 @@
       }
     },
     {
+      // The React client, in a debugger-attached browser. Half of the "Aspire +
+      // React client" compound below; launching it on its own expects the stack
+      // to already be running.
+      //
+      // Attached rather than merely opened, because the cost is one line and it
+      // buys breakpoints in .tsx, DOM inspection and network capture in the same
+      // session as the C# breakpoints.
+      //
+      // The URL is hardcoded rather than derived. Aspire assigns resource ports
+      // dynamically, but this one is pinned in AppHost.cs because WorkOS matches
+      // redirect URIs exactly — so 5173 is already a fixed fact of this repo
+      // rather than an assumption made here.
+      "name": "Browser: React client (5173)",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:5173",
+      "webRoot": "${workspaceFolder}/client",
+      // Vite serves sources over the dev server, so the default sourcemap lookup
+      // resolves /src/* against webRoot.
+      "sourceMapPathOverrides": {
+        "/src/*": "${workspaceFolder}/client/src/*",
+        "/@fs/*": "/*"
+      },
+      "preLaunchTask": "wait: client on 5173"
+    },
+    {
       // For debugging the API in isolation. Skips Aspire entirely, so no
       // dashboard, no traces and no React client — the connection string comes
       // from appsettings.Development.json rather than being injected by the
@@ -67,6 +93,30 @@
       "type": "coreclr",
       "request": "attach",
       "processName": "Clam.Api"
+    }
+  ],
+  "compounds": [
+    {
+      // The F5 target: dashboard, API, client, all three debuggable.
+      //
+      // A compound rather than an option on the Aspire configuration, because
+      // the Aspire debug type has no such option — `dashboardBrowser` decides
+      // how the *dashboard* opens and nothing else, and `debuggers` configures
+      // adapters for resources rather than opening URLs.
+      //
+      // Order is load-bearing. VS Code starts these in array order, so Aspire
+      // goes first and the browser's preLaunchTask then polls 5173 while the
+      // stack boots behind it.
+      //
+      // No `stopAll`. With it, closing the browser tab would tear down the whole
+      // stack, which is a surprising way to lose a dashboard. The cost is that
+      // the stop button only ends the session it is aimed at.
+      "name": "Aspire + React client",
+      "configurations": [
+        "Aspire: full stack (API + React + dashboard)",
+        "Browser: React client (5173)"
+      ],
+      "presentation": { "order": 1 }
     }
   ]
 }

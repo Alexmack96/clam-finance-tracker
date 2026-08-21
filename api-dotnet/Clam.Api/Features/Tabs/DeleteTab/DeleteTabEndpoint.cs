@@ -8,7 +8,6 @@ public sealed class DeleteTabEndpoint(DeleteTabCommand command) : ResultEndpoint
     public override void Configure()
     {
         Delete("tabs/{Id}");
-        AllowAnonymous();
         Description(b => b.WithName("DeleteTab"));
     }
 

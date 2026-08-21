@@ -13,7 +13,15 @@
 --      a test container creates a throwaway one per run.
 --   3. No filegroup, collation or file-path clauses — they differ per host.
 --   4. Re-runnable from any state, so a test can reset without recreating the
---      container.
+--      container. That includes dropping tables this file no longer creates —
+--      a retired table with a foreign key still blocks its parent's DROP.
+--   5. An index or constraint naming a *newly added* column must be wrapped in
+--      EXEC('...'). Rule 1 makes this one batch, so SQL Server compiles every
+--      statement before running any of them. Where the table already exists
+--      without that column the reference binds to the old table and fails at
+--      compile time, which rejects the entire batch — the DROP and CREATE that
+--      would have fixed it never execute. The error names the column and reads
+--      exactly like a typo in this file. EXEC defers compilation to run time.
 --
 -- Applying it by hand needs sqlcmd's -I flag:
 --     sqlcmd -S "(localdb)\MSSQLLocalDB" -E -d ClamDev -i schema.sql -I -b
@@ -41,25 +49,55 @@ DROP TABLE IF EXISTS [InvestmentAccounts];
 DROP TABLE IF EXISTS [RecurringVerdicts];
 DROP TABLE IF EXISTS [Notes];
 DROP TABLE IF EXISTS [Tabs];
+DROP TABLE IF EXISTS [Verifications];
+
+-- Retired with Better Auth, and dropped here even though nothing below creates
+-- them. Rule 4 says this file applies from any state, and a database that
+-- predates WorkOS still has both — each with a foreign key onto [Users]. Without
+-- these two lines the [Users] drop below fails on the constraint, the old table
+-- survives, and the run dies further down on "Invalid column name
+-- 'workOsUserId'" — which reads as a typo in the new schema rather than as a
+-- table that refused to go. Delete them once no live database has these tables.
 DROP TABLE IF EXISTS [Sessions];
 DROP TABLE IF EXISTS [Accounts];
-DROP TABLE IF EXISTS [Verifications];
+
 DROP TABLE IF EXISTS [Users];
 DROP TABLE IF EXISTS [Transactions];
 DROP TABLE IF EXISTS [StatementFiles];
 DROP TABLE IF EXISTS [Categories];
 
+-- [id] is NVARCHAR(50), not 30, and the same goes for every id and foreign key
+-- in this file. Production ids are mostly 25-character cuids, but two categories
+-- and both users carry 36-character UUIDs from an earlier scheme. At 30 those
+-- rows cannot be migrated at all, and the error — String or binary data would be
+-- truncated — names no column.
 CREATE TABLE [Categories] (
-    [id]    NVARCHAR(30)  NOT NULL CONSTRAINT [PK_Categories] PRIMARY KEY,
+    [id]    NVARCHAR(50)  NOT NULL CONSTRAINT [PK_Categories] PRIMARY KEY,
     [name]  NVARCHAR(100) NOT NULL,
     [color] NVARCHAR(20)  NOT NULL,
     CONSTRAINT [UQ_Categories_name] UNIQUE ([name])
 );
 
+-- The one row this schema ships with, because the application cannot run without
+-- it and will not create it.
+--
+-- ProcessStagedCommand throws outright when it is missing ("the import pipeline
+-- has nothing to fall back to"), DeleteCategory refuses to delete it and
+-- MergeCategories refuses to merge it away. So every other piece of code treats
+-- it as a permanent fixture while nothing anywhere brought it into existence —
+-- which meant a database created from this file could stage an import and never
+-- process one. The failure surfaced as an upload that appeared to succeed and
+-- produced no transactions.
+--
+-- The id and colour are production's, so a later data migration matches this row
+-- rather than colliding with it on the unique name.
+INSERT INTO [Categories] ([id], [name], [color])
+VALUES ('cmnk1z05a0004swu8j3pi8vb9', 'Uncategorised', '#d1d5db');
+
 -- The source PDF a batch of staged rows came from. Created before [Transactions]
 -- because that table points at it.
 CREATE TABLE [StatementFiles] (
-    [id]            NVARCHAR(30)  NOT NULL CONSTRAINT [PK_StatementFiles] PRIMARY KEY,
+    [id]            NVARCHAR(50)  NOT NULL CONSTRAINT [PK_StatementFiles] PRIMARY KEY,
     [bank]          NVARCHAR(30)  NOT NULL,
     [owner]         NVARCHAR(10)  NOT NULL,
     [statementDate] NVARCHAR(40)  NULL,
@@ -88,13 +126,13 @@ CREATE NONCLUSTERED INDEX [IX_StatementFiles_bank_owner] ON [StatementFiles] ([b
 -- syntax error. `Transactions` is not reserved. Brackets are kept anyway, for
 -- consistency with the quoted camelCase columns rather than out of necessity.
 CREATE TABLE [Transactions] (
-    [id]               NVARCHAR(30)   NOT NULL CONSTRAINT [PK_Transactions] PRIMARY KEY,
+    [id]               NVARCHAR(50)   NOT NULL CONSTRAINT [PK_Transactions] PRIMARY KEY,
     [description]      NVARCHAR(500)  NOT NULL,
     [amount]           DECIMAL(18, 2) NOT NULL,
     [type]             NVARCHAR(10)   NOT NULL,
     [date]             DATETIME2(3)   NOT NULL,
     [createdAt]        DATETIME2(3)   NOT NULL CONSTRAINT [DF_Transactions_createdAt] DEFAULT SYSUTCDATETIME(),
-    [categoryId]       NVARCHAR(30)   NOT NULL,
+    [categoryId]       NVARCHAR(50)   NOT NULL,
     [externalId]       NVARCHAR(200)  NULL,
     [note]             NVARCHAR(MAX)  NULL,
     [owner]            NVARCHAR(10)   NOT NULL CONSTRAINT [DF_Transactions_owner] DEFAULT 'Joint',
@@ -102,7 +140,7 @@ CREATE TABLE [Transactions] (
     [bucket]           NVARCHAR(10)   NULL,
     [originalAmount]   DECIMAL(18, 2) NULL,
     [originalCurrency] NVARCHAR(10)   NULL,
-    [statementFileId]  NVARCHAR(30)   NULL,
+    [statementFileId]  NVARCHAR(50)   NULL,
 
     CONSTRAINT [FK_Transactions_Categories] FOREIGN KEY ([categoryId])
         REFERENCES [Categories] ([id]),
@@ -142,12 +180,12 @@ CREATE NONCLUSTERED INDEX [IX_Transactions_statementFileId] ON [Transactions] ([
 -- duplicates are cheap to spot in the dry-run.
 
 CREATE TABLE [Rules] (
-    [id]           NVARCHAR(30) NOT NULL CONSTRAINT [PK_Rules] PRIMARY KEY,
+    [id]           NVARCHAR(50) NOT NULL CONSTRAINT [PK_Rules] PRIMARY KEY,
     [kind]         NVARCHAR(10) NOT NULL,
     [position]     INT          NOT NULL,
     [joinOperator] NVARCHAR(3)  NOT NULL CONSTRAINT [DF_Rules_joinOperator] DEFAULT 'AND',
     [bank]         NVARCHAR(30) NULL,
-    [categoryId]   NVARCHAR(30) NULL,
+    [categoryId]   NVARCHAR(50) NULL,
     [bucket]       NVARCHAR(10) NULL,
     [createdAt]    DATETIME2(3) NOT NULL CONSTRAINT [DF_Rules_createdAt] DEFAULT SYSUTCDATETIME(),
 
@@ -162,8 +200,8 @@ CREATE TABLE [Rules] (
 CREATE NONCLUSTERED INDEX [IX_Rules_kind_position] ON [Rules] ([kind], [position]);
 
 CREATE TABLE [RuleConditions] (
-    [id]       NVARCHAR(30)  NOT NULL CONSTRAINT [PK_RuleConditions] PRIMARY KEY,
-    [ruleId]   NVARCHAR(30)  NOT NULL,
+    [id]       NVARCHAR(50)  NOT NULL CONSTRAINT [PK_RuleConditions] PRIMARY KEY,
+    [ruleId]   NVARCHAR(50)  NOT NULL,
     [field]    NVARCHAR(20)  NOT NULL CONSTRAINT [DF_RuleConditions_field] DEFAULT 'Description',
     [operator] NVARCHAR(20)  NOT NULL CONSTRAINT [DF_RuleConditions_operator] DEFAULT 'Contains',
     [value]    NVARCHAR(200) NOT NULL,
@@ -187,7 +225,7 @@ CREATE NONCLUSTERED INDEX [IX_RuleConditions_ruleId] ON [RuleConditions] ([ruleI
 -- rows that will not parse, and the process step is where that becomes an error.
 
 CREATE TABLE [MonzoApiTransactions] (
-    [id]                NVARCHAR(30)  NOT NULL CONSTRAINT [PK_MonzoApiTransactions] PRIMARY KEY,
+    [id]                NVARCHAR(50)  NOT NULL CONSTRAINT [PK_MonzoApiTransactions] PRIMARY KEY,
     [monzoId]           NVARCHAR(60)  NOT NULL,
     [created]           DATETIME2(3)  NOT NULL,
     [settled]           DATETIME2(3)  NULL,
@@ -233,7 +271,7 @@ CREATE TABLE [AmexTransactions] (
     [importedAt]      DATETIME2(3)  NOT NULL CONSTRAINT [DF_AmexTransactions_importedAt] DEFAULT SYSUTCDATETIME(),
     [status]          NVARCHAR(20)  NOT NULL CONSTRAINT [DF_AmexTransactions_status] DEFAULT 'pending',
     -- Nullable: rows staged before statement tracking existed have no source file.
-    [statementFileId] NVARCHAR(30)  NULL,
+    [statementFileId] NVARCHAR(50)  NULL,
 
     CONSTRAINT [FK_AmexTransactions_StatementFiles] FOREIGN KEY ([statementFileId])
         REFERENCES [StatementFiles] ([id]) ON DELETE CASCADE
@@ -295,7 +333,7 @@ CREATE TABLE [HsbcTransactions] (
     [importedAt]    DATETIME2(3)  NOT NULL CONSTRAINT [DF_HsbcTransactions_importedAt] DEFAULT SYSUTCDATETIME(),
     [status]        NVARCHAR(20)  NOT NULL CONSTRAINT [DF_HsbcTransactions_status] DEFAULT 'pending',
     -- Nullable: rows staged before statement tracking existed have no source file.
-    [statementFileId] NVARCHAR(30) NULL,
+    [statementFileId] NVARCHAR(50) NULL,
 
     CONSTRAINT [UQ_HsbcTransactions_transactionId] UNIQUE ([transactionId]),
     CONSTRAINT [FK_HsbcTransactions_StatementFiles] FOREIGN KEY ([statementFileId])
@@ -341,8 +379,8 @@ CREATE TABLE [SofiTransactions] (
 -- ─── Monzo connection ────────────────────────────────────────────────────────
 
 CREATE TABLE [MonzoCredentials] (
-    [id]           NVARCHAR(30)  NOT NULL CONSTRAINT [PK_MonzoCredentials] PRIMARY KEY,
-    [userId]       NVARCHAR(30)  NOT NULL,
+    [id]           NVARCHAR(50)  NOT NULL CONSTRAINT [PK_MonzoCredentials] PRIMARY KEY,
+    [userId]       NVARCHAR(50)  NOT NULL,
     [accessToken]  NVARCHAR(MAX) NOT NULL,
     [refreshToken] NVARCHAR(MAX) NOT NULL,
     [expiresAt]    DATETIME2(3)  NOT NULL,
@@ -356,7 +394,7 @@ CREATE TABLE [MonzoCredentials] (
 -- One row per 90-day reconciliation pass. [results] is a JSON string: one entry
 -- per synced account with its API-vs-staging diff.
 CREATE TABLE [MonzoRecRuns] (
-    [id]              NVARCHAR(30)  NOT NULL CONSTRAINT [PK_MonzoRecRuns] PRIMARY KEY,
+    [id]              NVARCHAR(50)  NOT NULL CONSTRAINT [PK_MonzoRecRuns] PRIMARY KEY,
     [ranAt]           DATETIME2(3)  NOT NULL CONSTRAINT [DF_MonzoRecRuns_ranAt] DEFAULT SYSUTCDATETIME(),
     [window]          NVARCHAR(10)  NOT NULL CONSTRAINT [DF_MonzoRecRuns_window] DEFAULT '90d',
     [trigger]         NVARCHAR(10)  NOT NULL CONSTRAINT [DF_MonzoRecRuns_trigger] DEFAULT 'sync',
@@ -370,7 +408,7 @@ CREATE NONCLUSTERED INDEX [IX_MonzoRecRuns_ranAt] ON [MonzoRecRuns] ([ranAt] DES
 -- ─── Standalone features ─────────────────────────────────────────────────────
 
 CREATE TABLE [Notes] (
-    [id]        NVARCHAR(30)  NOT NULL CONSTRAINT [PK_Notes] PRIMARY KEY,
+    [id]        NVARCHAR(50)  NOT NULL CONSTRAINT [PK_Notes] PRIMARY KEY,
     [title]     NVARCHAR(300) NOT NULL,
     [body]      NVARCHAR(MAX) NULL,
     [pinned]    BIT           NOT NULL CONSTRAINT [DF_Notes_pinned] DEFAULT 0,
@@ -379,7 +417,7 @@ CREATE TABLE [Notes] (
 );
 
 CREATE TABLE [Tabs] (
-    [id]          NVARCHAR(30)   NOT NULL CONSTRAINT [PK_Tabs] PRIMARY KEY,
+    [id]          NVARCHAR(50)   NOT NULL CONSTRAINT [PK_Tabs] PRIMARY KEY,
     [person]      NVARCHAR(200)  NOT NULL,
     [description] NVARCHAR(500)  NOT NULL,
     [amount]      DECIMAL(18, 2) NOT NULL,
@@ -399,7 +437,7 @@ CREATE TABLE [Tabs] (
 -- Cadence, amount and next-due are recomputed from transactions on every
 -- request; the absence of a row is itself the "Proposed" state.
 CREATE TABLE [RecurringVerdicts] (
-    [id]          NVARCHAR(30)  NOT NULL CONSTRAINT [PK_RecurringVerdicts] PRIMARY KEY,
+    [id]          NVARCHAR(50)  NOT NULL CONSTRAINT [PK_RecurringVerdicts] PRIMARY KEY,
     [owner]       NVARCHAR(10)  NOT NULL,
     [description] NVARCHAR(400) NOT NULL,
     [status]      NVARCHAR(10)  NOT NULL,
@@ -413,7 +451,7 @@ CREATE TABLE [RecurringVerdicts] (
 );
 
 CREATE TABLE [InvestmentAccounts] (
-    [id]        NVARCHAR(30)  NOT NULL CONSTRAINT [PK_InvestmentAccounts] PRIMARY KEY,
+    [id]        NVARCHAR(50)  NOT NULL CONSTRAINT [PK_InvestmentAccounts] PRIMARY KEY,
     [name]      NVARCHAR(200) NOT NULL,
     [category]  NVARCHAR(20)  NOT NULL,
     [owner]     NVARCHAR(10)  NOT NULL CONSTRAINT [DF_InvestmentAccounts_owner] DEFAULT 'Alex',
@@ -429,8 +467,8 @@ CREATE TABLE [InvestmentAccounts] (
 );
 
 CREATE TABLE [InvestmentSnapshots] (
-    [id]        NVARCHAR(30) NOT NULL CONSTRAINT [PK_InvestmentSnapshots] PRIMARY KEY,
-    [accountId] NVARCHAR(30) NOT NULL,
+    [id]        NVARCHAR(50) NOT NULL CONSTRAINT [PK_InvestmentSnapshots] PRIMARY KEY,
+    [accountId] NVARCHAR(50) NOT NULL,
     [date]      DATETIME2(3) NOT NULL,
     [value]     FLOAT        NOT NULL,
     [createdAt] DATETIME2(3) NOT NULL CONSTRAINT [DF_InvestmentSnapshots_createdAt] DEFAULT SYSUTCDATETIME(),
@@ -447,60 +485,48 @@ CREATE TABLE [InvestmentSnapshots] (
 -- not ours. This service only reads sessions and writes a user + credential row;
 -- it never issues or rotates a session.
 
+-- Identity lives in WorkOS. This table is the local mirror of it: the row that
+-- says which of Alex and Casey a WorkOS login is, which nothing in a WorkOS
+-- access token can tell us.
+--
+-- [workOsUserId] is the `sub` claim, and the only link between the two. It is
+-- nullable because a row can exist before its person first signs in, and unique
+-- through a filtered index so several such rows can wait at once.
 CREATE TABLE [Users] (
-    [id]        NVARCHAR(30)  NOT NULL CONSTRAINT [PK_Users] PRIMARY KEY,
-    [email]     NVARCHAR(320) NOT NULL,
-    [name]      NVARCHAR(200) NOT NULL,
-    [owner]     NVARCHAR(10)  NULL,
-    [createdAt] DATETIME2(3)  NOT NULL CONSTRAINT [DF_Users_createdAt] DEFAULT SYSUTCDATETIME(),
-    [updatedAt] DATETIME2(3)  NOT NULL CONSTRAINT [DF_Users_updatedAt] DEFAULT SYSUTCDATETIME(),
-    [image]     NVARCHAR(500) NULL,
+    [id]           NVARCHAR(50)  NOT NULL CONSTRAINT [PK_Users] PRIMARY KEY,
+    [workOsUserId] NVARCHAR(60)  NULL,
+    [email]        NVARCHAR(320) NOT NULL,
+    [name]         NVARCHAR(200) NOT NULL,
+    [owner]        NVARCHAR(10)  NULL,
+    [createdAt]    DATETIME2(3)  NOT NULL CONSTRAINT [DF_Users_createdAt] DEFAULT SYSUTCDATETIME(),
+    [updatedAt]    DATETIME2(3)  NOT NULL CONSTRAINT [DF_Users_updatedAt] DEFAULT SYSUTCDATETIME(),
+    [image]        NVARCHAR(500) NULL,
 
     CONSTRAINT [UQ_Users_email] UNIQUE ([email]),
     CONSTRAINT [CK_Users_owner] CHECK ([owner] IN ('Alex', 'Casey', 'Joint'))
 );
 
-CREATE TABLE [Sessions] (
-    [id]        NVARCHAR(60)  NOT NULL CONSTRAINT [PK_Sessions] PRIMARY KEY,
-    [expiresAt] DATETIME2(3)  NOT NULL,
-    [token]     NVARCHAR(400) NOT NULL,
-    [createdAt] DATETIME2(3)  NOT NULL CONSTRAINT [DF_Sessions_createdAt] DEFAULT SYSUTCDATETIME(),
-    [updatedAt] DATETIME2(3)  NOT NULL CONSTRAINT [DF_Sessions_updatedAt] DEFAULT SYSUTCDATETIME(),
-    [ipAddress] NVARCHAR(60)  NULL,
-    [userAgent] NVARCHAR(500) NULL,
-    [userId]    NVARCHAR(30)  NOT NULL,
+-- Wrapped in EXEC, and it has to be. See rule 5 in the header: this file is one
+-- batch, so every statement is compiled before any of them runs. Against a
+-- database that already has a [Users] without this column, the index below binds
+-- to *that* table at compile time, fails with "Invalid column name
+-- 'workOsUserId'", and takes the whole batch down — including the DROP and
+-- CREATE two lines up that would have fixed it. EXEC defers compilation to
+-- execution, by which time the new table exists.
+EXEC('
+CREATE UNIQUE NONCLUSTERED INDEX [UQ_Users_workOsUserId]
+    ON [Users] ([workOsUserId])
+    WHERE [workOsUserId] IS NOT NULL;
+');
 
-    CONSTRAINT [FK_Sessions_Users] FOREIGN KEY ([userId])
-        REFERENCES [Users] ([id]) ON DELETE CASCADE,
-    CONSTRAINT [UQ_Sessions_token] UNIQUE ([token])
-);
-
-CREATE NONCLUSTERED INDEX [IX_Sessions_userId] ON [Sessions] ([userId]);
-
-CREATE TABLE [Accounts] (
-    [id]                    NVARCHAR(60)  NOT NULL CONSTRAINT [PK_Accounts] PRIMARY KEY,
-    [accountId]             NVARCHAR(200) NOT NULL,
-    [providerId]            NVARCHAR(60)  NOT NULL,
-    [userId]                NVARCHAR(30)  NOT NULL,
-    [accessToken]           NVARCHAR(MAX) NULL,
-    [refreshToken]          NVARCHAR(MAX) NULL,
-    [idToken]               NVARCHAR(MAX) NULL,
-    [accessTokenExpiresAt]  DATETIME2(3)  NULL,
-    [refreshTokenExpiresAt] DATETIME2(3)  NULL,
-    [scope]                 NVARCHAR(500) NULL,
-    -- Better Auth's scrypt output, `hexSalt:hexKey`. Never a bare hash.
-    [password]              NVARCHAR(400) NULL,
-    [createdAt]             DATETIME2(3)  NOT NULL CONSTRAINT [DF_Accounts_createdAt] DEFAULT SYSUTCDATETIME(),
-    [updatedAt]             DATETIME2(3)  NOT NULL CONSTRAINT [DF_Accounts_updatedAt] DEFAULT SYSUTCDATETIME(),
-
-    CONSTRAINT [FK_Accounts_Users] FOREIGN KEY ([userId])
-        REFERENCES [Users] ([id]) ON DELETE CASCADE
-);
-
-CREATE NONCLUSTERED INDEX [IX_Accounts_userId] ON [Accounts] ([userId]);
-
--- Better Auth's generic short-lived key/value store. The Monzo OAuth slice
--- borrows it to hold the `state` parameter between /auth and /callback.
+-- Sessions and Accounts are gone with Better Auth. WorkOS holds the session and
+-- the credential now, and this API never sees either: it validates a bearer
+-- token against the WorkOS JWKS and reads [Users] for everything else.
+--
+-- Verifications stays, despite its name. It was Better Auth's generic
+-- short-lived key/value store, and the Monzo OAuth slice borrows it to hold the
+-- `state` parameter between /auth and /callback. That has nothing to do with
+-- authenticating anyone here.
 CREATE TABLE [Verifications] (
     [id]         NVARCHAR(60)  NOT NULL CONSTRAINT [PK_Verifications] PRIMARY KEY,
     [identifier] NVARCHAR(200) NOT NULL,

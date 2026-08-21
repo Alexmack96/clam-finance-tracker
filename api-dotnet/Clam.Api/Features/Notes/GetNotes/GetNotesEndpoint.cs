@@ -7,7 +7,6 @@ public sealed class GetNotesEndpoint(GetNotesQuery query) : EndpointWithoutReque
     public override void Configure()
     {
         Get("notes");
-        AllowAnonymous();
         Description(b => b.WithName("GetNotes"));
     }
 

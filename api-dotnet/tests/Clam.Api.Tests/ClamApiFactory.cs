@@ -72,12 +72,14 @@ public sealed class ClamApiFactory : WebApplicationFactory<Program>, IAsyncLifet
         // gets a say, layering: host config -> appsettings.json ->
         // appsettings.Development.json -> user secrets -> environment variables.
         // UseSetting lands in the first layer and ConfigureAppConfiguration did
-        // not reliably land in the last, so appsettings.Development.json won —
-        // and it points at the real ClamFinanceTracker database.
+        // not reliably land in the last, so appsettings.Development.json won.
         //
-        // That is not cosmetic: POST /api/dev/seed DELETEs every row, so the
-        // suite would have wiped the dev database. VerifyTargetsOwnDatabase below
-        // exists so this can never regress silently.
+        // No committed connection string exists any more, so the failure this
+        // guards against has changed shape rather than gone away: whatever the
+        // developer has in user-secrets is now Azure. POST /api/dev/seed DELETEs
+        // every row, so a suite that lost this override would empty the shared
+        // dev database. VerifyTargetsOwnDatabase below exists so it cannot
+        // regress silently.
         Environment.SetEnvironmentVariable("ConnectionStrings__Clam", ConnectionString);
 
         // Same mechanism, same reason. MonzoOptions is bound in Program.cs at
@@ -99,16 +101,30 @@ public sealed class ClamApiFactory : WebApplicationFactory<Program>, IAsyncLifet
         // registration time, so the in-memory override below arrives too late.
         Environment.SetEnvironmentVariable("RateLimiting__PermitLimit", "100000");
 
+        // Same mechanism, third time, and this one decides whether the suite can
+        // run at all. A blank WorkOS:ClientId registers no JWT scheme, which is
+        // what leaves every endpoint anonymous — see AddWorkOsAuthentication.
+        // appsettings.Development.json now carries a real client id, and the
+        // in-memory override below loses to it, so without this every test gets
+        // 401 and 205 of them fail at once.
+        //
+        // A space rather than "". Environment.SetEnvironmentVariable *deletes*
+        // the variable when handed null or an empty string, which would leave
+        // appsettings.Development.json winning again. WorkOsOptions tests with
+        // IsNullOrWhiteSpace, so a space reads as "not configured".
+        Environment.SetEnvironmentVariable("WorkOS__ClientId", " ");
+
+        // And again for the seeder. appsettings.Development.json now sets this
+        // false, because Development points at a shared Azure database and
+        // POST /dev/seed opens by deleting every transaction and category. The
+        // suite still needs the endpoint registered — it has tests for its
+        // validator — and its own database is a throwaway created seconds ago,
+        // so here it is safe and has to win.
+        Environment.SetEnvironmentVariable("Seed__Enabled", "true");
+
         builder.ConfigureAppConfiguration(cfg => cfg.AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["ConnectionStrings:Clam"] = ConnectionString,
-
-            // The seeder endpoint is only registered when this is on.
-            ["Seed:Enabled"] = "true",
-
-            // Blank already means "register no JWT scheme"; this guarantees a
-            // machine with WorkOS configured locally does not change the suite.
-            ["WorkOS:ClientId"] = "",
 
             // Somewhere harmless for the statement store to resolve to. The Amex
             // upload tests do write real PDFs here, which is fine to leave

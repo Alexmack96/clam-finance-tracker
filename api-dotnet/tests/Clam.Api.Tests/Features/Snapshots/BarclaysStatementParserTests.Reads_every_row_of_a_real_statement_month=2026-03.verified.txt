@@ -1,0 +1,153 @@
+﻿{
+  StatementDate: March 2026,
+  RowCount: 21,
+  Rows: [
+    {
+      TransactionId: 1f771fb3f98b7040,
+      Date: 2026-03-23,
+      Description: Payment By Direct Debit,
+      Amount: 720.25,
+      IsCredit: true
+    },
+    {
+      TransactionId: 4889f85920ae8a9c,
+      Date: 2026-02-24,
+      Description: Greenwich Peninsula Golf, London,
+      Amount: 17.50,
+      IsCredit: false
+    },
+    {
+      TransactionId: 364b1018e0ad2d60,
+      Date: 2026-02-24,
+      Description: Lime*3 Rides Khja, London,
+      Amount: 4.62,
+      IsCredit: false
+    },
+    {
+      TransactionId: 24458dc747225547,
+      Date: 2026-02-27,
+      Description: Lime*3 Rides Khja, London,
+      Amount: 7.26,
+      IsCredit: false
+    },
+    {
+      TransactionId: 8705d3d08cdba0d5,
+      Date: 2026-02-27,
+      Description: Fortnum Mason, London,
+      Amount: 11.95,
+      IsCredit: false
+    },
+    {
+      TransactionId: 1ff6aa41426a2ca6,
+      Date: 2026-02-28,
+      Description: Paypal *Ionos Cloud, 35314369001,
+      Amount: 4.80,
+      IsCredit: false
+    },
+    {
+      TransactionId: ab8eb87252eece85,
+      Date: 2026-03-01,
+      Description: Seasons, Stamford 32.40 U.S. Dollar, USA, Exch Rate 0.77441 Incl Non Sterling Trans Fee of £0.00,
+      Amount: 24.11,
+      IsCredit: false
+    },
+    {
+      TransactionId: 52800047e8eba29f,
+      Date: 2026-03-05,
+      Description: Uber *Eats, Help.Uber.com 48.60 U.S. Dollar, USA, Exch Rate 0.77519 Incl Non Sterling Trans Fee of £0.00,
+      Amount: 36.54,
+      IsCredit: false
+    },
+    {
+      TransactionId: 0fbe47821fb6faeb,
+      Date: 2026-03-08,
+      Description: Uber *Trip, Help.Uber.com,
+      Amount: 27.14,
+      IsCredit: false
+    },
+    {
+      TransactionId: ad36197f085a5c51,
+      Date: 2026-03-08,
+      Description: Courtyard New York, New York 593.60 U.S. Dollar, USA, Exch Rate 0..7522 Incl Non Sterling Trans Fee of £0.00,
+      Amount: 446.48,
+      IsCredit: false
+    },
+    {
+      TransactionId: 70042592b3c4a9a3,
+      Date: 2026-03-13,
+      Description: Le Leberty, Les Bellevill 28.00 Euro, France, Exch Rate 0.8636 Incl Non Sterling Trans Fee of £0.00,
+      Amount: 24.18,
+      IsCredit: false
+    },
+    {
+      TransactionId: 3578c1940f0f49bb,
+      Date: 2026-03-17,
+      Description: D R Harris and Co Ltd, London,
+      Amount: 7.00,
+      IsCredit: false
+    },
+    {
+      TransactionId: 52479bff6e4d9c7e,
+      Date: 2026-03-17,
+      Description: Uber *Trip, Help.Uber.com,
+      Amount: 23.91,
+      IsCredit: false
+    },
+    {
+      TransactionId: 78fc8a230b3910f2,
+      Date: 2026-03-21,
+      Description: West End Minimart, London,
+      Amount: 8.47,
+      IsCredit: false
+    },
+    {
+      TransactionId: 0566ca2af9e54c9c,
+      Date: 2026-03-22,
+      Description: Caffe Romana, London,
+      Amount: 4.00,
+      IsCredit: false
+    },
+    {
+      TransactionId: 42c5b43b8a6275fc,
+      Date: 2026-03-22,
+      Description: Lul Ticket Machine, East Putney,
+      Amount: 30.00,
+      IsCredit: false
+    },
+    {
+      TransactionId: 692af3598f0da420,
+      Date: 2026-03-22,
+      Description: Richmond Golf, London,
+      Amount: 1.20,
+      IsCredit: false
+    },
+    {
+      TransactionId: dd7390179c8a50ae,
+      Date: 2026-03-22,
+      Description: Richmond Golf, London,
+      Amount: 7.15,
+      IsCredit: false
+    },
+    {
+      TransactionId: a5774d4d3256dde5,
+      Date: 2026-03-22,
+      Description: Nyx*Lexleisurecic, London,
+      Amount: 6.00,
+      IsCredit: false
+    },
+    {
+      TransactionId: 9f3ff18e25a63fc6,
+      Date: 2026-03-22,
+      Description: Nyx*Richmondparkgolfclu, Ambervalley,
+      Amount: 7.50,
+      IsCredit: false
+    },
+    {
+      TransactionId: 9f3ff18e25a63fc6-1,
+      Date: 2026-03-22,
+      Description: Nyx*Richmondparkgolfclu, Ambervalley,
+      Amount: 7.50,
+      IsCredit: false
+    }
+  ]
+}

@@ -9,7 +9,6 @@ public sealed class DeleteTransactionEndpoint(DeleteTransactionCommand command)
     public override void Configure()
     {
         Delete("transactions/{Id}");
-        AllowAnonymous();
         Description(b => b.WithName("DeleteTransaction"));
     }
 

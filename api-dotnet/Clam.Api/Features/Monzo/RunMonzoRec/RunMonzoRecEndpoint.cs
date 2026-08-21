@@ -11,7 +11,6 @@ public sealed class RunMonzoRecEndpoint(RunMonzoRecCommand command, MonzoOptions
     public override void Configure()
     {
         Post("admin/monzo/rec/run");
-        AllowAnonymous();
         Description(b => b.WithName("RunMonzoRec"));
     }
 

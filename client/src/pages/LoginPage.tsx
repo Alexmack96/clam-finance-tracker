@@ -1,41 +1,42 @@
-import { useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { signIn, useSession } from "../lib/authClient.js";
+import { useState } from "react";
+import { Navigate, useSearchParams } from "react-router-dom";
+import { useAuth } from "@workos-inc/authkit-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 
-const schema = z.object({
-  email: z.email("Please enter a valid email"),
-  password: z.string().min(1, "Password is required"),
-});
+/// The one failure the SDK cannot report itself, spelled out.
+///
+/// A blocked token exchange is almost always the origin missing from the
+/// allowed-origins list, which is a *separate* dashboard setting from the
+/// redirect URI. Getting the redirect URI right and stopping there gets you here.
+const EXCHANGE_FAILED =
+  "Signed in with WorkOS, but this app could not complete the token exchange. " +
+  "Add this exact origin to the allowed origins list on the WorkOS dashboard's " +
+  "Authentication page — that list is separate from Redirects, and both need it.";
 
-type LoginFormValues = z.infer<typeof schema>;
-
+/// The email and password form is gone. WorkOS AuthKit hosts sign-in now, so
+/// this page's only job is to send the browser there and to say where to come
+/// back to.
+///
+/// The editorial panel stays, because it is the first thing anyone sees and the
+/// redirect is fast enough that a bare spinner would look like a broken link.
 export function LoginPage() {
-  const navigate = useNavigate();
-  const { data: session } = useSession();
+  const { user, isLoading, signIn } = useAuth();
+  const [failed, setFailed] = useState<string | null>(null);
+  const [searchParams] = useSearchParams();
 
-  const {
-    register,
-    handleSubmit,
-    setError,
-    formState: { errors, isSubmitting },
-  } = useForm<LoginFormValues>({ resolver: zodResolver(schema) });
+  // Set by ProtectedRoute when a sign-in came back and then failed, rather than
+  // never having happened.
+  const authError = searchParams.get("authError");
+  const message = failed ?? (authError === "exchange" ? EXCHANGE_FAILED : authError);
 
-  if (session) {
-    navigate("/dashboard", { replace: true });
-    return null;
-  }
+  if (user) return <Navigate to="/dashboard" replace />;
 
-  async function onSubmit(values: LoginFormValues) {
-    const { error } = await signIn.email(values);
-    if (error) {
-      setError("root.serverError", { message: "Invalid email or password" });
-    } else {
-      navigate("/dashboard");
+  async function onSignIn() {
+    setFailed(null);
+    try {
+      await signIn({ state: { returnTo: "/dashboard" } });
+    } catch {
+      setFailed("Couldn't reach WorkOS. Check your connection and try again.");
     }
   }
 
@@ -105,53 +106,28 @@ export function LoginPage() {
             Sign in to continue your ledger.
           </p>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
-            <div className="space-y-1.5">
-              <Label htmlFor="email" className="eyebrow">
-                Email
-              </Label>
-              <Input
-                id="email"
-                type="email"
-                autoComplete="email"
-                placeholder="you@example.com"
-                {...register("email")}
-                className={`h-11 bg-card/60 backdrop-blur-sm ${errors.email ? "border-destructive focus-visible:ring-destructive" : ""}`}
-              />
-              {errors.email && (
-                <p className="text-xs text-destructive mt-1">{errors.email.message}</p>
+          <Button
+            onClick={onSignIn}
+            disabled={isLoading}
+            className="w-full h-11 mt-2 font-medium tracking-tight"
+          >
+            {isLoading ? "Checking your session..." : "Continue with WorkOS"}
+          </Button>
+
+          {message && (
+            <p className="text-xs text-destructive mt-3 leading-relaxed">
+              {message}
+              {authError === "exchange" && (
+                <>
+                  {" "}
+                  This origin is <span className="font-mono">{window.location.origin}</span>.
+                </>
               )}
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="password" className="eyebrow">
-                Password
-              </Label>
-              <Input
-                id="password"
-                type="password"
-                autoComplete="current-password"
-                placeholder="••••••••••"
-                {...register("password")}
-                className={`h-11 bg-card/60 backdrop-blur-sm ${errors.password ? "border-destructive focus-visible:ring-destructive" : ""}`}
-              />
-              {errors.password && (
-                <p className="text-xs text-destructive mt-1">{errors.password.message}</p>
-              )}
-            </div>
-            {errors.root?.serverError && (
-              <p className="text-xs text-destructive">{errors.root.serverError.message}</p>
-            )}
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full h-11 mt-2 font-medium tracking-tight"
-            >
-              {isSubmitting ? "Signing in..." : "Sign in"}
-            </Button>
-          </form>
+            </p>
+          )}
 
           <p className="text-xs text-muted-foreground/70 mt-8 leading-relaxed">
-            Locked out? Ask the admin (Alex) to reset your password.
+            Access is by invitation. Ask Alex to send you one from the WorkOS dashboard.
           </p>
         </div>
       </main>

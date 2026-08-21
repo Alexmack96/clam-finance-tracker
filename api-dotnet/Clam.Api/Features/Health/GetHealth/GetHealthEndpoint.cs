@@ -10,6 +10,9 @@ public sealed class GetHealthEndpoint : EndpointWithoutRequest<GetHealthResponse
     public override void Configure()
     {
         Get("health");
+
+        // A probe has no credentials and Railway restarts a container whose
+        // probe 401s.
         AllowAnonymous();
         Description(b => b.WithName("GetHealth"));
     }

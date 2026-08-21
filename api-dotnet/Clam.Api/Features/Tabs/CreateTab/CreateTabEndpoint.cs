@@ -7,7 +7,6 @@ public sealed class CreateTabEndpoint(CreateTabCommand command) : Endpoint<Creat
     public override void Configure()
     {
         Post("tabs");
-        AllowAnonymous();
         Description(b => b.WithName("CreateTab"));
     }
 

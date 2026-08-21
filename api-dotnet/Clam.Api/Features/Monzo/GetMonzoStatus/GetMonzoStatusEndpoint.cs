@@ -8,7 +8,6 @@ public sealed class GetMonzoStatusEndpoint(GetMonzoStatusQuery query)
     public override void Configure()
     {
         Get("admin/monzo/status");
-        AllowAnonymous();
         Description(b => b.WithName("GetMonzoStatus"));
     }
 

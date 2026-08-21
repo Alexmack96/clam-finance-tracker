@@ -127,14 +127,14 @@ React 18 + React Router v6 + Tailwind v4 + shadcn/ui. Entry: `main.tsx` → `App
 
 - `main.tsx` — Wraps app in `QueryClientProvider` → `ThemeProvider` → `BrowserRouter`.
 - `context/ThemeContext.tsx` — Light/dark theme toggle; persists to `localStorage`; toggles `.dark` on `<html>`.
-- `lib/authClient.ts` — Re-exports Better Auth client (`signIn`, `signOut`, `useSession`).
-- `lib/api.ts` — Axios instance (`withCredentials: true`). **Always import this for HTTP requests — never use `fetch` directly.**
+- `lib/authClient.ts` — `useSession()`, backed by WorkOS AuthKit plus `GET /api/me`. See "Auth (WorkOS AuthKit)" under the .NET API.
+- `lib/api.ts` — Axios instance. A request interceptor attaches the WorkOS bearer token. **Always import this for HTTP requests — never use `fetch` directly**, and never reach an API endpoint with `<a href>` or a form post, which carry no token.
 - `lib/utils.ts` — `cn()` helper (clsx + tailwind-merge).
 - `components/ProtectedRoute.tsx` — Route guard; redirects to `/login` if no session.
 - `components/Layout.tsx` — Shell with `<Navbar>` + `<Outlet>`; handles sign-out.
 - `components/Navbar.tsx` — Green navbar; all pages (incl. Import, Categories) are shown to every logged-in user.
 - `components/ui/` — shadcn/ui components (new-york style).
-- `pages/LoginPage.tsx` — Email/password login.
+- `pages/LoginPage.tsx` — Redirects to WorkOS AuthKit. No credentials are entered here.
 - `pages/DashboardPage.tsx` — Summary cards (income/expenses/balance), spending pie chart, transaction table with type/category filters.
 - `pages/AdminPage.tsx` — Admin tooling. (There is no Users page; `feat: remove admin` deleted `UsersPage`, `UsersTable` and `CreateUserDialog` along with the `/users` route.)
 - `pages/ImportPage.tsx` — Admin: upload bank CSV files to staging, process staged rows into transactions.
@@ -156,20 +156,15 @@ React 18 + React Router v6 + Tailwind v4 + shadcn/ui. Entry: `main.tsx` → `App
 
 Vite proxies `/api`, `/auth`, `/admin`, `/dashboard` → `localhost:3000`.
 
-### Authentication (Better Auth)
+### Authentication
 
-Server-side sessions stored in SQLite via the Prisma adapter. No JWT.
+**The client no longer signs in here.** It uses WorkOS AuthKit against the .NET
+API; see "Auth (WorkOS AuthKit)" in the .NET section below.
 
-**Server config** — `server/src/lib/auth.ts`:
-```ts
-export const auth = betterAuth({
-  database: prismaAdapter(db, { provider: "sqlite" }),
-  emailAndPassword: { enabled: true, disableSignUp: true },
-  user: { additionalFields: { role: { type: "string", defaultValue: "User", input: false } } },
-});
-```
-
-Sign-up is disabled — new users must be created by an admin.
+`server/src/lib/auth.ts` still holds the Better Auth setup and the Express routes
+still mount it, so this server keeps working on its own. Nothing calls it. It
+goes when Express does, and not before, so there is a working backend to fall
+back to until the .NET API is deployed.
 
 ### Database (Prisma + SQLite)
 
@@ -340,7 +335,7 @@ dotnet test  api-dotnet/tests/Clam.Api.Tests    # integration tests (LocalDB, no
 
 The AppHost prints a dashboard URL with a login token. It starts the API **and** the Vite client (`AddViteApp(...).WithBun()`), passing the API's address as `API_URL`, which `client/vite.config.ts` already uses as its `/api` proxy target. Drop that line and the client falls back to Express on `:3000`.
 
-Aspire uses `AddConnectionString("Clam")` — it does **not** run SQL Server in a container, so LocalDB and `Trusted_Connection` work. Set `ConnectionStrings:Clam` in `Clam.AppHost/appsettings.json`, or user-secrets for anything non-local.
+Aspire uses `AddConnectionString("Clam")` — it does **not** run SQL Server in a container. `ConnectionStrings:Clam` is **not committed anywhere**; set it in `Clam.AppHost` user-secrets. Under Aspire the AppHost injects it as an environment variable, which outranks `Clam.Api`'s own user-secrets, so setting it only on the API is silently ignored when the stack runs. **LocalDB is test-only** — the suite builds a throwaway database per run.
 
 ## Where code goes — the three tiers
 
@@ -362,7 +357,7 @@ The hard part of vertical slice architecture is what to do with shared code. The
 
 - **Central Package Management.** All versions in `Directory.Packages.props`; `<PackageReference>` carries no `Version`. `Aspire.Hosting.AppHost` is deliberately absent — the Aspire SDK adds it implicitly and declaring it is an error (NU1009).
 - **Tables are plural, columns are not.** `Transactions`, `Categories`; columns mirror Prisma field-for-field because those names go on the wire. Table names don't.
-- **Schema is `db/schema.sql`**, applied by hand and by the test fixture — there are no migrations. Apply with `sqlcmd -S "(localdb)\MSSQLLocalDB" -E -d ClamFinanceTracker -i api-dotnet/db/schema.sql -I -b` (the `-I` matters; the filtered index needs QUOTED_IDENTIFIER ON).
+- **Schema is `db/schema.sql`**, applied by hand and by the test fixture — there are no migrations. Apply with `sqlcmd -S tcp:<server>.database.windows.net,1433 -d ClamFinanceDev -U <user> -P <pw> -i api-dotnet/db/schema.sql -I -b` (the `-I` matters; the filtered index needs QUOTED_IDENTIFIER ON). It **drops every table it manages**, so it initialises an empty database rather than migrating a populated one. Two rules in its header are load-bearing and were each found by breaking them: retired tables keep their `DROP` (a dead FK blocks its parent's drop), and an index on a *newly added* column must be wrapped in `EXEC('...')` (the file is one batch, so a compile-time bind to the old table rejects the whole thing).
 - **Wire format is the contract.** Decimals serialise as strings and dates as `...Z` to match Prisma. Tests assert raw JSON, never a deserialised DTO, because deserialising hides exactly that.
 - **Results, not exceptions, for anticipated failures.** A slice that can fail returns `Result<T>` and inherits `ResultEndpoint<,>`; read slices that cannot fail stay on plain `Endpoint<,>`. Never use Ardalis' `ToMinimalApiResult()` — it serialises success with ASP.NET's default options and silently bypasses the converters above.
 - **Validation** is FastEndpoints' built-in `Validator<TRequest>`, discovered by reflection. No filter to register.
@@ -481,20 +476,80 @@ named its test after one, and answered 503.
 
 ## Tests
 
-Integration tests boot the real `Program.cs` against a throwaway LocalDB database created from `db/schema.sql`. Nothing is mocked. Two things are load-bearing and were each found the hard way:
+Integration tests boot the real `Program.cs` against a throwaway LocalDB database created from `db/schema.sql`. **LocalDB exists for this and nothing else** — the app itself runs on Azure SQL. `LocalDbHarness` creates a `ClamTest_<guid>` database per fixture, applies the schema and drops it, and sweeps stale ones at the start of a run rather than the end (a fixture's teardown fires when the *first* class using it finishes).
+
+Nothing is mocked. Three things are load-bearing and were each found the hard way:
 
 - Fixtures are declared **assembly-scoped** (`AssemblyInfo.cs`). FastEndpoints boots one SUT per fixture type for the whole project, so a class-scoped fixture is torn down while later classes are still using it.
-- The connection string is overridden with an **environment variable**. `UseSetting` and `ConfigureAppConfiguration` both lose to `appsettings.Development.json`, which points at the real dev database — and `POST /dev/seed` deletes every row. `ClamApp.VerifyTargetsOwnDatabaseAsync` fails the run if that override ever stops winning.
+- **Everything the suite overrides goes through an environment variable.** `UseSetting` and `ConfigureAppConfiguration` both lose to `appsettings.Development.json`, and that file has bitten three times now: once on the connection string (`POST /dev/seed` deletes every row, so a lost override empties the shared dev database — `VerifyTargetsOwnDatabase` fails the run if it stops winning), once on `WorkOS:ClientId` (a real id switches auth on and 401s all 238 tests), and once on `Seed:Enabled`. Note that `SetEnvironmentVariable(name, "")` *deletes* the variable, so blanking the WorkOS id uses a single space, which `IsNullOrWhiteSpace` still reads as unconfigured.
+- The database is emptied between tests by **Respawn**, which derives the delete order from the schema's own foreign keys. It replaced a hand-written list of `DELETE`s that had to be edited whenever a table was added; forgetting left rows standing into the next test, which surfaces as a test that passes alone and fails in a suite. `DatabaseResetTests` asserts the outcome so this cannot regress quietly.
 
-## WorkOS setup
+## Auth (WorkOS AuthKit)
 
-Auth is wired but **inactive**: `WorkOS:ClientId` ships blank, which registers no JWT scheme, and every endpoint is still `AllowAnonymous()`.
+Better Auth is gone. WorkOS holds the session and the credential; this API only
+validates a bearer token and reads its own `Users` table. The `Sessions` and
+`Accounts` tables, `SessionReader` and `BetterAuthPasswordHasher` are deleted.
+`Verifications` survives despite the name — the Monzo OAuth slice borrows it for
+its `state` parameter, which has nothing to do with authenticating anyone.
+
+### Setup
 
 1. WorkOS Dashboard → Configuration → copy **Client ID** (`client_01H...`). Not a secret.
-2. Put it in `Clam.Api/appsettings.Development.json` under `WorkOS:ClientId`.
-3. Leave `Authority` and `Audience` blank for the classic User Management issuer. Only set them for an AuthKit custom domain (`https://<sub>.authkit.app`), whose tokens do carry `aud`.
-4. Delete `AllowAnonymous()` from an endpoint to require a token.
+2. API: `WorkOS:ClientId` in `Clam.Api/appsettings.Development.json`, or `WorkOS__ClientId` in a deployment.
+3. Client: the same id as `VITE_WORKOS_CLIENT_ID` in the repo-root `.env`.
+4. Dashboard → Redirects: add the app origin as a **Redirect URI** (`http://localhost:5173`) and `<origin>/login` as the **Sign-in URL**. Add the origin to allowed origins on the Authentication page.
+5. Leave `Authority` and `Audience` blank for the classic User Management issuer. Only set them for an AuthKit custom domain (`https://<sub>.authkit.app`), whose tokens do carry `aud`.
 
 Token validation needs only the public JWKS, so the API key is never read here. If a slice ever calls the WorkOS API, put it in user-secrets, never appsettings.
+
+### Blank ClientId means the API is open
+
+Not "protected endpoints return 401" — open. FastEndpoints secures an endpoint
+unless it says `AllowAnonymous()`, but asking for authorization with no scheme
+registered throws on the first challenge instead of answering 401, so a blank id
+would 500 every request. Program.cs marks everything anonymous in that state
+instead, which is what lets a fresh clone and the test suite boot.
+
+**Production refuses to start with a blank id** rather than come up open. That
+guard in `AddWorkOsAuthentication` is the only thing between "misconfigured" and
+"unauthenticated public API".
+
+Three endpoints are anonymous on purpose, each saying why in its `Configure()`:
+`api/health` (a probe has no credentials), `admin/monzo/callback` (Monzo calls
+it; the single-use `state` stands in), and `dev/seed` (filtered out entirely
+unless `Seed:Enabled`).
+
+### A token says who, the database says which person
+
+A WorkOS access token carries `sub` and no profile at all — email and name are on
+the *ID* token, which the browser holds and this API never sees. So:
+
+- `Users.workOsUserId` is the `sub`, and the only link between WorkOS and this app. Nullable (a row can exist before its person first signs in) and unique through a filtered index.
+- `OnTokenValidated` looks that row up once per request and hangs `clam:userId` and `clam:owner` on the principal. `ICurrentUserAccessor` then reads claims, so endpoints pay nothing.
+- **No role claim**, unlike the PremPoints original this was ported from. There is no role column and no admin gate: every signed-in user reaches every route.
+- `owner` (Alex/Casey/Joint) is *not* an authorization boundary. It is which person's figures a page defaults to.
+
+A valid token with no matching row is left authenticated but unmapped rather than
+rejected. That is a newly invited user before they provision, and `GET /api/me`
+answers **404** so the client knows to call `POST /api/users/me` — which takes the
+name and email from the body and the identity from the token, so there is no
+version of it that creates somebody else.
+
+**It cannot claim an existing row by email.** That would make migration
+convenient and would also mean anyone who can create a WorkOS account with Alex's
+address becomes Alex. Rows that predate WorkOS get their `workOsUserId` set by the
+data migration.
+
+### The client
+
+`@workos-inc/authkit-react`, wrapped at `main.tsx`. Two pieces are load-bearing:
+
+- `AuthTokenBridge` hands `getAccessToken` to the axios instance, because the token lives in a React context and `lib/api.ts` is a module. The interceptor asks per request — AuthKit refreshes near expiry, so caching it would send a stale token after every refresh.
+- `useSession()` in `lib/authClient.ts` keeps Better Auth's `{ data, isPending }` shape on purpose, backed by `GET /api/me`. Four pages read `session.user.owner` and the navbar reads `session.user.name`; none of them needed to know identity moved.
+
+**A bearer token is not attached to a plain link the way a cookie was.** That broke
+`admin/monzo/auth`, which the Import page linked straight at. It now returns
+`{ url }` as JSON and the client navigates itself. Any future endpoint reached by
+`<a href>` or a form post has the same problem.
 
 Rate limiting is **global** (per-IP fixed window, `RateLimiting:*`), not opt-in per endpoint, so a new endpoint cannot be accidentally unprotected. CORS origins come from `AllowedOrigins`, defaulting to the Vite dev server in Development.

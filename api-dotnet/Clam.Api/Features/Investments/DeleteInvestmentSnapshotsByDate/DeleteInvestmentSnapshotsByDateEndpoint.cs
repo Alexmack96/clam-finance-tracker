@@ -11,7 +11,6 @@ public sealed class DeleteInvestmentSnapshotsByDateEndpoint(DeleteInvestmentSnap
         // Three segments, so this can never be confused with the two-segment
         // delete-by-id route despite sharing a prefix.
         Delete("investments/snapshots/date/{Date}");
-        AllowAnonymous();
         Description(b => b.WithName("DeleteInvestmentSnapshotsByDate"));
     }
 

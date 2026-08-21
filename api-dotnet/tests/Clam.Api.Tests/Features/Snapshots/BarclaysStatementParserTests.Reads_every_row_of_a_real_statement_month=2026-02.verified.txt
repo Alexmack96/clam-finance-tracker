@@ -1,0 +1,125 @@
+﻿{
+  StatementDate: February 2026,
+  RowCount: 17,
+  Rows: [
+    {
+      TransactionId: d1478505d31e82a3,
+      Date: 2026-02-20,
+      Description: Payment By Direct Debit,
+      Amount: 901.37,
+      IsCredit: true
+    },
+    {
+      TransactionId: 175a05e3e9277529,
+      Date: 2026-01-26,
+      Description: Sainsburys S/Mkts, Upper Street,
+      Amount: 5.83,
+      IsCredit: false
+    },
+    {
+      TransactionId: 5a46b47688172d86,
+      Date: 2026-01-28,
+      Description: Paypal *Ionos Cloud, 35314369001,
+      Amount: 4.80,
+      IsCredit: false
+    },
+    {
+      TransactionId: 8078417d74501f38,
+      Date: 2026-01-30,
+      Description: Deliveroo, London,
+      Amount: 45.93,
+      IsCredit: false
+    },
+    {
+      TransactionId: b72c7dced187be0b,
+      Date: 2026-02-01,
+      Description: Ubr* Pending.Uber.com, London,
+      Amount: 7.98,
+      IsCredit: false
+    },
+    {
+      TransactionId: 5ad5034d3d264696,
+      Date: 2026-02-01,
+      Description: Ubr* Pending.Uber.com, London,
+      Amount: 7.50,
+      IsCredit: false
+    },
+    {
+      TransactionId: 3852ac6a2df84b3d,
+      Date: 2026-02-01,
+      Description: Trainline, +443332022222,
+      Amount: 7.44,
+      IsCredit: false
+    },
+    {
+      TransactionId: 3b46dd638c6bc9b1,
+      Date: 2026-02-04,
+      Description: The Rattlin Bog, London,
+      Amount: 18.00,
+      IsCredit: false
+    },
+    {
+      TransactionId: 57d557a8184ee482,
+      Date: 2026-02-07,
+      Description: North Pole Greenwich, London,
+      Amount: 4.50,
+      IsCredit: false
+    },
+    {
+      TransactionId: ef80dd9eba292c33,
+      Date: 2026-02-10,
+      Description: D R Harris and Co Ltd, London,
+      Amount: 7.00,
+      IsCredit: false
+    },
+    {
+      TransactionId: c0580cee475c82d5,
+      Date: 2026-02-11,
+      Description: Highbury Fine Food and WI, London,
+      Amount: 2.00,
+      IsCredit: false
+    },
+    {
+      TransactionId: 74b5342506a46d9d,
+      Date: 2026-02-12,
+      Description: SQ *The Cut, London,
+      Amount: 4.90,
+      IsCredit: false
+    },
+    {
+      TransactionId: 12d92fb10d3089a1,
+      Date: 2026-02-14,
+      Description: Stagecoach Services, Stockport,
+      Amount: 2.70,
+      IsCredit: false
+    },
+    {
+      TransactionId: 12d92fb10d3089a1-1,
+      Date: 2026-02-14,
+      Description: Stagecoach Services, Stockport,
+      Amount: 2.70,
+      IsCredit: false
+    },
+    {
+      TransactionId: 25af953fd2cf209b,
+      Date: 2026-02-15,
+      Description: Hotel Le Pelvoux, Les Bellevill 671.22 Euro, France, Exch Rate 0.8723 Incl Non Sterling Trans Fee of £0.00,
+      Amount: 585.48,
+      IsCredit: false
+    },
+    {
+      TransactionId: 5d22fb2be3db8fa7,
+      Date: 2026-02-18,
+      Description: Amznmktplace*WT3UX3H85, Amazon.co.uk,
+      Amount: 9.99,
+      IsCredit: false
+    },
+    {
+      TransactionId: a5cbb5946116390f,
+      Date: 2026-02-19,
+      Description: Zettle_*Defichi Ltd, London,
+      Amount: 3.50,
+      IsCredit: false
+    }
+  ]
+}

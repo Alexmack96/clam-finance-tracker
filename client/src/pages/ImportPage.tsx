@@ -317,6 +317,14 @@ export function ImportPage() {
     onSuccess: () => refetchMonzoStatus(),
   });
 
+  // Fetches Monzo's consent URL with the caller's token, then leaves the app.
+  const connectMonzo = useMutation<{ url: string }, Error>({
+    mutationFn: () => api.get("/api/admin/monzo/auth").then((r) => r.data),
+    onSuccess: ({ url }) => {
+      window.location.href = url;
+    },
+  });
+
   const monzoParam = searchParams.get("monzo");
   // Safe to depend on the two callbacks even though `setSearchParams` changes
   // identity with the query string: the first run clears `?monzo`, so any re-run
@@ -454,9 +462,12 @@ export function ImportPage() {
                 Connect your Monzo account — pulls both your debit account and Flex card, tokens
                 refresh automatically, no more manual copy-paste.
               </p>
-              <a href="/api/admin/monzo/auth">
-                <Button>Connect Monzo</Button>
-              </a>
+              {/* A plain link used to work, because the browser attached the
+                  session cookie to it. A bearer token it does not attach, so the
+                  URL is fetched with one and the navigation happens here. */}
+              <Button onClick={() => connectMonzo.mutate()} disabled={connectMonzo.isPending}>
+                {connectMonzo.isPending ? "Connecting..." : "Connect Monzo"}
+              </Button>
             </>
           ) : (
             <>

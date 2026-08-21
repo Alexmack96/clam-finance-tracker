@@ -9,7 +9,6 @@ public sealed class UpdateTransactionEndpoint(UpdateTransactionCommand command)
     public override void Configure()
     {
         Patch("transactions/{Id}");
-        AllowAnonymous();
         Description(b => b.WithName("UpdateTransaction"));
     }
 

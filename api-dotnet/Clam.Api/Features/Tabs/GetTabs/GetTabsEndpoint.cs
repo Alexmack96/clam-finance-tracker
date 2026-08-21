@@ -7,7 +7,6 @@ public sealed class GetTabsEndpoint(GetTabsQuery query) : Endpoint<GetTabsReques
     public override void Configure()
     {
         Get("tabs");
-        AllowAnonymous();
         Description(b => b.WithName("GetTabs"));
     }
 

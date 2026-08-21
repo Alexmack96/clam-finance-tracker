@@ -8,7 +8,6 @@ public sealed class BackfillUsdGbpEndpoint(BackfillUsdGbpCommand command)
     public override void Configure()
     {
         Post("admin/backfill/usd-gbp");
-        AllowAnonymous();
         Description(b => b.WithName("BackfillUsdGbp"));
     }
 

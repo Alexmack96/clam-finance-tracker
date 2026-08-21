@@ -52,7 +52,7 @@ using Clam.Api.Features.Tabs.UpdateTab;
 using Clam.Api.Features.Transactions.DeleteTransaction;
 using Clam.Api.Features.Transactions.GetTransactions;
 using Clam.Api.Features.Transactions.UpdateTransaction;
-using Clam.Api.Features.Users.CreateUser;
+using Clam.Api.Features.Users.ProvisionCurrentUser;
 using Clam.Api.Features.Users.GetUsers;
 using Clam.Api.Features.Utilities.GetUtilities;
 using Clam.Api.Infrastructure.Auth;
@@ -116,9 +116,10 @@ public static class ServiceCollectionExtensions
     {
         services.AddSingleton<IDbConnectionFactory>(new SqlConnectionFactory(connectionString));
 
-        // Better Auth owns sessions; this only reads them, which is why it is a
-        // plain service rather than an authentication scheme.
-        services.AddScoped<ISessionReader, DatabaseSessionReader>();
+        // Reads claims off the current request. The database lookup behind those
+        // claims happened once, during token validation.
+        services.AddHttpContextAccessor();
+        services.AddScoped<ICurrentUserAccessor, HttpContextCurrentUserAccessor>();
 
         // The deep readiness probe behind /healthz. Tagged so it is excluded from
         // /alive, which must never touch the database — see Clam.ServiceDefaults.
@@ -259,7 +260,7 @@ public static class ServiceCollectionExtensions
 
         // Users
         services.AddScoped<GetUsersQuery>();
-        services.AddScoped<CreateUserCommand>();
+        services.AddScoped<ProvisionCurrentUserCommand>();
 
         // Statements
         services.AddScoped<GetStatementsQuery>();

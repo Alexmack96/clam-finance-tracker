@@ -6,18 +6,24 @@ var builder = DistributedApplication.CreateBuilder(args);
 //
 // AddSqlServer("clam") would start mcr.microsoft.com/mssql/server in a container
 // and hand back its connection string. There is no Docker on this machine, and
-// the database that matters locally is the LocalDB instance DataGrip and the
-// dev API already point at — a container would be a second, empty database.
+// the database that matters is Azure SQL — a container would be a second, empty
+// one that nothing else points at.
 //
 // AddConnectionString instead resolves ConnectionStrings:Clam from *this*
-// project's configuration (appsettings.json, or user-secrets) and injects it
-// into the API as the ConnectionStrings__Clam environment variable, which is
-// exactly what Clam.Api's Program.cs already reads. Aspire manages the
-// reference and shows the resource on the dashboard without owning its lifetime.
+// project's configuration and injects it into the API as the
+// ConnectionStrings__Clam environment variable, which is exactly what
+// Clam.Api's Program.cs already reads. Aspire manages the reference and shows
+// the resource on the dashboard without owning its lifetime.
 //
-// Trusted_Connection works because the API runs as a local process. It would not
-// if the API were containerised — that is the trap PremPoints' AppHost hit, and
-// why it carries a hardcoded host.docker.internal string with sa credentials.
+// **It comes from user-secrets on this project, and nowhere else.** There is no
+// value in appsettings.json, on purpose: the string carries an Azure SQL
+// password, and a committed LocalDB fallback would silently take over whenever
+// the secret was missing. Note the precedence too — this environment variable
+// beats Clam.Api's *own* user-secrets, so setting the string only on Clam.Api
+// works when the API runs alone and is quietly ignored under Aspire.
+//
+// LocalDB is for the integration tests. They build a throwaway database per run
+// and never read this.
 var clamDb = builder.AddConnectionString("Clam");
 
 // ── .NET API ──────────────────────────────────────────────────────────────
@@ -43,9 +49,10 @@ var api = builder.AddProject<Projects.Clam_Api>("clam-api")
                  })
                  // Aspire holds the resource "unhealthy" until this returns 200,
                  // so the dashboard shows the API as starting rather than running
-                 // while LocalDB wakes up. /alive is the shallow probe on
-                 // purpose — gating startup on the database would make a cold
-                 // Azure SQL look like a crash. /healthz is the deep one.
+                 // while a paused Azure SQL serverless database resumes. /alive
+                 // is the shallow probe on purpose — gating startup on the
+                 // database would make that resume look like a crash. /healthz
+                 // is the deep one.
                  .WithHttpHealthCheck("/alive")
                  .WithExternalHttpEndpoints();
 
@@ -54,10 +61,6 @@ var api = builder.AddProject<Projects.Clam_Api>("clam-api")
 // The client is a workspace of the Bun monorepo at the repo root, so WithBun()
 // rather than the npm default — otherwise `npm install` would fight bun.lock and
 // the "workspace:*" reference to @clam/core would not resolve.
-//
-// No WithHttpEndpoint: AddViteApp assigns the port itself and passes it as PORT,
-// which is why client/vite.config.ts reads process.env.PORT. Pinning a port here
-// is a documented mistake.
 //
 // API_URL is the seam that already existed — vite.config.ts proxies /api to
 // `process.env.API_URL ?? "http://localhost:3000"`. Setting it here points the
@@ -68,6 +71,33 @@ builder.AddViteApp("clam-client", "../../client")
        .WithReference(api)
        .WaitFor(api)
        .WithEnvironment("API_URL", api.GetEndpoint("http"))
+       // Vite on a fixed 5173, with no Aspire proxy in front of it. WorkOS is
+       // why it is fixed, and this project's own predev is why there is no proxy.
+       //
+       // AddViteApp leaves the port dynamic, which is fine until something
+       // off-machine has to know the address. AuthKit defaults its redirect_uri
+       // to window.origin and WorkOS matches redirect URIs exactly against an
+       // allowlist maintained by hand, so a port that changes every run can never
+       // be on it. That failure does not look like a bad port either: WorkOS
+       // falls back to whichever redirect URI *is* registered in the environment
+       // and sends you to a different app entirely.
+       //
+       // IsProxied = false is the load-bearing half. Pinning only the proxy port
+       // puts an Aspire listener on 5173, and the client's own `predev`
+       // (scripts/free-ports.ts, run by bun before vite) force-kills whatever
+       // holds 5173 — so the resource shot its own front door on every start and
+       // took the AppHost down with it. Unproxied, Vite binds 5173 itself, and
+       // free-ports goes back to doing what it was written for: clearing a stale
+       // vite from a previous session.
+       //
+       // Mutating the existing endpoint rather than adding one: WithHttpEndpoint
+       // here would create a second endpoint instead of changing this one.
+       .WithEndpoint("http", e =>
+       {
+           e.Port = 5173;
+           e.TargetPort = 5173;
+           e.IsProxied = false;
+       })
        .WithExternalHttpEndpoints();
 
 builder.Build().Run();

@@ -10,7 +10,6 @@ public sealed class ImportHsbcEndpoint(ImportHsbcCommand command)
     {
         Post("admin/import/hsbc");
         AllowFileUploads();
-        AllowAnonymous();
         Description(b => b.WithName("ImportHsbc"));
     }
 

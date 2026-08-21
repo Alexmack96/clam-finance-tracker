@@ -25,6 +25,7 @@
          throwaway database. -->
     <PackageReference Include="Dapper" />
     <PackageReference Include="Microsoft.Data.SqlClient" />
+    <PackageReference Include="Respawn" />
   </ItemGroup>
 
   <ItemGroup>
@@ -46,6 +47,13 @@
          cannot stand in for the latter: it fails in the extractor, which is a
          different rejection with a different status. -->
     <None Include="..\..\..\e2e\resources\statements\*-hsbc-statement.pdf"
+          Link="Statements\%(Filename)%(Extension)"
+          CopyToOutputDirectory="PreserveNewest" />
+
+    <!-- The Barclaycard statements, as downloaded — the file name is Barclays'
+         own, double space and all, and is left alone so the fixture is provably
+         the document rather than a tidied copy of it. -->
+    <None Include="..\..\..\e2e\resources\statements\Monthly BarclayCard Statement_*.pdf"
           Link="Statements\%(Filename)%(Extension)"
           CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>

@@ -9,7 +9,6 @@ public sealed class PreviewRulesEndpoint(PreviewRulesQuery query)
     public override void Configure()
     {
         Post("rules/preview");
-        AllowAnonymous();
         Description(b => b.WithName("PreviewRules"));
     }
 

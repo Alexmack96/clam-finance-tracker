@@ -83,6 +83,12 @@
     <PackageVersion Include="Verify.XunitV3" Version="31.28.0" />
     <PackageVersion Include="xunit.v3" Version="3.2.2" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
+
+    <!-- Empties the database between tests. It reads the foreign keys and works
+         out the delete order itself, which is the whole point: the hand-written
+         list it replaced had to be edited every time a table was added, and
+         forgetting left rows leaking into the next test. -->
+    <PackageVersion Include="Respawn" Version="7.0.0" />
   </ItemGroup>
 
 </Project>

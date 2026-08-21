@@ -9,7 +9,6 @@ public sealed class CreateInvestmentAccountEndpoint(CreateInvestmentAccountComma
     public override void Configure()
     {
         Post("investments/accounts");
-        AllowAnonymous();
         Description(b => b.WithName("CreateInvestmentAccount"));
     }
 

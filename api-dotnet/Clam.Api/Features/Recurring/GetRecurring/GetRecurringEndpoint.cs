@@ -8,7 +8,6 @@ public sealed class GetRecurringEndpoint(GetRecurringQuery query)
     public override void Configure()
     {
         Get("recurring");
-        AllowAnonymous();
         Description(b => b.WithName("GetRecurring"));
     }
 

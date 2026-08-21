@@ -13,7 +13,7 @@ public sealed class DisconnectMonzoResponse
 /// Forgets the stored credential. The staged transactions are deliberately left
 /// alone: they are already imported data, and disconnecting a bank is not a
 /// request to delete your history.
-public sealed class DisconnectMonzoEndpoint(IDbConnectionFactory factory, ISessionReader sessions)
+public sealed class DisconnectMonzoEndpoint(IDbConnectionFactory factory, ICurrentUserAccessor currentUser)
     : EndpointWithoutRequest<DisconnectMonzoResponse>
 {
     private const string Sql = "DELETE FROM [MonzoCredentials] WHERE [userId] = @UserId;";
@@ -21,21 +21,20 @@ public sealed class DisconnectMonzoEndpoint(IDbConnectionFactory factory, ISessi
     public override void Configure()
     {
         Post("admin/monzo/disconnect");
-        AllowAnonymous();
         Description(b => b.WithName("DisconnectMonzo"));
     }
 
     public override async Task HandleAsync(CancellationToken ct)
     {
-        var user = await sessions.GetCurrentUserAsync(HttpContext, ct);
-        if (user is null)
+        var caller = currentUser.Get();
+        if (caller?.UserId is null)
         {
             await Send.UnauthorizedAsync(ct);
             return;
         }
 
         using var connection = await factory.OpenAsync(ct);
-        await connection.ExecuteAsync(new CommandDefinition(Sql, new { UserId = user.Id }, cancellationToken: ct));
+        await connection.ExecuteAsync(new CommandDefinition(Sql, new { UserId = caller.UserId }, cancellationToken: ct));
 
         // Always ok, even when there was nothing to delete: the caller asked for
         // "not connected", and that is the state either way.

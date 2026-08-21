@@ -48,6 +48,10 @@ public sealed class MonzoCallbackEndpoint(
     public override void Configure()
     {
         Get("admin/monzo/callback");
+
+        // Monzo calls this, not the client, so there is no token to send. What
+        // stands in for one is the `state` parameter: single-use, ten-minute,
+        // and it names the user who started the flow.
         AllowAnonymous();
         Description(b => b.WithName("MonzoCallback"));
     }

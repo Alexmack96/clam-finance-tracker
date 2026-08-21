@@ -1,0 +1,314 @@
+﻿{
+  StatementDate: January 2026,
+  RowCount: 44,
+  Rows: [
+    {
+      TransactionId: 1858a9c011a3c23b,
+      Date: 2026-01-19,
+      Description: Payment By Direct Debit,
+      Amount: 2,110.29,
+      IsCredit: true
+    },
+    {
+      TransactionId: f20a8e3f869fdd56,
+      Date: 2025-12-22,
+      Description: Lime*3 Rides Khja, London,
+      Amount: 3.30,
+      IsCredit: false
+    },
+    {
+      TransactionId: fd21414eaafa7f7c,
+      Date: 2025-12-24,
+      Description: Trainline, +443332022222,
+      Amount: 8.09,
+      IsCredit: false
+    },
+    {
+      TransactionId: 90b1c3815e32c076,
+      Date: 2025-12-26,
+      Description: Google Play Apps, London,
+      Amount: 2.59,
+      IsCredit: false
+    },
+    {
+      TransactionId: 1d5c99185b20da11,
+      Date: 2025-12-27,
+      Description: Kempton Park Racecourse, Sunbury-On-th,
+      Amount: 30.20,
+      IsCredit: false
+    },
+    {
+      TransactionId: 41d35eafa3fbc114,
+      Date: 2025-12-28,
+      Description: Trainline, +443332022222,
+      Amount: 5.84,
+      IsCredit: false
+    },
+    {
+      TransactionId: 8ac9071bd9ec6567,
+      Date: 2025-12-28,
+      Description: Paypal *Ionos Cloud, 35314369001,
+      Amount: 4.80,
+      IsCredit: false
+    },
+    {
+      TransactionId: a430f295006f9db0,
+      Date: 2025-12-29,
+      Description: Lime*4 Rides Khja, London,
+      Amount: 4.29,
+      IsCredit: false
+    },
+    {
+      TransactionId: bfd1f60af1e54055,
+      Date: 2025-12-30,
+      Description: Uber *Trip, Help.Uber.com,
+      Amount: 18.96,
+      IsCredit: false
+    },
+    {
+      TransactionId: 7a83d0ec7cc6e13f,
+      Date: 2026-01-02,
+      Description: Amznmktplace*ZG0TS4MW4, Amazon.co.uk,
+      Amount: 9.99,
+      IsCredit: false
+    },
+    {
+      TransactionId: 6842074a59642400,
+      Date: 2026-01-07,
+      Description: Amazon.Co.UK*ZC3XQ7MP4, Amazon.co.uk,
+      Amount: 29.69,
+      IsCredit: false
+    },
+    {
+      TransactionId: 6eb867e20ba48dc7,
+      Date: 2026-01-08,
+      Description: Amazon.Co.UK*ZC0M03BU4, Amazon.co.uk,
+      Amount: 8.00,
+      IsCredit: false
+    },
+    {
+      TransactionId: eedced78bb563774,
+      Date: 2026-01-10,
+      Description: SQ *The Ten Bells, London,
+      Amount: 19.90,
+      IsCredit: false
+    },
+    {
+      TransactionId: a3a7471e02a33d13,
+      Date: 2026-01-10,
+      Description: SP Keychron UK, Christchurch,
+      Amount: 219.99,
+      IsCredit: false
+    },
+    {
+      TransactionId: 050fb4cb37037210,
+      Date: 2026-01-10,
+      Description: JD Wetherspoon, Watford,
+      Amount: 7.94,
+      IsCredit: false
+    },
+    {
+      TransactionId: 50093c3838a6d535,
+      Date: 2026-01-10,
+      Description: Bengal Village London GB, London,
+      Amount: 52.00,
+      IsCredit: false
+    },
+    {
+      TransactionId: d929d9f03dea97b0,
+      Date: 2026-01-10,
+      Description: Avoman, London,
+      Amount: 2.75,
+      IsCredit: false
+    },
+    {
+      TransactionId: 4acd1d86f3afb9bd,
+      Date: 2026-01-11,
+      Description: Uber *Trip, London,
+      Amount: 30.59,
+      IsCredit: false
+    },
+    {
+      TransactionId: 9f401fa59c667020,
+      Date: 2026-01-11,
+      Description: Kape Konnection, London,
+      Amount: 20.50,
+      IsCredit: false
+    },
+    {
+      TransactionId: 5e17f552c92d6445,
+      Date: 2026-01-11,
+      Description: Barista On The Other Side, London,
+      Amount: 9.90,
+      IsCredit: false
+    },
+    {
+      TransactionId: c95eb4c2ed2a0fa3,
+      Date: 2026-01-12,
+      Description: www.Everyoneactive.com, Hinckley,
+      Amount: 22.40,
+      IsCredit: false
+    },
+    {
+      TransactionId: 75d4e146b3a5e7c3,
+      Date: 2026-01-12,
+      Description: Lime*3 Rides Khja, London,
+      Amount: 4.29,
+      IsCredit: false
+    },
+    {
+      TransactionId: 97f669390f92f8c6,
+      Date: 2026-01-13,
+      Description: Greenwich Peninsula Golf, London,
+      Amount: 34.45,
+      IsCredit: false
+    },
+    {
+      TransactionId: f76d1e2d714f2bb7,
+      Date: 2026-01-13,
+      Description: Google Play Apps, London,
+      Amount: 48.74,
+      IsCredit: false
+    },
+    {
+      TransactionId: 9d2a045bff3de37f,
+      Date: 2026-01-13,
+      Description: N1 London, London,
+      Amount: 37.50,
+      IsCredit: false
+    },
+    {
+      TransactionId: 148c380da347782b,
+      Date: 2026-01-15,
+      Description: Greenwich Peninsula Golf, London,
+      Amount: 39.05,
+      IsCredit: false
+    },
+    {
+      TransactionId: a732bcdcac971278,
+      Date: 2026-01-16,
+      Description: Lime*6 Rides Khja, London,
+      Amount: 7.92,
+      IsCredit: false
+    },
+    {
+      TransactionId: 1d94e0d5258a5b18,
+      Date: 2026-01-16,
+      Description: Fortune Theatre, London,
+      Amount: 16.20,
+      IsCredit: false
+    },
+    {
+      TransactionId: 06e7f2c046bd70e6,
+      Date: 2026-01-16,
+      Description: TST-Wahaca - Covent GA, London,
+      Amount: 53.16,
+      IsCredit: false
+    },
+    {
+      TransactionId: 93aaa50ac5b3bd22,
+      Date: 2026-01-17,
+      Description: Amznmktplace*EP2MZ24M5, Amazon.co.uk,
+      Amount: 19.99,
+      IsCredit: false
+    },
+    {
+      TransactionId: fcd2ca4c59508c9a,
+      Date: 2026-01-18,
+      Description: Zettle_*Dropshot Coffe, Southfields,
+      Amount: 5.60,
+      IsCredit: false
+    },
+    {
+      TransactionId: 4bb13f0a804907d4,
+      Date: 2026-01-18,
+      Description: Richmond Park Golf Cou, London,
+      Amount: 1.20,
+      IsCredit: false
+    },
+    {
+      TransactionId: a79b500d74d51841,
+      Date: 2026-01-18,
+      Description: Amznmktplace*OM6WQ8G25, Amazon.co.uk,
+      Amount: 36.37,
+      IsCredit: false
+    },
+    {
+      TransactionId: 338a3b304cea8870,
+      Date: 2026-01-18,
+      Description: Ubr* Pending.Uber.com, London,
+      Amount: 11.99,
+      IsCredit: false
+    },
+    {
+      TransactionId: e7be4e4dfd632bb1,
+      Date: 2026-01-18,
+      Description: Nyx*Lexleisurecic, London,
+      Amount: 6.00,
+      IsCredit: false
+    },
+    {
+      TransactionId: bf1b67666dbf7798,
+      Date: 2026-01-18,
+      Description: Richmond Golf, London,
+      Amount: 7.15,
+      IsCredit: false
+    },
+    {
+      TransactionId: 093f7812632f7469,
+      Date: 2026-01-18,
+      Description: Lime*3 Rides Khja, London,
+      Amount: 3.63,
+      IsCredit: false
+    },
+    {
+      TransactionId: 193a08ab05df5e09,
+      Date: 2026-01-19,
+      Description: Amznmktplace*KC5UG3315, Amazon.co.uk,
+      Amount: 20.99,
+      IsCredit: false
+    },
+    {
+      TransactionId: 658ef24ee16fde95,
+      Date: 2026-01-20,
+      Description: Lime*4 Rides Khja, London,
+      Amount: 4.62,
+      IsCredit: false
+    },
+    {
+      TransactionId: aedeef5b3e35fdbe,
+      Date: 2026-01-21,
+      Description: Lime*Pass Khja, London,
+      Amount: 8.99,
+      IsCredit: false
+    },
+    {
+      TransactionId: 484b02715a047edb,
+      Date: 2026-01-23,
+      Description: Amazon.Co.UK*B31304075, Amazon.co.uk,
+      Amount: 3.75,
+      IsCredit: false
+    },
+    {
+      TransactionId: 8d39b3200ed03ffb,
+      Date: 2026-01-23,
+      Description: Lime*2 Rides Khja, London,
+      Amount: 2.31,
+      IsCredit: false
+    },
+    {
+      TransactionId: dfe5187f68694a20,
+      Date: 2026-01-24,
+      Description: Boots,Islington, Islington,
+      Amount: 10.80,
+      IsCredit: false
+    },
+    {
+      TransactionId: 8ea3fad4890946b2,
+      Date: 2026-01-25,
+      Description: Avoman Grocery, London,
+      Amount: 4.95,
+      IsCredit: false
+    }
+  ]
+}

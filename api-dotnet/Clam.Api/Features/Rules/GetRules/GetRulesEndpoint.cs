@@ -7,7 +7,6 @@ public sealed class GetRulesEndpoint(GetRulesQuery query) : EndpointWithoutReque
     public override void Configure()
     {
         Get("rules");
-        AllowAnonymous();
         Description(b => b.WithName("GetRules"));
     }
 

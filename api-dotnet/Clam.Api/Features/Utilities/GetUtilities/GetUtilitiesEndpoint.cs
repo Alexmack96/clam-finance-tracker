@@ -7,7 +7,6 @@ public sealed class GetUtilitiesEndpoint(GetUtilitiesQuery query) : EndpointWith
     public override void Configure()
     {
         Get("utilities");
-        AllowAnonymous();
         Description(b => b.WithName("GetUtilities"));
     }
 

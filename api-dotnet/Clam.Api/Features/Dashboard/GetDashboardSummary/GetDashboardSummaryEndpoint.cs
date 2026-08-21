@@ -8,7 +8,6 @@ public sealed class GetDashboardSummaryEndpoint(GetDashboardSummaryQuery query)
     public override void Configure()
     {
         Get("dashboard/summary");
-        AllowAnonymous();
         Description(b => b.WithName("GetDashboardSummary"));
     }
 

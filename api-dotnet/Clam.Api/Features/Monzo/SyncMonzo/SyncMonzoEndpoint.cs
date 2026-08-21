@@ -11,7 +11,6 @@ public sealed class SyncMonzoEndpoint(SyncMonzoCommand command, MonzoOptions opt
     public override void Configure()
     {
         Post("admin/monzo/sync");
-        AllowAnonymous();
         Description(b => b.WithName("SyncMonzo"));
     }
 

@@ -1,5 +1,7 @@
+using System.Collections.Concurrent;
 using Dapper;
 using Microsoft.Data.SqlClient;
+using Respawn;
 
 namespace Clam.Api.Tests;
 
@@ -64,35 +66,40 @@ public sealed class Arrange(string connectionString, Action resetIds)
              @ExternalId, @Owner, @Reviewed, @Bucket);
         """;
 
-    /// Truncation order is parent-last. Rules are cleared explicitly rather than
-    /// left to the cascade from Categories: a Bucket rule has a null categoryId,
-    /// so nothing cascades to it and it would survive into the next test as a
-    /// rule that silently rewrites buckets during an unrelated assertion.
-    private const string ClearSql = """
-        DELETE FROM [RuleConditions];
-        DELETE FROM [Rules];
-        DELETE FROM [RecurringVerdicts];
-        DELETE FROM [InvestmentSnapshots];
-        DELETE FROM [InvestmentAccounts];
-        DELETE FROM [Notes];
-        DELETE FROM [Tabs];
-        DELETE FROM [MonzoApiTransactions];
-        DELETE FROM [MonzoRecRuns];
-        DELETE FROM [AmexTransactions];
-        DELETE FROM [BarclaysTransactions];
-        DELETE FROM [SantanderTransactions];
-        DELETE FROM [HsbcTransactions];
-        DELETE FROM [SofiTransactions];
-        DELETE FROM [ChaseTransactions];
-        DELETE FROM [Transactions];
-        DELETE FROM [StatementFiles];
-        DELETE FROM [Categories];
-        DELETE FROM [Accounts];
-        DELETE FROM [Sessions];
-        DELETE FROM [Users];
-        DELETE FROM [MonzoCredentials];
-        DELETE FROM [Verifications];
-        """;
+    /// One Respawner per database, built once and reused.
+    ///
+    /// Building it reads every foreign key in the schema to work out a safe
+    /// delete order, which is not something to repeat before each of 237 tests.
+    /// Keyed by connection string because fixtures get a database each.
+    private static readonly ConcurrentDictionary<string, Task<Respawner>> Respawners = new(StringComparer.Ordinal);
+
+    /// Deletes every row in the database, in an order derived from the schema's
+    /// own foreign keys.
+    ///
+    /// This replaced a hand-written list of DELETEs in dependency order. The list
+    /// worked, and its failure mode was the problem: a table added to
+    /// db/schema.sql and forgotten here leaves rows standing into the next test,
+    /// which surfaces as a test that passes alone and fails in a suite, pointing
+    /// nowhere near the table that caused it. Nothing to keep in step now.
+    ///
+    /// WithReseed restarts IDENTITY columns at 1. The staging tables for Barclays
+    /// and Santander use one, and without this their ids depend on how many rows
+    /// earlier tests happened to insert.
+    private static Task<Respawner> RespawnerFor(string connectionString) =>
+        Respawners.GetOrAdd(connectionString, static cs => CreateRespawnerAsync(cs));
+
+    private static async Task<Respawner> CreateRespawnerAsync(string connectionString)
+    {
+        // Respawn 7 takes an open DbConnection rather than a connection string.
+        await using var connection = new SqlConnection(connectionString);
+        await connection.OpenAsync();
+
+        return await Respawner.CreateAsync(connection, new RespawnerOptions
+        {
+            DbAdapter = DbAdapter.SqlServer,
+            WithReseed = true,
+        });
+    }
 
     private async Task<SqlConnection> OpenAsync()
     {
@@ -116,10 +123,14 @@ public sealed class Arrange(string connectionString, Action resetIds)
     /// That includes the generated-id counter. It is a singleton on a host
     /// shared by the whole assembly, so resetting the rows without resetting the
     /// numbering leaves ids that depend on execution order.
-    public Task NothingAsync()
+    public async Task NothingAsync()
     {
         resetIds();
-        return ExecuteAsync(ClearSql);
+
+        var respawner = await RespawnerFor(connectionString);
+
+        await using var connection = await OpenAsync();
+        await respawner.ResetAsync(connection);
     }
 
     /// Five categories and four transactions: two Joint expenses, Casey's

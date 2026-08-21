@@ -8,7 +8,6 @@ public sealed class UpdateNoteEndpoint(UpdateNoteCommand command) : ResultEndpoi
     public override void Configure()
     {
         Patch("notes/{Id}");
-        AllowAnonymous();
         Description(b => b.WithName("UpdateNote"));
     }
 

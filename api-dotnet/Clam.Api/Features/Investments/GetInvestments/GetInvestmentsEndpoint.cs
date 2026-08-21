@@ -8,7 +8,6 @@ public sealed class GetInvestmentsEndpoint(GetInvestmentsQuery query)
     public override void Configure()
     {
         Get("investments");
-        AllowAnonymous();
         Description(b => b.WithName("GetInvestments"));
     }
 
