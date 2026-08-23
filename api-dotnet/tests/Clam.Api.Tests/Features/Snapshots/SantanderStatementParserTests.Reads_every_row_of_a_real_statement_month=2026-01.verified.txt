@@ -1,0 +1,104 @@
+﻿{
+  StatementDate: 21 Jan 2026 to 20 Feb 2026,
+  RowCount: 14,
+  Rows: [
+    {
+      TransactionId: 643c77e89d7a3c23,
+      Date: 2026-01-21,
+      Description: REGULAR TRANSFER FROM MR NATHAN ELLIOTT WINSLOW REFERENCE - Rent,
+      MoneyIn: 1,496.63,
+      Balance: 2,861.91
+    },
+    {
+      TransactionId: 7444fed074f27779,
+      Date: 2026-01-21,
+      Description: DIRECT DEBIT PAYMENT TO L B CAMDEN REF 01 85779278, MANDATE NO 0023,
+      MoneyOut: 257.00,
+      Balance: 2,604.91
+    },
+    {
+      TransactionId: 07362eae3eb14009,
+      Date: 2026-01-26,
+      Description: DIRECT DEBIT PAYMENT TO O2 REF D11185663, MANDATE NO 0018,
+      MoneyOut: 20.57,
+      Balance: 2,584.34
+    },
+    {
+      TransactionId: 95bd04cdaf910a50,
+      Date: 2026-01-30,
+      Description: FASTER PAYMENTS RECEIPT REF.HUDSON BAY FROM THROGMORTON UK LTD,
+      MoneyIn: 6,486.30,
+      Balance: 9,070.64
+    },
+    {
+      TransactionId: 917a1c0bbd6f8492,
+      Date: 2026-01-30,
+      Description: BILL PAYMENT VIA FASTER PAYMENT TO MY MONZO REFERENCE me , MANDATE NO 0078,
+      MoneyOut: 1,000.00,
+      Balance: 8,070.64
+    },
+    {
+      TransactionId: 078bd3aab96924d3,
+      Date: 2026-01-30,
+      Description: BILL PAYMENT VIA FASTER PAYMENT TO MY MONZO REFERENCE me , MANDATE NO 0078,
+      MoneyOut: 1,000.00,
+      Balance: 7,070.64
+    },
+    {
+      TransactionId: 92a709abf8e1a3bb,
+      Date: 2026-02-02,
+      Description: DIRECT DEBIT PAYMENT TO SO ENERGY REF HB69N5Z, MANDATE NO 0021,
+      MoneyOut: 85.19,
+      Balance: 6,985.45
+    },
+    {
+      TransactionId: 4901d9f64da04566,
+      Date: 2026-02-04,
+      Description: DIRECT DEBIT PAYMENT TO VIRGIN MEDIA PYMTS REF 112215503001, MANDATE NO 0019,
+      MoneyOut: 64.49,
+      Balance: 6,920.96
+    },
+    {
+      TransactionId: 7afcf15790be82db,
+      Date: 2026-02-05,
+      Description: DIRECT DEBIT PAYMENT TO AMERICAN EXPRESS REF 3760-151327-74005, MANDATE NO 0010,
+      MoneyOut: 4,575.34,
+      Balance: 2,345.62
+    },
+    {
+      TransactionId: fae55cab51d7a265,
+      Date: 2026-02-10,
+      Description: FASTER PAYMENTS RECEIPT REF.34454885 FROM Trading 212 UK Limited,
+      MoneyIn: 900.00,
+      Balance: 3,245.62
+    },
+    {
+      TransactionId: 6584a7764efcba00,
+      Date: 2026-02-17,
+      Description: FASTER PAYMENTS RECEIPT REF.Ski flights FROM LIDDY C,
+      MoneyIn: 200.00,
+      Balance: 3,445.62
+    },
+    {
+      TransactionId: a033498592810cd2,
+      Date: 2026-02-17,
+      Description: FASTER PAYMENTS RECEIPT REF.Ski hotel FROM LIDDY C,
+      MoneyIn: 292.00,
+      Balance: 3,737.62
+    },
+    {
+      TransactionId: c0471bd96c011a16,
+      Date: 2026-02-19,
+      Description: STANDING ORDER VIA FASTER PAYMENT TO Foxtons Limited REFERENCE RX336829 , MANDATE NO 0101,
+      MoneyOut: 2,400.00,
+      Balance: 1,337.62
+    },
+    {
+      TransactionId: 1e4c8ddf5c6cde41,
+      Date: 2026-02-20,
+      Description: DIRECT DEBIT PAYMENT TO B/CARD REWARDS REF 4929136523159004, MANDATE NO 0022,
+      MoneyOut: 901.37,
+      Balance: 436.25
+    }
+  ]
+}

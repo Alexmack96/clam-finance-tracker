@@ -294,12 +294,25 @@ CREATE TABLE [BarclaysTransactions] (
     [statementDate] NVARCHAR(40)  NOT NULL,
     [owner]         NVARCHAR(10)  NOT NULL CONSTRAINT [DF_BarclaysTransactions_owner] DEFAULT 'Alex',
     [importedAt]    DATETIME2(3)  NOT NULL CONSTRAINT [DF_BarclaysTransactions_importedAt] DEFAULT SYSUTCDATETIME(),
-    [status]        NVARCHAR(20)  NOT NULL CONSTRAINT [DF_BarclaysTransactions_status] DEFAULT 'pending'
+    [status]        NVARCHAR(20)  NOT NULL CONSTRAINT [DF_BarclaysTransactions_status] DEFAULT 'pending',
+    -- Nullable: rows staged before statement tracking existed have no source file.
+    [statementFileId] NVARCHAR(50) NULL,
+
+    CONSTRAINT [FK_BarclaysTransactions_StatementFiles] FOREIGN KEY ([statementFileId])
+        REFERENCES [StatementFiles] ([id]) ON DELETE CASCADE
 );
 
 CREATE UNIQUE NONCLUSTERED INDEX [UQ_BarclaysTransactions_transactionId]
     ON [BarclaysTransactions] ([transactionId])
     WHERE [transactionId] IS NOT NULL;
+
+-- Rule 5: [statementFileId] is new to this table, so the index has to be
+-- compiled after the CREATE above has actually run.
+EXEC('
+CREATE NONCLUSTERED INDEX [IX_BarclaysTransactions_statementFileId]
+    ON [BarclaysTransactions] ([statementFileId]);
+');
+CREATE NONCLUSTERED INDEX [IX_BarclaysTransactions_status] ON [BarclaysTransactions] ([status]);
 
 CREATE TABLE [SantanderTransactions] (
     [id]            INT           NOT NULL IDENTITY(1,1) CONSTRAINT [PK_SantanderTransactions] PRIMARY KEY,
@@ -312,12 +325,23 @@ CREATE TABLE [SantanderTransactions] (
     [statementDate] NVARCHAR(40)  NOT NULL,
     [owner]         NVARCHAR(10)  NOT NULL CONSTRAINT [DF_SantanderTransactions_owner] DEFAULT 'Alex',
     [importedAt]    DATETIME2(3)  NOT NULL CONSTRAINT [DF_SantanderTransactions_importedAt] DEFAULT SYSUTCDATETIME(),
-    [status]        NVARCHAR(20)  NOT NULL CONSTRAINT [DF_SantanderTransactions_status] DEFAULT 'pending'
+    [status]        NVARCHAR(20)  NOT NULL CONSTRAINT [DF_SantanderTransactions_status] DEFAULT 'pending',
+    -- Nullable: rows staged before statement tracking existed have no source file.
+    [statementFileId] NVARCHAR(50) NULL,
+
+    CONSTRAINT [FK_SantanderTransactions_StatementFiles] FOREIGN KEY ([statementFileId])
+        REFERENCES [StatementFiles] ([id]) ON DELETE CASCADE
 );
 
 CREATE UNIQUE NONCLUSTERED INDEX [UQ_SantanderTransactions_transactionId]
     ON [SantanderTransactions] ([transactionId])
     WHERE [transactionId] IS NOT NULL;
+
+EXEC('
+CREATE NONCLUSTERED INDEX [IX_SantanderTransactions_statementFileId]
+    ON [SantanderTransactions] ([statementFileId]);
+');
+CREATE NONCLUSTERED INDEX [IX_SantanderTransactions_status] ON [SantanderTransactions] ([status]);
 
 CREATE TABLE [HsbcTransactions] (
     [id]            INT           NOT NULL IDENTITY(1,1) CONSTRAINT [PK_HsbcTransactions] PRIMARY KEY,
@@ -354,9 +378,19 @@ CREATE TABLE [ChaseTransactions] (
     [owner]         NVARCHAR(10)  NOT NULL CONSTRAINT [DF_ChaseTransactions_owner] DEFAULT 'Casey',
     [importedAt]    DATETIME2(3)  NOT NULL CONSTRAINT [DF_ChaseTransactions_importedAt] DEFAULT SYSUTCDATETIME(),
     [status]        NVARCHAR(20)  NOT NULL CONSTRAINT [DF_ChaseTransactions_status] DEFAULT 'pending',
+    -- Nullable: rows staged before statement tracking existed have no source file.
+    [statementFileId] NVARCHAR(50) NULL,
 
-    CONSTRAINT [UQ_ChaseTransactions_transactionId] UNIQUE ([transactionId])
+    CONSTRAINT [UQ_ChaseTransactions_transactionId] UNIQUE ([transactionId]),
+    CONSTRAINT [FK_ChaseTransactions_StatementFiles] FOREIGN KEY ([statementFileId])
+        REFERENCES [StatementFiles] ([id]) ON DELETE CASCADE
 );
+
+EXEC('
+CREATE NONCLUSTERED INDEX [IX_ChaseTransactions_statementFileId]
+    ON [ChaseTransactions] ([statementFileId]);
+');
+CREATE NONCLUSTERED INDEX [IX_ChaseTransactions_status] ON [ChaseTransactions] ([status]);
 
 CREATE TABLE [SofiTransactions] (
     [id]            INT           NOT NULL IDENTITY(1,1) CONSTRAINT [PK_SofiTransactions] PRIMARY KEY,
@@ -372,9 +406,19 @@ CREATE TABLE [SofiTransactions] (
     [owner]         NVARCHAR(10)  NOT NULL CONSTRAINT [DF_SofiTransactions_owner] DEFAULT 'Casey',
     [importedAt]    DATETIME2(3)  NOT NULL CONSTRAINT [DF_SofiTransactions_importedAt] DEFAULT SYSUTCDATETIME(),
     [status]        NVARCHAR(20)  NOT NULL CONSTRAINT [DF_SofiTransactions_status] DEFAULT 'pending',
+    -- Nullable: rows staged before statement tracking existed have no source file.
+    [statementFileId] NVARCHAR(50) NULL,
 
-    CONSTRAINT [UQ_SofiTransactions_transactionId] UNIQUE ([transactionId])
+    CONSTRAINT [UQ_SofiTransactions_transactionId] UNIQUE ([transactionId]),
+    CONSTRAINT [FK_SofiTransactions_StatementFiles] FOREIGN KEY ([statementFileId])
+        REFERENCES [StatementFiles] ([id]) ON DELETE CASCADE
 );
+
+EXEC('
+CREATE NONCLUSTERED INDEX [IX_SofiTransactions_statementFileId]
+    ON [SofiTransactions] ([statementFileId]);
+');
+CREATE NONCLUSTERED INDEX [IX_SofiTransactions_status] ON [SofiTransactions] ([status]);
 
 -- ─── Monzo connection ────────────────────────────────────────────────────────
 

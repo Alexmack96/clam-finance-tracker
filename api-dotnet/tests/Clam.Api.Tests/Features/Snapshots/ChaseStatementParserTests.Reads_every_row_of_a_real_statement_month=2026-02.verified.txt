@@ -1,0 +1,139 @@
+﻿{
+  StatementDate: Feb 2026,
+  RowCount: 19,
+  Rows: [
+    {
+      TransactionId: 79f041c6714850b5,
+      Date: 2026-02-08,
+      Description: Payment Thank You-Mobile,
+      Amount: 688.91,
+      IsCredit: true
+    },
+    {
+      TransactionId: b9f4e82ec67ee57b,
+      Date: 2026-02-11,
+      Description: AIRBNB * HMY9SPE3Z8 4158005959 CA,
+      Amount: 495.54,
+      IsCredit: true
+    },
+    {
+      TransactionId: 514d2fa62d65e3ef,
+      Date: 2026-01-21,
+      Description: TFL TRAVEL CH TFL.GOV.UK/CP,
+      Amount: 3.77,
+      IsCredit: false
+    },
+    {
+      TransactionId: 07c899312dbf8c6d,
+      Date: 2026-01-22,
+      Description: TFL TRAVEL CH TFL.GOV.UK/CP,
+      Amount: 3.92,
+      IsCredit: false
+    },
+    {
+      TransactionId: dd864511b6638d8a,
+      Date: 2026-01-29,
+      Description: AMZNMktplace*I87S64FG5 amazon.co.uk,
+      Amount: 32.58,
+      IsCredit: false
+    },
+    {
+      TransactionId: 41ed0b51e93f597a,
+      Date: 2026-01-29,
+      Description: COURTYARD BY MARRIOTT DUESSELDORF,
+      Amount: 518.46,
+      IsCredit: false
+    },
+    {
+      TransactionId: c4e7638e276ecaa1,
+      Date: 2026-02-04,
+      Description: CONNECTIVITY LONDON,
+      Amount: 82.25,
+      IsCredit: false
+    },
+    {
+      TransactionId: 7c9a6653d43f1da6,
+      Date: 2026-02-09,
+      Description: UBER *ONE MEMBERSHIP UBER.COM/BILL CA,
+      Amount: 9.99,
+      IsCredit: false
+    },
+    {
+      TransactionId: ffb43a56de06f36c,
+      Date: 2026-02-11,
+      Description: MORRISONS DAILY BIRMINGHAM,
+      Amount: 4.10,
+      IsCredit: false
+    },
+    {
+      TransactionId: d55dcb04fcfb407e,
+      Date: 2026-02-12,
+      Description: AMAZON PRIME*VV8G35X23 amzn.com/bill WA,
+      Amount: 3.19,
+      IsCredit: false
+    },
+    {
+      TransactionId: 6869d59ae2fab12b,
+      Date: 2026-02-13,
+      Description: JOE THE JUICE UK LTD London,
+      Amount: 12.92,
+      IsCredit: false
+    },
+    {
+      TransactionId: 559bef2ade7aa5ff,
+      Date: 2026-02-14,
+      Description: STAGECOACH SERVICES STOCKPORT,
+      Amount: 3.69,
+      IsCredit: false
+    },
+    {
+      TransactionId: 559bef2ade7aa5ff-1,
+      Date: 2026-02-14,
+      Description: STAGECOACH SERVICES STOCKPORT,
+      Amount: 3.69,
+      IsCredit: false
+    },
+    {
+      TransactionId: a0107fc2c74a1c75,
+      Date: 2026-02-13,
+      Description: Amazon Digit*S65A41KW3 888-802-3080 WA,
+      Amount: 10.99,
+      IsCredit: false
+    },
+    {
+      TransactionId: 614d511671fbfa2f,
+      Date: 2026-02-16,
+      Description: AMZNMktplace*VN88L0NV5 amazon.co.uk,
+      Amount: 22.32,
+      IsCredit: false
+    },
+    {
+      TransactionId: dce0e891ee691ae5,
+      Date: 2026-02-16,
+      Description: AMZNMktplace*4Z3CM6H75 amazon.co.uk,
+      Amount: 14.51,
+      IsCredit: false
+    },
+    {
+      TransactionId: 5e3913082d256527,
+      Date: 2026-02-16,
+      Description: AMZNMktplace*SQ6ND0U55 amazon.co.uk,
+      Amount: 13.95,
+      IsCredit: false
+    },
+    {
+      TransactionId: aec16546eddd70f5,
+      Date: 2026-02-16,
+      Description: AMZNMktplace*FD5CK1DK5 amazon.co.uk,
+      Amount: 9.76,
+      IsCredit: false
+    },
+    {
+      TransactionId: 3a4cdbe22c97020f,
+      Date: 2026-02-19,
+      Description: AMZNMktplace*DI4U39HH5 amazon.co.uk,
+      Amount: 12.42,
+      IsCredit: false
+    }
+  ]
+}

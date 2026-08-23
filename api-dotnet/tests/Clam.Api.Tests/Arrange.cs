@@ -284,6 +284,24 @@ public sealed class Arrange(string connectionString, Action resetIds)
                ('barclays_debit',  '2026-02-14', 'SAINSBURYS',       '25.00',  0, 'Feb 2026', 'Alex');
         """);
 
+    /// A category the user already owns, under a name the system catalogue also
+    /// uses, in a colour the catalogue would never pick. The seeder has to leave
+    /// every part of it alone.
+    public Task UserOwnedGroceriesCategoryAsync() => ExecuteAsync("""
+        INSERT INTO [Categories] ([id], [name], [color])
+        VALUES ('ctest000000000000mine1cat', 'Groceries', '#000000');
+        """);
+
+    /// One Bucket rule already at position 0, so a seeded rule has somewhere to
+    /// land *after*. Rules are first-match-wins, so where new ones go is the
+    /// whole question.
+    public Task UserOwnedBucketRuleAsync() => ExecuteAsync("""
+        INSERT INTO [Rules] ([id], [kind], [position], [joinOperator], [bucket])
+        VALUES (@UserRuleId, 'Bucket', 0, 'AND', 'Needs');
+        """, new { UserRuleId });
+
+    public const string UserRuleId = "ctest00000000000mine1rule";
+
     /// One pending SoFi row in dollars, which the process step has to convert.
     public Task StagedSofiRowAsync() => ExecuteAsync("""
         INSERT INTO [SofiTransactions]
@@ -413,9 +431,9 @@ public sealed class Arrange(string connectionString, Action resetIds)
             INSERT INTO [StatementFiles]
                 ([id], [bank], [owner], [statementDate], [originalName], [contentHash],
                  [byteSize], [storageKey], [rowCount], [reconciled])
-            VALUES ('cstmt0000000000000000002', 'barclays', 'Alex', 'February 2026',
-                    'barclays-feb.pdf', 'f6e5d4c3b2a1', 10240,
-                    'barclays/Alex/February-2026-f6e5d4c3b2a1.pdf', 2, 1);
+            VALUES ('cstmt0000000000000000002', 'monzo', 'Alex', 'February 2026',
+                    'monzo-feb.pdf', 'f6e5d4c3b2a1', 10240,
+                    'monzo/Alex/February-2026-f6e5d4c3b2a1.pdf', 2, 1);
             """);
     }
 

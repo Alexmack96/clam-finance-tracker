@@ -12,7 +12,11 @@ using Clam.Api.Features.Import.BackfillUsdGbp;
 using Clam.Api.Features.Import.GetLastStatement;
 using Clam.Api.Features.Import.GetStagedCounts;
 using Clam.Api.Features.Import.ImportAmex;
+using Clam.Api.Features.Import.ImportBarclays;
+using Clam.Api.Features.Import.ImportChase;
 using Clam.Api.Features.Import.ImportHsbc;
+using Clam.Api.Features.Import.ImportSantander;
+using Clam.Api.Features.Import.ImportSofi;
 using Clam.Api.Features.Import.ProcessStaged;
 using Clam.Api.Features.Investments.CreateInvestmentAccount;
 using Clam.Api.Features.Investments.DeleteInvestmentAccount;
@@ -275,7 +279,11 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ProcessStagedCommand>();
         services.AddScoped<BackfillUsdGbpCommand>();
         services.AddScoped<ImportAmexCommand>();
+        services.AddScoped<ImportBarclaysCommand>();
+        services.AddScoped<ImportChaseCommand>();
         services.AddScoped<ImportHsbcCommand>();
+        services.AddScoped<ImportSantanderCommand>();
+        services.AddScoped<ImportSofiCommand>();
 
         // Monzo
         services.AddScoped<MonzoConnectionResolver>();

@@ -1,0 +1,230 @@
+﻿{
+  StatementDate: Mar 2026,
+  RowCount: 32,
+  Rows: [
+    {
+      TransactionId: ce49930d285a75cc,
+      Date: 2026-03-08,
+      Description: Payment Thank You-Mobile,
+      Amount: 1483.17,
+      IsCredit: true
+    },
+    {
+      TransactionId: 68ed1717f41f04ca,
+      Date: 2026-03-18,
+      Description: Payment Thank You-Mobile,
+      Amount: 1425.66,
+      IsCredit: true
+    },
+    {
+      TransactionId: 515107462b4ac498,
+      Date: 2026-02-23,
+      Description: FANTUAN LONDON LONDON N1,
+      Amount: 18.65,
+      IsCredit: false
+    },
+    {
+      TransactionId: de87ccbadf7af8ec,
+      Date: 2026-02-26,
+      Description: AMZNMktplace*2M4S569B5 amazon.co.uk,
+      Amount: 12.72,
+      IsCredit: false
+    },
+    {
+      TransactionId: 90b46cd06f14bee9,
+      Date: 2026-02-26,
+      Description: AMZNMktplace*TH2PL15X5 amazon.co.uk,
+      Amount: 22.41,
+      IsCredit: false
+    },
+    {
+      TransactionId: d758f92469589177,
+      Date: 2026-02-27,
+      Description: AMZNMktplace*4Y3VN2G25 amazon.co.uk,
+      Amount: 9.65,
+      IsCredit: false
+    },
+    {
+      TransactionId: 868a466b9a22bebb,
+      Date: 2026-03-01,
+      Description: SUNDAY*Permit Room Portob London,
+      Amount: 54.42,
+      IsCredit: false
+    },
+    {
+      TransactionId: 8224f203dc251347,
+      Date: 2026-03-01,
+      Description: MAISONSPORT.COM KENDAL,
+      Amount: 1005.15,
+      IsCredit: false
+    },
+    {
+      TransactionId: df684155cb9353f1,
+      Date: 2026-03-01,
+      Description: Europcar UK (SEC E-Comm.) Leicester,
+      Amount: 374.90,
+      IsCredit: false
+    },
+    {
+      TransactionId: e7da28bf1077e438,
+      Date: 2026-03-01,
+      Description: GINGER & LIME JUICE BAR LONDON,
+      Amount: 10.13,
+      IsCredit: false
+    },
+    {
+      TransactionId: 0c200f76e50ded3b,
+      Date: 2026-03-01,
+      Description: Intersport France Longjumeau,
+      Amount: 121.84,
+      IsCredit: false
+    },
+    {
+      TransactionId: 54d4c9d7d972e724,
+      Date: 2026-03-02,
+      Description: AMZNMktplace*A434B9085 amazon.co.uk,
+      Amount: 17.92,
+      IsCredit: false
+    },
+    {
+      TransactionId: 5c39e2003ceef3fa,
+      Date: 2026-03-02,
+      Description: AMZNMktplace*QV9Z13PX5 amazon.co.uk,
+      Amount: 11.02,
+      IsCredit: false
+    },
+    {
+      TransactionId: 1689a23106b3e5d0,
+      Date: 2026-03-01,
+      Description: GREEN SHOP LONDON,
+      Amount: 4.55,
+      IsCredit: false
+    },
+    {
+      TransactionId: 0789ace625286607,
+      Date: 2026-03-02,
+      Description: AMZNMktplace*7P2EH2H75 amazon.co.uk,
+      Amount: 12.68,
+      IsCredit: false
+    },
+    {
+      TransactionId: 55dd25698092a3f4,
+      Date: 2026-03-04,
+      Description: CONNECTIVITY LONDON,
+      Amount: 80.56,
+      IsCredit: false
+    },
+    {
+      TransactionId: 1099b0ef3b687b90,
+      Date: 2026-03-05,
+      Description: AMZNMktplace*NO73X70E5 amazon.co.uk,
+      Amount: 27.26,
+      IsCredit: false
+    },
+    {
+      TransactionId: 50542617225f99bc,
+      Date: 2026-03-05,
+      Description: AMZNMktplace*IZ4660SM5 amazon.co.uk,
+      Amount: 12.12,
+      IsCredit: false
+    },
+    {
+      TransactionId: cc19a2b2fa2ab9a7,
+      Date: 2026-03-05,
+      Description: AMZNMktplace*6O1OX7WH5 amazon.co.uk,
+      Amount: 47.71,
+      IsCredit: false
+    },
+    {
+      TransactionId: fe729ec037dce75e,
+      Date: 2026-03-05,
+      Description: AMZNMktplace*LN8BN82Z5 amazon.co.uk,
+      Amount: 13.49,
+      IsCredit: false
+    },
+    {
+      TransactionId: 0cd2a7c89625fafa,
+      Date: 2026-03-07,
+      Description: GINGER & LIME JUICE BAR LONDON,
+      Amount: 10.74,
+      IsCredit: false
+    },
+    {
+      TransactionId: 578526ac582d4984,
+      Date: 2026-03-06,
+      Description: LOUIE LONDON WC2H,
+      Amount: 227.15,
+      IsCredit: false
+    },
+    {
+      TransactionId: edcbc1b298f17965,
+      Date: 2026-03-08,
+      Description: Mountain Warehouse Ltd London,
+      Amount: 248.29,
+      IsCredit: false
+    },
+    {
+      TransactionId: 36f03cc8d3effa81,
+      Date: 2026-03-08,
+      Description: Mountain Warehouse Ltd London,
+      Amount: 206.02,
+      IsCredit: false
+    },
+    {
+      TransactionId: 30d9d4d6814ec49f,
+      Date: 2026-03-08,
+      Description: ANYA SPA LONDON N1,
+      Amount: 267.12,
+      IsCredit: false
+    },
+    {
+      TransactionId: dc815647461845ae,
+      Date: 2026-03-10,
+      Description: UBER *ONE MEMBERSHIP UBER.COM/BILL CA,
+      Amount: 9.99,
+      IsCredit: false
+    },
+    {
+      TransactionId: fca22b586589fd4c,
+      Date: 2026-03-12,
+      Description: AMAZON PRIME*BP2R23NC0 amzn.com/bill WA,
+      Amount: 3.19,
+      IsCredit: false
+    },
+    {
+      TransactionId: 0d2569107fdc63c5,
+      Date: 2026-03-13,
+      Description: Amazon Digit*BD2PK1KG2 888-802-3080 WA,
+      Amount: 10.99,
+      IsCredit: false
+    },
+    {
+      TransactionId: 2090ceeb3f0213a8,
+      Date: 2026-03-14,
+      Description: CARREFOUR FERNEY-VOLTAI,
+      Amount: 39.43,
+      IsCredit: false
+    },
+    {
+      TransactionId: 459ff0a6c038b33d,
+      Date: 2026-03-17,
+      Description: AMZNMktplace*K162T0GP5 amazon.co.uk,
+      Amount: 16.27,
+      IsCredit: false
+    },
+    {
+      TransactionId: 70e9668faf34a978,
+      Date: 2026-03-15,
+      Description: AMAZON* 2T1WG7NE5 LONDON,
+      Amount: 386.47,
+      IsCredit: false
+    },
+    {
+      TransactionId: 0180a584bdbf5ea7,
+      Date: 2026-03-18,
+      Description: ZETTLE_*GINGER AND LIM LONDON,
+      Amount: 10.03,
+      IsCredit: false
+    }
+  ]
+}

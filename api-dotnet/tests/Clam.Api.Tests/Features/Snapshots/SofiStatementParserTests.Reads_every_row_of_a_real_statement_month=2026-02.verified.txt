@@ -1,0 +1,86 @@
+﻿{
+  StatementDate: Feb 2026,
+  RowCount: 8,
+  Rows: [
+    {
+      TransactionId: 486-1,
+      Date: 2026-02-28,
+      Type: Interest Earned,
+      Description: Interest earned,
+      Amount: 0.63,
+      IsCredit: true,
+      Balance: 2,125.05,
+      AccountType: Checking
+    },
+    {
+      TransactionId: 485-496003001,
+      Date: 2026-02-23,
+      Type: Direct Payment,
+      Description: BETTERMENT SEC TRANSFER,
+      Amount: 150.00,
+      IsCredit: false,
+      Balance: 2,124.42,
+      AccountType: Checking
+    },
+    {
+      TransactionId: 481-80208001,
+      Date: 2026-02-13,
+      Type: Deposit,
+      Description: VENMO CASHOUT,
+      Amount: 738.20,
+      IsCredit: true,
+      Balance: 2,274.42,
+      AccountType: Checking
+    },
+    {
+      TransactionId: 480-304501001,
+      Date: 2026-02-09,
+      Type: Direct Payment,
+      Description: CHASE CREDIT CRD EPAY,
+      Amount: 688.91,
+      IsCredit: false,
+      Balance: 1,536.22,
+      AccountType: Checking
+    },
+    {
+      TransactionId: 478-83353002,
+      Date: 2026-02-08,
+      Type: Deposit,
+      Description: From Savings - 3143,
+      Amount: 2000.00,
+      IsCredit: true,
+      Balance: 2,225.13,
+      AccountType: Checking
+    },
+    {
+      TransactionId: 477-578171001,
+      Date: 2026-02-05,
+      Type: Direct Payment,
+      Description: BETTERMENT SEC TRANSFER,
+      Amount: 150.00,
+      IsCredit: false,
+      Balance: 225.13,
+      AccountType: Checking
+    },
+    {
+      TransactionId: 118-1,
+      Date: 2026-02-28,
+      Type: Interest Earned,
+      Description: Interest earned,
+      Amount: 1.99,
+      IsCredit: true,
+      Balance: 460.61,
+      AccountType: Savings
+    },
+    {
+      TransactionId: 113-83353001,
+      Date: 2026-02-08,
+      Type: Withdrawal,
+      Description: To Checking - 1598,
+      Amount: 2000.00,
+      IsCredit: false,
+      Balance: 458.62,
+      AccountType: Savings
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+﻿{
+  Status: 409 Conflict,
+  Content: {
+    Headers: {
+      Content-Length: 235,
+      Content-Type: application/problem+json
+    },
+    Value: {
+      title: Conflict,
+      status: 409,
+      detail: This exact PDF was already uploaded on 2026-08-11 as "Monthly BarclayCard Statement_26-JAN-26  270310481775250939803.pdf".,
+      instance: /api/admin/import/barclays,
+      traceId: {Scrubbed}
+    }
+  }
+}

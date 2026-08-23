@@ -56,6 +56,28 @@
     <None Include="..\..\..\e2e\resources\statements\Monthly BarclayCard Statement_*.pdf"
           Link="Statements\%(Filename)%(Extension)"
           CopyToOutputDirectory="PreserveNewest" />
+
+    <!-- The Santander statements. Four rather than three: one of them runs
+         22nd December to 20th January, which is the only fixture that proves the
+         year is inferred from the period's end rather than assumed. -->
+    <None Include="..\..\..\e2e\resources\statements\*-santander.pdf"
+          Link="Statements\%(Filename)%(Extension)"
+          CopyToOutputDirectory="PreserveNewest" />
+
+    <!-- The Chase statements, renamed by closing date. Chase's own download name
+         is "Feb26.pdf", which carries nothing the parser or a reader can use and
+         collides across years — the one case where keeping the bank's name for
+         the file is worse than replacing it. -->
+    <None Include="..\..\..\e2e\resources\statements\*-chase.pdf"
+          Link="Statements\%(Filename)%(Extension)"
+          CopyToOutputDirectory="PreserveNewest" />
+
+    <!-- The SoFi statements, under SoFi's own download name, which already
+         carries the closing date. Each holds two accounts — Checking then
+         Savings — so three files are six tables. -->
+    <None Include="..\..\..\e2e\resources\statements\SoFiMoneyStatement_*.pdf"
+          Link="Statements\%(Filename)%(Extension)"
+          CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>

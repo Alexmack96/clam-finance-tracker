@@ -1,0 +1,14 @@
+﻿{
+  Status: 200 OK,
+  Content: {
+    Headers: {
+      Content-Length: 75,
+      Content-Type: application/json; charset=utf-8
+    },
+    Value: {
+      imported: 8,
+      duplicates: [],
+      statementFileId: cgen00000000000000000001
+    }
+  }
+}

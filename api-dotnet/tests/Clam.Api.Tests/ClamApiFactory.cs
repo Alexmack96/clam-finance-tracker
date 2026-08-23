@@ -101,6 +101,13 @@ public sealed class ClamApiFactory : WebApplicationFactory<Program>, IAsyncLifet
         // registration time, so the in-memory override below arrives too late.
         Environment.SetEnvironmentVariable("RateLimiting__PermitLimit", "100000");
 
+        // Same mechanism, and this one is about determinism rather than access.
+        // The system category seeder is a BackgroundService: left on, it races
+        // Respawn, and a test that arranged an empty world finds twelve
+        // categories in it because the seeder caught up mid-run. It is driven
+        // directly by SystemCategorySeederTests instead.
+        Environment.SetEnvironmentVariable("SystemCategories__Seed", "false");
+
         // Same mechanism, third time, and this one decides whether the suite can
         // run at all. A blank WorkOS:ClientId registers no JWT scheme, which is
         // what leaves every endpoint anonymous — see AddWorkOsAuthentication.

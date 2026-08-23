@@ -1,0 +1,83 @@
+﻿{
+  Status: 200 OK,
+  Content: {
+    Headers: {
+      Content-Length: 1121,
+      Content-Type: application/json; charset=utf-8
+    },
+    Value: [
+      {
+        id: cgen00000000000000000001,
+        name: Activities,
+        color: #8b5cf6,
+        transactionCount: 0
+      },
+      {
+        id: cgen00000000000000000004,
+        name: Bank Sauce,
+        color: #0ea5e9,
+        transactionCount: 0
+      },
+      {
+        id: cgen00000000000000000007,
+        name: Entertainment,
+        color: #7C3AED,
+        transactionCount: 0
+      },
+      {
+        id: cgen00000000000000000010,
+        name: Food & Social,
+        color: #fb923c,
+        transactionCount: 0
+      },
+      {
+        id: cgen00000000000000000013,
+        name: Groceries,
+        color: #22c55e,
+        transactionCount: 0
+      },
+      {
+        id: cgen00000000000000000019,
+        name: Personal Care,
+        color: #f43f5e,
+        transactionCount: 0
+      },
+      {
+        id: cgen00000000000000000022,
+        name: Rent & Bills,
+        color: #64748b,
+        transactionCount: 0
+      },
+      {
+        id: cgen00000000000000000025,
+        name: Savings,
+        color: #a855f7,
+        transactionCount: 0
+      },
+      {
+        id: cgen00000000000000000016,
+        name: Takeout,
+        color: #ef4444,
+        transactionCount: 0
+      },
+      {
+        id: cgen00000000000000000028,
+        name: Transport,
+        color: #3b82f6,
+        transactionCount: 0
+      },
+      {
+        id: cgen00000000000000000031,
+        name: Uncategorised,
+        color: #d1d5db,
+        transactionCount: 0
+      },
+      {
+        id: cgen00000000000000000032,
+        name: Vacation,
+        color: #eab308,
+        transactionCount: 0
+      }
+    ]
+  }
+}

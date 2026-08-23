@@ -141,8 +141,11 @@ public class ReparseStatementTests(ClamApiFactory api) : ApiTest(api)
         await Verify(response);
     }
 
-    /// A bank whose parser was never ported. It answers rather than throwing,
-    /// because the statement row is legitimate — only the re-read is impossible.
+    /// A bank with no statement parser at all. Every bank that uploads a PDF is
+    /// re-parseable now, so the case left is a feed that never had one: Monzo
+    /// arrives over its API, and a StatementFiles row naming it has no document
+    /// behind it to re-read. It answers rather than throwing, because the
+    /// statement row is legitimate — only the re-read is impossible.
     [Fact]
     public async Task Refuses_a_bank_it_has_no_parser_for()
     {

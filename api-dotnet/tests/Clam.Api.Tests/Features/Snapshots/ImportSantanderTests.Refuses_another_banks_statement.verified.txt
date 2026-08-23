@@ -1,0 +1,16 @@
+﻿{
+  Status: 422 Unprocessable Entity,
+  Content: {
+    Headers: {
+      Content-Length: 239,
+      Content-Type: application/problem+json
+    },
+    Value: {
+      title: Unprocessable Entity,
+      status: 422,
+      detail: This looks like an American Express statement, not Santander. Upload it under the American Express account instead.,
+      instance: /api/admin/import/santander,
+      traceId: {Scrubbed}
+    }
+  }
+}

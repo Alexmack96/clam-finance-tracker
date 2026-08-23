@@ -1,0 +1,38 @@
+# Railway service config for the .NET API.
+#
+# Separate from the repo-root railway.toml, which builds the Bun/Express service.
+# Both can run at once, which is the point: the .NET service is deployed and
+# verified alongside Express before Express is retired, not instead of it.
+#
+# Point the Railway service's config path at this file, and its root directory
+# at the repo root — the Dockerfile needs client/ and core/ in its build context.
+
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "api-dotnet/Dockerfile"
+
+[deploy]
+# /api/health never touches the database, deliberately. A probe that queried a
+# cold Azure SQL would time out, Railway would restart the container, and the
+# next probe would hit an equally cold database — /healthz is the deep report
+# and is not what the platform watches.
+healthcheckPath = "/api/health"
+healthcheckTimeout = 30
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10
+
+# Variables this service needs, none of which belong in this file:
+#
+#   ConnectionStrings__Clam   Azure SQL. Carries a password.
+#   WorkOS__ClientId          Public client id. Production refuses to boot blank.
+#   Statements__Directory     Mount path of the volume holding statement PDFs.
+#                             Note the key: the Express service read STATEMENTS_DIR,
+#                             this one binds Statements:Directory and defaults to
+#                             /app/statements, which is not a volume.
+#   AllowedOrigins            Only if the client is ever served from another
+#                             origin; same-origin needs none.
+#
+# And as Dockerfile build arguments, because Vite inlines them at build time:
+#
+#   VITE_WORKOS_CLIENT_ID     The same client id as above.
+#   VITE_SENTRY_DSN           Optional.

@@ -1,0 +1,86 @@
+﻿{
+  StatementDate: Mar 2026,
+  RowCount: 8,
+  Rows: [
+    {
+      TransactionId: 498-1,
+      Date: 2026-03-31,
+      Type: Interest Earned,
+      Description: Interest earned,
+      Amount: 1.10,
+      IsCredit: true,
+      Balance: 1,609.56,
+      AccountType: Checking
+    },
+    {
+      TransactionId: 497-482666001,
+      Date: 2026-03-23,
+      Type: Direct Payment,
+      Description: BETTERMENT SEC TRANSFER,
+      Amount: 150.00,
+      IsCredit: false,
+      Balance: 1,608.46,
+      AccountType: Checking
+    },
+    {
+      TransactionId: 496-46758001,
+      Date: 2026-03-19,
+      Type: Direct Payment,
+      Description: CHASE CREDIT CRD EPAY,
+      Amount: 1425.66,
+      IsCredit: false,
+      Balance: 1,758.46,
+      AccountType: Checking
+    },
+    {
+      TransactionId: 494-835959001,
+      Date: 2026-03-09,
+      Type: Direct Payment,
+      Description: BETTERMENT SEC TRANSFER,
+      Amount: 8000.00,
+      IsCredit: false,
+      Balance: 3,184.12,
+      AccountType: Checking
+    },
+    {
+      TransactionId: 493-310856001,
+      Date: 2026-03-09,
+      Type: Direct Payment,
+      Description: CHASE CREDIT CRD EPAY,
+      Amount: 1483.17,
+      IsCredit: false,
+      Balance: 11,184.12,
+      AccountType: Checking
+    },
+    {
+      TransactionId: 488-66208001,
+      Date: 2026-03-08,
+      Type: Instant Transfer,
+      Description: Instant Transfer from Casey Jean Liddy Via WISE,
+      Amount: 10692.24,
+      IsCredit: true,
+      Balance: 12,667.29,
+      AccountType: Checking
+    },
+    {
+      TransactionId: 487-600178001,
+      Date: 2026-03-05,
+      Type: Direct Payment,
+      Description: BETTERMENT SEC TRANSFER,
+      Amount: 150.00,
+      IsCredit: false,
+      Balance: 1,975.05,
+      AccountType: Checking
+    },
+    {
+      TransactionId: 123-1,
+      Date: 2026-03-31,
+      Type: Interest Earned,
+      Description: Interest earned,
+      Amount: 1.07,
+      IsCredit: true,
+      Balance: 461.68,
+      AccountType: Savings
+    }
+  ]
+}

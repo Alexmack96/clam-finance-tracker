@@ -1,0 +1,118 @@
+﻿{
+  StatementDate: 21 Mar 2026 to 20 Apr 2026,
+  RowCount: 16,
+  Rows: [
+    {
+      TransactionId: 716e3b61ba1369f5,
+      Date: 2026-03-22,
+      Description: BILL PAYMENT VIA FASTER PAYMENT TO CASEY LIDDY REFERENCE food - groceries , MANDATE NO 0106,
+      MoneyOut: 12.50,
+      Balance: 2,402.56
+    },
+    {
+      TransactionId: 50a49959183c39a4,
+      Date: 2026-03-23,
+      Description: REGULAR TRANSFER FROM MR NATHAN ELLIOTT WINSLOW REFERENCE - Rent,
+      MoneyIn: 1,496.63,
+      Balance: 3,899.19
+    },
+    {
+      TransactionId: d2de2919b7e164f7,
+      Date: 2026-03-23,
+      Description: DIRECT DEBIT PAYMENT TO B/CARD REWARDS REF 4929136523159004, MANDATE NO 0022,
+      MoneyOut: 720.25,
+      Balance: 3,178.94
+    },
+    {
+      TransactionId: fb6cb92e66103a2a,
+      Date: 2026-03-25,
+      Description: CHEQUE DEPOSIT,
+      MoneyIn: 15.33,
+      Balance: 3,194.27
+    },
+    {
+      TransactionId: f8349809e27d1671,
+      Date: 2026-03-26,
+      Description: DIRECT DEBIT PAYMENT TO O2 REF D11185663, MANDATE NO 0018,
+      MoneyOut: 69.57,
+      Balance: 3,124.70
+    },
+    {
+      TransactionId: aaba62e0f1570a8e,
+      Date: 2026-03-26,
+      Description: BILL PAYMENT VIA FASTER PAYMENT TO MY MONZO REFERENCE me , MANDATE NO 0078,
+      MoneyOut: 500.00,
+      Balance: 2,624.70
+    },
+    {
+      TransactionId: f0230dc0b8871ef6,
+      Date: 2026-03-28,
+      Description: FASTER PAYMENTS RECEIPT REF.Golf ting FROM Izak Kallumpram,
+      MoneyIn: 4.00,
+      Balance: 2,628.70
+    },
+    {
+      TransactionId: 74111e71c884e83c,
+      Date: 2026-03-31,
+      Description: FASTER PAYMENTS RECEIPT REF.HUDSON BAY FROM THROGMORTON UK LTD,
+      MoneyIn: 5,515.17,
+      Balance: 8,143.87
+    },
+    {
+      TransactionId: 4b7eccce6aa62598,
+      Date: 2026-04-01,
+      Description: DIRECT DEBIT PAYMENT TO VANGUARD ASSET MAN REF VG0152205001090025, MANDATE NO 0026,
+      MoneyOut: 300.00,
+      Balance: 7,843.87
+    },
+    {
+      TransactionId: 08857be68e7105ed,
+      Date: 2026-04-01,
+      Description: DIRECT DEBIT PAYMENT TO SO ENERGY REF HB69N5Z, MANDATE NO 0021,
+      MoneyOut: 51.11,
+      Balance: 7,792.76
+    },
+    {
+      TransactionId: 7ec405b048c99a56,
+      Date: 2026-04-02,
+      Description: BILL PAYMENT FROM MR NATHAN ELLIOTT WINSLOW, REFERENCE Thames water,
+      MoneyIn: 74.29,
+      Balance: 7,867.05
+    },
+    {
+      TransactionId: a5e0d986f692501e,
+      Date: 2026-04-07,
+      Description: DIRECT DEBIT PAYMENT TO VIRGIN MEDIA PYMTS REF 112215503001, MANDATE NO 0019,
+      MoneyOut: 64.49,
+      Balance: 7,802.56
+    },
+    {
+      TransactionId: 3251600660cf94c7,
+      Date: 2026-04-08,
+      Description: FASTER PAYMENTS RECEIPT REF.34454885 FROM Trading 212 UK Limited,
+      MoneyIn: 5,000.00,
+      Balance: 12,802.56
+    },
+    {
+      TransactionId: fc686f36c2bdc9c8,
+      Date: 2026-04-09,
+      Description: DIRECT DEBIT PAYMENT TO AMERICAN EXPRESS REF 3760-151327-74005, MANDATE NO 0010,
+      MoneyOut: 2,180.19,
+      Balance: 10,622.37
+    },
+    {
+      TransactionId: 3cb924e15ed099c5,
+      Date: 2026-04-09,
+      Description: CARD PAYMENT TO VANGUARD ON 08-04-2026,
+      MoneyOut: 5,000.00,
+      Balance: 5,622.37
+    },
+    {
+      TransactionId: 5d8d2751a3b3e49d,
+      Date: 2026-04-20,
+      Description: DIRECT DEBIT PAYMENT TO B/CARD REWARDS REF 4929136523159004, MANDATE NO 0022,
+      MoneyOut: 418.62,
+      Balance: 5,203.75
+    }
+  ]
+}

@@ -12,7 +12,6 @@ import { env } from "./config/env.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { requireAuth } from "./middleware/auth.js";
 import { initSystemCategories } from "./routes/admin.js";
-import { rescueSofiChaseFx } from "./migrations/rescueSofiChaseFx.js";
 import { usersRouter } from "./routes/users.js";
 import { importRouter } from "./routes/import.js";
 import { statementsRouter } from "./routes/statements.js";
@@ -26,7 +25,6 @@ import { investmentsRouter } from "./routes/investments.js";
 import { tabsRouter } from "./routes/tabs.js";
 import { notesRouter } from "./routes/notes.js";
 import { monzoRouter } from "./routes/monzo.js";
-import { plaidRouter } from "./routes/plaid.js";
 
 Sentry.init({ dsn: env.SENTRY_DSN, environment: env.SENTRY_ENVIRONMENT });
 
@@ -79,7 +77,6 @@ app.use("/api/investments", requireAuth, investmentsRouter);
 app.use("/api/tabs", requireAuth, tabsRouter);
 app.use("/api/notes", requireAuth, notesRouter);
 app.use("/api/admin/monzo", monzoRouter);
-app.use("/api/admin/plaid", plaidRouter);
 
 if (env.NODE_ENV === "production") {
   const clientDist = join(import.meta.dirname, "../../client/dist");
@@ -97,9 +94,4 @@ app.use(errorHandler);
 app.listen(env.PORT, async () => {
   console.log(`Backend running on port ${env.PORT}`);
   await initSystemCategories();
-  try {
-    await rescueSofiChaseFx();
-  } catch (err) {
-    console.error("[rescueSofiChaseFx] failed:", err);
-  }
 });

@@ -1,0 +1,16 @@
+﻿{
+  Status: 422 Unprocessable Entity,
+  Content: {
+    Headers: {
+      Content-Length: 229,
+      Content-Type: application/problem+json
+    },
+    Value: {
+      title: Unprocessable Entity,
+      status: 422,
+      detail: This looks like an American Express statement, not SoFi. Upload it under the American Express account instead.,
+      instance: /api/admin/import/sofi,
+      traceId: {Scrubbed}
+    }
+  }
+}

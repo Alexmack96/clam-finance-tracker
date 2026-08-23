@@ -134,6 +134,7 @@ Supported: Monzo ✓ · Amex ✓ · Barclays ✓ · Santander ✓ · HSBC ✓ ·
 
 ## Todo 28-Jun-2026
 
+[] default file format saved in persistent volume mount 24-02-26-b344dfeb8ac9
 [] unexpected state 
 [] S - categorising an uncategorised thing should run the 'bucket' rules and so would for example auto-set to needs for going from uncategroised -> grociers category. 
 [] categories page looks horrible, lets bring it back to nested under categories, and rules can be its own buckets page maybe.. im torn but i know i hate the look right now, they were better nested and hidden. As for buckets yeah sure it can have a page like it does, but it needs a redesign it looks awful! change quite drastically.
@@ -203,8 +204,10 @@ accounts**, not a general integration: Enable Banking has self-serve "Restricted
 Production for own accounts" (EU/UK), Teller.io gives 100 free live US connections
 for Casey's Chase/SoFi/Wells Fargo side. GoCardless/Nordigen dropped its
 free-forever tier; Plaid and Tink are sales-led; TrueLayer publishes tiers.
-`plaid.ts` and `monzo.ts` already have full OAuth + sync routes, and the
-stage → process pipeline means a new sync source is just another staging table.
+`monzo.ts` already has full OAuth + sync routes, and the stage → process
+pipeline means a new sync source is just another staging table. A Plaid
+version of that existed and was deleted unused — the `santander-plaid:`
+externalIds it left behind are all that survives it.
 
 [] **6. Multi-currency as a first-class concept** — `originalAmount`,
 `originalCurrency` and `lib/fxRates.ts` already exist. Surface "$X / £Y this month"

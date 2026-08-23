@@ -321,7 +321,7 @@ Return ONLY the JSON array, no prose.` },
 
 # .NET API (`api-dotnet/`)
 
-A second backend, alongside the Express/Prisma one — **FastEndpoints + Dapper + SQL Server**, organised as vertical slices. It currently serves read-only endpoints over synthetic data and exists to be byte-compatible with the Express API it shadows.
+A second backend, alongside the Express/Prisma one — **FastEndpoints + Dapper + SQL Server**, organised as vertical slices. It exists to be byte-compatible with the Express API it shadows, and now covers every route the client calls — the Express service is kept only as a fallback until this one is deployed.
 
 Projects: `Clam.Api`, `Clam.AppHost` (Aspire), `Clam.ServiceDefaults`, `tests/Clam.Api.Tests`.
 
@@ -336,6 +336,95 @@ dotnet test  api-dotnet/tests/Clam.Api.Tests    # integration tests (LocalDB, no
 The AppHost prints a dashboard URL with a login token. It starts the API **and** the Vite client (`AddViteApp(...).WithBun()`), passing the API's address as `API_URL`, which `client/vite.config.ts` already uses as its `/api` proxy target. Drop that line and the client falls back to Express on `:3000`.
 
 Aspire uses `AddConnectionString("Clam")` — it does **not** run SQL Server in a container. `ConnectionStrings:Clam` is **not committed anywhere**; set it in `Clam.AppHost` user-secrets. Under Aspire the AppHost injects it as an environment variable, which outranks `Clam.Api`'s own user-secrets, so setting it only on the API is silently ignored when the stack runs. **LocalDB is test-only** — the suite builds a throwaway database per run.
+
+## Deploying it, and retiring Express
+
+`api-dotnet/Dockerfile` builds the API **with the React client baked in as its
+static files**, and `api-dotnet/railway.toml` is the service config. Build
+context is the repo root, because the client and `core/` live outside
+`api-dotnet/`.
+
+Serving the client from this process is not a nicety. The Express service was
+also the web server, which is the real reason it could not simply be deleted
+once its routes were ported. One origin for the app and its API also keeps CORS
+out of production entirely.
+
+Two details in `Program.cs` carry that:
+
+- Static files are served only outside Development — Vite serves the client on
+  :5173 with hot reload and proxies `/api` here — and only when the directory
+  exists, with a warning at boot when it does not.
+- **`app.MapFallback("/api/{**rest}")` is load-bearing.** A file fallback answers
+  *any* unmatched request, and middleware order does not change that: both are
+  endpoints, matched by route precedence. Without it a mistyped `/api/…` comes
+  back as `index.html` with a 200, which reaches the client as "Unexpected
+  token '<'" rather than as a missing route. It was exactly that until it was
+  probed.
+
+### The order the cutover has to happen in
+
+1. **Apply `db/schema.sql` to the new database.** It DROPs every table it
+   manages, so it initialises rather than migrates — run it against the target
+   *before* there is anything in it worth keeping.
+2. **Run the migration** (below), before anyone signs in.
+3. **Re-register Monzo's redirect URI.** It is registered against whatever host
+   currently serves `/api/admin/monzo/callback`, and Monzo rejects a code
+   exchange whose `redirect_uri` does not match the registered one exactly.
+   Update it in the Monzo developer console and set `Monzo__RedirectUri` to the
+   same string. The credential itself is deliberately *not* migrated: it is tied
+   to the old URI, so the connection is re-authorised rather than carried over.
+4. **Then** retire Express.
+
+### The data migration (`tools/Clam.Migrate`)
+
+```bash
+dotnet run --project api-dotnet/tools/Clam.Migrate --     --sqlite prod.db --target "<connection string>" --dry-run
+```
+
+Re-uploading the statements does **not** stand in for this. Statements recover
+bank transactions; they do not recover categories, rules, tabs, notes,
+investment accounts and their snapshots, recurring verdicts, or the Monzo
+history — Monzo's API only reaches back 90 days, so what is in the staging table
+is all there will ever be.
+
+- Conversion is driven by the **target** schema, read back as an empty
+  `DataTable`. SQLite has no real types: a Prisma `DateTime` is an ISO string, a
+  `Boolean` is 0 or 1, a `Decimal` is a double, so the destination column is the
+  only thing that knows what a value should become.
+- It **refuses a target that already holds rows**, including the bucket rules the
+  system category seeder creates — those would outrank every migrated rule on
+  position. `--force` overrides; exit code is 1 on refusal.
+- `--workos <email>=<sub>` fills in `Users.workOsUserId`. Do it before anyone
+  signs in: `GET /api/me` answers 404 for an unlinked user and the client reads
+  that as "provision me", which creates a **second** row for the same person.
+- The five staging tables with an `IDENTITY` id do not carry it across, so a
+  Barclays or Santander row processed before it had a content-hash
+  `transactionId` keeps a `Transactions.externalId` like `barclays:41` pointing
+  at a number the staged row no longer has. Those rows are already processed, so
+  nothing re-reads the link.
+
+Verified against the real 1.8 MB production snapshot: 4,975 rows, totals and
+date ranges identical on both sides, no orphaned foreign keys.
+
+## System categories
+
+`SystemCategorySeeder` is a `BackgroundService` that brings the database up to
+the catalogue in `SystemCategories.cs` on every boot, and seeds each **new**
+category's starting Bucket rule. It is a port of the Express service's
+`initSystemCategories`, and without it a fresh database comes up with one
+category and no bucket rules — every import lands Uncategorised and the
+dashboard's Needs/Wants/Savings split is three zeroes. Nothing fails; it just
+quietly has no data.
+
+- **Create-only.** An existing category is skipped whole, colour included: by
+  then it is the user's. The bucket rule ships only with a *new* category, which
+  is what stops a re-run resurrecting a rule deleted on purpose.
+- **Background, not inline before `app.Run()`.** A cold Azure SQL takes tens of
+  seconds to answer its first query, and blocking startup on that is how a
+  container fails its health probe and gets restarted into a loop.
+- **Off in the tests** (`SystemCategories__Seed=false`), because a background task
+  inserting rows races Respawn. `SystemCategorySeederTests` drives it directly
+  instead.
 
 ## Where code goes — the three tiers
 
@@ -374,9 +463,19 @@ amount on a page down by one row.
 `StatementGrid` is feature-shared (tier 2) ahead of the usual rule of three, on
 purpose: it is mechanical geometry with no business meaning, parameterised by
 one thing — where the column bounds fall. Each bank keeps its own bounds in its
-own slice (`AmexStatementGrid`, `HsbcStatementGrid`). Two copies of subtle
-coordinate code is how the copies drift, and the resulting bug is a silently
-wrong number rather than a crash.
+own slice (`AmexStatementGrid`, `BarclaysStatementGrid`, …). Two copies of
+subtle coordinate code is how the copies drift, and the resulting bug is a
+silently wrong number rather than a crash.
+
+Two things sit in `StatementGrid` beyond the columns themselves. **Bands** read
+a magazine-style page — Barclaycard's, where entries run down the left half and
+continue at the top of the right — one half at a time; read as one table, y-order
+interleaves them and the 13th of the month lands between the 22nd and the 24th.
+**`BuildRows`** hands back each line's page and y as well as its cells, for
+Santander, which sets a long description over three lines and centres the date
+and figures against the middle one — so a row's own anchor arrives *between* two
+lines of its description, and which lines belong together is a question about
+spacing (~4pt wrapped, ~9.5pt between entries) that cells alone cannot answer.
 
 The one thing to know if you port another bank: PdfPig emits **words** where
 pdf.js emitted **runs**, so words must be coalesced back into runs *before*
@@ -451,12 +550,86 @@ TypeScript original let it run into the next word, which turns the interest-rate
 footer's `Cre dit inte re s t` into a `CR` transaction invented out of page
 furniture.
 
+### Barclays (`ImportBarclays/`)
+
+A card statement set as **two magazine columns** — see the band note above.
+
+**An entry's direction is the section it was printed under**, never its
+description. Credits sit under "Payments towards your account"; the TypeScript
+importer tested the description for "Payment By Direct Debit", which is what the
+credit happens to be called rather than anything the bank guarantees.
+
+Reconciled twice over, because the statement prints both a balance
+reconciliation and a per-section breakdown and each catches what the other does
+not. An entry printed above any section heading belongs to no total, so no check
+would ever see it — that one is refused outright rather than imported
+unreconciled.
+
+### Santander (`ImportSantander/`)
+
+A current account: date, description, Money in, Money out, Balance.
+
+**Direction is the column the figure sat in.** "REGULAR TRANSFER FROM" does not
+always point the way it reads, so the words are not evidence.
+
+**Every row prints a running balance**, which makes each row checkable on its
+own: the balance a row moved to, less the balance before it, must be the figure
+in the column it was read from. The Express parser derived direction *from* that
+difference, having no coordinates; here it is the check rather than the source —
+the column says what happened and the balance proves it. The statement's own
+Total money in / out are checked too, because the per-row chain cannot catch a
+row dropped from the end of the table.
+
+### Chase (`ImportChase/`)
+
+A US card, in dollars. **A row is a line that starts with a date**; a foreign
+charge's currency and exchange-rate lines are indented into the description
+column and skipped, and there is nowhere in `ChaseTransactions` to put either
+figure anyway. **The sign on the figure is the direction** — the opposite of
+Barclaycard, which signs nothing.
+
+Chase draws its section headings twice, one copy a hair below the other, so
+"ACCOUNT ACTIVITY" arrives as `ACCOUNT ACTIVITYACCOUNT ACTIVITY` — doubled as a
+whole phrase, not word by word. `Undouble` halves it, and is applied to headings
+only: a description of two identical merchant names would be collapsed into one.
+
+**Chase flattens some pages to an image.** The January 2026 statement has a page
+of transactions with 0 letters and 1 picture — $2,587.83 that no text parser can
+see. The reconciliation refuses the whole statement, which is the point of
+having one: the Express importer had none, imported the other two thirds and
+said nothing. `StatementGrid.TextlessPages` is asked only *after* a
+reconciliation has already failed, so the message can name the page — a textless
+last page is common and harmless, so it is never a rejection on its own.
+
+### SoFi (`ImportSofi/`)
+
+**One PDF, two accounts** — Checking in full, then Savings starting over with its
+own header and balances. Each is reconciled separately, and each row is tagged
+with its account, which is what lets the process step recognise the transfers
+between them and skip both sides rather than counting the same dollars twice.
+
+**Rows run newest first and each prints its balance**, so the chain is walked in
+that direction and the oldest row has to land exactly on the Beginning Balance.
+
+The only bank of the six that prints **a real per-row id** ("Transaction ID:
+485-496003001"), unique across both accounts and across statements, so those are
+kept rather than replaced with a content hash — an id the bank assigned survives
+a statement being reissued with a corrected description.
+
 ### Re-parse (`Features/Statements/ReparseStatement/`)
 
 Re-runs the current parser over bytes already on the volume, which is how a
-parser fix reaches a statement without the original file. **Amex and HSBC both
-re-parse here**; the Express route refuses every bank but Amex, which was the
+parser fix reaches a statement without the original file. **Every bank with a
+parser re-parses here**; the Express route refuses all but Amex, which was the
 absence of a parser rather than a policy.
+
+**A bank added to the pipeline has to be added to the statement views too**, and
+that is the step nothing fails on when you skip it. `GetStatements` counts staged
+rows as a UNION across the staging tables, `GetStatement` reads them the same
+way, `DeleteStatement` clears every one of them, and this slice picks its table
+off the statement's own bank. Miss an arm and the statement reports zero rows —
+which looks exactly like a parse that silently dropped everything, rather than
+like a missing case.
 
 Two orderings carry the whole slice. It **parses before deleting**, so a
 statement that no longer parses keeps the rows it already had rather than

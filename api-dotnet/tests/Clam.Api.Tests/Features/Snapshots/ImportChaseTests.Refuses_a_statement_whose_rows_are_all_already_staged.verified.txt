@@ -1,0 +1,16 @@
+﻿{
+  Status: 409 Conflict,
+  Content: {
+    Headers: {
+      Content-Length: 192,
+      Content-Type: application/problem+json
+    },
+    Value: {
+      title: Conflict,
+      status: 409,
+      detail: Every transaction on this statement (19) is already imported, so nothing was stored.,
+      instance: /api/admin/import/chase,
+      traceId: {Scrubbed}
+    }
+  }
+}

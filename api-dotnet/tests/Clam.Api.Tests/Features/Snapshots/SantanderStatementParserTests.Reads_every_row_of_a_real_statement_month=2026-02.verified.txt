@@ -1,0 +1,97 @@
+﻿{
+  StatementDate: 21 Feb 2026 to 20 Mar 2026,
+  RowCount: 13,
+  Rows: [
+    {
+      TransactionId: d15b407917aabdc9,
+      Date: 2026-02-22,
+      Description: BILL PAYMENT VIA FASTER PAYMENT TO MY MONZO REFERENCE me , MANDATE NO 0078,
+      MoneyOut: 100.00,
+      Balance: 336.25
+    },
+    {
+      TransactionId: 94aa94ac0876454c,
+      Date: 2026-02-23,
+      Description: REGULAR TRANSFER FROM MR NATHAN ELLIOTT WINSLOW REFERENCE - Rent,
+      MoneyIn: 1,496.63,
+      Balance: 1,832.88
+    },
+    {
+      TransactionId: 0a74716c6c7102b9,
+      Date: 2026-02-26,
+      Description: DIRECT DEBIT PAYMENT TO O2 REF D11185663, MANDATE NO 0018,
+      MoneyOut: 20.57,
+      Balance: 1,812.31
+    },
+    {
+      TransactionId: 8d1045f5b7addc0e,
+      Date: 2026-02-26,
+      Description: BILL PAYMENT FROM MR NATHAN ELLIOTT WINSLOW, REFERENCE wifi,
+      MoneyIn: 85.00,
+      Balance: 1,897.31
+    },
+    {
+      TransactionId: 4099779b6cb67852,
+      Date: 2026-02-27,
+      Description: FASTER PAYMENTS RECEIPT REF.HUDSON BAY FROM THROGMORTON UK LTD,
+      MoneyIn: 5,515.57,
+      Balance: 7,412.88
+    },
+    {
+      TransactionId: 0461706a72fd225d,
+      Date: 2026-02-27,
+      Description: BILL PAYMENT VIA FASTER PAYMENT TO MY MONZO REFERENCE me , MANDATE NO 0078,
+      MoneyOut: 1,400.00,
+      Balance: 6,012.88
+    },
+    {
+      TransactionId: 64368711df1093c1,
+      Date: 2026-03-02,
+      Description: DIRECT DEBIT PAYMENT TO VANGUARD ASSET MAN REF VG0152205001090025, MANDATE NO 0026,
+      MoneyOut: 300.00,
+      Balance: 5,712.88
+    },
+    {
+      TransactionId: b9cf1cb00cca2697,
+      Date: 2026-03-02,
+      Description: DIRECT DEBIT PAYMENT TO SO ENERGY REF HB69N5Z, MANDATE NO 0021,
+      MoneyOut: 85.19,
+      Balance: 5,627.69
+    },
+    {
+      TransactionId: b722d520052577e9,
+      Date: 2026-03-04,
+      Description: DIRECT DEBIT PAYMENT TO VIRGIN MEDIA PYMTS REF 112215503001, MANDATE NO 0019,
+      MoneyOut: 64.49,
+      Balance: 5,563.20
+    },
+    {
+      TransactionId: 4bd0531bc2896f1d,
+      Date: 2026-03-10,
+      Description: DIRECT DEBIT PAYMENT TO AMERICAN EXPRESS REF 3760-151327-74005, MANDATE NO 0010,
+      MoneyOut: 1,934.85,
+      Balance: 3,628.35
+    },
+    {
+      TransactionId: 3badfdcb84f3b4a2,
+      Date: 2026-03-14,
+      Description: FASTER PAYMENTS RECEIPT REF.ER-02569 FROM HUDSON BAY CAPITAL UK LLP,
+      MoneyIn: 1,686.71,
+      Balance: 5,315.06
+    },
+    {
+      TransactionId: 90a6e04ddf87f777,
+      Date: 2026-03-14,
+      Description: BILL PAYMENT VIA FASTER PAYMENT TO MY MONZO REFERENCE me , MANDATE NO 0078,
+      MoneyOut: 500.00,
+      Balance: 4,815.06
+    },
+    {
+      TransactionId: fc29da9c6be5b8ac,
+      Date: 2026-03-19,
+      Description: STANDING ORDER VIA FASTER PAYMENT TO Foxtons Limited REFERENCE RX336829 , MANDATE NO 0101,
+      MoneyOut: 2,400.00,
+      Balance: 2,415.06
+    }
+  ]
+}

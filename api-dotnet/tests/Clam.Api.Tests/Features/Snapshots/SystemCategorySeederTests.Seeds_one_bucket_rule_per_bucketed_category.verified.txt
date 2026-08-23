@@ -1,0 +1,231 @@
+﻿{
+  Status: 200 OK,
+  Content: {
+    Headers: {
+      Content-Length: 3371,
+      Content-Type: application/json; charset=utf-8
+    },
+    Value: [
+      {
+        id: cgen00000000000000000002,
+        kind: Bucket,
+        position: 0,
+        joinOperator: AND,
+        bank: null,
+        categoryId: null,
+        bucket: Wants,
+        createdAt: {Scrubbed},
+        conditions: [
+          {
+            id: cgen00000000000000000003,
+            field: Category,
+            operator: Exact,
+            value: Activities,
+            negate: false,
+            position: 0
+          }
+        ]
+      },
+      {
+        id: cgen00000000000000000005,
+        kind: Bucket,
+        position: 1,
+        joinOperator: AND,
+        bank: null,
+        categoryId: null,
+        bucket: Wants,
+        createdAt: {Scrubbed},
+        conditions: [
+          {
+            id: cgen00000000000000000006,
+            field: Category,
+            operator: Exact,
+            value: Bank Sauce,
+            negate: false,
+            position: 0
+          }
+        ]
+      },
+      {
+        id: cgen00000000000000000008,
+        kind: Bucket,
+        position: 2,
+        joinOperator: AND,
+        bank: null,
+        categoryId: null,
+        bucket: Wants,
+        createdAt: {Scrubbed},
+        conditions: [
+          {
+            id: cgen00000000000000000009,
+            field: Category,
+            operator: Exact,
+            value: Entertainment,
+            negate: false,
+            position: 0
+          }
+        ]
+      },
+      {
+        id: cgen00000000000000000011,
+        kind: Bucket,
+        position: 3,
+        joinOperator: AND,
+        bank: null,
+        categoryId: null,
+        bucket: Wants,
+        createdAt: {Scrubbed},
+        conditions: [
+          {
+            id: cgen00000000000000000012,
+            field: Category,
+            operator: Exact,
+            value: Food & Social,
+            negate: false,
+            position: 0
+          }
+        ]
+      },
+      {
+        id: cgen00000000000000000014,
+        kind: Bucket,
+        position: 4,
+        joinOperator: AND,
+        bank: null,
+        categoryId: null,
+        bucket: Wants,
+        createdAt: {Scrubbed},
+        conditions: [
+          {
+            id: cgen00000000000000000015,
+            field: Category,
+            operator: Exact,
+            value: Groceries,
+            negate: false,
+            position: 0
+          }
+        ]
+      },
+      {
+        id: cgen00000000000000000017,
+        kind: Bucket,
+        position: 5,
+        joinOperator: AND,
+        bank: null,
+        categoryId: null,
+        bucket: Wants,
+        createdAt: {Scrubbed},
+        conditions: [
+          {
+            id: cgen00000000000000000018,
+            field: Category,
+            operator: Exact,
+            value: Takeout,
+            negate: false,
+            position: 0
+          }
+        ]
+      },
+      {
+        id: cgen00000000000000000020,
+        kind: Bucket,
+        position: 6,
+        joinOperator: AND,
+        bank: null,
+        categoryId: null,
+        bucket: Wants,
+        createdAt: {Scrubbed},
+        conditions: [
+          {
+            id: cgen00000000000000000021,
+            field: Category,
+            operator: Exact,
+            value: Personal Care,
+            negate: false,
+            position: 0
+          }
+        ]
+      },
+      {
+        id: cgen00000000000000000023,
+        kind: Bucket,
+        position: 7,
+        joinOperator: AND,
+        bank: null,
+        categoryId: null,
+        bucket: Needs,
+        createdAt: {Scrubbed},
+        conditions: [
+          {
+            id: cgen00000000000000000024,
+            field: Category,
+            operator: Exact,
+            value: Rent & Bills,
+            negate: false,
+            position: 0
+          }
+        ]
+      },
+      {
+        id: cgen00000000000000000026,
+        kind: Bucket,
+        position: 8,
+        joinOperator: AND,
+        bank: null,
+        categoryId: null,
+        bucket: Savings,
+        createdAt: {Scrubbed},
+        conditions: [
+          {
+            id: cgen00000000000000000027,
+            field: Category,
+            operator: Exact,
+            value: Savings,
+            negate: false,
+            position: 0
+          }
+        ]
+      },
+      {
+        id: cgen00000000000000000029,
+        kind: Bucket,
+        position: 9,
+        joinOperator: AND,
+        bank: null,
+        categoryId: null,
+        bucket: Needs,
+        createdAt: {Scrubbed},
+        conditions: [
+          {
+            id: cgen00000000000000000030,
+            field: Category,
+            operator: Exact,
+            value: Transport,
+            negate: false,
+            position: 0
+          }
+        ]
+      },
+      {
+        id: cgen00000000000000000033,
+        kind: Bucket,
+        position: 10,
+        joinOperator: AND,
+        bank: null,
+        categoryId: null,
+        bucket: Wants,
+        createdAt: {Scrubbed},
+        conditions: [
+          {
+            id: cgen00000000000000000034,
+            field: Category,
+            operator: Exact,
+            value: Vacation,
+            negate: false,
+            position: 0
+          }
+        ]
+      }
+    ]
+  }
+}

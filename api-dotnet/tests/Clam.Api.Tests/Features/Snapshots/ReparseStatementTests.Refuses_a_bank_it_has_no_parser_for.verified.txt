@@ -2,7 +2,7 @@
   Status: 400 Bad Request,
   Content: {
     Headers: {
-      Content-Length: 234,
+      Content-Length: 231,
       Content-Type: application/problem+json
     },
     Value: {
@@ -11,7 +11,7 @@
       instance: /api/admin/statements/cstmt0000000000000000002/reparse,
       errors: {
         bank: [
-          Re-parse is not supported for barclays statements yet
+          Re-parse is not supported for monzo statements yet
         ]
       },
       traceId: {Scrubbed}

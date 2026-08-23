@@ -1,0 +1,136 @@
+﻿{
+  StatementDate: Jan 2026,
+  RowCount: 13,
+  Rows: [
+    {
+      TransactionId: 476-1,
+      Date: 2026-01-31,
+      Type: Interest Earned,
+      Description: Interest earned,
+      Amount: 0.72,
+      IsCredit: true,
+      Balance: 375.13,
+      AccountType: Checking
+    },
+    {
+      TransactionId: 475-200212001,
+      Date: 2026-01-23,
+      Type: Direct Payment,
+      Description: WELLS FARGO CARD BILTCRDCRD,
+      Amount: 823.93,
+      IsCredit: false,
+      Balance: 374.41,
+      AccountType: Checking
+    },
+    {
+      TransactionId: 474-27137001,
+      Date: 2026-01-23,
+      Type: Direct Payment,
+      Description: CHASE CREDIT CRD EPAY,
+      Amount: 448.55,
+      IsCredit: false,
+      Balance: 1,198.34,
+      AccountType: Checking
+    },
+    {
+      TransactionId: 471-22676002,
+      Date: 2026-01-22,
+      Type: Deposit,
+      Description: From Savings - 3143,
+      Amount: 500.00,
+      IsCredit: true,
+      Balance: 1,646.89,
+      AccountType: Checking
+    },
+    {
+      TransactionId: 470-1091693001,
+      Date: 2026-01-20,
+      Type: Direct Payment,
+      Description: BETTERMENT SEC TRANSFER,
+      Amount: 150.00,
+      IsCredit: false,
+      Balance: 1,146.89,
+      AccountType: Checking
+    },
+    {
+      TransactionId: 468-111439002,
+      Date: 2026-01-14,
+      Type: Deposit,
+      Description: From Savings - 3143,
+      Amount: 1000.00,
+      IsCredit: true,
+      Balance: 1,296.89,
+      AccountType: Checking
+    },
+    {
+      TransactionId: 466-69526001,
+      Date: 2026-01-13,
+      Type: Direct Payment,
+      Description: CHASE CREDIT CRD EPAY,
+      Amount: 973.68,
+      IsCredit: false,
+      Balance: 296.89,
+      AccountType: Checking
+    },
+    {
+      TransactionId: 463-272259001,
+      Date: 2026-01-06,
+      Type: Direct Payment,
+      Description: WELLS FARGO CARD BILTCRDCRD,
+      Amount: 442.63,
+      IsCredit: false,
+      Balance: 1,270.57,
+      AccountType: Checking
+    },
+    {
+      TransactionId: 462-96243001,
+      Date: 2026-01-06,
+      Type: Direct Payment,
+      Description: CHASE CREDIT CRD EPAY,
+      Amount: 3828.09,
+      IsCredit: false,
+      Balance: 1,713.20,
+      AccountType: Checking
+    },
+    {
+      TransactionId: 461-1100513001,
+      Date: 2026-01-05,
+      Type: Direct Payment,
+      Description: BETTERMENT SEC TRANSFER,
+      Amount: 150.00,
+      IsCredit: false,
+      Balance: 5,541.29,
+      AccountType: Checking
+    },
+    {
+      TransactionId: 112-1,
+      Date: 2026-01-31,
+      Type: Interest Earned,
+      Description: Interest earned,
+      Amount: 8.86,
+      IsCredit: true,
+      Balance: 2,458.62,
+      AccountType: Savings
+    },
+    {
+      TransactionId: 111-22676001,
+      Date: 2026-01-22,
+      Type: Withdrawal,
+      Description: To Checking - 1598,
+      Amount: 500.00,
+      IsCredit: false,
+      Balance: 2,449.76,
+      AccountType: Savings
+    },
+    {
+      TransactionId: 110-111439001,
+      Date: 2026-01-14,
+      Type: Withdrawal,
+      Description: To Checking - 1598,
+      Amount: 1000.00,
+      IsCredit: false,
+      Balance: 2,949.76,
+      AccountType: Savings
+    }
+  ]
+}

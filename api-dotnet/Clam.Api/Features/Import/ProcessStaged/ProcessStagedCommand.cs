@@ -198,7 +198,8 @@ public sealed class ProcessStagedCommand(IDbConnectionFactory factory, IIdGenera
         internal async Task ProcessBarclaysAsync(CancellationToken ct)
         {
             const string Sql = """
-                SELECT [id], [transactionId], [date], [description], [amount], [isCredit], [owner]
+                SELECT [id], [transactionId], [date], [description], [amount], [isCredit],
+                       [owner], [statementFileId]
                 FROM   [BarclaysTransactions]
                 WHERE  [status] = 'pending';
                 """;
@@ -238,6 +239,7 @@ public sealed class ProcessStagedCommand(IDbConnectionFactory factory, IIdGenera
                     CategoryId = categoryId,
                     Bucket = bucket,
                     Owner = row.Owner,
+                    StatementFileId = row.StatementFileId,
                 }, ct);
 
                 await MarkAsync("BarclaysTransactions", "id", row.Id, StagedStatus.Processed, ct);
@@ -249,7 +251,8 @@ public sealed class ProcessStagedCommand(IDbConnectionFactory factory, IIdGenera
         internal async Task ProcessSantanderAsync(CancellationToken ct)
         {
             const string Sql = """
-                SELECT [id], [transactionId], [date], [description], [moneyIn], [moneyOut], [owner]
+                SELECT [id], [transactionId], [date], [description], [moneyIn], [moneyOut],
+                       [owner], [statementFileId]
                 FROM   [SantanderTransactions]
                 WHERE  [status] = 'pending';
                 """;
@@ -266,9 +269,7 @@ public sealed class ProcessStagedCommand(IDbConnectionFactory factory, IIdGenera
 
                 var status = await ProcessTwoColumnRowAsync(
                     "santander", $"santander:{row.TransactionId ?? row.Id.ToString(System.Globalization.CultureInfo.InvariantCulture)}",
-                    // No statement file: Santander's upload route is not ported
-                    // yet, so its staging table has no column to link one.
-                    row.Description, amount, date, isIncome, row.Owner, null, ct);
+                    row.Description, amount, date, isIncome, row.Owner, row.StatementFileId, ct);
 
                 await MarkAsync("SantanderTransactions", "id", row.Id, status, ct);
             }
@@ -307,7 +308,8 @@ public sealed class ProcessStagedCommand(IDbConnectionFactory factory, IIdGenera
         internal async Task ProcessSofiAsync(CancellationToken ct)
         {
             const string Sql = """
-                SELECT [id], [transactionId], [date], [description], [amount], [isCredit], [owner]
+                SELECT [id], [transactionId], [date], [description], [amount], [isCredit],
+                       [owner], [statementFileId]
                 FROM   [SofiTransactions]
                 WHERE  [status] = 'pending';
                 """;
@@ -325,7 +327,7 @@ public sealed class ProcessStagedCommand(IDbConnectionFactory factory, IIdGenera
 
                 var status = await ProcessUsdRowAsync(
                     "sofi", $"sofi:{row.TransactionId}", row.Description, row.Amount,
-                    row.Date, row.IsCredit, row.Owner, ct);
+                    row.Date, row.IsCredit, row.Owner, row.StatementFileId, ct);
 
                 await MarkAsync("SofiTransactions", "id", row.Id, status, ct);
             }
@@ -335,7 +337,8 @@ public sealed class ProcessStagedCommand(IDbConnectionFactory factory, IIdGenera
         internal async Task ProcessChaseAsync(CancellationToken ct)
         {
             const string Sql = """
-                SELECT [id], [transactionId], [date], [description], [amount], [isCredit], [owner]
+                SELECT [id], [transactionId], [date], [description], [amount], [isCredit],
+                       [owner], [statementFileId]
                 FROM   [ChaseTransactions]
                 WHERE  [status] = 'pending';
                 """;
@@ -346,7 +349,7 @@ public sealed class ProcessStagedCommand(IDbConnectionFactory factory, IIdGenera
             {
                 var status = await ProcessUsdRowAsync(
                     "chase", $"chase:{row.TransactionId}", row.Description, row.Amount,
-                    row.Date, row.IsCredit, row.Owner, ct);
+                    row.Date, row.IsCredit, row.Owner, row.StatementFileId, ct);
 
                 await MarkAsync("ChaseTransactions", "id", row.Id, status, ct);
             }
@@ -398,7 +401,8 @@ public sealed class ProcessStagedCommand(IDbConnectionFactory factory, IIdGenera
         /// totalled against anything sterling.
         private async Task<string> ProcessUsdRowAsync(
             string bank, string externalId, string description, string rawAmount,
-            string rawDate, bool isCredit, string owner, CancellationToken ct)
+            string rawDate, bool isCredit, string owner, string? statementFileId,
+            CancellationToken ct)
         {
             var usd = StagedAmount.Parse(rawAmount);
             var date = StagedAmount.ParseDate(rawDate);
@@ -438,6 +442,7 @@ public sealed class ProcessStagedCommand(IDbConnectionFactory factory, IIdGenera
                 CategoryId = categoryId,
                 Bucket = bucket,
                 Owner = owner,
+                StatementFileId = statementFileId,
                 OriginalAmount = usd.Value,
                 OriginalCurrency = UsdCurrency,
             }, ct);
@@ -536,6 +541,10 @@ public sealed class ProcessStagedCommand(IDbConnectionFactory factory, IIdGenera
         public string Amount { get; set; } = "";
         public bool IsCredit { get; set; }
         public string Owner { get; set; } = "";
+
+        /// The PDF this row was read out of, so the normalised transaction can
+        /// trace back to its source document in one join.
+        public string? StatementFileId { get; set; }
     }
 
     private sealed class SantanderRow
@@ -547,6 +556,10 @@ public sealed class ProcessStagedCommand(IDbConnectionFactory factory, IIdGenera
         public string? MoneyIn { get; set; }
         public string? MoneyOut { get; set; }
         public string Owner { get; set; } = "";
+
+        /// The PDF this row was read out of, so the normalised transaction can
+        /// trace back to its source document in one join.
+        public string? StatementFileId { get; set; }
     }
 
     private sealed class HsbcRow
@@ -573,6 +586,10 @@ public sealed class ProcessStagedCommand(IDbConnectionFactory factory, IIdGenera
         public string Amount { get; set; } = "";
         public bool IsCredit { get; set; }
         public string Owner { get; set; } = "";
+
+        /// The PDF this row was read out of, so the normalised transaction can
+        /// trace back to its source document in one join.
+        public string? StatementFileId { get; set; }
     }
 
     private sealed class ChaseRow
@@ -584,5 +601,9 @@ public sealed class ProcessStagedCommand(IDbConnectionFactory factory, IIdGenera
         public string Amount { get; set; } = "";
         public bool IsCredit { get; set; }
         public string Owner { get; set; } = "";
+
+        /// The PDF this row was read out of, so the normalised transaction can
+        /// trace back to its source document in one join.
+        public string? StatementFileId { get; set; }
     }
 }

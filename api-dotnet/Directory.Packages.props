@@ -18,6 +18,15 @@
     <PackageVersion Include="Dapper" Version="2.1.79" />
     <PackageVersion Include="FastEndpoints" Version="8.2.0" />
     <PackageVersion Include="FastEndpoints.Swagger" Version="8.2.0" />
+    <!-- The one-shot SQLite reader for tools/Clam.Migrate. Nothing else uses it,
+         and it goes when the migration has been run and Express is gone. -->
+    <PackageVersion Include="Microsoft.Data.Sqlite" Version="10.0.2" />
+    <!-- Pinned past the version Microsoft.Data.Sqlite drags in: 2.1.11 carries
+         GHSA-2m69-gcr7-jv3q. Transitive, so it needs naming to be raised. -->
+    <PackageVersion Include="SQLitePCLRaw.lib.e_sqlite3" Version="2.1.13" />
+    <PackageVersion Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.13" />
+    <PackageVersion Include="SQLitePCLRaw.core" Version="2.1.13" />
+    <PackageVersion Include="SQLitePCLRaw.provider.e_sqlite3" Version="2.1.13" />
     <PackageVersion Include="Microsoft.Data.SqlClient" Version="7.0.2" />
     <!-- Entra ID auth for Azure SQL. Separate package on purpose: SqlClient 7.0
          removed Azure.Core/Azure.Identity from the core driver so that everyone
