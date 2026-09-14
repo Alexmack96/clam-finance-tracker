@@ -80,7 +80,7 @@ public sealed class ClamApiFactory : WebApplicationFactory<Program>, IAsyncLifet
         // every row, so a suite that lost this override would empty the shared
         // dev database. VerifyTargetsOwnDatabase below exists so it cannot
         // regress silently.
-        Environment.SetEnvironmentVariable("ConnectionStrings__Clam", ConnectionString);
+        Environment.SetEnvironmentVariable("ConnectionStrings__ClamFinance", ConnectionString);
 
         // Same mechanism, same reason. MonzoOptions is bound in Program.cs at
         // registration time from builder.Configuration, which is built before
@@ -131,7 +131,7 @@ public sealed class ClamApiFactory : WebApplicationFactory<Program>, IAsyncLifet
 
         builder.ConfigureAppConfiguration(cfg => cfg.AddInMemoryCollection(new Dictionary<string, string?>
         {
-            ["ConnectionStrings:Clam"] = ConnectionString,
+            ["ConnectionStrings:ClamFinance"] = ConnectionString,
 
             // Somewhere harmless for the statement store to resolve to. The Amex
             // upload tests do write real PDFs here, which is fine to leave
@@ -169,7 +169,7 @@ public sealed class ClamApiFactory : WebApplicationFactory<Program>, IAsyncLifet
     /// POST /api/dev/seed quietly deletes the real dev database.
     internal void VerifyTargetsOwnDatabase()
     {
-        var resolved = Services.GetRequiredService<IConfiguration>().GetConnectionString("Clam");
+        var resolved = Services.GetRequiredService<IConfiguration>().GetConnectionString("ClamFinance");
 
         if (!string.Equals(resolved, ConnectionString, StringComparison.Ordinal))
         {

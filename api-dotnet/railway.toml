@@ -23,16 +23,24 @@ restartPolicyMaxRetries = 10
 
 # Variables this service needs, none of which belong in this file:
 #
-#   ConnectionStrings__Clam   Azure SQL. Carries a password.
-#   WorkOS__ClientId          Public client id. Production refuses to boot blank.
-#   Statements__Directory     Mount path of the volume holding statement PDFs.
-#                             Note the key: the Express service read STATEMENTS_DIR,
-#                             this one binds Statements:Directory and defaults to
-#                             /app/statements, which is not a volume.
-#   AllowedOrigins            Only if the client is ever served from another
-#                             origin; same-origin needs none.
+#   ConnectionStrings__ClamFinance  Azure SQL. Carries a password. The suffix is
+#                                   the config key Program.cs asks for, not the
+#                                   database name — the catalog lives inside the
+#                                   string.
+#   WorkOS__ClientId                Public client id. Production refuses to boot
+#                                   blank.
+#   Statements__Directory           Mount path of the volume holding statement
+#                                   PDFs. Note the key: the Express service read
+#                                   STATEMENTS_DIR, this one binds
+#                                   Statements:Directory and defaults to
+#                                   /app/statements, which is not a volume.
+#   Monzo__ClientId                 Monzo OAuth app. The redirect URI must match
+#   Monzo__ClientSecret             the one registered in the Monzo developer
+#   Monzo__RedirectUri              console byte for byte.
+#   AllowedOrigins                  Only if the client is ever served from
+#                                   another origin; same-origin needs none.
 #
 # And as Dockerfile build arguments, because Vite inlines them at build time:
 #
-#   VITE_WORKOS_CLIENT_ID     The same client id as above.
-#   VITE_SENTRY_DSN           Optional.
+#   VITE_WORKOS_CLIENT_ID           The same client id as above.
+#   VITE_SENTRY_DSN                 Optional.

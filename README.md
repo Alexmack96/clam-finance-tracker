@@ -135,13 +135,12 @@ Supported: Monzo ✓ · Amex ✓ · Barclays ✓ · Santander ✓ · HSBC ✓ ·
 ## Todo 28-Jun-2026
 
 [] default file format saved in persistent volume mount 24-02-26-b344dfeb8ac9
-[] unexpected state 
 [] S - categorising an uncategorised thing should run the 'bucket' rules and so would for example auto-set to needs for going from uncategroised -> grociers category. 
 [] categories page looks horrible, lets bring it back to nested under categories, and rules can be its own buckets page maybe.. im torn but i know i hate the look right now, they were better nested and hidden. As for buckets yeah sure it can have a page like it does, but it needs a redesign it looks awful! change quite drastically.
 [] Add visual marker using new endpoint that figured out our recurring transactions
 [] ANDROID PWA EXPERIENCE COULD IMPORVE, SHOPW TOP 10 BY TXNS FOR THAT USER, NOT BY ALPHABETICAL AND DONT LAUNCH KEYBOARD SO LIKELY WE ARE TAPPIUNG ONCE, ADD SCOLLY BAR INSTEAD
 [] quick question - how better could i be interracting with my data right now? rather than get you to write janky ralways scripts, better i eventually maybe a rest api i can just called endpoints to mess around and dlete bulk by id or by statement id or something?
-[] IOS PWA experience is garbage - I shared from safari rather than instlal fgrom chrome.. is that why? on android itypically install from chrome
+[] IOS PWA experience is garbage - I shared from safari rather than instlal from chrome.. is that why? on android itypically install from chrome
 [] S - Mobile all - stop zoom on IOS specifically 
 [] S - Mobile all - dont open keyboard immediately, instead add a scrolly bar so you likely will never type. But you could if you prefer to tap the text and do that.
 [] Y - Amex YTD rec. unit tests for ALL of them. ensure GBP and all sums correctly. ignore 2025 in the jan upload. 

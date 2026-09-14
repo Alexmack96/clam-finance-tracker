@@ -41,13 +41,6 @@ change and which Rule would claim each one. For a single Rule it reports
 because a Rule above it claimed them first.
 _Avoid_: preview mode, simulate, test run
 
-**Pin**:
-A mark on a transaction's Category or Bucket recording that a person chose it.
-Set whenever that field is edited by hand. [[Rule]]s never overwrite a pinned
-field, so running Rules over existing transactions cannot erase a deliberate
-choice. Category and Bucket are pinned independently.
-_Avoid_: lock, manual override, reviewed
-
 **Uncategorised**:
 A transaction whose [[Bucket]] is null because no Bucket Rule claimed it and no
 manual choice has been made. Distinct from `Ignore`, which is a deliberate

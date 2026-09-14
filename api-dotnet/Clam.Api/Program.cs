@@ -9,23 +9,23 @@ using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Supplied by the Aspire AppHost as ConnectionStrings__Clam when running under
-// it, and by this project's user-secrets when it is launched alone. Never from
-// appsettings: it carries an Azure SQL password.
-var connectionString = builder.Configuration.GetConnectionString("Clam");
+// Supplied by the Aspire AppHost as ConnectionStrings__ClamFinance when running
+// under it, and by this project's user-secrets when it is launched alone. Never
+// from appsettings: it carries an Azure SQL password.
+var connectionString = builder.Configuration.GetConnectionString("ClamFinance");
 
-// Blank, not just null. `??` alone lets an empty ConnectionStrings__Clam through
-// — which is exactly what a deployment sets when a secret fails to resolve — and
-// the failure then surfaces much later as an unhelpful SqlException about a
-// missing server name.
+// Blank, not just null. `??` alone lets an empty ConnectionStrings__ClamFinance
+// through — which is exactly what a deployment sets when a secret fails to
+// resolve — and the failure then surfaces much later as an unhelpful
+// SqlException about a missing server name.
 if (string.IsNullOrWhiteSpace(connectionString))
 {
     throw new InvalidOperationException(
-        "ConnectionStrings:Clam is not configured. It is not committed anywhere, because it " +
+        "ConnectionStrings:ClamFinance is not configured. It is not committed anywhere, because it " +
         "carries an Azure SQL password. Set it in user-secrets:\n" +
-        "    dotnet user-secrets set \"ConnectionStrings:Clam\" \"Server=tcp:...;\" --project Clam.Api\n" +
+        "    dotnet user-secrets set \"ConnectionStrings:ClamFinance\" \"Server=tcp:...;\" --project Clam.Api\n" +
         "or, to run the whole stack, on Clam.AppHost instead — under Aspire the AppHost injects " +
-        "ConnectionStrings__Clam and that wins. In a deployment, set the environment variable " +
+        "ConnectionStrings__ClamFinance and that wins. In a deployment, set the environment variable " +
         "directly. LocalDB is for the integration tests, which build their own database per run.");
 }
 

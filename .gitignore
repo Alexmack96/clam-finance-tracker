@@ -161,3 +161,7 @@ prod.db-shm
 # Prod keeps these on the Railway volume at /data/statements.
 server/statements/
 statements/
+
+# CSV dumps of the prod SQLite snapshot (real financial data — never commit).
+# See scripts/sync-prod-to-sql.ps1 and api-dotnet/tools/Clam.Sync.
+.sync/

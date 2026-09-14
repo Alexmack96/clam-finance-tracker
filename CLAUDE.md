@@ -335,7 +335,7 @@ dotnet test  api-dotnet/tests/Clam.Api.Tests    # integration tests (LocalDB, no
 
 The AppHost prints a dashboard URL with a login token. It starts the API **and** the Vite client (`AddViteApp(...).WithBun()`), passing the API's address as `API_URL`, which `client/vite.config.ts` already uses as its `/api` proxy target. Drop that line and the client falls back to Express on `:3000`.
 
-Aspire uses `AddConnectionString("Clam")` — it does **not** run SQL Server in a container. `ConnectionStrings:Clam` is **not committed anywhere**; set it in `Clam.AppHost` user-secrets. Under Aspire the AppHost injects it as an environment variable, which outranks `Clam.Api`'s own user-secrets, so setting it only on the API is silently ignored when the stack runs. **LocalDB is test-only** — the suite builds a throwaway database per run.
+Aspire uses `AddConnectionString("ClamFinance")` — it does **not** run SQL Server in a container. `ConnectionStrings:ClamFinance` is **not committed anywhere**; set it in `Clam.AppHost` user-secrets. Under Aspire the AppHost injects it as an environment variable, which outranks `Clam.Api`'s own user-secrets, so setting it only on the API is silently ignored when the stack runs. **LocalDB is test-only** — the suite builds a throwaway database per run.
 
 ## Deploying it, and retiring Express
 
@@ -405,6 +405,56 @@ is all there will ever be.
 
 Verified against the real 1.8 MB production snapshot: 4,975 rows, totals and
 date ranges identical on both sides, no orphaned foreign keys.
+
+### The repeatable top-up (`tools/Clam.Sync`)
+
+`Clam.Migrate` is the cutover and runs once. While Express is still live and
+still collecting rows, `Clam.Sync` is the one to re-run:
+
+```powershell
+./scripts/sync-prod-to-sql.ps1 -DryRun     # pulls prod.db, dumps CSV, rolls the load back
+./scripts/sync-prod-to-sql.ps1             # same, committed
+```
+
+The script downloads `/data/prod.db` off the Railway volume (PowerShell, not Git
+Bash — MSYS rewrites the leading `/data/…` and the download 404s), dumps every
+table in `MigrationPlan` to CSV under `.sync/prod-csv`, then inserts what the
+target does not have. The connection string comes from `-Target`,
+`$env:CLAM_SQL_CONNECTION`, or `Clam.AppHost`'s user-secrets, in that order.
+
+**It only ever inserts.** A row already there is left alone, so a note written or
+a category corrected on the SQL Server side survives every re-run — and the cost
+is the other direction: a production edit made after a row was copied does not
+follow it, and a production delete is not replayed.
+
+Three things carry it:
+
+- **A row is "already there" by key *or* by natural key.** The key alone is not
+  enough. `SystemCategorySeeder` creates Groceries with its own cuid, production
+  has its own, and inserting the second one violates `UQ_Categories_name`. So
+  Categories also matches on `name`, StatementFiles on `contentHash`, Users on
+  `email`, and so on — declared in `SyncPlan`.
+- **Which means ids have to be remapped.** A category matched by name and skipped
+  leaves every Transaction and Rule that referenced production's id pointing at
+  an id this database never had. Tables marked `RemapsIds` build source-id →
+  target-id after their insert, and the tables after them — which is why the load
+  runs in `MigrationPlan`'s foreign-key order — rewrite their references before
+  staging. Verified: 477 transactions and 7 rules followed a planted duplicate
+  category, no orphans.
+- **One transaction for the whole load**, so a failure at Transactions cannot
+  leave Categories and StatementFiles committed with no record of how far it got.
+  `--dry-run` is that same transaction, rolled back.
+
+The CSVs are the artefact to look at when a number disagrees: diffable between
+two pulls and readable without either database. The format is RFC 4180 with one
+addition — **an unquoted empty field is NULL, a quoted one is the empty string**.
+CSV cannot otherwise tell them apart, and a NULL `statementFileId` read back as
+`""` is a foreign key pointing at nothing. `.sync/` is gitignored; these are the
+real figures.
+
+`SyncPlan.Validate()` runs first and fails on drift between its key metadata and
+`MigrationPlan`'s column lists, because `MigrationPlan` is the file that gets
+edited when a table changes and this is the one that gets forgotten.
 
 ## System categories
 

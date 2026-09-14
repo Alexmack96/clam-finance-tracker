@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Clam.Sync</RootNamespace>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <!-- Shared with Clam.Migrate by source, not by a project reference. Per
+       CLAUDE.md a csproj is a compile and deploy boundary; two files do not earn
+       one, and both tools are deleted together when Express is retired.
+
+       MigrationPlan is the file that matters: it is the one list of what moves
+       and which columns each table carries, and two copies of that is how a
+       column added on one side goes missing on the other. SyncPlan.Validate()
+       fails the run if this tool's key metadata drifts away from it. -->
+  <ItemGroup>
+    <Compile Include="../Clam.Migrate/MigrationPlan.cs" Link="MigrationPlan.cs" />
+    <Compile Include="../Clam.Migrate/SqliteValue.cs" Link="SqliteValue.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Data.Sqlite" />
+    <PackageReference Include="Microsoft.Data.SqlClient" />
+    <!-- Named only to lift the transitive SQLitePCLRaw off a version with a
+         known advisory. See Directory.Packages.props. -->
+    <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" />
+  </ItemGroup>
+
+</Project>

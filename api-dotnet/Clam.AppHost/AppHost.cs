@@ -9,9 +9,9 @@ var builder = DistributedApplication.CreateBuilder(args);
 // the database that matters is Azure SQL — a container would be a second, empty
 // one that nothing else points at.
 //
-// AddConnectionString instead resolves ConnectionStrings:Clam from *this*
+// AddConnectionString instead resolves ConnectionStrings:ClamFinance from *this*
 // project's configuration and injects it into the API as the
-// ConnectionStrings__Clam environment variable, which is exactly what
+// ConnectionStrings__ClamFinance environment variable, which is exactly what
 // Clam.Api's Program.cs already reads. Aspire manages the reference and shows
 // the resource on the dashboard without owning its lifetime.
 //
@@ -24,7 +24,7 @@ var builder = DistributedApplication.CreateBuilder(args);
 //
 // LocalDB is for the integration tests. They build a throwaway database per run
 // and never read this.
-var clamDb = builder.AddConnectionString("Clam");
+var clamDb = builder.AddConnectionString("ClamFinance");
 
 // ── .NET API ──────────────────────────────────────────────────────────────
 var api = builder.AddProject<Projects.Clam_Api>("clam-api")

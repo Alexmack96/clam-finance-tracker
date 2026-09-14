@@ -177,7 +177,7 @@ static async Task<int> MoveAsync(SqliteConnection source, SqlConnection target, 
 
         var row = shape.NewRow();
         for (var i = 0; i < table.Columns.Length; i++)
-            row[i] = Coerce(rows.IsDBNull(i) ? null : rows.GetValue(i), shape.Columns[i].DataType);
+            row[i] = SqliteValue.Coerce(rows.IsDBNull(i) ? null : rows.GetValue(i), shape.Columns[i].DataType);
 
         shape.Rows.Add(row);
     }
@@ -201,31 +201,6 @@ static async Task<HashSet<string>> ExistingIdsAsync(SqlConnection target, string
     while (await reader.ReadAsync()) ids.Add(reader.GetString(0));
 
     return ids;
-}
-
-/// One SQLite value into the CLR type the destination column wants.
-static object Coerce(object? value, Type target)
-{
-    if (value is null or DBNull) return DBNull.Value;
-
-    // Prisma writes DateTime as an ISO 8601 string with an offset. Normalised to
-    // UTC rather than kept local: every date the API reads and writes is UTC, and
-    // a value an hour out is a transaction on the wrong day at the month boundary.
-    if (target == typeof(DateTime))
-    {
-        return value switch
-        {
-            string text => DateTime.Parse(text, CultureInfo.InvariantCulture,
-                DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeUniversal),
-            DateTime already => already,
-            _ => DateTimeOffset.FromUnixTimeMilliseconds(Convert.ToInt64(value, CultureInfo.InvariantCulture)).UtcDateTime,
-        };
-    }
-
-    // SQLite has no boolean; Prisma stores 0 and 1.
-    if (target == typeof(bool)) return Convert.ToInt64(value, CultureInfo.InvariantCulture) != 0;
-
-    return Convert.ChangeType(value, target, CultureInfo.InvariantCulture);
 }
 
 internal sealed record Options(
