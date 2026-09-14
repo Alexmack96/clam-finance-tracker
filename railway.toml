@@ -1,6 +1,10 @@
+# The service Railway deploys: the .NET API with the React client baked in.
+# Settings live in api-dotnet/railway.toml; this file points at the same image
+# because Railway reads the repo-root config unless the service overrides it.
+
 [build]
 builder = "DOCKERFILE"
-dockerfilePath = "Dockerfile"
+dockerfilePath = "api-dotnet/Dockerfile"
 
 [deploy]
 healthcheckPath = "/api/health"
