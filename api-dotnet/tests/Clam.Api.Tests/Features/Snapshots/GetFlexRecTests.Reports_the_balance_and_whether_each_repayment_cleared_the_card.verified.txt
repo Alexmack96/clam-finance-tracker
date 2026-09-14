@@ -1,0 +1,46 @@
+﻿{
+  Status: 200 OK,
+  Content: {
+    Headers: {
+      Content-Length: 553,
+      Content-Type: application/json; charset=utf-8
+    },
+    Value: {
+      balance: 89.5,
+      purchases: 407,
+      repaid: 317,
+      refunds: 0.5,
+      outstanding: 1,
+      repayments: [
+        {
+          date: 2026-07-05T00:00:00.000Z,
+          amount: 52,
+          balanceBefore: 52,
+          balanceAfter: 0,
+          status: Cleared
+        },
+        {
+          date: 2026-07-25T00:00:00.000Z,
+          amount: 100,
+          balanceBefore: 115,
+          balanceAfter: 15,
+          status: ClearedLater
+        },
+        {
+          date: 2026-07-28T00:00:00.000Z,
+          amount: 15,
+          balanceBefore: 15,
+          balanceAfter: 0,
+          status: Cleared
+        },
+        {
+          date: 2026-08-08T00:00:00.000Z,
+          amount: 150,
+          balanceBefore: 239.5,
+          balanceAfter: 89.5,
+          status: Outstanding
+        }
+      ]
+    }
+  }
+}

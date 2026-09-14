@@ -26,6 +26,7 @@ using Clam.Api.Features.Investments.GetInvestments;
 using Clam.Api.Features.Investments.UpdateInvestmentAccount;
 using Clam.Api.Features.Investments.UpsertInvestmentSnapshot;
 using Clam.Api.Features.Monzo;
+using Clam.Api.Features.Monzo.GetFlexRec;
 using Clam.Api.Features.Monzo.GetMonzoRecRuns;
 using Clam.Api.Features.Monzo.GetMonzoStatus;
 using Clam.Api.Features.Monzo.RunMonzoRec;
@@ -270,6 +271,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<GetMonzoStatusQuery>();
         services.AddScoped<SyncMonzoCommand>();
         services.AddScoped<GetMonzoRecRunsQuery>();
+        services.AddScoped<GetFlexRecQuery>();
         services.AddScoped<RunMonzoRecCommand>();
 
         // Dev

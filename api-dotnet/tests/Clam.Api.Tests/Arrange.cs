@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Globalization;
 using Dapper;
 using Microsoft.Data.SqlClient;
 using Respawn;
@@ -241,6 +242,45 @@ public sealed class Arrange(string connectionString, Action resetIds)
         await SeededAsync();
         await ExecuteAsync(InsertCategorySql,
             new { Id = UuidCategoryId, Name = "Education", Color = "#0ea5e9" });
+    }
+
+    /// The seeded set plus a Flex card history covering every repayment outcome:
+    /// one that clears the card, one that leaves a balance a later repayment
+    /// clears, a refund, and a last repayment that leaves a balance nothing has
+    /// cleared yet. No staging rows, so repayments are recognised by name.
+    public async Task FlexHistoryAsync()
+    {
+        await SeededAsync();
+
+        var n = 0;
+        object Flex(string date, string description, decimal amount, string type) => new
+        {
+            Id = $"ctestflex{++n:D15}",
+            Description = description,
+            Amount = amount,
+            Type = type,
+            Date = DateTime.Parse(date, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeUniversal),
+            CategoryId = GroceriesCategoryId,
+            ExternalId = (string?)$"flex:tx_flex_{n}",
+            Owner = "Alex",
+            Reviewed = false,
+            Bucket = (string?)null,
+        };
+
+        await ExecuteAsync(InsertTransactionSql, new[]
+        {
+            Flex("2026-07-01", "Pret", 30.00m, "Expense"),
+            Flex("2026-07-02", "Tesco", 22.00m, "Expense"),
+            Flex("2026-07-05", "Flex", 52.00m, "Income"),       // clears: 0.00
+            Flex("2026-07-10", "Trainline", 100.00m, "Expense"),
+            Flex("2026-07-20", "Pret", 15.00m, "Expense"),
+            Flex("2026-07-25", "Flex", 100.00m, "Income"),      // leaves 15.00...
+            Flex("2026-07-28", "Flex", 15.00m, "Income"),       // ...which this clears
+            Flex("2026-08-01", "Uniqlo", 40.00m, "Expense"),
+            Flex("2026-08-02", "Grab", 0.50m, "Income"),        // refund, not a repayment
+            Flex("2026-08-05", "Hotel", 200.00m, "Expense"),
+            Flex("2026-08-08", "Flex", 150.00m, "Income"),      // leaves 89.50, not cleared
+        });
     }
 
     /// A category rule (TESCO → Rent) and a bucket rule (category Rent → Wants),

@@ -7,6 +7,7 @@ import {
   ArrowDownToLine,
 } from "lucide-react";
 import api from "../lib/api.js";
+import { WarningBanner } from "../components/WarningBanner.js";
 import { Card, CardContent } from "../components/ui/card.js";
 import { Button } from "../components/ui/button.js";
 import {
@@ -150,6 +151,8 @@ export function AdminPage() {
         </h1>
       </header>
 
+      <FlexRecSection />
+
       <section className="space-y-5">
         <div className="flex items-end justify-between gap-6 flex-wrap">
           <div>
@@ -199,6 +202,152 @@ export function AdminPage() {
         )}
       </section>
     </div>
+  );
+}
+
+type FlexRepaymentStatus = "Cleared" | "ClearedLater" | "Outstanding";
+
+type FlexRepayment = {
+  date: string;
+  amount: string;
+  balanceBefore: string;
+  balanceAfter: string;
+  status: FlexRepaymentStatus;
+};
+
+type FlexRec = {
+  balance: string;
+  purchases: string;
+  repaid: string;
+  refunds: string;
+  outstanding: number;
+  repayments: FlexRepayment[];
+};
+
+const pounds = (value: string | number) => {
+  const n = typeof value === "string" ? parseFloat(value) : value;
+  return `${n < 0 ? "−" : ""}£${Math.abs(n).toFixed(2)}`;
+};
+
+const FLEX_STATUS: Record<FlexRepaymentStatus, { label: string; className: string }> = {
+  Cleared: { label: "Cleared", className: "text-[var(--signal)]" },
+  ClearedLater: { label: "Cleared by a later payment", className: "text-muted-foreground" },
+  Outstanding: { label: "Not cleared", className: "text-amber-700 dark:text-amber-400" },
+};
+
+// The Flex balance rebuilt from the card's own transactions, and whether every
+// repayment brought it back to zero.
+function FlexRecSection() {
+  const { data, isLoading, isError } = useQuery<FlexRec>({
+    queryKey: ["flex-rec"],
+    queryFn: () => api.get("/api/admin/flex/rec").then((r) => r.data),
+  });
+
+  const balance = data ? parseFloat(data.balance) : 0;
+
+  return (
+    <section className="space-y-5">
+      <div>
+        <p className="eyebrow mb-1.5">Flex reconciliation</p>
+        <p className="text-sm text-muted-foreground max-w-prose leading-relaxed">
+          Purchases add to the Flex balance and repayments take it off, so each repayment should
+          bring it back to zero. Within £1 counts as cleared: a refund after a statement is paid
+          leaves pennies over.
+        </p>
+      </div>
+
+      {isLoading ? (
+        <p className="text-sm text-muted-foreground">Loading…</p>
+      ) : isError || !data ? (
+        <p className="text-sm text-destructive">Couldn’t load the Flex reconciliation.</p>
+      ) : (
+        <Card className="overflow-hidden">
+          <CardContent className="p-6 space-y-5">
+            <div className="flex items-end justify-between gap-6 flex-wrap">
+              <div>
+                <p className="eyebrow mb-2">
+                  {balance < -0.005 ? "Flex owes you" : "Owed to Flex"}
+                </p>
+                <p className="font-display text-[44px] leading-none font-light text-foreground">
+                  {pounds(Math.abs(balance))}
+                </p>
+              </div>
+              <dl className="grid grid-cols-3 gap-6 text-sm">
+                <div>
+                  <dt className="text-muted-foreground">Purchases</dt>
+                  <dd className="font-numeric">{pounds(data.purchases)}</dd>
+                </div>
+                <div>
+                  <dt className="text-muted-foreground">Repaid</dt>
+                  <dd className="font-numeric">{pounds(data.repaid)}</dd>
+                </div>
+                <div>
+                  <dt className="text-muted-foreground">Refunds</dt>
+                  <dd className="font-numeric">{pounds(data.refunds)}</dd>
+                </div>
+              </dl>
+            </div>
+
+            {data.outstanding > 0 ? (
+              <WarningBanner>
+                {data.outstanding === 1
+                  ? "1 repayment left a balance that no later repayment has cleared."
+                  : `${data.outstanding} repayments left a balance that no later repayment has cleared.`}{" "}
+                If it’s the most recent one, purchases made after the statement closed may simply be
+                waiting for the next payment.
+              </WarningBanner>
+            ) : data.repayments.length > 0 ? (
+              <p className="flex items-center gap-2 text-sm text-[var(--signal)]">
+                <CheckCircle2 className="size-4" aria-hidden="true" />
+                Every repayment cleared the card.
+              </p>
+            ) : null}
+
+            {data.repayments.length > 0 && (
+              <Collapsible>
+                <CollapsibleTrigger className="group flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
+                  <ChevronRight
+                    className="size-4 transition-transform group-data-[state=open]:rotate-90"
+                    aria-hidden="true"
+                  />
+                  {data.repayments.length === 1
+                    ? "1 repayment"
+                    : `${data.repayments.length} repayments`}
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <div className="mt-3 overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="text-left text-muted-foreground">
+                          <th className="py-1.5 pr-4 font-normal">Date</th>
+                          <th className="py-1.5 pr-4 font-normal text-right">Paid</th>
+                          <th className="py-1.5 pr-4 font-normal text-right">Before</th>
+                          <th className="py-1.5 pr-4 font-normal text-right">After</th>
+                          <th className="py-1.5 font-normal">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody className="font-numeric">
+                        {[...data.repayments].reverse().map((r, i) => (
+                          <tr key={`${r.date}-${i}`} className="border-t border-border">
+                            <td className="py-1.5 pr-4">{r.date.slice(0, 10)}</td>
+                            <td className="py-1.5 pr-4 text-right">{pounds(r.amount)}</td>
+                            <td className="py-1.5 pr-4 text-right">{pounds(r.balanceBefore)}</td>
+                            <td className="py-1.5 pr-4 text-right">{pounds(r.balanceAfter)}</td>
+                            <td className={`py-1.5 ${FLEX_STATUS[r.status].className}`}>
+                              {FLEX_STATUS[r.status].label}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+            )}
+          </CardContent>
+        </Card>
+      )}
+    </section>
   );
 }
 
