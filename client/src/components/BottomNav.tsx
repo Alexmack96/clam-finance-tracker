@@ -6,11 +6,13 @@ import {
   PiggyBank,
   TrendingUp,
   MoreHorizontal,
+  Repeat,
   Receipt,
   ListTodo,
-  Users,
   Upload,
   Tags,
+  ListFilter,
+  Settings,
 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover.js";
 
@@ -21,12 +23,15 @@ const mainTabs = [
   { to: "/investments", label: "Investments", Icon: TrendingUp },
 ] as const;
 
+// Every Navbar link not in mainTabs, in the Navbar's order.
 const extraItems = [
+  { to: "/recurring", label: "Recurring", Icon: Repeat },
   { to: "/tabs", label: "Tabs", Icon: Receipt },
   { to: "/tasks", label: "Tasks", Icon: ListTodo },
-  { to: "/users", label: "Users", Icon: Users },
   { to: "/import", label: "Import", Icon: Upload },
   { to: "/categories", label: "Categories", Icon: Tags },
+  { to: "/rules", label: "Rules", Icon: ListFilter },
+  { to: "/admin", label: "Admin", Icon: Settings },
 ];
 
 const otherRoutes = extraItems.map((i) => i.to);

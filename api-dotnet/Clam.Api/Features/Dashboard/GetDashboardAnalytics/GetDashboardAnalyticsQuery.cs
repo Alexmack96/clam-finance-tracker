@@ -78,12 +78,7 @@ public sealed class GetDashboardAnalyticsQuery(IDbConnectionFactory factory, Tim
         {
             Budget = BuildBudget(transactions, owner, latestSalary, now, currentMonthIndex),
 
-            MonthlyTransactionCount = [.. monthLabels.Select((month, i) => new MonthlyCount
-            {
-                Month = month,
-                Count = transactions.Count(t => t.Date.Month - 1 == i),
-                Partial = i == currentMonthIndex,
-            })],
+            MonthlyTransactionCount = [.. MonthlyCounts(transactions, monthLabels, currentMonthIndex)],
 
             MonthlyFun = ByMonthAndCategory(expenses, monthLabels, FunCategories),
             FunCategories = [.. Swatches(colorByCategory, FunCategories)],
@@ -108,8 +103,42 @@ public sealed class GetDashboardAnalyticsQuery(IDbConnectionFactory factory, Tim
                 .Where(o => o.Amount > 0)],
 
             MonthlyGolf = [.. MonthlyTotals(expenses, monthLabels, GolfCategory)],
+
+            ByOwner = Enum.GetValues<Owner>().ToDictionary(
+                o => o.ToString(),
+                o => BuildOwnerSeries(
+                    [.. transactions.Where(t => t.Owner == o)], monthLabels, currentMonthIndex),
+                StringComparer.Ordinal),
         };
     }
+
+    private static OwnerSeries BuildOwnerSeries(
+        List<AnalyticsRow> transactions,
+        string[] monthLabels,
+        int currentMonthIndex)
+    {
+        var expenses = transactions.Where(t => t.Type == TransactionType.Expense).ToList();
+
+        return new OwnerSeries
+        {
+            MonthlyTransactionCount = [.. MonthlyCounts(transactions, monthLabels, currentMonthIndex)],
+            MonthlyFun = ByMonthAndCategory(expenses, monthLabels, FunCategories),
+            MonthlyVacation = [.. MonthlyTotals(expenses, monthLabels, VacationCategory)],
+            MonthlyFood = ByMonthAndCategory(expenses, monthLabels, FoodCategories),
+            MonthlyGolf = [.. MonthlyTotals(expenses, monthLabels, GolfCategory)],
+        };
+    }
+
+    private static IEnumerable<MonthlyCount> MonthlyCounts(
+        List<AnalyticsRow> transactions,
+        string[] monthLabels,
+        int currentMonthIndex) =>
+        monthLabels.Select((month, i) => new MonthlyCount
+        {
+            Month = month,
+            Count = transactions.Count(t => t.Date.Month - 1 == i),
+            Partial = i == currentMonthIndex,
+        });
 
     /// Wants budget = net Wants spend this month, owner-weighted like the
     /// savings score: the selected person in full plus half of Joint. Refunds

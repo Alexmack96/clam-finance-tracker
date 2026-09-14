@@ -71,4 +71,22 @@ public sealed class GetDashboardAnalyticsResponse
     public IReadOnlyList<CategoryTotal> SpendingByCategory { get; set; } = [];
     public IReadOnlyList<OwnerTotal> OwnerBreakdown { get; set; } = [];
     public IReadOnlyList<MonthlyAmount> MonthlyGolf { get; set; } = [];
+
+    /// The five monthly charts again, once per owner — keyed `Alex`, `Casey`,
+    /// `Joint`. The fields above are the unfiltered "All" view. Sent together
+    /// so switching a chart's owner is a lookup rather than a refetch.
+    public IReadOnlyDictionary<string, OwnerSeries> ByOwner { get; set; } =
+        new Dictionary<string, OwnerSeries>(StringComparer.Ordinal);
+}
+
+/// One owner's transactions only, matched exactly. Unlike the budget gauge there
+/// is no weighting: Joint is the joint account's rows and Alex excludes them, so
+/// the three owners add up to the unfiltered series.
+public sealed class OwnerSeries
+{
+    public IReadOnlyList<MonthlyCount> MonthlyTransactionCount { get; set; } = [];
+    public IReadOnlyList<Dictionary<string, object>> MonthlyFun { get; set; } = [];
+    public IReadOnlyList<MonthlyAmount> MonthlyVacation { get; set; } = [];
+    public IReadOnlyList<Dictionary<string, object>> MonthlyFood { get; set; } = [];
+    public IReadOnlyList<MonthlyAmount> MonthlyGolf { get; set; } = [];
 }

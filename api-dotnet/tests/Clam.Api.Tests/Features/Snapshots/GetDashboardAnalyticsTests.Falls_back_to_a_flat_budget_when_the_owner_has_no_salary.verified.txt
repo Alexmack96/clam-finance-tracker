@@ -2,7 +2,7 @@
   Status: 200 OK,
   Content: {
     Headers: {
-      Content-Length: 2240,
+      Content-Length: 7485,
       Content-Type: application/json; charset=utf-8
     },
     Value: {
@@ -257,7 +257,621 @@
           month: Aug,
           amount: 0
         }
-      ]
+      ],
+      byOwner: {
+        Alex: {
+          monthlyTransactionCount: [
+            {
+              month: Jan,
+              count: 1,
+              partial: false
+            },
+            {
+              month: Feb,
+              count: 0,
+              partial: false
+            },
+            {
+              month: Mar,
+              count: 0,
+              partial: false
+            },
+            {
+              month: Apr,
+              count: 0,
+              partial: false
+            },
+            {
+              month: May,
+              count: 0,
+              partial: false
+            },
+            {
+              month: Jun,
+              count: 0,
+              partial: false
+            },
+            {
+              month: Jul,
+              count: 0,
+              partial: false
+            },
+            {
+              month: Aug,
+              count: 0,
+              partial: true
+            }
+          ],
+          monthlyFun: [
+            {
+              month: Jan,
+              Food & Social: 0,
+              Activities: 0
+            },
+            {
+              month: Feb,
+              Food & Social: 0,
+              Activities: 0
+            },
+            {
+              month: Mar,
+              Food & Social: 0,
+              Activities: 0
+            },
+            {
+              month: Apr,
+              Food & Social: 0,
+              Activities: 0
+            },
+            {
+              month: May,
+              Food & Social: 0,
+              Activities: 0
+            },
+            {
+              month: Jun,
+              Food & Social: 0,
+              Activities: 0
+            },
+            {
+              month: Jul,
+              Food & Social: 0,
+              Activities: 0
+            },
+            {
+              month: Aug,
+              Food & Social: 0,
+              Activities: 0
+            }
+          ],
+          monthlyVacation: [
+            {
+              month: Jan,
+              amount: 0
+            },
+            {
+              month: Feb,
+              amount: 0
+            },
+            {
+              month: Mar,
+              amount: 0
+            },
+            {
+              month: Apr,
+              amount: 0
+            },
+            {
+              month: May,
+              amount: 0
+            },
+            {
+              month: Jun,
+              amount: 0
+            },
+            {
+              month: Jul,
+              amount: 0
+            },
+            {
+              month: Aug,
+              amount: 0
+            }
+          ],
+          monthlyFood: [
+            {
+              month: Jan,
+              Food & Social: 0,
+              Groceries: 0,
+              Takeout: 0
+            },
+            {
+              month: Feb,
+              Food & Social: 0,
+              Groceries: 0,
+              Takeout: 0
+            },
+            {
+              month: Mar,
+              Food & Social: 0,
+              Groceries: 0,
+              Takeout: 0
+            },
+            {
+              month: Apr,
+              Food & Social: 0,
+              Groceries: 0,
+              Takeout: 0
+            },
+            {
+              month: May,
+              Food & Social: 0,
+              Groceries: 0,
+              Takeout: 0
+            },
+            {
+              month: Jun,
+              Food & Social: 0,
+              Groceries: 0,
+              Takeout: 0
+            },
+            {
+              month: Jul,
+              Food & Social: 0,
+              Groceries: 0,
+              Takeout: 0
+            },
+            {
+              month: Aug,
+              Food & Social: 0,
+              Groceries: 0,
+              Takeout: 0
+            }
+          ],
+          monthlyGolf: [
+            {
+              month: Jan,
+              amount: 0
+            },
+            {
+              month: Feb,
+              amount: 0
+            },
+            {
+              month: Mar,
+              amount: 0
+            },
+            {
+              month: Apr,
+              amount: 0
+            },
+            {
+              month: May,
+              amount: 0
+            },
+            {
+              month: Jun,
+              amount: 0
+            },
+            {
+              month: Jul,
+              amount: 0
+            },
+            {
+              month: Aug,
+              amount: 0
+            }
+          ]
+        },
+        Casey: {
+          monthlyTransactionCount: [
+            {
+              month: Jan,
+              count: 0,
+              partial: false
+            },
+            {
+              month: Feb,
+              count: 1,
+              partial: false
+            },
+            {
+              month: Mar,
+              count: 0,
+              partial: false
+            },
+            {
+              month: Apr,
+              count: 0,
+              partial: false
+            },
+            {
+              month: May,
+              count: 0,
+              partial: false
+            },
+            {
+              month: Jun,
+              count: 0,
+              partial: false
+            },
+            {
+              month: Jul,
+              count: 0,
+              partial: false
+            },
+            {
+              month: Aug,
+              count: 0,
+              partial: true
+            }
+          ],
+          monthlyFun: [
+            {
+              month: Jan,
+              Food & Social: 0,
+              Activities: 0
+            },
+            {
+              month: Feb,
+              Food & Social: 0,
+              Activities: 0
+            },
+            {
+              month: Mar,
+              Food & Social: 0,
+              Activities: 0
+            },
+            {
+              month: Apr,
+              Food & Social: 0,
+              Activities: 0
+            },
+            {
+              month: May,
+              Food & Social: 0,
+              Activities: 0
+            },
+            {
+              month: Jun,
+              Food & Social: 0,
+              Activities: 0
+            },
+            {
+              month: Jul,
+              Food & Social: 0,
+              Activities: 0
+            },
+            {
+              month: Aug,
+              Food & Social: 0,
+              Activities: 0
+            }
+          ],
+          monthlyVacation: [
+            {
+              month: Jan,
+              amount: 0
+            },
+            {
+              month: Feb,
+              amount: 0
+            },
+            {
+              month: Mar,
+              amount: 0
+            },
+            {
+              month: Apr,
+              amount: 0
+            },
+            {
+              month: May,
+              amount: 0
+            },
+            {
+              month: Jun,
+              amount: 0
+            },
+            {
+              month: Jul,
+              amount: 0
+            },
+            {
+              month: Aug,
+              amount: 0
+            }
+          ],
+          monthlyFood: [
+            {
+              month: Jan,
+              Food & Social: 0,
+              Groceries: 0,
+              Takeout: 0
+            },
+            {
+              month: Feb,
+              Food & Social: 0,
+              Groceries: 0,
+              Takeout: 0
+            },
+            {
+              month: Mar,
+              Food & Social: 0,
+              Groceries: 0,
+              Takeout: 0
+            },
+            {
+              month: Apr,
+              Food & Social: 0,
+              Groceries: 0,
+              Takeout: 0
+            },
+            {
+              month: May,
+              Food & Social: 0,
+              Groceries: 0,
+              Takeout: 0
+            },
+            {
+              month: Jun,
+              Food & Social: 0,
+              Groceries: 0,
+              Takeout: 0
+            },
+            {
+              month: Jul,
+              Food & Social: 0,
+              Groceries: 0,
+              Takeout: 0
+            },
+            {
+              month: Aug,
+              Food & Social: 0,
+              Groceries: 0,
+              Takeout: 0
+            }
+          ],
+          monthlyGolf: [
+            {
+              month: Jan,
+              amount: 0
+            },
+            {
+              month: Feb,
+              amount: 0
+            },
+            {
+              month: Mar,
+              amount: 0
+            },
+            {
+              month: Apr,
+              amount: 0
+            },
+            {
+              month: May,
+              amount: 0
+            },
+            {
+              month: Jun,
+              amount: 0
+            },
+            {
+              month: Jul,
+              amount: 0
+            },
+            {
+              month: Aug,
+              amount: 0
+            }
+          ]
+        },
+        Joint: {
+          monthlyTransactionCount: [
+            {
+              month: Jan,
+              count: 0,
+              partial: false
+            },
+            {
+              month: Feb,
+              count: 1,
+              partial: false
+            },
+            {
+              month: Mar,
+              count: 1,
+              partial: false
+            },
+            {
+              month: Apr,
+              count: 0,
+              partial: false
+            },
+            {
+              month: May,
+              count: 0,
+              partial: false
+            },
+            {
+              month: Jun,
+              count: 0,
+              partial: false
+            },
+            {
+              month: Jul,
+              count: 0,
+              partial: false
+            },
+            {
+              month: Aug,
+              count: 0,
+              partial: true
+            }
+          ],
+          monthlyFun: [
+            {
+              month: Jan,
+              Food & Social: 0,
+              Activities: 0
+            },
+            {
+              month: Feb,
+              Food & Social: 0,
+              Activities: 0
+            },
+            {
+              month: Mar,
+              Food & Social: 0,
+              Activities: 0
+            },
+            {
+              month: Apr,
+              Food & Social: 0,
+              Activities: 0
+            },
+            {
+              month: May,
+              Food & Social: 0,
+              Activities: 0
+            },
+            {
+              month: Jun,
+              Food & Social: 0,
+              Activities: 0
+            },
+            {
+              month: Jul,
+              Food & Social: 0,
+              Activities: 0
+            },
+            {
+              month: Aug,
+              Food & Social: 0,
+              Activities: 0
+            }
+          ],
+          monthlyVacation: [
+            {
+              month: Jan,
+              amount: 0
+            },
+            {
+              month: Feb,
+              amount: 0
+            },
+            {
+              month: Mar,
+              amount: 0
+            },
+            {
+              month: Apr,
+              amount: 0
+            },
+            {
+              month: May,
+              amount: 0
+            },
+            {
+              month: Jun,
+              amount: 0
+            },
+            {
+              month: Jul,
+              amount: 0
+            },
+            {
+              month: Aug,
+              amount: 0
+            }
+          ],
+          monthlyFood: [
+            {
+              month: Jan,
+              Food & Social: 0,
+              Groceries: 0,
+              Takeout: 0
+            },
+            {
+              month: Feb,
+              Food & Social: 0,
+              Groceries: 200,
+              Takeout: 0
+            },
+            {
+              month: Mar,
+              Food & Social: 0,
+              Groceries: 0,
+              Takeout: 0
+            },
+            {
+              month: Apr,
+              Food & Social: 0,
+              Groceries: 0,
+              Takeout: 0
+            },
+            {
+              month: May,
+              Food & Social: 0,
+              Groceries: 0,
+              Takeout: 0
+            },
+            {
+              month: Jun,
+              Food & Social: 0,
+              Groceries: 0,
+              Takeout: 0
+            },
+            {
+              month: Jul,
+              Food & Social: 0,
+              Groceries: 0,
+              Takeout: 0
+            },
+            {
+              month: Aug,
+              Food & Social: 0,
+              Groceries: 0,
+              Takeout: 0
+            }
+          ],
+          monthlyGolf: [
+            {
+              month: Jan,
+              amount: 0
+            },
+            {
+              month: Feb,
+              amount: 0
+            },
+            {
+              month: Mar,
+              amount: 0
+            },
+            {
+              month: Apr,
+              amount: 0
+            },
+            {
+              month: May,
+              amount: 0
+            },
+            {
+              month: Jun,
+              amount: 0
+            },
+            {
+              month: Jul,
+              amount: 0
+            },
+            {
+              month: Aug,
+              amount: 0
+            }
+          ]
+        }
+      }
     }
   }
 }

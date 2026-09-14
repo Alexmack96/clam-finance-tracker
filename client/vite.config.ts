@@ -20,6 +20,10 @@ export default defineConfig({
         // user sees the latest deploy. No manual cache clearing needed.
         skipWaiting: true,
         clientsClaim: true,
+        // Browser navigations to the API must reach the server. Without this the
+        // SW answers them with index.html, which renders a blank page — the Monzo
+        // OAuth callback is a navigation to /api/admin/monzo/callback.
+        navigateFallbackDenylist: [/^\/api\//],
       },
       manifest: {
         name: "Clam Finance",
@@ -31,10 +35,15 @@ export default defineConfig({
         start_url: "/dashboard",
         orientation: "portrait",
         icons: [
-          { src: "pwa-64x64.png",           sizes: "64x64",   type: "image/png" },
-          { src: "pwa-192x192.png",          sizes: "192x192", type: "image/png" },
-          { src: "pwa-512x512.png",          sizes: "512x512", type: "image/png" },
-          { src: "maskable-icon-512x512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
+          { src: "pwa-64x64.png", sizes: "64x64", type: "image/png" },
+          { src: "pwa-192x192.png", sizes: "192x192", type: "image/png" },
+          { src: "pwa-512x512.png", sizes: "512x512", type: "image/png" },
+          {
+            src: "maskable-icon-512x512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "maskable",
+          },
         ],
       },
     }),
