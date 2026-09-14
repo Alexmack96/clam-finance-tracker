@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace Clam.Api.Infrastructure.Statements;
@@ -49,15 +50,55 @@ public sealed partial class FileSystemStatementStore : IStatementStore
         return full;
     }
 
+    /// `amex/Alex/2026-02-24-amex.pdf`: sorts by date on the volume and reads at a
+    /// glance. Only new uploads get this shape. Every read goes through the key
+    /// stored on the StatementFiles row, so older files keep their older names.
     public string KeyFor(string bank, string owner, string? statementDate, string contentHash)
     {
         ArgumentNullException.ThrowIfNull(contentHash);
 
-        // The hash suffix keeps keys unique when two statements share a date, and
-        // makes the file self-identifying if you are poking around on the volume.
-        var date = string.IsNullOrWhiteSpace(statementDate) ? "undated" : Slug(statementDate);
-        var hash = Slug(contentHash);
-        return $"{Slug(bank)}/{Slug(owner)}/{date}-{hash[..Math.Min(12, hash.Length)]}.pdf";
+        var date = IsoDate(statementDate)
+            ?? (string.IsNullOrWhiteSpace(statementDate) ? "undated" : Slug(statementDate));
+        var stem = $"{Slug(bank)}/{Slug(owner)}/{date}-{Slug(bank)}";
+
+        // Two different statements can share a bank, owner and date, a reissued
+        // one say. Identical bytes never get this far (contentHash is unique), so
+        // a taken name means a different file, and a short hash stops it
+        // overwriting the first.
+        var key = $"{stem}.pdf";
+        if (File.Exists(PathFor(key)))
+        {
+            var hash = Slug(contentHash);
+            key = $"{stem}-{hash[..Math.Min(8, hash.Length)]}.pdf";
+        }
+
+        return key;
+    }
+
+    private static readonly string[] DayFormats = ["dd/MM/yy", "d MMMM yyyy", "d MMM yyyy"];
+    private static readonly string[] MonthFormats = ["MMMM yyyy", "MMM yyyy"];
+
+    /// The labels the parsers produce: "24/02/26" (Amex), "February 2026"
+    /// (Barclays), "Feb 2026" (Chase, SoFi), "10 March to 9 April 2026" (HSBC),
+    /// "21 Feb 2026 to 20 Mar 2026" (Santander). A range is named by its end, the
+    /// day the statement closed. A month-only label stays a month rather than
+    /// gaining a day the statement never printed. Null when nothing parses.
+    internal static string? IsoDate(string? label)
+    {
+        if (string.IsNullOrWhiteSpace(label)) return null;
+
+        var text = label.Trim();
+        var to = text.LastIndexOf(" to ", StringComparison.OrdinalIgnoreCase);
+        if (to >= 0) text = text[(to + 4)..].Trim();
+        text = text.Replace("Sept ", "Sep ", StringComparison.OrdinalIgnoreCase);
+
+        if (DateOnly.TryParseExact(text, DayFormats, CultureInfo.InvariantCulture, DateTimeStyles.None, out var day))
+            return day.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+
+        if (DateOnly.TryParseExact(text, MonthFormats, CultureInfo.InvariantCulture, DateTimeStyles.None, out var month))
+            return month.ToString("yyyy-MM", CultureInfo.InvariantCulture);
+
+        return null;
     }
 
     public async Task SaveAsync(string key, byte[] data, CancellationToken ct = default)

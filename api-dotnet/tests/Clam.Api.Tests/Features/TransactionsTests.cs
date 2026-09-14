@@ -106,6 +106,18 @@ public class UpdateTransactionTests(ClamApiFactory api) : ApiTest(api)
         await Verify(response);
     }
 
+    /// Two production categories carried over from Express have 36-character
+    /// UUID ids. The id limit was once 30, which rejected them as "not an id"
+    /// and made both categories impossible to pick.
+    [Fact]
+    public async Task Accepts_a_category_with_a_uuid_id()
+    {
+        await Given.SeededWithUuidCategoryAsync();
+        var response = await Patch($"/api/transactions/{Arrange.RentTransactionId}",
+            new { categoryId = Arrange.UuidCategoryId });
+        await Verify(response);
+    }
+
     [Fact]
     public async Task Keeps_a_bucket_sent_alongside_the_category()
     {

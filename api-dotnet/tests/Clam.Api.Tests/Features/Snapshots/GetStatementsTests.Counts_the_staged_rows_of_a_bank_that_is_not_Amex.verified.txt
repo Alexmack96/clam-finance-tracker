@@ -2,7 +2,7 @@
   Status: 200 OK,
   Content: {
     Headers: {
-      Content-Length: 410,
+      Content-Length: 388,
       Content-Type: application/json; charset=utf-8
     },
     Value: [
@@ -14,7 +14,7 @@
         originalName: 2026-04-09-hsbc-statement.pdf,
         contentHash: 55f7991e977e88b144ada1381d05574df69d08439e56b91101ce9c1a59bd03df,
         byteSize: 137718,
-        storageKey: hsbc/Joint/10-March-to-9-April-2026-55f7991e977e.pdf,
+        storageKey: hsbc/Joint/2026-04-09-hsbc.pdf,
         uploadedAt: {Scrubbed},
         rowCount: 21,
         reconciled: true,

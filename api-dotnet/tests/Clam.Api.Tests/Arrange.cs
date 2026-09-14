@@ -25,6 +25,12 @@ namespace Clam.Api.Tests;
 ///     shows up as a primary-key violation.
 public sealed class Arrange(string connectionString, Action resetIds)
 {
+    /// Where the host's statement store writes uploaded PDFs during the suite.
+    /// Emptied with the database, because a statement's file name now depends on
+    /// whether that name is already taken on disk.
+    public static readonly string StatementsDirectory =
+        Path.Combine(Path.GetTempPath(), "clam-tests", "statements");
+
     // Ids are fixed and self-describing. They appear in snapshots, so a reader
     // should be able to tell what a row is without cross-referencing.
     public const string RentCategoryId = "ctest0000000000000001rent";
@@ -122,10 +128,14 @@ public sealed class Arrange(string connectionString, Action resetIds)
     ///
     /// That includes the generated-id counter. It is a singleton on a host
     /// shared by the whole assembly, so resetting the rows without resetting the
-    /// numbering leaves ids that depend on execution order.
+    /// numbering leaves ids that depend on execution order. The same goes for
+    /// stored statement PDFs: a file left by an earlier test takes the name the
+    /// next upload of that statement would get.
     public async Task NothingAsync()
     {
         resetIds();
+
+        if (Directory.Exists(StatementsDirectory)) Directory.Delete(StatementsDirectory, recursive: true);
 
         var respawner = await RespawnerFor(connectionString);
 
@@ -219,6 +229,18 @@ public sealed class Arrange(string connectionString, Action resetIds)
         await SeededAsync();
         await ExecuteAsync(InsertCategorySql,
             new { Id = UncategorisedCategoryId, Name = "Uncategorised", Color = "#d1d5db" });
+    }
+
+    /// A UUID rather than a cuid, the shape of the two categories carried over
+    /// from Express. 36 characters, which a 30-character id limit rejected.
+    public const string UuidCategoryId = "3f2a9c1e-7b4d-4e8a-9c6f-1d2e3b4a5c6d";
+
+    /// The seeded set plus a category whose id is a 36-character UUID.
+    public async Task SeededWithUuidCategoryAsync()
+    {
+        await SeededAsync();
+        await ExecuteAsync(InsertCategorySql,
+            new { Id = UuidCategoryId, Name = "Education", Color = "#0ea5e9" });
     }
 
     /// A category rule (TESCO → Rent) and a bucket rule (category Rent → Wants),

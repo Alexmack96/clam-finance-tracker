@@ -1,7 +1,9 @@
 namespace Clam.Api.Domain;
 
-/// The width of an id column, which is the same in every table in db/schema.sql:
-/// `NVARCHAR(30)`, holding a cuid.
+/// The width of an id column in db/schema.sql: `NVARCHAR(50)`. Most ids are
+/// 25-character cuids, but not all — two categories carried over from Express
+/// have 36-character UUIDs. This was 30 once, which matched no column and
+/// rejected those categories as "not an id" on every write.
 ///
 /// Here rather than in a slice for the same reason as <c>Enums.cs</c> — it is the
 /// database's contract, not one feature's opinion, and a slice cannot pick a
@@ -15,5 +17,5 @@ namespace Clam.Api.Domain;
 /// which is a 500 for what is squarely the caller's mistake.
 public static class Ids
 {
-    public const int MaxLength = 30;
+    public const int MaxLength = 50;
 }

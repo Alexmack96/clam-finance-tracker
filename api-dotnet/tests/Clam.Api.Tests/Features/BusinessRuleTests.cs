@@ -44,7 +44,7 @@ public class BusinessRuleTests(ClamApiFactory api) : ApiTest(api)
         await Verify(response);
     }
 
-    /// 31 characters against an NVARCHAR(30) id column. Not a length a client
+    /// 51 characters against an NVARCHAR(50) id column. Not a length a client
     /// reaches by accident, but the value is INSERTed rather than compared, so
     /// without the rule it is a truncation 500 instead of "no such category".
     [Fact]
@@ -195,7 +195,7 @@ public class BusinessRuleTests(ClamApiFactory api) : ApiTest(api)
         await Verify(response);
     }
 
-    /// 31 characters against an NVARCHAR(30) id column. The MERGE INSERTs this,
+    /// 51 characters against an NVARCHAR(50) id column. The MERGE INSERTs this,
     /// so without the rule it is a truncation 500 rather than the 404 the
     /// foreign-key catch exists to produce.
     [Fact]
@@ -268,7 +268,7 @@ public class BusinessRuleTests(ClamApiFactory api) : ApiTest(api)
 
     /// 31 characters — one past every id column in db/schema.sql, and spelled so
     /// that is visible without counting.
-    private const string TooLongId = "cthisidiswaytoolongforacolumn31";
+    private const string TooLongId = "cthisidiswaytoolongforanidcolumnthatholdsfiftyx0051";
 
     private const string EquityAccountId = "cacct0000000000001equity";
 

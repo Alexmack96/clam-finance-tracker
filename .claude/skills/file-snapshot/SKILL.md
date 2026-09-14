@@ -20,9 +20,14 @@ replaces `LOCAL_PATH` wholesale and would take the archive with it. Stage, then 
 ## Facts about this deployment
 
 - Prod runs on **Railway**, volume **`@helpdesk/server-volume`** mounted at `/data`.
-- PDFs live at **`/data/statements`**, laid out by
-  [`statementStore.keyFor`](../../../server/src/lib/statementStorage.ts):
-  `<bank>/<owner>/<statement-date>-<hash12>.pdf` — e.g. `amex/Alex/March-2025-a1b2c3d4e5f6.pdf`.
+- PDFs live at **`/data/statements`**, laid out by `FileSystemStatementStore.KeyFor`
+  in `api-dotnet/Clam.Api/Infrastructure/Statements/StatementStore.cs`:
+  `<bank>/<owner>/<iso-date>-<bank>.pdf`, e.g. `amex/Alex/2026-02-24-amex.pdf`
+  (`2026-02-barclays.pdf` when the statement only names a month). A second statement
+  with the same date gets `-<hash8>` appended rather than overwriting the first.
+- Files uploaded before that change keep their old names,
+  `<bank>/<owner>/<statement-date-text>-<hash12>.pdf` (e.g. `amex/Alex/24-02-26-b344dfeb8ac9.pdf`).
+  Both shapes coexist; the path each file actually has is `StatementFiles.storageKey`.
 - The filename is **not** the original upload name. The mapping lives in the `StatementFile`
   table (`storageKey` → `originalName`), which is why step 4 writes a manifest.
 - `STATEMENTS_DIR` is **not** set in Railway and does not need to be — `defaultStatementsDir()`

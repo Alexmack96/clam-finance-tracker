@@ -129,15 +129,17 @@ public sealed class ClamApiFactory : WebApplicationFactory<Program>, IAsyncLifet
         // so here it is safe and has to win.
         Environment.SetEnvironmentVariable("Seed__Enabled", "true");
 
+        // Somewhere harmless for the statement store to resolve to. An environment
+        // variable for the same reason as the rest: this sat in the in-memory
+        // collection below, lost, and the upload tests wrote their PDFs into
+        // Clam.Api/statements — the folder local dev keeps real statements in.
+        // Arrange.NothingAsync empties it with the database, so one test's file
+        // cannot change the next test's key.
+        Environment.SetEnvironmentVariable("Statements__Directory", Arrange.StatementsDirectory);
+
         builder.ConfigureAppConfiguration(cfg => cfg.AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["ConnectionStrings:ClamFinance"] = ConnectionString,
-
-            // Somewhere harmless for the statement store to resolve to. The Amex
-            // upload tests do write real PDFs here, which is fine to leave
-            // behind: a storage key is derived from the file's content hash, so
-            // re-running the suite overwrites rather than accumulates.
-            ["Statements:Directory"] = Path.Combine(Path.GetTempPath(), "clam-tests", "statements"),
         }));
 
         builder.ConfigureTestServices(services =>

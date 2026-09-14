@@ -79,7 +79,7 @@ public class LengthLimitTests(ClamApiFactory api) : ApiTest(api)
         await Verify(response);
     }
 
-    /// Transactions.categoryId is NVARCHAR(30). Not a length the client would
+    /// Transactions.categoryId is NVARCHAR(50). Not a length the client would
     /// ever hit by accident, but the UPDATE COALESCEs it straight into the column
     /// and a truncation error there is indistinguishable from a real failure.
     [Fact]
@@ -87,7 +87,7 @@ public class LengthLimitTests(ClamApiFactory api) : ApiTest(api)
     {
         await Given.SeededAsync();
         var response = await Patch($"/api/transactions/{Arrange.RentTransactionId}",
-            new { categoryId = new string('c', 31) });
+            new { categoryId = new string('c', 51) });
         await Verify(response);
     }
 
