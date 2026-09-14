@@ -1,0 +1,20 @@
+﻿{
+  Status: 400 Bad Request,
+  Content: {
+    Headers: {
+      Content-Length: 206,
+      Content-Type: application/problem+json
+    },
+    Value: {
+      title: One or more validation errors occurred.,
+      status: 400,
+      instance: /api/transactions/ctest00000000000000001tx,
+      errors: {
+        owner: [
+          Only Monzo transactions can be Joint
+        ]
+      },
+      traceId: {Scrubbed}
+    }
+  }
+}

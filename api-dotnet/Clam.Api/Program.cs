@@ -36,7 +36,6 @@ builder.AddServiceDefaults();   // OpenTelemetry, service discovery, liveness ch
 builder.Services
     .AddApiInfrastructure()           // FastEndpoints, Swagger, ProblemDetails
     .AddPersistence(connectionString) // Dapper connection factory, SQL health check
-    .AddDatabaseKeepAlive(builder.Configuration) // timed ping, dark behind a feature flag
     .AddStatementStorage(builder.Configuration, builder.Environment)
     .AddExternalClients(builder.Configuration)  // Monzo and Frankfurter typed clients
     .AddFeatureSlices()               // one registration per vertical slice

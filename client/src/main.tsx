@@ -55,8 +55,9 @@ createRoot(document.getElementById("root")!).render(
       {/* devMode keeps the refresh token in localStorage. Without a custom WorkOS
           auth domain it lives in a cookie on api.workos.com, which browsers block
           as third-party: silent refresh fails, requests 401 once the ~5-minute
-          access token expires, and every reload signs you out. The cost is that
-          script running on the page could read the token. */}
+          access token expires, and every reload signs you out. Security trade-off:
+          JavaScript running on the page can read localStorage, so an XSS bug could
+          steal the token, where an HTTP-only cookie is out of script's reach. */}
       <AuthKitProvider clientId={workOsClientId} devMode>
         <QueryClientProvider client={queryClient}>
           <AuthTokenBridge>

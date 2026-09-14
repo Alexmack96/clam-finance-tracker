@@ -20,6 +20,7 @@ import {
 import type {
   ColDef,
   GridApi,
+  IFilter,
   CsvExportParams,
   ProcessCellForExportParams,
   ProcessHeaderForExportParams,
@@ -427,7 +428,11 @@ function OwnerCell({ tx, onSave }: { tx: Transaction; onSave: (owner: Owner) => 
     return () => document.removeEventListener("mousedown", handle);
   }, [open]);
 
-  const OWNER_DROPDOWN_HEIGHT = 3 * 32 + 8;
+  // Joint is the shared Monzo account; every other source belongs to one person.
+  // The API rejects Joint anywhere else, so it is not offered.
+  const owners: Owner[] =
+    bankSource(tx.externalId) === "Monzo" ? ["Alex", "Casey", "Joint"] : ["Alex", "Casey"];
+  const OWNER_DROPDOWN_HEIGHT = owners.length * 32 + 8;
 
   function handleClick() {
     if (triggerRef.current) {
@@ -581,9 +586,14 @@ interface CategoryFilterExtraProps {
 function CategoryFilter({
   model,
   onModelChange,
+  api,
+  column,
   categories,
 }: CustomFilterProps<Transaction, any, FilterModel> & CategoryFilterExtraProps) {
   const [attachTick, setAttachTick] = useState(0);
+  // Category names on rows that pass every *other* column filter, so filtering
+  // Owner to Joint leaves only Joint's categories here. Null shows them all.
+  const [available, setAvailable] = useState<Set<string> | null>(null);
   useGridFilter({
     doesFilterPass: (params) => {
       if (!model) return true;
@@ -592,14 +602,47 @@ function CategoryFilter({
     afterGuiAttached: () => setAttachTick((t) => t + 1),
   });
 
+  // Recomputed each time the dropdown opens; only one filter popup is open at a
+  // time, so the other filters cannot change underneath it. Not
+  // forEachNodeAfterFilter: that applies this filter too, and once a category is
+  // picked the list would shrink to that one.
+  useEffect(() => {
+    if (attachTick === 0) return;
+    let cancelled = false;
+    const selfId = column.getColId();
+    const otherIds = Object.keys(api.getFilterModel()).filter((id) => id !== selfId);
+
+    void Promise.all(otherIds.map((id) => api.getColumnFilterInstance<IFilter>(id))).then(
+      (instances) => {
+        if (cancelled) return;
+        const others = instances.filter((f): f is IFilter => f != null);
+        const names = new Set<string>();
+        api.forEachNode((node) => {
+          const tx = node.data;
+          if (!tx) return;
+          if (others.every((f) => f.doesFilterPass({ node, data: tx })))
+            names.add(tx.category.name);
+        });
+        setAvailable(names);
+      },
+    );
+
+    return () => {
+      cancelled = true;
+    };
+  }, [attachTick, api, column]);
+
   const options = useMemo<FilterOption[]>(
     () =>
-      categories.map((c) => ({
-        value: c.name,
-        label: c.name,
-        badgeStyle: { color: c.color, borderColor: c.color },
-      })),
-    [categories],
+      categories
+        // The selected category stays listed so it can still be cleared.
+        .filter((c) => !available || available.has(c.name) || c.name === model?.value)
+        .map((c) => ({
+          value: c.name,
+          label: c.name,
+          badgeStyle: { color: c.color, borderColor: c.color },
+        })),
+    [categories, available, model?.value],
   );
 
   return (

@@ -4,6 +4,7 @@ Personal finance tracker. Import bank transactions (Monzo, Amex, Barclays, Santa
 
 ## Todo 28-Jun-2026
 
+[] auto run bucketing rules on catregory change
 [] M - Test pdf upload for all banks in new app
 [] default file format saved in persistent volume mount 24-02-26-b344dfeb8ac9
 [] S - categorising an uncategorised thing should run the 'bucket' rules and so would for example auto-set to needs for going from uncategroised -> grociers category. 
@@ -166,7 +167,7 @@ sqlcmd -S tcp:<server>.database.windows.net,1433 -d ClamFinanceDev -U <user> -P 
 
 `schema.sql` **drops every table it manages**, so it sets up an empty database rather than migrating a populated one.
 
-Azure SQL serverless auto-pauses. The first connection after an idle spell fails with *"Database is not currently available"* and succeeds on retry, roughly a minute later. `FeatureManagement:DatabaseKeepAlive` pings every 45 minutes to prevent that, and is **off** because keeping a serverless database awake costs money.
+`ClamFinanceDev` is on the free serverless tier, which auto-pauses. The first connection after an idle spell fails with *"Database is not currently available"* and succeeds on retry, roughly a minute later. There is no keep-alive: holding a serverless database awake is billed per vCore-second and cost far more than moving production to the **Basic** DTU tier, which never pauses, for a fixed ~$6 a month.
 
 `POST /api/dev/seed` fills the database with synthetic data. It opens by deleting every transaction and category, so `Seed:Enabled` is **false** by default now that Development points at a shared database — turn it on for the run that needs it and back off. Health: `/alive` (liveness) and `/healthz` (per-dependency JSON).
 

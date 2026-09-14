@@ -1,0 +1,31 @@
+﻿{
+  Status: 200 OK,
+  Content: {
+    Headers: {
+      Content-Length: 469,
+      Content-Type: application/json; charset=utf-8
+    },
+    Value: {
+      id: ctest00000000000000003tx,
+      description: MONZO TRANSFER FROM CASEY,
+      amount: 600,
+      type: Income,
+      date: 2026-02-01T00:00:00.000Z,
+      createdAt: {Scrubbed},
+      categoryId: ctest00000000000000003net,
+      externalId: monzo:tx_casey_settlement,
+      note: null,
+      owner: Joint,
+      reviewed: true,
+      bucket: Ignore,
+      originalAmount: null,
+      originalCurrency: null,
+      statementFileId: null,
+      category: {
+        id: ctest00000000000000003net,
+        name: Net,
+        color: #3b82f6
+      }
+    }
+  }
+}

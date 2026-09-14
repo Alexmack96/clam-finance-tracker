@@ -29,6 +29,8 @@ import {
   type RulePreview,
 } from "@clam/core";
 import api from "../lib/api.js";
+import { categoriesWithoutDefaultBucket } from "../lib/bucketCoverage.js";
+import { WarningBanner } from "../components/WarningBanner.js";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card.js";
 import { Button } from "../components/ui/button.js";
 import { Input } from "../components/ui/input.js";
@@ -147,6 +149,10 @@ export default function RulesPage() {
     () => (rules ?? []).filter((r) => r.kind === "Bucket").sort((a, b) => a.position - b.position),
     [rules],
   );
+  const unbucketedCategories = useMemo(
+    () => categoriesWithoutDefaultBucket(categories ?? [], bucketRules),
+    [categories, bucketRules],
+  );
 
   const [preview, setPreview] = useState<{ preview: RulePreview; scope: PreviewScope } | null>(
     null,
@@ -178,6 +184,15 @@ export default function RulesPage() {
             categories={categories ?? []}
             onPreview={(p, scope) => setPreview({ preview: p, scope })}
           />
+          {categories && unbucketedCategories.length > 0 && (
+            <WarningBanner>
+              {unbucketedCategories.length === 1
+                ? "1 category has no default bucket rule: "
+                : `${unbucketedCategories.length} categories have no default bucket rule: `}
+              {unbucketedCategories.map((c) => c.name).join(", ")}. Transactions moved into{" "}
+              {unbucketedCategories.length === 1 ? "it" : "them"} keep their old bucket.
+            </WarningBanner>
+          )}
           <RuleSection
             kind="Bucket"
             title="Bucket rules"

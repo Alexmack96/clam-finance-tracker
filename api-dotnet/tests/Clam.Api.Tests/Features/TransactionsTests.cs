@@ -77,6 +77,43 @@ public class UpdateTransactionTests(ClamApiFactory api) : ApiTest(api)
         var response = await Patch("/api/transactions/nope", new { reviewed = true });
         await Verify(response);
     }
+
+    /// Rent is a manual row with no externalId, so it is not from Monzo.
+    [Fact]
+    public async Task Rejects_joint_on_a_transaction_not_from_monzo()
+    {
+        await Given.SeededAsync();
+        var response = await Patch($"/api/transactions/{Arrange.RentTransactionId}", new { owner = "Joint" });
+        await Verify(response);
+    }
+
+    [Fact]
+    public async Task Allows_joint_on_a_monzo_transaction()
+    {
+        await Given.SeededAsync();
+        var response = await Patch($"/api/transactions/{Arrange.SettlementTransactionId}", new { owner = "Joint" });
+        await Verify(response);
+    }
+
+    /// Groceries starts in Needs. The seeded bucket rule sends category Rent to
+    /// Wants, so moving it to Rent must move its bucket with it.
+    [Fact]
+    public async Task Reruns_bucket_rules_when_the_category_changes()
+    {
+        await Given.SeededWithRulesAsync();
+        var response = await Patch($"/api/transactions/{Arrange.GroceriesTransactionId}",
+            new { categoryId = Arrange.RentCategoryId });
+        await Verify(response);
+    }
+
+    [Fact]
+    public async Task Keeps_a_bucket_sent_alongside_the_category()
+    {
+        await Given.SeededWithRulesAsync();
+        var response = await Patch($"/api/transactions/{Arrange.GroceriesTransactionId}",
+            new { categoryId = Arrange.RentCategoryId, bucket = "Savings" });
+        await Verify(response);
+    }
 }
 
 public class DeleteTransactionTests(ClamApiFactory api) : ApiTest(api)

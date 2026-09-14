@@ -67,7 +67,6 @@ using Clam.Api.Infrastructure.Json;
 using Clam.Api.Infrastructure.Monzo;
 using Clam.Api.Infrastructure.Statements;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
-using Microsoft.FeatureManagement;
 using FastEndpoints;
 using FastEndpoints.Swagger;
 
@@ -134,26 +133,6 @@ public static class ServiceCollectionExtensions
                 name: "sql",
                 timeout: TimeSpan.FromSeconds(5),
                 tags: ["ready", "db"]);
-
-        return services;
-    }
-
-    /// The timed database ping, and the feature-flag infrastructure that gates it.
-    ///
-    /// The hosted service is registered unconditionally and asks the flag on each
-    /// tick, rather than being registered only when the flag is on. Both are one
-    /// line; only this one can be switched on without a redeploy, which is the
-    /// point of shipping it dark.
-    public static IServiceCollection AddDatabaseKeepAlive(
-        this IServiceCollection services,
-        IConfiguration config)
-    {
-        ArgumentNullException.ThrowIfNull(config);
-
-        // Binds the "FeatureManagement" configuration section.
-        services.AddFeatureManagement(config.GetSection("FeatureManagement"));
-
-        services.AddHostedService<DatabaseKeepAliveService>();
 
         return services;
     }
