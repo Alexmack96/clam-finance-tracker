@@ -5,6 +5,10 @@
 [build]
 builder = "DOCKERFILE"
 dockerfilePath = "api-dotnet/Dockerfile"
+# Paths whose changes trigger a deploy. The dashboard still held "/server/**"
+# from the Express service, so every push since the cutover was skipped with
+# "No changes to watched files". Set here, it overrides the dashboard value.
+watchPatterns = ["/api-dotnet/**", "/client/**", "/core/**", "/package.json", "/bun.lock", "/railway.toml"]
 
 [deploy]
 healthcheckPath = "/api/health"
