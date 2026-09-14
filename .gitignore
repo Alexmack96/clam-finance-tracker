@@ -161,6 +161,10 @@ prod.db-shm
 # Prod keeps these on the Railway volume at /data/statements.
 server/statements/
 statements/
+# core.ignorecase is on under Windows, so the line above also swallows the
+# source folders named Statements. Never let it.
+!api-dotnet/Clam.Api/Features/Statements/
+!api-dotnet/Clam.Api/Infrastructure/Statements/
 
 # CSV dumps of the prod SQLite snapshot (real financial data — never commit).
 # See scripts/sync-prod-to-sql.ps1 and api-dotnet/tools/Clam.Sync.
